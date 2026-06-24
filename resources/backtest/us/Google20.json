@@ -1,0 +1,766 @@
+{
+  "stockHistory": {
+    "US02079K1079": [
+      {
+        "closingPrice": 67.96
+      },
+      {
+        "closingPrice": 67.63
+      },
+      {
+        "closingPrice": 69.3
+      },
+      {
+        "closingPrice": 69.26
+      },
+      {
+        "closingPrice": 69.8
+      },
+      {
+        "closingPrice": 70.57
+      },
+      {
+        "closingPrice": 71.06
+      },
+      {
+        "closingPrice": 71.54
+      },
+      {
+        "closingPrice": 71.12
+      },
+      {
+        "closingPrice": 71.53
+      },
+      {
+        "closingPrice": 72.16
+      },
+      {
+        "closingPrice": 73.58
+      },
+      {
+        "closingPrice": 73.78
+      },
+      {
+        "closingPrice": 73.86
+      },
+      {
+        "closingPrice": 73.89
+      },
+      {
+        "closingPrice": 72.9
+      },
+      {
+        "closingPrice": 71.27
+      },
+      {
+        "closingPrice": 72.2
+      },
+      {
+        "closingPrice": 72.5
+      },
+      {
+        "closingPrice": 72.36
+      },
+      {
+        "closingPrice": 71.29
+      },
+      {
+        "closingPrice": 73.86
+      },
+      {
+        "closingPrice": 71.93
+      },
+      {
+        "closingPrice": 71.98
+      },
+      {
+        "closingPrice": 73.38
+      },
+      {
+        "closingPrice": 73.52
+      },
+      {
+        "closingPrice": 74.99
+      },
+      {
+        "closingPrice": 74.99
+      },
+      {
+        "closingPrice": 75.46
+      },
+      {
+        "closingPrice": 75.29
+      },
+      {
+        "closingPrice": 75.59
+      },
+      {
+        "closingPrice": 75.53
+      },
+      {
+        "closingPrice": 75.88
+      },
+      {
+        "closingPrice": 75.46
+      },
+      {
+        "closingPrice": 73.82
+      },
+      {
+        "closingPrice": 70.66
+      },
+      {
+        "closingPrice": 69.01
+      },
+      {
+        "closingPrice": 69.25
+      },
+      {
+        "closingPrice": 65.52
+      },
+      {
+        "closingPrice": 66.57
+      },
+      {
+        "closingPrice": 69.05
+      },
+      {
+        "closingPrice": 66.67
+      },
+      {
+        "closingPrice": 68.92
+      },
+      {
+        "closingPrice": 65.56
+      },
+      {
+        "closingPrice": 64.54
+      },
+      {
+        "closingPrice": 60.42
+      },
+      {
+        "closingPrice": 63.64
+      },
+      {
+        "closingPrice": 60.41
+      },
+      {
+        "closingPrice": 55.42
+      },
+      {
+        "closingPrice": 60.63
+      },
+      {
+        "closingPrice": 53.9
+      },
+      {
+        "closingPrice": 55.66
+      },
+      {
+        "closingPrice": 54.52
+      },
+      {
+        "closingPrice": 55.43
+      },
+      {
+        "closingPrice": 53.3
+      },
+      {
+        "closingPrice": 52.52
+      },
+      {
+        "closingPrice": 56.39
+      },
+      {
+        "closingPrice": 54.8
+      },
+      {
+        "closingPrice": 57.74
+      },
+      {
+        "closingPrice": 55.21
+      },
+      {
+        "closingPrice": 57.0
+      },
+      {
+        "closingPrice": 57.8
+      },
+      {
+        "closingPrice": 54.95
+      },
+      {
+        "closingPrice": 55.71
+      },
+      {
+        "closingPrice": 54.57
+      },
+      {
+        "closingPrice": 59.0
+      },
+      {
+        "closingPrice": 58.97
+      },
+      {
+        "closingPrice": 60.16
+      },
+      {
+        "closingPrice": 60.21
+      },
+      {
+        "closingPrice": 60.52
+      },
+      {
+        "closingPrice": 63.09
+      },
+      {
+        "closingPrice": 62.75
+      },
+      {
+        "closingPrice": 62.8
+      },
+      {
+        "closingPrice": 63.78
+      },
+      {
+        "closingPrice": 62.96
+      },
+      {
+        "closingPrice": 60.46
+      },
+      {
+        "closingPrice": 62.79
+      },
+      {
+        "closingPrice": 63.44
+      },
+      {
+        "closingPrice": 63.59
+      },
+      {
+        "closingPrice": 63.42
+      },
+      {
+        "closingPrice": 61.32
+      },
+      {
+        "closingPrice": 66.68
+      },
+      {
+        "closingPrice": 67.03
+      },
+      {
+        "closingPrice": 65.64
+      },
+      {
+        "closingPrice": 65.95
+      },
+      {
+        "closingPrice": 67.16
+      },
+      {
+        "closingPrice": 66.97
+      },
+      {
+        "closingPrice": 68.22
+      },
+      {
+        "closingPrice": 69.01
+      },
+      {
+        "closingPrice": 69.75
+      },
+      {
+        "closingPrice": 68.38
+      },
+      {
+        "closingPrice": 67.07
+      },
+      {
+        "closingPrice": 67.41
+      },
+      {
+        "closingPrice": 68.25
+      },
+      {
+        "closingPrice": 68.79
+      },
+      {
+        "closingPrice": 68.27
+      },
+      {
+        "closingPrice": 69.92
+      },
+      {
+        "closingPrice": 69.73
+      },
+      {
+        "closingPrice": 70.1
+      },
+      {
+        "closingPrice": 70.43
+      },
+      {
+        "closingPrice": 70.47
+      },
+      {
+        "closingPrice": 70.42
+      },
+      {
+        "closingPrice": 71.02
+      },
+      {
+        "closingPrice": 71.17
+      },
+      {
+        "closingPrice": 71.54
+      },
+      {
+        "closingPrice": 71.39
+      },
+      {
+        "closingPrice": 70.19
+      },
+      {
+        "closingPrice": 71.49
+      },
+      {
+        "closingPrice": 71.9
+      },
+      {
+        "closingPrice": 72.38
+      },
+      {
+        "closingPrice": 72.86
+      },
+      {
+        "closingPrice": 69.78
+      },
+      {
+        "closingPrice": 70.24
+      },
+      {
+        "closingPrice": 70.57
+      },
+      {
+        "closingPrice": 71.71
+      },
+      {
+        "closingPrice": 72.13
+      },
+      {
+        "closingPrice": 71.37
+      },
+      {
+        "closingPrice": 71.16
+      },
+      {
+        "closingPrice": 72.16
+      },
+      {
+        "closingPrice": 72.79
+      },
+      {
+        "closingPrice": 71.18
+      },
+      {
+        "closingPrice": 71.64
+      },
+      {
+        "closingPrice": 67.59
+      },
+      {
+        "closingPrice": 69.34
+      },
+      {
+        "closingPrice": 70.26
+      },
+      {
+        "closingPrice": 71.48
+      },
+      {
+        "closingPrice": 72.8
+      },
+      {
+        "closingPrice": 74.34
+      },
+      {
+        "closingPrice": 73.82
+      },
+      {
+        "closingPrice": 74.36
+      },
+      {
+        "closingPrice": 75.1
+      },
+      {
+        "closingPrice": 76.63
+      },
+      {
+        "closingPrice": 75.12
+      },
+      {
+        "closingPrice": 75.58
+      },
+      {
+        "closingPrice": 75.23
+      },
+      {
+        "closingPrice": 75.45
+      },
+      {
+        "closingPrice": 75.33
+      },
+      {
+        "closingPrice": 77.82
+      },
+      {
+        "closingPrice": 77.46
+      },
+      {
+        "closingPrice": 77.96
+      },
+      {
+        "closingPrice": 75.34
+      },
+      {
+        "closingPrice": 75.15
+      },
+      {
+        "closingPrice": 76.06
+      },
+      {
+        "closingPrice": 74.57
+      },
+      {
+        "closingPrice": 75.65
+      },
+      {
+        "closingPrice": 76.12
+      },
+      {
+        "closingPrice": 73.71
+      },
+      {
+        "closingPrice": 73.29
+      },
+      {
+        "closingPrice": 72.82
+      },
+      {
+        "closingPrice": 73.25
+      },
+      {
+        "closingPrice": 74.56
+      },
+      {
+        "closingPrice": 74.28
+      },
+      {
+        "closingPrice": 74.36
+      },
+      {
+        "closingPrice": 73.58
+      },
+      {
+        "closingPrice": 74.89
+      },
+      {
+        "closingPrice": 75.47
+      },
+      {
+        "closingPrice": 74.94
+      },
+      {
+        "closingPrice": 75.45
+      },
+      {
+        "closingPrice": 77.47
+      },
+      {
+        "closingPrice": 76.92
+      },
+      {
+        "closingPrice": 78.62
+      },
+      {
+        "closingPrice": 78.55
+      },
+      {
+        "closingPrice": 78.94
+      },
+      {
+        "closingPrice": 79.94
+      },
+      {
+        "closingPrice": 82.13
+      },
+      {
+        "closingPrice": 81.23
+      },
+      {
+        "closingPrice": 81.73
+      },
+      {
+        "closingPrice": 81.23
+      },
+      {
+        "closingPrice": 82.54
+      },
+      {
+        "closingPrice": 85.9
+      },
+      {
+        "closingPrice": 81.61
+      },
+      {
+        "closingPrice": 79.08
+      },
+      {
+        "closingPrice": 76.17
+      },
+      {
+        "closingPrice": 77.39
+      },
+      {
+        "closingPrice": 76.15
+      },
+      {
+        "closingPrice": 75.59
+      },
+      {
+        "closingPrice": 75.52
+      },
+      {
+        "closingPrice": 76.62
+      },
+      {
+        "closingPrice": 75.6
+      },
+      {
+        "closingPrice": 74.33
+      },
+      {
+        "closingPrice": 72.57
+      },
+      {
+        "closingPrice": 71.14
+      },
+      {
+        "closingPrice": 72.84
+      },
+      {
+        "closingPrice": 70.34
+      },
+      {
+        "closingPrice": 70.99
+      },
+      {
+        "closingPrice": 71.82
+      },
+      {
+        "closingPrice": 72.79
+      },
+      {
+        "closingPrice": 73.03
+      },
+      {
+        "closingPrice": 73.05
+      },
+      {
+        "closingPrice": 74.06
+      },
+      {
+        "closingPrice": 72.49
+      },
+      {
+        "closingPrice": 73.86
+      },
+      {
+        "closingPrice": 72.24
+      },
+      {
+        "closingPrice": 72.58
+      },
+      {
+        "closingPrice": 73.86
+      },
+      {
+        "closingPrice": 75.31
+      },
+      {
+        "closingPrice": 77.99
+      },
+      {
+        "closingPrice": 78.12
+      },
+      {
+        "closingPrice": 77.94
+      },
+      {
+        "closingPrice": 77.5
+      },
+      {
+        "closingPrice": 78.19
+      },
+      {
+        "closingPrice": 76.28
+      },
+      {
+        "closingPrice": 77.34
+      },
+      {
+        "closingPrice": 79.19
+      },
+      {
+        "closingPrice": 80.29
+      },
+      {
+        "closingPrice": 81.57
+      },
+      {
+        "closingPrice": 79.05
+      },
+      {
+        "closingPrice": 79.74
+      },
+      {
+        "closingPrice": 75.38
+      },
+      {
+        "closingPrice": 77.9
+      },
+      {
+        "closingPrice": 80.57
+      },
+      {
+        "closingPrice": 80.82
+      },
+      {
+        "closingPrice": 82.02
+      },
+      {
+        "closingPrice": 86.94
+      },
+      {
+        "closingPrice": 87.65
+      },
+      {
+        "closingPrice": 87.57
+      },
+      {
+        "closingPrice": 87.63
+      },
+      {
+        "closingPrice": 86.51
+      },
+      {
+        "closingPrice": 87.12
+      },
+      {
+        "closingPrice": 86.98
+      },
+      {
+        "closingPrice": 88.33
+      },
+      {
+        "closingPrice": 88.54
+      },
+      {
+        "closingPrice": 87.98
+      },
+      {
+        "closingPrice": 86.82
+      },
+      {
+        "closingPrice": 87.67
+      },
+      {
+        "closingPrice": 86.59
+      },
+      {
+        "closingPrice": 86.23
+      },
+      {
+        "closingPrice": 87.92
+      },
+      {
+        "closingPrice": 88.05
+      },
+      {
+        "closingPrice": 89.13
+      },
+      {
+        "closingPrice": 87.52
+      },
+      {
+        "closingPrice": 89.37
+      },
+      {
+        "closingPrice": 90.86
+      },
+      {
+        "closingPrice": 90.8
+      },
+      {
+        "closingPrice": 90.86
+      },
+      {
+        "closingPrice": 90.44
+      },
+      {
+        "closingPrice": 90.39
+      },
+      {
+        "closingPrice": 88.68
+      },
+      {
+        "closingPrice": 88.24
+      },
+      {
+        "closingPrice": 88.56
+      },
+      {
+        "closingPrice": 87.48
+      },
+      {
+        "closingPrice": 87.87
+      },
+      {
+        "closingPrice": 87.63
+      },
+      {
+        "closingPrice": 86.88
+      },
+      {
+        "closingPrice": 86.04
+      },
+      {
+        "closingPrice": 86.45
+      },
+      {
+        "closingPrice": 85.67
+      },
+      {
+        "closingPrice": 86.11
+      },
+      {
+        "closingPrice": 86.43
+      },
+      {
+        "closingPrice": 88.28
+      },
+      {
+        "closingPrice": 87.42
+      },
+      {
+        "closingPrice": 86.46
+      },
+      {
+        "closingPrice": 87.08
+      }
+    ]
+  },
+  "holdings": {}
+}
