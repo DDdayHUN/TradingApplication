@@ -153,13 +153,13 @@ public final class AlgorithmBackTester {
     /*===========================================================*/
     // Constructor(s)
 
-    public AlgorithmBackTester(final Algorithm.Type type, final double toke, final String stockNev, final int from, final int to) {
+    public AlgorithmBackTester(final Algorithm.Type type, final double capital, final String stockNev, final int from, final int to) {
         m_StockNev = stockNev;
         m_From = from;
         m_To = to;
 
-        m_StartingCapital = toke;
-        m_Capital = toke;
+        m_StartingCapital = capital;
+        m_Capital = capital;
 
         final var pair = Algorithm.InitForBackTest(type, m_StockNev, m_From, m_To);
 

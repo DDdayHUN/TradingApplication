@@ -34,7 +34,8 @@ public record FinnhubQuoteDto(
         h,
         l,
         o,
-        pc
+        pc,
+        System.currentTimeMillis()
       );
    }
 }
