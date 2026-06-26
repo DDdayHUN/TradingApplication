@@ -11,7 +11,8 @@ public class SerializationData {
     public final Map<String, List<History>> stockHistory;
     public final Map<String, List<Bought>>  holdings;
 
-    public SerializationData(final Map<String, List<History>> stockHistory, final Map<String, List<Bought>> holdings) {
+    public SerializationData(final Map<String, List<History>> stockHistory,
+                             final Map<String, List<Bought>> holdings) {
         this.stockHistory   = new HashMap<>(stockHistory);
         this.holdings       = new HashMap<>(holdings);
     }

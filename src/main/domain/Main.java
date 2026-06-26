@@ -3,10 +3,20 @@ package domain;
 
 import domain.algorithm.Algorithm;
 import domain.algorithm.AlgorithmBackTester;
+import infrastructure.finnhub.FinnhubClient;
+import infrastructure.finnhub.FinnhubConfig;
+import infrastructure.finnhub.FinnhubTester;
+
+import java.io.IOException;
 
 public final class Main {
-    static public void main(String[] args) {
+    static public void main(String[] args) throws IOException, InterruptedException {
+        System.out.println("#==========================================#");
+        System.out.println("\n### Algorithm ###\n");
         final var BT = new AlgorithmBackTester(Algorithm.Type.TACPP46, 10000d, "Cloudflare", 20, 24);
         BT.runBackTestWithDebug();
+        System.out.println("\n### Finnhub ###\n");
+        final var FT = new FinnhubTester();
+        FT.runFinnhubTester("AAPL");
     }
 }

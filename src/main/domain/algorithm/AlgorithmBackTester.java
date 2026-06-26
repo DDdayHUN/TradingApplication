@@ -18,7 +18,7 @@ public final class AlgorithmBackTester {
     private final int       m_From;
     private final int       m_To;
 
-    private final double    m_KezdetiToke;
+    private final double m_StartingCapital;
 
     private Algorithm               m_Algorithm;
     private final Algorithm.Type    m_Type;
@@ -27,7 +27,7 @@ public final class AlgorithmBackTester {
     private final List<Bought>  m_Holdings;
     private final List<Double>  m_CapitalHistory;
 
-    private double m_Toke;
+    private double m_Capital;
 
     private int m_TotalTrades   = 0;
     private int m_WinningTrades = 0;
@@ -37,14 +37,14 @@ public final class AlgorithmBackTester {
     // Public Interface(s)
 
     public void runBackTestWithDebug() {
-        internal_runBackTest();
+        runInternalBackTest();
         Display(true);
     }
 
     /*===========================================================*/
 
     public void runBackTest() {
-        internal_runBackTest();
+        runInternalBackTest();
         Display(false);
     }
 
@@ -52,7 +52,7 @@ public final class AlgorithmBackTester {
     /*===========================================================*/
     // Private Interface(s)
 
-    private void internal_runBackTest() {
+    private void runInternalBackTest() {
         final var pair = Algorithm.InitForBackTest(m_Type, m_StockNev, m_From, m_To);
 
         // Cleanup and Init
@@ -60,14 +60,14 @@ public final class AlgorithmBackTester {
             m_Holdings.clear();
             m_CapitalHistory.clear();
 
-            m_Toke = m_KezdetiToke;
+            m_Capital = m_StartingCapital;
 
             m_Algorithm = pair.second;
 
             m_TotalTrades   = 0;
             m_WinningTrades = 0;
 
-            m_CapitalHistory.add(m_KezdetiToke);
+            m_CapitalHistory.add(m_StartingCapital);
         }
 
         for(final var history : m_HistoryWeRunAgainst) {
@@ -80,10 +80,10 @@ public final class AlgorithmBackTester {
     /*===========================================================*/
 
     private void runOneIteration(final double currentPrice) {
-        final var ret = m_Algorithm.Run(m_Holdings, m_Toke, currentPrice);
+        final var ret = m_Algorithm.Run(m_Holdings, m_Capital, currentPrice);
 
         if(ret.buy != null) {
-            m_Toke -= ret.buy.amount * currentPrice;
+            m_Capital -= ret.buy.amount * currentPrice;
             m_Holdings.add(new Bought(currentPrice, ret.buy.amount));
         }
 
@@ -95,11 +95,11 @@ public final class AlgorithmBackTester {
                 if (amount > bought.amount) throw new IllegalStateException("Sell Amount");
 
                 if(amount == bought.amount) {
-                    m_Toke += amount * currentPrice;
+                    m_Capital += amount * currentPrice;
                     m_Holdings.remove(bought);
                 }
                 else {
-                    m_Toke += amount * currentPrice;
+                    m_Capital += amount * currentPrice;
                     bought.amount -= amount;
                 }
 
@@ -110,7 +110,7 @@ public final class AlgorithmBackTester {
 
         double sum = 0d;
         for(var item : m_Holdings) sum += (currentPrice * item.amount);
-        m_CapitalHistory.add(m_Toke + sum);
+        m_CapitalHistory.add(m_Capital + sum);
     }
 
     /*===========================================================*/
@@ -119,8 +119,8 @@ public final class AlgorithmBackTester {
         if (m_CapitalHistory.isEmpty()) throw new IllegalArgumentException("m_CapitalHistory is empty");
 
         final double last = m_CapitalHistory.get(m_CapitalHistory.size() - 1);
-        final double profit = last - m_KezdetiToke;
-        final double szazalek = (profit / m_KezdetiToke) * 100.0d;
+        final double profit = last - m_StartingCapital;
+        final double szazalek = (profit / m_StartingCapital) * 100.0d;
 
         final double winrate;
         if(m_TotalTrades <= 0) winrate = Double.NaN;
@@ -132,7 +132,7 @@ public final class AlgorithmBackTester {
         System.out.println("Total Trades Made: " + m_TotalTrades);
         System.out.println("Winrate: " + String.format("%.2f", winrate) + "%");
         System.out.println();
-        System.out.println("Kezdeti Toke: " + String.format("%.2f", m_KezdetiToke));
+        System.out.println("Kezdeti Toke: " + String.format("%.2f", m_StartingCapital));
         System.out.println("Profit: " + String.format("%.2f", profit));
         System.out.println("Return: " + String.format("%.2f", szazalek) + "%");
         System.out.println();
@@ -153,13 +153,13 @@ public final class AlgorithmBackTester {
     /*===========================================================*/
     // Constructor(s)
 
-    public AlgorithmBackTester(final Algorithm.Type type, final double toke, final String stockNev, final int from, final int to) {
+    public AlgorithmBackTester(final Algorithm.Type type, final double capital, final String stockNev, final int from, final int to) {
         m_StockNev = stockNev;
         m_From = from;
         m_To = to;
 
-        m_KezdetiToke = toke;
-        m_Toke = toke;
+        m_StartingCapital = capital;
+        m_Capital = capital;
 
         final var pair = Algorithm.InitForBackTest(type, m_StockNev, m_From, m_To);
 
