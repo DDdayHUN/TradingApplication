@@ -1,8 +1,9 @@
-package domain.algorithm;
+package application.backtest;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import domain.algorithm.Algorithm;
 import domain.stock.Holding;
 import domain.stock.History;
 
@@ -20,7 +21,7 @@ public final class AlgorithmBackTester {
 
     private final double m_StartingCapital;
 
-    private Algorithm               m_Algorithm;
+    private Algorithm m_Algorithm;
     private final Algorithm.Type    m_Type;
 
     private final List<History> m_HistoryWeRunAgainst;

@@ -2,7 +2,7 @@ package domain;
 // Hello Wrold :) System.out.println("Hello, Wrold!");
 
 import domain.algorithm.Algorithm;
-import domain.algorithm.AlgorithmBackTester;
+import application.backtest.AlgorithmBackTester;
 //import infrastructure.finnhub.FinnhubClient;
 //import infrastructure.finnhub.FinnhubConfig;
 //import infrastructure.finnhub.FinnhubTester;
