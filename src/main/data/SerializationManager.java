@@ -11,20 +11,20 @@ import java.nio.charset.StandardCharsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-/*===========================================================*/
-/*===========================================================*/
+//===========================================================//
+//===========================================================//
 
 public final class SerializationManager {
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Static Field(s)
 
     static private final Gson s_GSON = new GsonBuilder()
         .setPrettyPrinting()
         .create();
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Public Interface(s)
 
     static public void saveToFile(final File file, final SerializationData serData) throws IOException {
@@ -35,7 +35,7 @@ public final class SerializationManager {
         }
     }
 
-    /*===========================================================*/
+    //===========================================================//
 
     static public SerializationData loadFromFile(final File file) throws IOException {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) 
@@ -44,8 +44,8 @@ public final class SerializationManager {
         }
     }
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Constructor(s)
 
     private SerializationManager() {} // To prevent instantiation.

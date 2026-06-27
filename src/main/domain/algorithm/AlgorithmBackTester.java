@@ -37,23 +37,23 @@ public final class AlgorithmBackTester {
     // Public Interface(s)
 
     public void runBackTestWithDebug() {
-        runInternalBackTest();
-        Display(true);
+        m_runInternalBackTest();
+        m_display(true);
     }
 
     //===========================================================//
 
     public void runBackTest() {
-        runInternalBackTest();
-        Display(false);
+        m_runInternalBackTest();
+        m_display(false);
     }
 
     //===========================================================//
     //===========================================================//
     // Private Interface(s)
 
-    private void runInternalBackTest() {
-        final var pair = Algorithm.InitForBackTest(m_Type, m_StockNev, m_From, m_To);
+    private void m_runInternalBackTest() {
+        final var pair = Algorithm.initForBackTest(m_Type, m_StockNev, m_From, m_To);
 
         // Cleanup and Init
         {
@@ -72,15 +72,15 @@ public final class AlgorithmBackTester {
 
         for(final var history : m_HistoryWeRunAgainst) {
             final var currentPrice = history.closingPrice();
-            this.runOneIteration(currentPrice);
-            m_Algorithm.UpdateHistory(history);
+            this.m_runOneIteration(currentPrice);
+            m_Algorithm.updateHistory(history);
         }
     }
 
     //===========================================================//
 
-    private void runOneIteration(final double currentPrice) {
-        final var ret = m_Algorithm.Run(m_Holdings, m_Capital, currentPrice);
+    private void m_runOneIteration(final double currentPrice) {
+        final var ret = m_Algorithm.run(m_Holdings, m_Capital, currentPrice);
 
         if(ret.buy() != null) {
             m_Capital -= ret.buy().amount() * currentPrice;
@@ -114,7 +114,7 @@ public final class AlgorithmBackTester {
 
     //===========================================================//
 
-    private void Display(final boolean debug) {
+    private void m_display(final boolean debug) {
         if (m_CapitalHistory.isEmpty()) throw new IllegalArgumentException("m_CapitalHistory is empty");
 
         final double last = m_CapitalHistory.get(m_CapitalHistory.size() - 1);
@@ -160,7 +160,7 @@ public final class AlgorithmBackTester {
         m_StartingCapital = capital;
         m_Capital = capital;
 
-        final var pair = Algorithm.InitForBackTest(type, m_StockNev, m_From, m_To);
+        final var pair = Algorithm.initForBackTest(type, m_StockNev, m_From, m_To);
 
         m_Algorithm = pair.second;
         m_Type = type;
