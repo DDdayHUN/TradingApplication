@@ -12,16 +12,16 @@ import java.util.List;
 
 import data.SerializationManager;
 
-/*===========================================================*/
+//===========================================================//
 /**
  * Abstract base class for all trading algorithms.
  * <p> Defines the required interface and provides factory methods for initializing algorithms in different modes.</p>
  */
-/*===========================================================*/
+//===========================================================//
 
 public abstract class Algorithm {
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Public Interface(s)
 
     /**
@@ -41,7 +41,7 @@ public abstract class Algorithm {
      */
     public abstract void UpdateHistory(final History stock);
 
-    /*===========================================================*/
+    //===========================================================//
     /**
      * Initializes an algorithm instance configured for backtesting.
      *
@@ -55,7 +55,7 @@ public abstract class Algorithm {
         return initialiser(type, Init.BACKTEST, stockNev, from, to);
     }
 
-    /*===========================================================*/
+    //===========================================================//
 
     /**
      * Initializes an algorithm instance configured for live trading.
@@ -68,8 +68,8 @@ public abstract class Algorithm {
         return initialiser(type, Init.TRADING, stockNev, Integer.MIN_VALUE, Integer.MAX_VALUE).second;
     }
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Private Interface(s)
 
     /**
@@ -99,7 +99,7 @@ public abstract class Algorithm {
         catch(IOException IO_E) { throw new IllegalArgumentException(IO_E.getMessage(), IO_E.getCause()); }
     }
 
-    /*===========================================================*/
+    //===========================================================//
     /**
      * Loads historical data from files based on the given parameters.
      *
@@ -142,8 +142,8 @@ public abstract class Algorithm {
         return ret;
     }
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Enum(s)
 
     /**
@@ -153,7 +153,7 @@ public abstract class Algorithm {
         TACPP46
     }
 
-    /*===========================================================*/
+    //===========================================================//
     /**
      * Initialization modes for the algorithm.
      */
@@ -162,8 +162,8 @@ public abstract class Algorithm {
         TRADING
     }
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Constructor(s)
 
     /**

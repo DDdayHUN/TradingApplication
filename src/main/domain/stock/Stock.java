@@ -4,6 +4,4 @@ public record Stock(
     String uuid, 
     String isin, 
     String symbol
-) {
-    
-}
+) {}

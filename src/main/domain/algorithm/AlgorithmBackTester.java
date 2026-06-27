@@ -6,12 +6,12 @@ import java.util.List;
 import domain.stock.Holding;
 import domain.stock.History;
 
-/*===========================================================*/
-/*===========================================================*/
+//===========================================================//
+//===========================================================//
 
 public final class AlgorithmBackTester {
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Private Field(s)
 
     private final String    m_StockNev;
@@ -32,8 +32,8 @@ public final class AlgorithmBackTester {
     private int m_TotalTrades   = 0;
     private int m_WinningTrades = 0;
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Public Interface(s)
 
     public void runBackTestWithDebug() {
@@ -41,15 +41,15 @@ public final class AlgorithmBackTester {
         Display(true);
     }
 
-    /*===========================================================*/
+    //===========================================================//
 
     public void runBackTest() {
         runInternalBackTest();
         Display(false);
     }
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Private Interface(s)
 
     private void runInternalBackTest() {
@@ -77,7 +77,7 @@ public final class AlgorithmBackTester {
         }
     }
 
-    /*===========================================================*/
+    //===========================================================//
 
     private void runOneIteration(final double currentPrice) {
         final var ret = m_Algorithm.Run(m_Holdings, m_Capital, currentPrice);
@@ -112,7 +112,7 @@ public final class AlgorithmBackTester {
         m_CapitalHistory.add(m_Capital + sum);
     }
 
-    /*===========================================================*/
+    //===========================================================//
 
     private void Display(final boolean debug) {
         if (m_CapitalHistory.isEmpty()) throw new IllegalArgumentException("m_CapitalHistory is empty");
@@ -148,8 +148,8 @@ public final class AlgorithmBackTester {
         }
     }
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Constructor(s)
 
     public AlgorithmBackTester(final Algorithm.Type type, final double capital, final String stockNev, final int from, final int to) {
