@@ -1,5 +1,6 @@
 package domain.algorithm;
 
+import domain.algorithm.Algorithm.Init;
 import domain.stock.History;
 import utils.Pair;
 import domain.stock.Holding;
@@ -146,14 +147,6 @@ public abstract class Algorithm {
     /*===========================================================*/
     // Enum(s)
 
-    /**
-     * Supported algorithm types.
-     */
-    static public enum Type {
-        TACPP46
-    }
-
-    /*===========================================================*/
     /**
      * Initialization modes for the algorithm.
      */

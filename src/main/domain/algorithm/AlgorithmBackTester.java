@@ -82,13 +82,13 @@ public final class AlgorithmBackTester {
     private void runOneIteration(final double currentPrice) {
         final var ret = m_Algorithm.Run(m_Holdings, m_Capital, currentPrice);
 
-        if(ret.buy != null) {
-            m_Capital -= ret.buy.amount * currentPrice;
-            m_Holdings.add(new Holding(currentPrice, ret.buy.amount));
+        if(ret.buy() != null) {
+            m_Capital -= ret.buy().amount() * currentPrice;
+            m_Holdings.add(new Holding(currentPrice, ret.buy().amount()));
         }
 
-        if(ret.sell != null) {
-            for(final var item : ret.sell.batches) {
+        if(ret.sell() != null) {
+            for(final var item : ret.sell().batches()) {
                 final var bought = item.first;
                 final var amount = item.second;
                 
