@@ -107,7 +107,7 @@ public abstract class Algorithm {
      */
 
     static private final List<History> historyInitialiser(final String stockNev, final int from, final int to) throws IOException {
-        final var backtestFiles = new File("resources/backtest/us/").listFiles();
+        final var backtestFiles = new File("src/main/resources/backtest/us/").listFiles();
         final List<Pair<File, Integer>> proxy = new ArrayList<>();
 
         for(final var file : backtestFiles) {
