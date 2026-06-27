@@ -11,8 +11,8 @@ import domain.stock.History;
 import utils.Pair;
 
 final class TACPP46 extends Algorithm {
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Private Field(s)
 
     private ArrayDeque<Double>  lastInputArr        = new ArrayDeque<>();
@@ -21,12 +21,12 @@ final class TACPP46 extends Algorithm {
     private Map<Holding, Double> trailingHigh        = new HashMap<>();
     private List<Holding>        markedForSelling    = new ArrayList<>();
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Public Interface(s)
 
     @Override
-    public AlgorithmOutput Run(final List<Holding> holdings, final double allocatedToke, final double currentPrice) {
+    public AlgorithmOutput run(final List<Holding> holdings, final double allocatedToke, final double currentPrice) {
         AlgorithmOutput.Buy buy  = null;
         AlgorithmOutput.Sell sell = null;
 
@@ -66,7 +66,7 @@ final class TACPP46 extends Algorithm {
             boolean isMarked = markedForSelling.contains(item);
 
             // Activate trailing if gained > risk
-            if (!isMarked && currentPrice > item.price() * (1.0d + risk)) {
+            if (!isMarked && currentPrice > item.entryPrice() * (1.0d + risk)) {
                 markedForSelling.add(item);
                 trailingHigh.put(item, currentPrice);
                 isMarked = true;
@@ -94,7 +94,7 @@ final class TACPP46 extends Algorithm {
 
         // Stop-loss
         for (final var item : holdings) {
-            if (currentPrice < item.price() * (1.0d - risk * 2.0d)) {
+            if (currentPrice < item.entryPrice() * (1.0d - risk * 2.0d)) {
                 toBeSold.add(new Pair<>(item, item.amount()));
 
                 // cleanup
@@ -107,10 +107,10 @@ final class TACPP46 extends Algorithm {
         return new AlgorithmOutput(buy, sell);
     }
 
-    /*===========================================================*/
+    //===========================================================//
 
     @Override
-    public void UpdateHistory(final History history) {
+    public void updateHistory(final History history) {
         final double alpha = 2.0d / (emaHistory.size() + 1.0d);
         final double last = emaHistory.peekLast();
 
@@ -120,8 +120,8 @@ final class TACPP46 extends Algorithm {
         emaHistory.addLast(newEma);
     }
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Constructor(s)
 
     /**

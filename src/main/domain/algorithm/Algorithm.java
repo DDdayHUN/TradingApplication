@@ -32,14 +32,14 @@ public abstract class Algorithm {
      * @param currentPrice  - Current market price of the asset.
      * @return              AlgorithmOutput containing the decision/results.
      */
-    public abstract AlgorithmOutput Run(final List<Holding> holdings, final double allocatedToke, final double currentPrice);
+    public abstract AlgorithmOutput run(final List<Holding> holdings, final double allocatedToke, final double currentPrice);
 
     /**
      * Updates the internal state/history of the algorithm.
      *
      * @param stock - Historical stock data to be incorporated.
      */
-    public abstract void UpdateHistory(final History stock);
+    public abstract void updateHistory(final History stock);
 
     //===========================================================//
     /**
@@ -51,8 +51,8 @@ public abstract class Algorithm {
      * @param to       - End date (inclusive).
      * @return         Pair containing the list of history that was not used up for initialisation and the algorithm instance.
      */
-    static public final Pair<List<History>, Algorithm> InitForBackTest(final Type type, final String stockNev, final int from, final int to) {
-        return initialiser(type, Init.BACKTEST, stockNev, from, to);
+    static public final Pair<List<History>, Algorithm> initForBackTest(final Type type, final String stockNev, final int from, final int to) {
+        return sm_initialiser(type, Init.BACKTEST, stockNev, from, to);
     }
 
     //===========================================================//
@@ -64,8 +64,8 @@ public abstract class Algorithm {
      * @param stockNev - Stock identifier/name.
      * @return         Initialized algorithm instance.
      */
-    static public final Algorithm InitForTrading(final Type type, final String stockNev) {
-        return initialiser(type, Init.TRADING, stockNev, Integer.MIN_VALUE, Integer.MAX_VALUE).second;
+    static public final Algorithm initForTrading(final Type type, final String stockNev) {
+        return sm_initialiser(type, Init.TRADING, stockNev, Integer.MIN_VALUE, Integer.MAX_VALUE).second;
     }
 
     //===========================================================//
@@ -82,9 +82,9 @@ public abstract class Algorithm {
      * @param to       - End date (inclusive).
      * @return         Pair of history data and initialized algorithm.
      */
-    static private final Pair<List<History>, Algorithm> initialiser(final Type type, final Init init, final String stockNev, final int from, final int to) {
+    static private final Pair<List<History>, Algorithm> sm_initialiser(final Type type, final Init init, final String stockNev, final int from, final int to) {
         try {
-            final var retHistory = historyInitialiser(stockNev, from, to);
+            final var retHistory = sm_historyInitialiser(stockNev, from, to);
             final Algorithm retAlgorithm;
 
             switch (type) {
@@ -112,7 +112,7 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException If the expected range of files is not fully available.
      */
 
-    static private final List<History> historyInitialiser(final String stockNev, final int from, final int to) throws IOException {
+    static private final List<History> sm_historyInitialiser(final String stockNev, final int from, final int to) throws IOException {
         final var backtestFiles = new File("resources/backtest/us/").listFiles();
         final List<Pair<File, Integer>> proxy = new ArrayList<>();
 
