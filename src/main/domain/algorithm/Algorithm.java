@@ -52,7 +52,7 @@ public abstract class Algorithm {
      * @return         Pair containing the list of history that was not used up for initialisation and the algorithm instance.
      */
     static public final Pair<List<History>, Algorithm> initForBackTest(final Type type, final String stockNev, final int from, final int to) {
-        return m_initialiser(type, Init.BACKTEST, stockNev, from, to);
+        return initialiser(type, Init.BACKTEST, stockNev, from, to);
     }
 
     //===========================================================//
@@ -65,7 +65,7 @@ public abstract class Algorithm {
      * @return         Initialized algorithm instance.
      */
     static public final Algorithm initForTrading(final Type type, final String stockNev) {
-        return m_initialiser(type, Init.TRADING, stockNev, Integer.MIN_VALUE, Integer.MAX_VALUE).second;
+        return initialiser(type, Init.TRADING, stockNev, Integer.MIN_VALUE, Integer.MAX_VALUE).second;
     }
 
     //===========================================================//
@@ -82,16 +82,16 @@ public abstract class Algorithm {
      * @param to       - End date (inclusive).
      * @return         Pair of history data and initialized algorithm.
      */
-    static private final Pair<List<History>, Algorithm> m_initialiser(final Type type, final Init init, final String stockNev, final int from, final int to) {
+    static private final Pair<List<History>, Algorithm> initialiser(final Type type, final Init init, final String stockNev, final int from, final int to) {
         try {
-            final var retHistory = m_historyInitialiser(stockNev, from, to);
+            final var retHistory = historyInitialiser(stockNev, from, to);
             final Algorithm retAlgorithm;
 
             switch (type) {
                 case Type.TACPP46: {
                     retAlgorithm = new TACPP46(init, retHistory);
                 } break;
-                
+
                 default: throw new IllegalArgumentException("Type");
             }
 
@@ -113,7 +113,7 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException If the expected range of files is not fully available.
      */
 
-    static private final List<History> m_historyInitialiser(final String stockNev, final int from, final int to) throws IOException {
+    static private final List<History> historyInitialiser(final String stockNev, final int from, final int to) throws IOException {
         final var backtestFiles = new File("resources/backtest/us/").listFiles();
         final List<Pair<File, Integer>> proxy = new ArrayList<>();
 

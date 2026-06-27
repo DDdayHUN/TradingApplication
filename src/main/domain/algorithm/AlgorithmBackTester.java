@@ -37,22 +37,22 @@ public final class AlgorithmBackTester {
     // Public Interface(s)
 
     public void runBackTestWithDebug() {
-        m_runInternalBackTest();
-        m_display(true);
+        runInternalBackTest();
+        display(true);
     }
 
     //===========================================================//
 
     public void runBackTest() {
-        m_runInternalBackTest();
-        m_display(false);
+        runInternalBackTest();
+        display(false);
     }
 
     //===========================================================//
     //===========================================================//
     // Private Interface(s)
 
-    private void m_runInternalBackTest() {
+    private void runInternalBackTest() {
         final var pair = Algorithm.initForBackTest(m_Type, m_StockNev, m_From, m_To);
 
         // Cleanup and Init
@@ -72,14 +72,14 @@ public final class AlgorithmBackTester {
 
         for(final var history : m_HistoryWeRunAgainst) {
             final var currentPrice = history.closingPrice();
-            this.m_runOneIteration(currentPrice);
+            runOneIteration(currentPrice);
             m_Algorithm.updateHistory(history);
         }
     }
 
     //===========================================================//
 
-    private void m_runOneIteration(final double currentPrice) {
+    private void runOneIteration(final double currentPrice) {
         final var ret = m_Algorithm.run(m_Holdings, m_Capital, currentPrice);
 
         if(ret.buy() != null) {
@@ -114,7 +114,7 @@ public final class AlgorithmBackTester {
 
     //===========================================================//
 
-    private void m_display(final boolean debug) {
+    private void display(final boolean debug) {
         if (m_CapitalHistory.isEmpty()) throw new IllegalArgumentException("m_CapitalHistory is empty");
 
         final double last = m_CapitalHistory.get(m_CapitalHistory.size() - 1);
