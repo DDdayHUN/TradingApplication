@@ -1,9 +1,18 @@
 package domain.tax;
 
-import java.util.function.Supplier;
+//===========================================================//
+//===========================================================//
 
 public abstract class Taxation {
-    static public Taxation create(final Supplier<Taxation> supplier) {
-        return supplier.get();
-    }
+    //===========================================================//
+    //===========================================================//
+    // Public Field(s)
+
+    static public final Taxation HUNGARY = new HungaryTaxation();
+
+    //===========================================================//
+    //===========================================================//
+    // Constructor(s)
+
+    protected Taxation() {}  // To prevent instantiation, but allow subclasses.
 }

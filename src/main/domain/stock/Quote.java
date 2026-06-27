@@ -1,10 +1,10 @@
 package domain.stock;
-/* ====================================================== */
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+//===========================================================//
 /**
  * Represents the latest market quote for a stock symbol.
  * <p>
@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter;
  * @param openPrice
  * @param prevClosePrice
  */
-/* ====================================================== */
+//===========================================================//
 
 public record Quote(
   String symbol,

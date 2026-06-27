@@ -3,15 +3,15 @@ package domain.algorithm;
 import java.util.ArrayList;
 import java.util.List;
 
-import domain.stock.Bought;
+import domain.stock.Holding;
 import domain.stock.History;
 
-/*===========================================================*/
-/*===========================================================*/
+//===========================================================//
+//===========================================================//
 
 public final class AlgorithmBackTester {
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Private Field(s)
 
     private final String    m_StockNev;
@@ -24,7 +24,7 @@ public final class AlgorithmBackTester {
     private final Algorithm.Type    m_Type;
 
     private final List<History> m_HistoryWeRunAgainst;
-    private final List<Bought>  m_Holdings;
+    private final List<Holding>  m_Holdings;
     private final List<Double>  m_CapitalHistory;
 
     private double m_Capital;
@@ -32,28 +32,28 @@ public final class AlgorithmBackTester {
     private int m_TotalTrades   = 0;
     private int m_WinningTrades = 0;
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Public Interface(s)
 
     public void runBackTestWithDebug() {
         runInternalBackTest();
-        Display(true);
+        display(true);
     }
 
-    /*===========================================================*/
+    //===========================================================//
 
     public void runBackTest() {
         runInternalBackTest();
-        Display(false);
+        display(false);
     }
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Private Interface(s)
 
     private void runInternalBackTest() {
-        final var pair = Algorithm.InitForBackTest(m_Type, m_StockNev, m_From, m_To);
+        final var pair = Algorithm.initForBackTest(m_Type, m_StockNev, m_From, m_To);
 
         // Cleanup and Init
         {
@@ -71,51 +71,50 @@ public final class AlgorithmBackTester {
         }
 
         for(final var history : m_HistoryWeRunAgainst) {
-            final var currentPrice = history.closingPrice;
-            this.runOneIteration(currentPrice);
-            m_Algorithm.UpdateHistory(history);
+            final var currentPrice = history.closingPrice();
+            runOneIteration(currentPrice);
+            m_Algorithm.updateHistory(history);
         }
     }
 
-    /*===========================================================*/
+    //===========================================================//
 
     private void runOneIteration(final double currentPrice) {
-        final var ret = m_Algorithm.Run(m_Holdings, m_Capital, currentPrice);
+        final var ret = m_Algorithm.run(m_Holdings, m_Capital, currentPrice);
 
-        if(ret.buy != null) {
-            m_Capital -= ret.buy.amount * currentPrice;
-            m_Holdings.add(new Bought(currentPrice, ret.buy.amount));
+        if(ret.buy() != null) {
+            m_Capital -= ret.buy().amount() * currentPrice;
+            m_Holdings.add(new Holding(currentPrice, ret.buy().amount()));
         }
 
-        if(ret.sell != null) {
-            for(final var item : ret.sell.batches) {
+        if(ret.sell() != null) {
+            for(final var item : ret.sell().batches()) {
                 final var bought = item.first;
                 final var amount = item.second;
                 
-                if (amount > bought.amount) throw new IllegalStateException("Sell Amount");
+                if (amount > bought.amount()) throw new IllegalStateException("Sell Amount");
 
-                if(amount == bought.amount) {
-                    m_Capital += amount * currentPrice;
-                    m_Holdings.remove(bought);
-                }
+                m_Holdings.remove(bought);
+
+                if(amount == bought.amount()) m_Capital += amount * currentPrice;
                 else {
                     m_Capital += amount * currentPrice;
-                    bought.amount -= amount;
+                    m_Holdings.add(new Holding(bought.entryPrice(), bought.amount() - amount));
                 }
 
                 m_TotalTrades++;
-                if(currentPrice > bought.price) m_WinningTrades++;
+                if(currentPrice > bought.entryPrice()) m_WinningTrades++;
             }
         }
 
         double sum = 0d;
-        for(var item : m_Holdings) sum += (currentPrice * item.amount);
+        for(var item : m_Holdings) sum += (currentPrice * item.amount());
         m_CapitalHistory.add(m_Capital + sum);
     }
 
-    /*===========================================================*/
+    //===========================================================//
 
-    private void Display(final boolean debug) {
+    private void display(final boolean debug) {
         if (m_CapitalHistory.isEmpty()) throw new IllegalArgumentException("m_CapitalHistory is empty");
 
         final double last = m_CapitalHistory.get(m_CapitalHistory.size() - 1);
@@ -145,12 +144,12 @@ public final class AlgorithmBackTester {
         if (m_Holdings.isEmpty()) System.out.println("None");
         else {
             System.out.println();
-            for (Bought item : m_Holdings) System.out.println("  Price: " + String.format("%.2f", item.price) + " db: " + item.amount);
+            for (Holding item : m_Holdings) System.out.println("  Entry Price: " + String.format("%.2f", item.entryPrice()) + " db: " + item.amount());
         }
     }
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Constructor(s)
 
     public AlgorithmBackTester(final Algorithm.Type type, final double capital, final String stockNev, final int from, final int to) {
@@ -161,7 +160,7 @@ public final class AlgorithmBackTester {
         m_StartingCapital = capital;
         m_Capital = capital;
 
-        final var pair = Algorithm.InitForBackTest(type, m_StockNev, m_From, m_To);
+        final var pair = Algorithm.initForBackTest(type, m_StockNev, m_From, m_To);
 
         m_Algorithm = pair.second;
         m_Type = type;
