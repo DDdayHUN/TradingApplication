@@ -3,7 +3,7 @@ package domain.algorithm;
 import java.util.ArrayList;
 import java.util.List;
 
-import domain.stock.Bought;
+import domain.stock.Holding;
 import domain.stock.History;
 
 /*===========================================================*/
@@ -24,7 +24,7 @@ public final class AlgorithmBackTester {
     private final Algorithm.Type    m_Type;
 
     private final List<History> m_HistoryWeRunAgainst;
-    private final List<Bought>  m_Holdings;
+    private final List<Holding>  m_Holdings;
     private final List<Double>  m_CapitalHistory;
 
     private double m_Capital;
@@ -71,7 +71,7 @@ public final class AlgorithmBackTester {
         }
 
         for(final var history : m_HistoryWeRunAgainst) {
-            final var currentPrice = history.closingPrice;
+            final var currentPrice = history.closingPrice();
             this.runOneIteration(currentPrice);
             m_Algorithm.UpdateHistory(history);
         }
@@ -84,7 +84,7 @@ public final class AlgorithmBackTester {
 
         if(ret.buy != null) {
             m_Capital -= ret.buy.amount * currentPrice;
-            m_Holdings.add(new Bought(currentPrice, ret.buy.amount));
+            m_Holdings.add(new Holding(currentPrice, ret.buy.amount));
         }
 
         if(ret.sell != null) {
@@ -92,24 +92,23 @@ public final class AlgorithmBackTester {
                 final var bought = item.first;
                 final var amount = item.second;
                 
-                if (amount > bought.amount) throw new IllegalStateException("Sell Amount");
+                if (amount > bought.amount()) throw new IllegalStateException("Sell Amount");
 
-                if(amount == bought.amount) {
-                    m_Capital += amount * currentPrice;
-                    m_Holdings.remove(bought);
-                }
+                m_Holdings.remove(bought);
+
+                if(amount == bought.amount()) m_Capital += amount * currentPrice;
                 else {
                     m_Capital += amount * currentPrice;
-                    bought.amount -= amount;
+                    m_Holdings.add(new Holding(bought.entryPrice(), bought.amount() - amount));
                 }
 
                 m_TotalTrades++;
-                if(currentPrice > bought.price) m_WinningTrades++;
+                if(currentPrice > bought.entryPrice()) m_WinningTrades++;
             }
         }
 
         double sum = 0d;
-        for(var item : m_Holdings) sum += (currentPrice * item.amount);
+        for(var item : m_Holdings) sum += (currentPrice * item.amount());
         m_CapitalHistory.add(m_Capital + sum);
     }
 
@@ -145,7 +144,7 @@ public final class AlgorithmBackTester {
         if (m_Holdings.isEmpty()) System.out.println("None");
         else {
             System.out.println();
-            for (Bought item : m_Holdings) System.out.println("  Price: " + String.format("%.2f", item.price) + " db: " + item.amount);
+            for (Holding item : m_Holdings) System.out.println("  Entry Price: " + String.format("%.2f", item.entryPrice()) + " db: " + item.amount());
         }
     }
 

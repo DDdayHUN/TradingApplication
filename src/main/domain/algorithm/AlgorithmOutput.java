@@ -2,7 +2,7 @@ package domain.algorithm;
 
 import java.util.List;
 
-import domain.stock.Bought;
+import domain.stock.Holding;
 import utils.Pair;
 
 public final class AlgorithmOutput {
@@ -18,9 +18,9 @@ public final class AlgorithmOutput {
     }
 
     static public final class Sell {
-        public final List<Pair<Bought, Long>> batches;
+        public final List<Pair<Holding, Long>> batches;
 
-        public Sell(final List<Pair<Bought, Long>> batches) {
+        public Sell(final List<Pair<Holding, Long>> batches) {
             this.batches = batches;
         }
     }

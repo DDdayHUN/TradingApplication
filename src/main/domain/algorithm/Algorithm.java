@@ -2,7 +2,7 @@ package domain.algorithm;
 
 import domain.stock.History;
 import utils.Pair;
-import domain.stock.Bought;
+import domain.stock.Holding;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public abstract class Algorithm {
      * @param currentPrice  - Current market price of the asset.
      * @return              AlgorithmOutput containing the decision/results.
      */
-    public abstract AlgorithmOutput Run(final List<Bought> holdings, final double allocatedToke, final double currentPrice);
+    public abstract AlgorithmOutput Run(final List<Holding> holdings, final double allocatedToke, final double currentPrice);
 
     /**
      * Updates the internal state/history of the algorithm.

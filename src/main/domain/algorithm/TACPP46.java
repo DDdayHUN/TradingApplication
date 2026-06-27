@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import domain.stock.Bought;
+import domain.stock.Holding;
 import domain.stock.History;
 import utils.Pair;
 
@@ -18,15 +18,15 @@ final class TACPP46 extends Algorithm {
     private ArrayDeque<Double>  lastInputArr        = new ArrayDeque<>();
     private ArrayDeque<Double>  emaHistory          = new ArrayDeque<>();
 
-    private Map<Bought, Double> trailingHigh        = new HashMap<>();
-    private List<Bought>        markedForSelling    = new ArrayList<>();
+    private Map<Holding, Double> trailingHigh        = new HashMap<>();
+    private List<Holding>        markedForSelling    = new ArrayList<>();
 
     /*===========================================================*/
     /*===========================================================*/
     // Public Interface(s)
 
     @Override
-    public AlgorithmOutput Run(final List<Bought> holdings, final double allocatedToke, final double currentPrice) {
+    public AlgorithmOutput Run(final List<Holding> holdings, final double allocatedToke, final double currentPrice) {
         AlgorithmOutput.Buy buy  = null;
         AlgorithmOutput.Sell sell = null;
 
@@ -59,14 +59,14 @@ final class TACPP46 extends Algorithm {
         final double risk = utils.Math.clamp(std * 100d, 0.05d, 0.2d); // to put it into percentages
 
         // Sell
-        final List<Pair<Bought, Long>> toBeSold = new ArrayList<>();
+        final List<Pair<Holding, Long>> toBeSold = new ArrayList<>();
 
         // Trailing-profit logic
         for (final var item : holdings) {
             boolean isMarked = markedForSelling.contains(item);
 
             // Activate trailing if gained > risk
-            if (!isMarked && currentPrice > item.price * (1.0d + risk)) {
+            if (!isMarked && currentPrice > item.price() * (1.0d + risk)) {
                 markedForSelling.add(item);
                 trailingHigh.put(item, currentPrice);
                 isMarked = true;
@@ -83,7 +83,7 @@ final class TACPP46 extends Algorithm {
 
                 // Sell if price falls more than risk from peak
                 if (currentPrice < high * (1.0d - risk)) {
-                    toBeSold.add(new Pair<>(item, item.amount));
+                    toBeSold.add(new Pair<>(item, item.amount()));
 
                     // cleanup
                     markedForSelling.remove(item);
@@ -94,8 +94,8 @@ final class TACPP46 extends Algorithm {
 
         // Stop-loss
         for (final var item : holdings) {
-            if (currentPrice < item.price * (1.0d - risk * 2.0d)) {
-                toBeSold.add(new Pair<>(item, item.amount));
+            if (currentPrice < item.price() * (1.0d - risk * 2.0d)) {
+                toBeSold.add(new Pair<>(item, item.amount()));
 
                 // cleanup
                 markedForSelling.remove(item);
@@ -114,7 +114,7 @@ final class TACPP46 extends Algorithm {
         final double alpha = 2.0d / (emaHistory.size() + 1.0d);
         final double last = emaHistory.peekLast();
 
-        final double newEma = alpha * history.closingPrice + (1.0d - alpha) * last;
+        final double newEma = alpha * history.closingPrice() + (1.0d - alpha) * last;
 
         emaHistory.pollFirst();
         emaHistory.addLast(newEma);
@@ -161,8 +161,8 @@ final class TACPP46 extends Algorithm {
 
         }
 
-        final List<Double> q0 = historyQ0.stream().map(item -> item.closingPrice).toList();
-        final List<Double> q1 = historyQ1.stream().map(item -> item.closingPrice).toList();
+        final List<Double> q0 = historyQ0.stream().map(item -> item.closingPrice()).toList();
+        final List<Double> q1 = historyQ1.stream().map(item -> item.closingPrice()).toList();
 
         final double alpha = 2.0d / (q1.size() + 1.0d);
         double ema = utils.Math.average(q0); // initial Value
