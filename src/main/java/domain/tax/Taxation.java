@@ -20,5 +20,5 @@ public abstract class Taxation {
     //===========================================================//
     // Constructor(s)
 
-    protected Taxation() {}  // To prevent instantiation, but allow subclasses.
+    Taxation() {}
 }

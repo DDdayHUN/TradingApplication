@@ -48,5 +48,5 @@ public final class SerializationManager {
     //===========================================================//
     // Constructor(s)
 
-    private SerializationManager() {} // To prevent instantiation.
+    private SerializationManager() {}
 }

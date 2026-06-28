@@ -13,5 +13,5 @@ final class HungaryTaxation extends Taxation {
     //===========================================================//
     // Constructor(s)
 
-    protected HungaryTaxation() {}  // To prevent instantiation, but allow subclasses.
+    HungaryTaxation() {}
 }
