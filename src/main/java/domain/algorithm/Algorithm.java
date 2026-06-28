@@ -39,7 +39,7 @@ public abstract class Algorithm {
      *
      * @param stock - Historical stock data to be incorporated.
      */
-    public abstract void updateHistory(final History stock);
+    public abstract void updateState(final History stock);
 
     //===========================================================//
     /**

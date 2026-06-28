@@ -38,8 +38,8 @@ public final class AlgorithmBackTester {
     private Algorithm m_Algorithm;
     private final Algorithm.Type m_Type;
     
-    private final TaxationContext m_WithTaxes;
     private final TaxationContext m_WithoutTaxes;
+    private final TaxationContext m_WithTaxes;
 
     //===========================================================//
     //===========================================================//
@@ -66,34 +66,34 @@ public final class AlgorithmBackTester {
 
         // Cleanup and Init
         {
-            m_Holdings.clear();
-            m_CapitalHistory.clear();
+            m_WithoutTaxes.holdings.clear();
+            m_WithoutTaxes.capitalHistory.clear();
 
-            m_Capital = m_StartingCapital;
+            m_WithoutTaxes.capital = m_StartingCapital;
 
             m_Algorithm = pair.second;
 
-            m_TotalTrades   = 0;
-            m_WinningTrades = 0;
+            m_WithoutTaxes.totalTrades   = 0;
+            m_WithoutTaxes.winningTrades = 0;
 
-            m_CapitalHistory.add(m_StartingCapital);
+            m_WithoutTaxes.capitalHistory.add(m_StartingCapital);
         }
 
         for(final var history : m_HistoryWeRunAgainst) {
             final var currentPrice = history.closingPrice();
             runOneIteration(currentPrice);
-            m_Algorithm.updateHistory(history);
+            m_Algorithm.updateState(history);
         }
     }
 
     //===========================================================//
 
     private void runOneIteration(final double currentPrice) {
-        final var ret = m_Algorithm.run(m_Holdings, m_Capital, currentPrice);
+        final var ret = m_Algorithm.run(m_WithoutTaxes.holdings, m_WithoutTaxes.capital, currentPrice);
 
         if(ret.buy() != null) {
-            m_Capital -= ret.buy().amount() * currentPrice;
-            m_Holdings.add(new Holding(currentPrice, ret.buy().amount()));
+            m_WithoutTaxes.capital -= ret.buy().amount() * currentPrice;
+            m_WithoutTaxes.holdings.add(new Holding(currentPrice, ret.buy().amount()));
         }
 
         if(ret.sell() != null) {
@@ -103,57 +103,57 @@ public final class AlgorithmBackTester {
                 
                 if (amount > bought.amount()) throw new IllegalStateException("Sell Amount");
 
-                m_Holdings.remove(bought);
+                m_WithoutTaxes.holdings.remove(bought);
 
-                if(amount == bought.amount()) m_Capital += amount * currentPrice;
+                if(amount == bought.amount()) m_WithoutTaxes.capital += amount * currentPrice;
                 else {
-                    m_Capital += amount * currentPrice;
-                    m_Holdings.add(new Holding(bought.entryPrice(), bought.amount() - amount));
+                    m_WithoutTaxes.capital += amount * currentPrice;
+                    m_WithoutTaxes.holdings.add(new Holding(bought.entryPrice(), bought.amount() - amount));
                 }
 
-                m_TotalTrades++;
-                if(currentPrice > bought.entryPrice()) m_WinningTrades++;
+                m_WithoutTaxes.totalTrades++;
+                if(currentPrice > bought.entryPrice()) m_WithoutTaxes.winningTrades++;
             }
         }
 
         double sum = 0d;
-        for(var item : m_Holdings) sum += (currentPrice * item.amount());
-        m_CapitalHistory.add(m_Capital + sum);
+        for(var item : m_WithoutTaxes.holdings) sum += (currentPrice * item.amount());
+        m_WithoutTaxes.capitalHistory.add(m_WithoutTaxes.capital + sum);
     }
 
     //===========================================================//
 
     private void display(final boolean debug) {
-        if (m_CapitalHistory.isEmpty()) throw new IllegalArgumentException("m_CapitalHistory is empty");
+        if (m_WithoutTaxes.capitalHistory.isEmpty()) throw new IllegalArgumentException("m_WithoutTaxes.capitalHistory is empty");
 
-        final double last = m_CapitalHistory.get(m_CapitalHistory.size() - 1);
+        final double last = m_WithoutTaxes.capitalHistory.get(m_WithoutTaxes.capitalHistory.size() - 1);
         final double profit = last - m_StartingCapital;
         final double szazalek = (profit / m_StartingCapital) * 100.0d;
 
         final double winrate;
-        if(m_TotalTrades <= 0) winrate = Double.NaN;
-        else winrate = m_WinningTrades * 100.0d / m_TotalTrades;
+        if(m_WithoutTaxes.totalTrades <= 0) winrate = Double.NaN;
+        else winrate = m_WithoutTaxes.winningTrades * 100.0d / m_WithoutTaxes.totalTrades;
 
         System.out.println("===============================================================");
         System.out.println("Stock: " + m_StockNev + " " + "[" + Integer.toString(m_From) + "-" + Integer.toString(m_To) + "]");
         System.out.println();
-        System.out.println("Total Trades Made: " + m_TotalTrades);
+        System.out.println("Total Trades Made: " + m_WithoutTaxes.totalTrades);
         System.out.println("Winrate: " + String.format("%.2f", winrate) + "%");
         System.out.println();
         System.out.println("Kezdeti Toke: " + String.format("%.2f", m_StartingCapital));
         System.out.println("Profit: " + String.format("%.2f", profit));
         System.out.println("Return: " + String.format("%.2f", szazalek) + "%");
         System.out.println();
-        System.out.println("Sharpe Ratio: " + String.format("%.2f", utils.Math.sharpeRatio(m_CapitalHistory, 0.03d)));
+        System.out.println("Sharpe Ratio: " + String.format("%.2f", utils.Math.sharpeRatio(m_WithoutTaxes.capitalHistory, 0.03d)));
 
         if(!debug) { System.out.println(); return;}
 
         System.out.println(System.lineSeparator() + "DEBUG:");
         System.out.print("Holding: ");
-        if (m_Holdings.isEmpty()) System.out.println("None");
+        if (m_WithoutTaxes.holdings.isEmpty()) System.out.println("None");
         else {
             System.out.println();
-            for (Holding item : m_Holdings) System.out.println("  Entry Price: " + String.format("%.2f", item.entryPrice()) + " db: " + item.amount());
+            for (Holding item : m_WithoutTaxes.holdings) System.out.println("  Entry Price: " + String.format("%.2f", item.entryPrice()) + " db: " + item.amount());
         }
     }
 
@@ -167,7 +167,8 @@ public final class AlgorithmBackTester {
         m_To = to;
 
         m_StartingCapital = capital;
-        m_Capital = capital;
+        m_WithoutTaxes  = new TaxationContext(new ArrayList<>(), new ArrayList<>(), capital);
+        m_WithTaxes     = new TaxationContext(new ArrayList<>(), new ArrayList<>(), capital);
 
         final var pair = Algorithm.initForBackTest(type, m_StockNev, m_From, m_To);
 
@@ -175,8 +176,6 @@ public final class AlgorithmBackTester {
         m_Type = type;
 
         m_HistoryWeRunAgainst = pair.first;
-        m_Holdings = new ArrayList<>();
-        m_CapitalHistory = new ArrayList<>();
     }
 
     //===========================================================//
@@ -191,7 +190,7 @@ public final class AlgorithmBackTester {
         public long totalTrades;
         public long winningTrades;
 
-        public TaxationContext(final List<Holding> holdings, final List<Double> capitalHistory, final double capital, final long totalTrades, final long winningTrades) {
+        public TaxationContext(final List<Holding> holdings, final List<Double> capitalHistory, final double capital) {
             if(holdings == null) throw new IllegalArgumentException("Holdings");
             if(capitalHistory == null) throw new IllegalArgumentException("CapitalHistory");
             if(capital <= 0d) throw new IllegalArgumentException("Capital");
@@ -199,8 +198,8 @@ public final class AlgorithmBackTester {
             this.holdings = holdings;
             this.capitalHistory = capitalHistory;
             this.capital = capital;
-            this.totalTrades = totalTrades;
-            this.winningTrades = winningTrades;
+            this.totalTrades = 0;
+            this.winningTrades = 0;
         }
     }
 }
