@@ -155,7 +155,7 @@ public final class AlgorithmBackTester {
             if(m_TotalTrades <= 0) winrate = Double.NaN;
             else winrate = m_WinningTrades * 100.0d / m_TotalTrades;
             
-            if(m_Taxation == null) System.out.println("With Taxes:");
+            if(m_Taxation != null) System.out.println("With Taxes:");
             else System.out.println("Without Taxes:");
 
             System.out.println("    Profit: " + String.format("%.2f", profit));
@@ -201,11 +201,14 @@ public final class AlgorithmBackTester {
 
                     m_Holdings.remove(bought);
 
-                    if(amount == bought.amount()) m_CurrentCapital += amount * currentPrice;
+                    if(m_Taxation == null) m_CurrentCapital += amount * currentPrice;
                     else {
-                        m_CurrentCapital += amount * currentPrice;
-                        m_Holdings.add(new Holding(bought.entryPrice(), bought.amount() - amount));
+                        final double revenue = amount * currentPrice;
+                        final double costBasis = amount * bought.entryPrice();
+                        m_CurrentCapital += m_Taxation.calculateRevenueAfterTax(revenue, costBasis);
                     }
+
+                    if(amount != bought.amount()) m_Holdings.add(new Holding(bought.entryPrice(), bought.amount() - amount));
 
                     m_TotalTrades++;
                     if(currentPrice > bought.entryPrice()) m_WinningTrades++;

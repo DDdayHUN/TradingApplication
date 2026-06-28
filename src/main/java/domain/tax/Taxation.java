@@ -20,10 +20,10 @@ public abstract class Taxation {
     //===========================================================//
     // Public Interface(s)
 
-    public abstract double taxCapitalGain(final double value);
-    public abstract double taxInterestIncome(final double value);
-    public abstract double taxDividendIncome(final double value);
-    public abstract double taxCryptoGain(final double value);
+    public abstract double calculateRevenueAfterTax(final double revenue, final double costBasis);
+    // public abstract double taxInterestIncome(final double value);
+    // public abstract double taxDividendIncome(final double value);
+    // public abstract double taxCryptoGain(final double value);
 
     //===========================================================//
     //===========================================================//
