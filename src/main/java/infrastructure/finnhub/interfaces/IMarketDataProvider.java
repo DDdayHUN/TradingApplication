@@ -10,6 +10,6 @@ import java.io.IOException;
  *    Implementations can load data from Finnhub
  * </p>
  */
-public interface MarketDataProvider {
+public interface IMarketDataProvider {
    Quote getQuote(final String symbol) throws IOException, InterruptedException;
 }

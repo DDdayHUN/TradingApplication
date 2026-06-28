@@ -28,11 +28,11 @@ public abstract class Algorithm {
      * Executes the algorithm based on current holdings and market conditions.
      *
      * @param holdings      - List of currently owned assets.
-     * @param allocatedToke - Amount of capital allocated for trading.
+     * @param allocatedCapital - Amount of capital allocated for trading.
      * @param currentPrice  - Current market price of the asset.
      * @return              AlgorithmOutput containing the decision/results.
      */
-    public abstract AlgorithmOutput run(final List<Holding> holdings, final double allocatedToke, final double currentPrice);
+    public abstract AlgorithmOutput run(final List<Holding> holdings, final double allocatedCapital, final double currentPrice);
 
     /**
      * Updates the internal state/history of the algorithm.
@@ -82,19 +82,12 @@ public abstract class Algorithm {
      * @param to       - End date (inclusive).
      * @return         Pair of history data and initialized algorithm.
      */
-    static private final Pair<List<History>, Algorithm> initialiser(final Type type, final Init init, final String stockNev, final int from, final int to) {
+    static private Pair<List<History>, Algorithm> initialiser(final Type type, final Init init, final String stockNev, final int from, final int to) {
         try {
             final var retHistory = historyInitialiser(stockNev, from, to);
-            final Algorithm retAlgorithm;
-
-            switch (type) {
-                case Type.TACPP46: {
-                    retAlgorithm = new TACPP46(init, retHistory);
-                } break;
-
-                default: throw new IllegalArgumentException("Type");
-            }
-
+            final Algorithm retAlgorithm = switch (type){
+                case TACPP46 -> new TACPP46(init, retHistory);
+            };
             return new Pair<>(retHistory, retAlgorithm);
         }
         catch(IOException IO_E) { throw new IllegalArgumentException(IO_E.getMessage(), IO_E.getCause()); }
@@ -114,7 +107,7 @@ public abstract class Algorithm {
      */
 
     static private final List<History> historyInitialiser(final String stockNev, final int from, final int to) throws IOException {
-        final var backtestFiles = new File("resources/backtest/us/").listFiles();
+        final var backtestFiles = new File("src/main/resources/backtest/us/").listFiles();
         final List<Pair<File, Integer>> proxy = new ArrayList<>();
 
         for(final var file : backtestFiles) {
@@ -151,7 +144,7 @@ public abstract class Algorithm {
      * Supported algorithm types.
      */
     static public enum Type {
-        TACPP46
+        TACPP46,
     }
 
     //===========================================================//

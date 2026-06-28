@@ -1,14 +1,14 @@
 package infrastructure.finnhub;
 
 import domain.stock.Quote;
-import infrastructure.finnhub.interfaces.MarketDataProvider;
+import infrastructure.finnhub.interfaces.IMarketDataProvider;
 
 import java.io.IOException;
 
 /**
  * Provider implementation that gets quote data from Finnhub.
  */
-public final class FinnhubMarketDataProvider implements MarketDataProvider {
+public final class FinnhubMarketDataProvider implements IMarketDataProvider {
    private final FinnhubClient m_client;
 
    public FinnhubMarketDataProvider(final FinnhubClient client) {
