@@ -21,11 +21,12 @@ final class TACPP46 extends Algorithm {
     //===========================================================//
     // Private Field(s)
 
-    private ArrayDeque<Double>  lastInputArr    = new ArrayDeque<>();
-    private ArrayDeque<Double>  emaHistory      = new ArrayDeque<>();
+    private ArrayDeque<Double> emaHistory = new ArrayDeque<>();
 
-    private Map<Holding, Double> trailingHigh        = new HashMap<>();
-    private List<Holding>        markedForSelling    = new ArrayList<>();
+    private Map<Holding, Double> trailingHigh = new HashMap<>();
+    private List<Holding> markedForSelling = new ArrayList<>();
+
+    private ArrayDeque<Double> lastInputArr = new ArrayDeque<>();
 
     //===========================================================//
     //===========================================================//
@@ -33,6 +34,7 @@ final class TACPP46 extends Algorithm {
 
     @Override
     public Algorithm.Output run(final List<Holding> holdings, final double allocatedToke, final double currentPrice) {
+
         Algorithm.Output.Buy buy  = null;
         Algorithm.Output.Sell sell = null;
 
@@ -116,7 +118,7 @@ final class TACPP46 extends Algorithm {
     //===========================================================//
 
     @Override
-    public void updateState(final History history) {
+    public void updateHistory(final History history) {
         final double alpha = 2.0d / (emaHistory.size() + 1.0d);
         final double last = emaHistory.peekLast();
 
