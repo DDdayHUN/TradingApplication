@@ -1,6 +1,12 @@
 package domain.tax;
 
 //===========================================================//
+/**
+ * Represents a fixed set of taxation configurations.
+ *
+ * <p>Taxation instances are singleton-style objects representing specific tax systems.
+ * All taxation rules are exposed as static constants.</p>
+ */
 //===========================================================//
 
 public abstract class Taxation {

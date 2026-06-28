@@ -10,13 +10,19 @@ import domain.stock.Holding;
 import domain.stock.History;
 import utils.Pair;
 
+//===========================================================//
+/**
+ * An implementation of {@link Algorithm}.
+ */
+//===========================================================//
+
 final class TACPP46 extends Algorithm {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private ArrayDeque<Double>  lastInputArr        = new ArrayDeque<>();
-    private ArrayDeque<Double>  emaHistory          = new ArrayDeque<>();
+    private ArrayDeque<Double>  lastInputArr    = new ArrayDeque<>();
+    private ArrayDeque<Double>  emaHistory      = new ArrayDeque<>();
 
     private Map<Holding, Double> trailingHigh        = new HashMap<>();
     private List<Holding>        markedForSelling    = new ArrayList<>();

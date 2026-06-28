@@ -8,6 +8,19 @@ import domain.stock.Holding;
 import domain.stock.History;
 
 //===========================================================//
+/**
+ * AlgorithmBackTester is responsible for simulating and evaluating a trading algorithm
+ * over historical market data.
+ *
+ * <p>It runs a specified {@link Algorithm} over a defined time range for a given stock,
+ * tracks virtual holdings, capital changes, and performance metrics such as total trades and win rate.</p>
+ *
+ * <p>The backtester supports both normal execution and debug execution, where additional
+ * internal state (such as current holdings) is printed for inspection.</p>
+ *
+ * <p>This class is immutable in configuration (stock, range, initial capital, algorithm type),
+ * but maintains mutable state during backtesting execution.</p>
+ */
 //===========================================================//
 
 public final class AlgorithmBackTester {
