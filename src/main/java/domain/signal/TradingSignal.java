@@ -14,6 +14,7 @@ public record TradingSignal(
   SignalStrength strength,
   double currentPrice,
   Long amount,
+  Long currentStockCount,
   String reason,
   Instant createdAt
 ) {

@@ -76,7 +76,9 @@ public final class AlgorithmBackTester {
     private void display(final boolean debug) {
         System.out.println("===============================================================");
         System.out.println("Buy & Sale trades:");
+        var counter = 1;
         for(final var signal : m_Signals){
+            System.out.printf(counter++ + " ");
             System.out.println(m_SignalFormatter.format(signal));
         }
         System.out.println(System.lineSeparator());
@@ -129,7 +131,7 @@ public final class AlgorithmBackTester {
         private final double m_StartingCapital;
         private double m_CurrentCapital;
 
-        private int m_TotalTrades = 0;
+        private int m_TotalSellsMade = 0;
         private int m_WinningTrades = 0;
 
         private final SignalEngine m_SignalEngine;
@@ -157,7 +159,7 @@ public final class AlgorithmBackTester {
             m_CapitalHistory.clear();
 
             m_CurrentCapital = m_StartingCapital;
-            m_TotalTrades = 0;
+            m_TotalSellsMade = 0;
             m_WinningTrades = 0;
         }
 
@@ -171,8 +173,8 @@ public final class AlgorithmBackTester {
             final double percent = (profit / m_StartingCapital) * 100.0d;
 
             final double winRate;
-            if(m_TotalTrades <= 0) winRate = Double.NaN;
-            else winRate = m_WinningTrades * 100.0d / m_TotalTrades;
+            if(m_TotalSellsMade <= 0) winRate = Double.NaN;
+            else winRate = m_WinningTrades * 100.0d / m_TotalSellsMade;
 
             if(m_Taxation != null) System.out.println("With Taxes:");
             else System.out.println("Without Taxes:");
@@ -181,7 +183,7 @@ public final class AlgorithmBackTester {
             System.out.println("    Return: " + String.format("%.2f", percent) + "%");
             System.out.println();
             
-            System.out.println("    Total Trades Made: " + m_TotalTrades);
+            System.out.println("    Total Sells Made: " + m_TotalSellsMade);
             System.out.println("    Winrate: " + String.format("%.2f", winRate) + "%");
             System.out.println("    Sharpe Ratio: " + String.format("%.2f", utils.Math.sharpeRatio(m_CapitalHistory, 0.03d)));
             System.out.println();
@@ -210,11 +212,22 @@ public final class AlgorithmBackTester {
               currentPrice
             );
 
+            long projectedStockCount = getCurrentStockCount();
+
+            if(ret.buy() != null) {
+                projectedStockCount += ret.buy().amount();
+            }
+
+            if(ret.sell() != null) {
+                projectedStockCount -= getSellAmount(ret.sell());
+            }
+
             final var signal = m_SignalEngine.createSignal(
               m_StockName,
               ret,
               m_CurrentCapital,
-              currentPrice
+              currentPrice,
+              projectedStockCount
             );
 
             if(signal.action() != SignalAction.HOLD) {
@@ -244,7 +257,7 @@ public final class AlgorithmBackTester {
 
                     if(amount != bought.amount()) m_Holdings.add(new Holding(bought.entryPrice(), bought.amount() - amount));
 
-                    m_TotalTrades++;
+                    m_TotalSellsMade++;
                     if(currentPrice > bought.entryPrice()) m_WinningTrades++;
                 }
             }
@@ -252,6 +265,25 @@ public final class AlgorithmBackTester {
             double sum = 0d;
             for(var item : m_Holdings) sum += (currentPrice * item.amount());
             m_CapitalHistory.add(m_CurrentCapital + sum);
+        }
+
+        private long getCurrentStockCount(){
+            long count = 0L;
+
+            for(final var holding : m_Holdings){
+                count += holding.amount();
+            }
+
+            return count;
+        }
+
+        private long getSellAmount(final Algorithm.Output.Sell sell){
+            long amount = 0L;
+            for(final var batch : sell.batches()) {
+                amount += batch.second;
+            }
+
+            return amount;
         }
 
         //===========================================================//

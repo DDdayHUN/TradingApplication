@@ -14,11 +14,12 @@ import java.time.Instant;
 //===========================================================//
 public final class SignalEngine {
 
-   static public TradingSignal createSignal(
+    public TradingSignal createSignal(
      final String symbol,
      final Algorithm.Output output,
      final double availableCapital,
-     final double currentPrice
+     final double currentPrice,
+     final long currentStockCount
    ) {
       if (output.buy() != null) {
          return new TradingSignal(
@@ -31,6 +32,7 @@ public final class SignalEngine {
            ),
            currentPrice,
            output.buy().amount(),
+           currentStockCount,
            "Algorithm generated a buy signal.",
            Instant.now()
          );
@@ -49,6 +51,7 @@ public final class SignalEngine {
            SignalStrength.MEDIUM,
            currentPrice,
            amountToSell,
+           currentStockCount,
            "Algorithm generated a sell signal.",
            Instant.now()
          );
@@ -60,12 +63,13 @@ public final class SignalEngine {
         SignalStrength.LOW,
         currentPrice,
         null,
+        currentStockCount,
         "No buy or sell signal was generated.",
         Instant.now()
       );
    }
 
-   static private SignalStrength calculateBuyStrength(
+    private SignalStrength calculateBuyStrength(
      final long amount,
      final double availableCapital,
      final double currentPrice

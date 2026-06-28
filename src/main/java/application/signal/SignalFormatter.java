@@ -21,6 +21,8 @@ public final class SignalFormatter {
                + " | Price: "
                + String.format("%.2f", signal.currentPrice())
                + amountText
+               + " | Current Stock Count: "
+               + signal.currentStockCount()
                + " | Reason: "
                + signal.reason()
                + " | At: "
