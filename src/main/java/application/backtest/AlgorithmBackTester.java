@@ -3,7 +3,10 @@ package application.backtest;
 import java.util.ArrayList;
 import java.util.List;
 
+import application.signal.SignalEngine;
+import application.signal.SignalFormatter;
 import domain.algorithm.Algorithm;
+import domain.signal.SignalAction;
 import domain.stock.Holding;
 import domain.tax.Taxation;
 import utils.Pair;
@@ -116,6 +119,9 @@ public final class AlgorithmBackTester {
         private int m_TotalTrades = 0;
         private int m_WinningTrades = 0;
 
+        private final SignalEngine m_SignalEngine;
+        private final SignalFormatter m_SignalFormatter;
+
         //===========================================================//
         //===========================================================//
         // Public Interface(s)
@@ -185,7 +191,22 @@ public final class AlgorithmBackTester {
         // Private Interface(s)
 
         private void runOneIteration(final double currentPrice) {
-            final var ret = m_Algorithm.run(m_Holdings, m_CurrentCapital, currentPrice);
+            final var ret = m_Algorithm.run(
+              List.copyOf(m_Holdings),
+              m_CurrentCapital,
+              currentPrice
+            );
+
+            final var signal = m_SignalEngine.createSignal(
+              "UNKNOWN",
+              ret,
+              m_CurrentCapital,
+              currentPrice
+            );
+
+            if(signal.action() != SignalAction.HOLD) {
+                System.out.println(m_SignalFormatter.format(signal));
+            }
 
             if(ret.buy() != null) {
                 m_CurrentCapital -= ret.buy().amount() * currentPrice;
@@ -196,7 +217,7 @@ public final class AlgorithmBackTester {
                 for(final var item : ret.sell().batches()) {
                     final var bought = item.first;
                     final var amount = item.second;
-                    
+
                     if (amount > bought.amount()) throw new IllegalStateException("Sell Amount");
 
                     m_Holdings.remove(bought);
@@ -237,6 +258,9 @@ public final class AlgorithmBackTester {
             m_HistoryWeRunAgainst = pair.first;
             m_Holdings = new ArrayList<>();
             m_CapitalHistory = new ArrayList<>();
+
+            m_SignalEngine = new SignalEngine();
+            m_SignalFormatter = new SignalFormatter();
         }
     }
 }

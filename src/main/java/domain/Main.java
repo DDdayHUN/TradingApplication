@@ -1,6 +1,8 @@
 package domain;
 // Hello Wrold :) System.out.println("Hello, Wrold!");
 
+import application.signal.SignalEngine;
+import application.signal.SignalRequest;
 import domain.algorithm.Algorithm;
 import domain.tax.Taxation;
 import application.backtest.AlgorithmBackTester;
@@ -20,5 +22,6 @@ public final class Main {
         //System.out.println("\n### Finnhub ###\n");
         //final var FT = new FinnhubTester();
         //FT.runFinnhubTester("AAPL");
+
     }
 }
