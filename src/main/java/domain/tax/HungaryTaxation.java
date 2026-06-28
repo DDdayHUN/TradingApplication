@@ -12,8 +12,8 @@ final class HungaryTaxation extends Taxation {
     //===========================================================//
     // Private Field(s)
 
-    private static final double SZJA = 0.15d;
-    private static final double SZOCHO = 0.13d;
+    private final double SZJA = 0.15d;
+    private final double SZOCHO = 0.13d;
 
     //===========================================================//
     //===========================================================//

@@ -116,7 +116,7 @@ final class TACPP46 extends Algorithm {
     //===========================================================//
 
     @Override
-    public void updateHistory(final History history) {
+    public void updateState(final History history) {
         final double alpha = 2.0d / (emaHistory.size() + 1.0d);
         final double last = emaHistory.peekLast();
 

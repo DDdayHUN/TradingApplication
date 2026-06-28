@@ -28,23 +28,18 @@ public final class AlgorithmBackTester {
     //===========================================================//
     // Private Field(s)
 
-    private final String    m_StockNev;
-    private final int       m_From;
-    private final int       m_To;
+    private final String m_StockNev;
+    private final int m_From;
+    private final int m_To;
 
     private final double m_StartingCapital;
+    private final List<History> m_HistoryWeRunAgainst;
 
     private Algorithm m_Algorithm;
-    private final Algorithm.Type    m_Type;
-
-    private final List<History> m_HistoryWeRunAgainst;
-    private final List<Holding>  m_Holdings;
-    private final List<Double>  m_CapitalHistory;
-
-    private double m_Capital;
-
-    private int m_TotalTrades   = 0;
-    private int m_WinningTrades = 0;
+    private final Algorithm.Type m_Type;
+    
+    private final TaxationContext m_WithTaxes;
+    private final TaxationContext m_WithoutTaxes;
 
     //===========================================================//
     //===========================================================//
@@ -182,5 +177,30 @@ public final class AlgorithmBackTester {
         m_HistoryWeRunAgainst = pair.first;
         m_Holdings = new ArrayList<>();
         m_CapitalHistory = new ArrayList<>();
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Helper Class(es)
+
+    static private final class TaxationContext {
+        public final List<Holding> holdings;
+        public final List<Double> capitalHistory;
+
+        public double capital;
+        public long totalTrades;
+        public long winningTrades;
+
+        public TaxationContext(final List<Holding> holdings, final List<Double> capitalHistory, final double capital, final long totalTrades, final long winningTrades) {
+            if(holdings == null) throw new IllegalArgumentException("Holdings");
+            if(capitalHistory == null) throw new IllegalArgumentException("CapitalHistory");
+            if(capital <= 0d) throw new IllegalArgumentException("Capital");
+
+            this.holdings = holdings;
+            this.capitalHistory = capitalHistory;
+            this.capital = capital;
+            this.totalTrades = totalTrades;
+            this.winningTrades = winningTrades;
+        }
     }
 }
