@@ -161,10 +161,10 @@ public abstract class Algorithm {
     // Constructor(s)
 
     /**
-     * Protected constructor to enforce initialization mode handling
+     * Package constructor to enforce initialization mode handling
      * in subclasses.
      *
      * @param init - Initialization mode.
      */
-    protected Algorithm(final Init init) {}
+    Algorithm(final Init init) {}
 }

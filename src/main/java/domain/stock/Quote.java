@@ -40,7 +40,7 @@ public record Quote(
   long receivedAtMillis
 ) {
 
-   private static final DateTimeFormatter FORMATTER =
+   private static final DateTimeFormatter s_Formatter =
      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
        .withZone(ZoneId.systemDefault());
 
@@ -52,6 +52,6 @@ public record Quote(
    }
 
    public String getFormattedReceivedAt(){
-      return FORMATTER.format(Instant.ofEpochMilli(receivedAtMillis));
+      return s_Formatter.format(Instant.ofEpochMilli(receivedAtMillis));
    }
 }
