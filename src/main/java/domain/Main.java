@@ -1,7 +1,6 @@
 package domain;
 // Hello Wrold :) System.out.println("Hello, Wrold!");
 
-
 import domain.algorithm.Algorithm;
 import domain.tax.Taxation;
 import application.backtest.AlgorithmBackTester;
