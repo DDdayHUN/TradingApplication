@@ -34,10 +34,11 @@ public final class AlgorithmBackTester {
     private final int m_From;
     private final int m_To;
 
+    private final double m_StartingCapital;
     private final Algorithm.Type m_Type;
 
-    private final TaxationContext m_WithoutTax;
-    private final TaxationContext m_WithTax;
+    private final BackTesterWithTaxationContext m_WithoutTax;
+    private final BackTesterWithTaxationContext m_WithTax;
 
     //===========================================================//
     //===========================================================//
@@ -62,14 +63,18 @@ public final class AlgorithmBackTester {
     }
 
     //===========================================================//
+    //===========================================================//
+    // Private Interface(s)
 
     private void display(final boolean debug) {
         System.out.println("===============================================================");
         System.out.println("Stock: " + m_StockNev + " " + "[" + Integer.toString(m_From) + "-" + Integer.toString(m_To) + "]");
+        System.out.println("Kezdeti Toke: " + String.format("%.2f", m_StartingCapital) + System.lineSeparator());
         m_WithoutTax.display();
         if(debug) m_WithoutTax.displayDebugInfo();
         m_WithTax.display();
         if(debug) m_WithTax.displayDebugInfo();
+        System.out.println("===============================================================");
     }
 
     //===========================================================//
@@ -80,18 +85,19 @@ public final class AlgorithmBackTester {
         m_StockNev = stockNev;
         m_From = from;
         m_To = to;
-
+        
+        m_StartingCapital = capital;
         m_Type = type;
 
-        m_WithoutTax = new TaxationContext(null, Algorithm.initForBackTest(type, stockNev, from, to), capital);
-        m_WithTax = new TaxationContext(taxation, Algorithm.initForBackTest(type, stockNev, from, to), capital);
+        m_WithoutTax = new BackTesterWithTaxationContext(null, Algorithm.initForBackTest(type, stockNev, from, to), capital);
+        m_WithTax = new BackTesterWithTaxationContext(taxation, Algorithm.initForBackTest(type, stockNev, from, to), capital);
     }
 
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
 
-    static private final class TaxationContext {
+    static private final class BackTesterWithTaxationContext {
         //===========================================================//
         //===========================================================//
         // Private Field(s)
@@ -115,7 +121,11 @@ public final class AlgorithmBackTester {
         // Public Interface(s)
 
         public void runBackTest() {
-            
+            for(final var history : m_HistoryWeRunAgainst) {
+                final var currentPrice = history.closingPrice();
+                runOneIteration(currentPrice);
+                m_Algorithm.updateHistory(history);
+            }
         }
 
         //===========================================================//
@@ -145,27 +155,28 @@ public final class AlgorithmBackTester {
             if(m_TotalTrades <= 0) winrate = Double.NaN;
             else winrate = m_WinningTrades * 100.0d / m_TotalTrades;
             
+            if(m_Taxation == null) System.out.println("With Taxes:");
+            else System.out.println("Without Taxes:");
+
+            System.out.println("    Profit: " + String.format("%.2f", profit));
+            System.out.println("    Return: " + String.format("%.2f", szazalek) + "%");
             System.out.println();
-            System.out.println("Total Trades Made: " + m_TotalTrades);
-            System.out.println("Winrate: " + String.format("%.2f", winrate) + "%");
-            System.out.println();
-            System.out.println("Kezdeti Toke: " + String.format("%.2f", m_StartingCapital));
-            System.out.println("Profit: " + String.format("%.2f", profit));
-            System.out.println("Return: " + String.format("%.2f", szazalek) + "%");
-            System.out.println();
-            System.out.println("Sharpe Ratio: " + String.format("%.2f", utils.Math.sharpeRatio(m_CapitalHistory, 0.03d)));
+            
+            System.out.println("    Total Trades Made: " + m_TotalTrades);
+            System.out.println("    Winrate: " + String.format("%.2f", winrate) + "%");
+            System.out.println("    Sharpe Ratio: " + String.format("%.2f", utils.Math.sharpeRatio(m_CapitalHistory, 0.03d)));
             System.out.println();
         }
 
         //===========================================================//
 
         public void displayDebugInfo() {
-            System.out.println("DEBUG:");
-            System.out.print("Holding: ");
+            System.out.println("    DEBUG:");
+            System.out.print("  Holding: ");
             if (m_Holdings.isEmpty()) System.out.println("None");
             else {
                 System.out.println();
-                for (Holding item : m_Holdings) System.out.println("  Entry Price: " + String.format("%.2f", item.entryPrice()) + " db: " + item.amount());
+                for (Holding item : m_Holdings) System.out.println("        Entry Price: " + String.format("%.2f", item.entryPrice()) + " db: " + item.amount());
             }
         }
 
@@ -210,7 +221,7 @@ public final class AlgorithmBackTester {
         //===========================================================//
         // Constructor(s)
 
-        public TaxationContext(final Taxation taxation, final Pair<List<History>, Algorithm> pair, final double capital) {
+        public BackTesterWithTaxationContext(final Taxation taxation, final Pair<List<History>, Algorithm> pair, final double capital) {
             if(pair == null) throw new IllegalArgumentException("Pair");
             if(capital <= 0d) throw new IllegalArgumentException("Capital");
 
