@@ -32,9 +32,9 @@ final class TACPP46 extends Algorithm {
     // Public Interface(s)
 
     @Override
-    public AlgorithmOutput run(final List<Holding> holdings, final double allocatedToke, final double currentPrice) {
-        AlgorithmOutput.Buy buy  = null;
-        AlgorithmOutput.Sell sell = null;
+    public Algorithm.Output run(final List<Holding> holdings, final double allocatedToke, final double currentPrice) {
+        Algorithm.Output.Buy buy  = null;
+        Algorithm.Output.Sell sell = null;
 
         final List<Double> ema = new ArrayList<>(emaHistory);
         final double std = utils.Math.stdDev(ema);
@@ -52,7 +52,7 @@ final class TACPP46 extends Algorithm {
                 final double confidence = utils.Math.clamp(((1.0d - std * 100.0d) + (100.0d - rsi) / 100.0d) / 2.0d, 0.0d, 0.3d);  // changing confidence has a massive effect on returns
                 final long amount = (long) (allocatedToke * confidence / currentPrice);
 
-                if(amount != 0L) buy = new AlgorithmOutput.Buy(amount);
+                if(amount != 0L) buy = new Algorithm.Output.Buy(amount);
 
             } else {
                 lastInputArr.add(currentPrice);
@@ -109,8 +109,8 @@ final class TACPP46 extends Algorithm {
             }
         }
 
-        if (!toBeSold.isEmpty()) sell = new AlgorithmOutput.Sell(toBeSold);
-        return new AlgorithmOutput(buy, sell);
+        if (!toBeSold.isEmpty()) sell = new Algorithm.Output.Sell(toBeSold);
+        return new Algorithm.Output(buy, sell);
     }
 
     //===========================================================//

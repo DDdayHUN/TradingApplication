@@ -32,7 +32,7 @@ public abstract class Algorithm {
      * @param currentPrice  - Current market price of the asset.
      * @return              AlgorithmOutput containing the decision/results.
      */
-    public abstract AlgorithmOutput run(final List<Holding> holdings, final double allocatedCapital, final double currentPrice);
+    public abstract Algorithm.Output run(final List<Holding> holdings, final double allocatedCapital, final double currentPrice);
 
     /**
      * Updates the internal state/history of the algorithm.
@@ -167,4 +167,21 @@ public abstract class Algorithm {
      * @param init - Initialization mode.
      */
     Algorithm(final Init init) {}
+
+    //===========================================================//
+    //===========================================================//
+    // Helper class(es)
+
+    static public record Output(
+        Buy buy,
+        Sell sell
+    ) {
+        static public record Buy(
+            long amount
+        ) {}
+
+        static public record Sell(
+            List<Pair<Holding, Long>> batches
+        ) {}
+    }
 }
