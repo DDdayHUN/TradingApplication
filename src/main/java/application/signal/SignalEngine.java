@@ -7,9 +7,14 @@ import domain.signal.TradingSignal;
 
 import java.time.Instant;
 
+//===========================================================//
+/**
+ * Converts algorithm decisions into final trading signals {@link TradingSignal}.
+ */
+//===========================================================//
 public final class SignalEngine {
 
-   public TradingSignal createSignal(
+   static public TradingSignal createSignal(
      final String symbol,
      final Algorithm.Output output,
      final double availableCapital,
@@ -60,7 +65,7 @@ public final class SignalEngine {
       );
    }
 
-   private SignalStrength calculateBuyStrength(
+   static private SignalStrength calculateBuyStrength(
      final long amount,
      final double availableCapital,
      final double currentPrice

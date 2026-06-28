@@ -7,6 +7,7 @@ import application.signal.SignalEngine;
 import application.signal.SignalFormatter;
 import domain.algorithm.Algorithm;
 import domain.signal.SignalAction;
+import domain.signal.TradingSignal;
 import domain.stock.Holding;
 import domain.tax.Taxation;
 import utils.Pair;
@@ -33,7 +34,7 @@ public final class AlgorithmBackTester {
     //===========================================================//
     // Private Field(s)
 
-    private final String m_StockNev;
+    private final String m_StockName;
     private final int m_From;
     private final int m_To;
 
@@ -43,13 +44,16 @@ public final class AlgorithmBackTester {
     private final BackTesterWithTaxationContext m_WithoutTax;
     private final BackTesterWithTaxationContext m_WithTax;
 
+    private List<TradingSignal> m_Signals;
+    private final SignalFormatter m_SignalFormatter;
+
     //===========================================================//
     //===========================================================//
     // Public Interface(s)
 
     public void runBackTestWithDebug() {
-        m_WithoutTax.reset(Algorithm.initForBackTest(m_Type, m_StockNev, m_From, m_To));
-        m_WithTax.reset(Algorithm.initForBackTest(m_Type, m_StockNev, m_From, m_To));
+        m_WithoutTax.reset(Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To));
+        m_WithTax.reset(Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To));
         m_WithoutTax.runBackTest();
         m_WithTax.runBackTest();
         display(true);
@@ -58,8 +62,8 @@ public final class AlgorithmBackTester {
     //===========================================================//
 
     public void runBackTest() {
-        m_WithoutTax.reset(Algorithm.initForBackTest(m_Type, m_StockNev, m_From, m_To));
-        m_WithTax.reset(Algorithm.initForBackTest(m_Type, m_StockNev, m_From, m_To));
+        m_WithoutTax.reset(Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To));
+        m_WithTax.reset(Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To));
         m_WithoutTax.runBackTest();
         m_WithTax.runBackTest();
         display(false);
@@ -71,7 +75,14 @@ public final class AlgorithmBackTester {
 
     private void display(final boolean debug) {
         System.out.println("===============================================================");
-        System.out.println("Stock: " + m_StockNev + " " + "[" + Integer.toString(m_From) + "-" + Integer.toString(m_To) + "]");
+        System.out.println("Buy & Sale trades:");
+        for(final var signal : m_Signals){
+            System.out.println(m_SignalFormatter.format(signal));
+        }
+        System.out.println(System.lineSeparator());
+        System.out.println("#==========================================#");
+        System.out.println(System.lineSeparator());
+        System.out.println("Stock: " + m_StockName + " " + "[" + Integer.toString(m_From) + "-" + Integer.toString(m_To) + "]");
         System.out.println("Kezdeti Toke: " + String.format("%.2f", m_StartingCapital) + System.lineSeparator());
         m_WithoutTax.display();
         if(debug) m_WithoutTax.displayDebugInfo();
@@ -85,7 +96,7 @@ public final class AlgorithmBackTester {
     // Constructor(s)
 
     public AlgorithmBackTester(final Taxation taxation, final Algorithm.Type type, final double capital, final String stockNev, final int from, final int to) {
-        m_StockNev = stockNev;
+        m_StockName = stockNev;
         m_From = from;
         m_To = to;
         
@@ -94,13 +105,15 @@ public final class AlgorithmBackTester {
 
         m_WithoutTax = new BackTesterWithTaxationContext(null, Algorithm.initForBackTest(type, stockNev, from, to), capital);
         m_WithTax = new BackTesterWithTaxationContext(taxation, Algorithm.initForBackTest(type, stockNev, from, to), capital);
+        m_SignalFormatter = new SignalFormatter();
+        m_Signals = new ArrayList<>();
     }
 
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
 
-    static private final class BackTesterWithTaxationContext {
+     private final class BackTesterWithTaxationContext {
         //===========================================================//
         //===========================================================//
         // Private Field(s)
@@ -120,7 +133,7 @@ public final class AlgorithmBackTester {
         private int m_WinningTrades = 0;
 
         private final SignalEngine m_SignalEngine;
-        private final SignalFormatter m_SignalFormatter;
+
 
         //===========================================================//
         //===========================================================//
@@ -153,23 +166,23 @@ public final class AlgorithmBackTester {
         public void display() {
             if (m_CapitalHistory.isEmpty()) throw new IllegalArgumentException("m_CapitalHistory is empty");
 
-            final double last = m_CapitalHistory.get(m_CapitalHistory.size() - 1);
+            final double last = m_CapitalHistory.getLast();
             final double profit = last - m_StartingCapital;
-            final double szazalek = (profit / m_StartingCapital) * 100.0d;
+            final double percent = (profit / m_StartingCapital) * 100.0d;
 
-            final double winrate;
-            if(m_TotalTrades <= 0) winrate = Double.NaN;
-            else winrate = m_WinningTrades * 100.0d / m_TotalTrades;
-            
+            final double winRate;
+            if(m_TotalTrades <= 0) winRate = Double.NaN;
+            else winRate = m_WinningTrades * 100.0d / m_TotalTrades;
+
             if(m_Taxation != null) System.out.println("With Taxes:");
             else System.out.println("Without Taxes:");
 
             System.out.println("    Profit: " + String.format("%.2f", profit));
-            System.out.println("    Return: " + String.format("%.2f", szazalek) + "%");
+            System.out.println("    Return: " + String.format("%.2f", percent) + "%");
             System.out.println();
             
             System.out.println("    Total Trades Made: " + m_TotalTrades);
-            System.out.println("    Winrate: " + String.format("%.2f", winrate) + "%");
+            System.out.println("    Winrate: " + String.format("%.2f", winRate) + "%");
             System.out.println("    Sharpe Ratio: " + String.format("%.2f", utils.Math.sharpeRatio(m_CapitalHistory, 0.03d)));
             System.out.println();
         }
@@ -198,14 +211,14 @@ public final class AlgorithmBackTester {
             );
 
             final var signal = m_SignalEngine.createSignal(
-              "UNKNOWN",
+              m_StockName,
               ret,
               m_CurrentCapital,
               currentPrice
             );
 
             if(signal.action() != SignalAction.HOLD) {
-                System.out.println(m_SignalFormatter.format(signal));
+                m_Signals.add(signal);
             }
 
             if(ret.buy() != null) {
@@ -260,7 +273,6 @@ public final class AlgorithmBackTester {
             m_CapitalHistory = new ArrayList<>();
 
             m_SignalEngine = new SignalEngine();
-            m_SignalFormatter = new SignalFormatter();
         }
     }
 }

@@ -2,6 +2,11 @@ package application.signal;
 
 import domain.signal.TradingSignal;
 
+//===========================================================//
+/**
+ * Formats trading signals into readable text output.
+ */
+//===========================================================//
 public final class SignalFormatter {
 
    public String format(final TradingSignal signal) {
@@ -17,6 +22,8 @@ public final class SignalFormatter {
                + String.format("%.2f", signal.currentPrice())
                + amountText
                + " | Reason: "
-               + signal.reason();
+               + signal.reason()
+               + " | At: "
+               + signal.createdAt();
    }
 }
