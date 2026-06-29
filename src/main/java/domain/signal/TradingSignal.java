@@ -8,10 +8,11 @@ import java.time.Instant;
  * Represents formatted trading signal that can be displayed
  */
 //===========================================================//
+
 public record TradingSignal(
   String symbol,
-  SignalAction action,
-  SignalStrength strength,
+  Action action,
+  Strength strength,
   double currentPrice,
   Long amount,
   Long currentStockCount,
@@ -19,15 +20,8 @@ public record TradingSignal(
   Instant createdAt
 ) {
    //===========================================================//
-   /**
-    * Represents the calculated Signal strength of generated signal.
-    */
    //===========================================================//
-   public enum SignalStrength {
-      HIGH,
-      MEDIUM,
-      LOW
-   }
+   // Public Interface(s)
 
    public String formatToReadableText() {
       final String amountText = amount() == null
@@ -47,5 +41,29 @@ public record TradingSignal(
                + reason()
                + " | At: "
                + createdAt();
+   }
+
+   //===========================================================//
+   //===========================================================//
+   // Enum(s)
+
+   /**
+    * Represents the calculated Signal strength of generated signal.
+    */
+   public enum Strength {
+      HIGH,
+      MEDIUM,
+      LOW
+   }
+
+   //===========================================================//
+   /**
+    * Represents the action suggested by the signal engine.
+    */
+
+   public enum Action {
+      BUY,
+      SELL,
+      HOLD
    }
 }

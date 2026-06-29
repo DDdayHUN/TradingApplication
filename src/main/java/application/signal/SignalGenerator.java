@@ -1,8 +1,6 @@
 package application.signal;
 
 import domain.algorithm.Algorithm;
-import domain.signal.SignalAction;
-import domain.signal.TradingSignal.SignalStrength;
 import domain.signal.TradingSignal;
 
 import java.time.Instant;
@@ -12,19 +10,14 @@ import java.time.Instant;
  * Converts algorithm decisions into final trading signals {@link TradingSignal}.
  */
 //===========================================================//
+
 public final class SignalGenerator {
 
-    public TradingSignal createSignal(
-     final String symbol,
-     final Algorithm.Output output,
-     final double availableCapital,
-     final double currentPrice,
-     final long currentStockCount
-   ) {
+   public TradingSignal createSignal(final String symbol, final Algorithm.Output output, final double availableCapital, final double currentPrice, final long currentStockCount) {
       if (output.buy() != null) {
          return new TradingSignal(
            symbol,
-           SignalAction.BUY,
+           TradingSignal.Action.BUY,
            calculateBuyStrength(
              output.buy().amount(),
              availableCapital,
@@ -47,8 +40,8 @@ public final class SignalGenerator {
 
          return new TradingSignal(
            symbol,
-           SignalAction.SELL,
-           SignalStrength.MEDIUM,
+           TradingSignal.Action.SELL,
+           TradingSignal.Strength.MEDIUM,
            currentPrice,
            amountToSell,
            currentStockCount,
@@ -59,8 +52,8 @@ public final class SignalGenerator {
 
       return new TradingSignal(
         symbol,
-        SignalAction.HOLD,
-        SignalStrength.LOW,
+        TradingSignal.Action.HOLD,
+        TradingSignal.Strength.LOW,
         currentPrice,
         null,
         currentStockCount,
@@ -69,26 +62,14 @@ public final class SignalGenerator {
       );
    }
 
-    private SignalStrength calculateBuyStrength(
-     final long amount,
-     final double availableCapital,
-     final double currentPrice
-   ) {
-      if (availableCapital <= 0.0d) {
-         return SignalStrength.LOW;
-      }
+   private TradingSignal.Strength calculateBuyStrength(final long amount, final double availableCapital, final double currentPrice) {
+      if (availableCapital <= 0.0d) return TradingSignal.Strength.LOW;
 
       final double usedCapital = amount * currentPrice;
       final double usedCapitalRatio = usedCapital / availableCapital;
 
-      if (usedCapitalRatio >= 0.20d) {
-         return SignalStrength.HIGH;
-      }
-
-      if (usedCapitalRatio >= 0.10d) {
-         return SignalStrength.MEDIUM;
-      }
-
-      return SignalStrength.LOW;
+      if (usedCapitalRatio >= 0.20d) return TradingSignal.Strength.HIGH;
+      if (usedCapitalRatio >= 0.10d) return TradingSignal.Strength.MEDIUM;
+      return TradingSignal.Strength.LOW;
    }
 }

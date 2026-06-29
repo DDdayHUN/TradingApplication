@@ -1,5 +1,6 @@
 package domain.risk;
 
+//===========================================================//
 /**
  * Applies basic risk management rules to algorithm-generated trading decisions.
  * <p>
@@ -8,6 +9,8 @@ package domain.risk;
  *    limits.
  * </p>
  */
+//===========================================================//
+
 public class RiskManager {
    // TODO : Implement
 }
