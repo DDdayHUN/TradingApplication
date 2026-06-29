@@ -2,7 +2,7 @@ package application.signal;
 
 import domain.algorithm.Algorithm;
 import domain.signal.SignalAction;
-import domain.signal.SignalStrength;
+import domain.signal.TradingSignal.SignalStrength;
 import domain.signal.TradingSignal;
 
 import java.time.Instant;
@@ -12,7 +12,7 @@ import java.time.Instant;
  * Converts algorithm decisions into final trading signals {@link TradingSignal}.
  */
 //===========================================================//
-public final class SignalEngine {
+public final class SignalGenerator {
 
     public TradingSignal createSignal(
      final String symbol,

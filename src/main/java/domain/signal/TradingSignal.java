@@ -18,4 +18,34 @@ public record TradingSignal(
   String reason,
   Instant createdAt
 ) {
+   //===========================================================//
+   /**
+    * Represents the calculated Signal strength of generated signal.
+    */
+   //===========================================================//
+   public enum SignalStrength {
+      HIGH,
+      MEDIUM,
+      LOW
+   }
+
+   public String formatToReadableText() {
+      final String amountText = amount() == null
+                                  ? "" : " | Amount:  " + amount();
+
+      return symbol()
+               + ": "
+               + action()
+               + " | "
+               + strength()
+               + " | Price: "
+               + String.format("%.2f", currentPrice())
+               + amountText
+               + " | Current Stock Count: "
+               + currentStockCount()
+               + " | Reason: "
+               + reason()
+               + " | At: "
+               + createdAt();
+   }
 }

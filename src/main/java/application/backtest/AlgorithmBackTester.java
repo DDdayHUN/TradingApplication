@@ -3,8 +3,7 @@ package application.backtest;
 import java.util.ArrayList;
 import java.util.List;
 
-import application.signal.SignalEngine;
-import application.signal.SignalFormatter;
+import application.signal.SignalGenerator;
 import domain.algorithm.Algorithm;
 import domain.signal.SignalAction;
 import domain.signal.TradingSignal;
@@ -45,7 +44,6 @@ public final class AlgorithmBackTester {
     private final BackTesterWithTaxationContext m_WithTax;
 
     private List<TradingSignal> m_Signals;
-    private final SignalFormatter m_SignalFormatter;
 
     //===========================================================//
     //===========================================================//
@@ -79,7 +77,7 @@ public final class AlgorithmBackTester {
         var counter = 1;
         for(final var signal : m_Signals){
             System.out.printf(counter++ + " ");
-            System.out.println(m_SignalFormatter.format(signal));
+            System.out.println(signal.formatToReadableText());
         }
         System.out.println(System.lineSeparator());
         System.out.println("#==========================================#");
@@ -107,7 +105,6 @@ public final class AlgorithmBackTester {
 
         m_WithoutTax = new BackTesterWithTaxationContext(null, Algorithm.initForBackTest(type, stockNev, from, to), capital);
         m_WithTax = new BackTesterWithTaxationContext(taxation, Algorithm.initForBackTest(type, stockNev, from, to), capital);
-        m_SignalFormatter = new SignalFormatter();
         m_Signals = new ArrayList<>();
     }
 
@@ -134,7 +131,7 @@ public final class AlgorithmBackTester {
         private int m_TotalSellsMade = 0;
         private int m_WinningTrades = 0;
 
-        private final SignalEngine m_SignalEngine;
+        private final SignalGenerator m_SignalGenerator;
 
 
         //===========================================================//
@@ -222,7 +219,7 @@ public final class AlgorithmBackTester {
                 projectedStockCount -= getSellAmount(ret.sell());
             }
 
-            final var signal = m_SignalEngine.createSignal(
+            final var signal = m_SignalGenerator.createSignal(
               m_StockName,
               ret,
               m_CurrentCapital,
@@ -304,7 +301,7 @@ public final class AlgorithmBackTester {
             m_Holdings = new ArrayList<>();
             m_CapitalHistory = new ArrayList<>();
 
-            m_SignalEngine = new SignalEngine();
+            m_SignalGenerator = new SignalGenerator();
         }
     }
 }
