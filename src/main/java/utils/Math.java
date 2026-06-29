@@ -15,7 +15,7 @@ public final class Math {
 
     /*===========================================================*/
     /*===========================================================*/
-    // Public Interface(s)
+    // Public Method(es)
 
     /**
      * Computes the arithmetic mean of a list of numeric values.
@@ -183,7 +183,7 @@ public final class Math {
 
     /*===========================================================*/
     /*===========================================================*/
-    // Private Interface(s)
+    // Private Method(es)
 
     private Math() {} // To prevent instantiation.
 }

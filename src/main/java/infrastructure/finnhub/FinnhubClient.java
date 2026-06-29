@@ -13,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
+//===========================================================//
 /**
  * Client class for communicating with the Finnhub API.
  * <p>
@@ -21,25 +22,23 @@ import java.nio.charset.StandardCharsets;
  *    DTO into Quote domain model
  * </p>
  */
+//===========================================================//
+
 public final class FinnhubClient {
    /*===================================================*/
    /*===================================================*/
-   // static Field(s)
+   // Private Field(s)
 
    private static final Gson s_GSON = new GsonBuilder()
                                         .setPrettyPrinting()
                                         .create();
-
-   /*===================================================*/
-   /*===================================================*/
-   // private Field(s)
 
    private final FinnhubConfig m_config;
    private final HttpClient m_httpClient;
 
    /*===================================================*/
    /*===================================================*/
-   // public Interface(s)
+   // Public Method(es)
 
    /**
     * Gets the latest quote for a given stock symbol.
@@ -90,7 +89,7 @@ public final class FinnhubClient {
 
    /*===================================================*/
    /*===================================================*/
-   // constructor(s)
+   // Constructor(s)
 
    /**
     * Initializes Finnhub client with config

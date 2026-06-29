@@ -2,6 +2,7 @@ package infrastructure.finnhub.dto;
 
 import domain.stock.Quote;
 
+//===========================================================//
 /**
  *  Data Transfer Object for Finnhub quote response.
  *  <p>
@@ -15,6 +16,7 @@ import domain.stock.Quote;
  * @param o open price of the day
  * @param pc previous close price
  */
+//===========================================================//
 
 public record FinnhubQuoteDto(
   double c,

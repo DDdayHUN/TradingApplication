@@ -5,9 +5,12 @@ import infrastructure.finnhub.interfaces.IMarketDataProvider;
 
 import java.io.IOException;
 
+//===========================================================//
 /**
  * Provider implementation that gets quote data from Finnhub.
  */
+//===========================================================//
+
 public final class FinnhubMarketDataProvider implements IMarketDataProvider {
    private final FinnhubClient m_client;
 
