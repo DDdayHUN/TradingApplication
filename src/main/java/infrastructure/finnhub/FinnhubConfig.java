@@ -120,7 +120,9 @@ private final Duration m_Timeout;
       validateTimeout(timeout);
       this.m_apiKey = loadApiKeyFromEnv();
       this.m_baseUrl = baseUrl;
-      this.m_timeout = timeout;
+this.m_ApiKey = loadApiKeyFromEnv();
+this.m_BaseUrl = baseUrl;
+this.m_Timeout = timeout;
    }
 
 }
