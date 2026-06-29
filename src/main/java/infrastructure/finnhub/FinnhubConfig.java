@@ -32,9 +32,9 @@ private final Duration m_Timeout;
    /*===================================================*/
    // Public Method(es)
 
-   public String getApiKey(){ return m_apiKey; }
-   public String getBaseUrl(){ return m_baseUrl; }
-   public Duration getTimeout(){ return m_timeout; }
+   public String getApiKey(){ return m_ApiKey; }
+   public String getBaseUrl(){ return m_BaseUrl; }
+   public Duration getTimeout(){ return m_Timeout; }
 
    /*===================================================*/
    /*===================================================*/
