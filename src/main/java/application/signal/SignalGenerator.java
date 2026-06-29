@@ -7,11 +7,14 @@ import java.time.Instant;
 
 //===========================================================//
 /**
- * Converts algorithm decisions into final trading signals {@link TradingSignal}.
+ * Converts algorithm outputs {@link Algorithm.Output} into final trading signals {@link TradingSignal}.
  */
 //===========================================================//
 
 public final class SignalGenerator {
+   //===========================================================//
+   //===========================================================//
+   // Public Method(es)
 
    public TradingSignal createSignal(final String symbol, final Algorithm.Output output, final double availableCapital, final double currentPrice, final long currentStockCount) {
       if (output.buy() != null) {
@@ -61,6 +64,10 @@ public final class SignalGenerator {
         Instant.now()
       );
    }
+
+   //===========================================================//
+   //===========================================================//
+   // Private Method(es)
 
    private TradingSignal.Strength calculateBuyStrength(final long amount, final double availableCapital, final double currentPrice) {
       if (availableCapital <= 0.0d) return TradingSignal.Strength.LOW;
