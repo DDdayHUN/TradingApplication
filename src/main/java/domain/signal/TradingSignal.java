@@ -21,7 +21,7 @@ public record TradingSignal(
 ) {
    //===========================================================//
    //===========================================================//
-   // Public Interface(s)
+   // Public Method(es)
 
    public String formatToReadableText() {
       final String amountText = amount() == null

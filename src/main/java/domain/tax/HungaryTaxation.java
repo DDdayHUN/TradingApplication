@@ -21,7 +21,7 @@ final class HungaryTaxation extends Taxation {
 
     //===========================================================//
     //===========================================================//
-    // Public Interface(s)
+    // Public Method(es)
 
     /**
      * SOURCE : https://bankmonitor.hu/mediatar/cikk/befekteteseid-adozasa-2025-ben-10-fontos-tudnivalo/
