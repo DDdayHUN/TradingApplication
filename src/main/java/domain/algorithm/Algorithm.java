@@ -22,7 +22,7 @@ import data.SerializationManager;
 public abstract class Algorithm {
     //===========================================================//
     //===========================================================//
-    // Public Interface(s)
+    // Public Method(es)
 
     /**
      * Executes the algorithm based on current holdings and market conditions.
@@ -70,7 +70,7 @@ public abstract class Algorithm {
 
     //===========================================================//
     //===========================================================//
-    // Private Interface(s)
+    // Private Method(es)
 
     /**
      * Core initialization method used by both trading and backtesting setups.

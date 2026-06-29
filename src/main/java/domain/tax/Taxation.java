@@ -18,7 +18,7 @@ public abstract class Taxation {
 
     //===========================================================//
     //===========================================================//
-    // Public Interface(s)
+    // Public Method(es)
 
     public abstract double calculateRevenueAfterTax(final double revenue, final double costBasis);
     // public abstract double taxInterestIncome(final double value);

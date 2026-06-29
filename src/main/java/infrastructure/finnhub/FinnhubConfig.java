@@ -5,48 +5,40 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Properties;
 
+//===========================================================//
 /**
  * Configuration class for Finnhub API access.
  * <p>
  *    This Config loads API key from local .env file.
  * </p>
  */
+//===========================================================//
+
 public final class FinnhubConfig {
    /*===================================================*/
    /*===================================================*/
-   // Static Field(s)
-   private static final String ENV_FILE = ".env";
-   private static final String FINNHUB_API_KEY_NAME = "FINNHUB_API_KEY";
-   private static final String DEFAULT_BASE_URL = "https://finnhub.io/api/v1";
-   private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
+   // Private Field(s)
+
+   private static final String s_ENV_FILE = ".env";
+   private static final String s_FINNHUB_API_KEY_NAME = "FINNHUB_API_KEY";
+   private static final String s_DEFAULT_BASE_URL = "https://finnhub.io/api/v1";
+   private static final Duration s_DEFAULT_TIMEOUT = Duration.ofSeconds(10);
+
+private final String m_ApiKey;
+private final String m_BaseUrl;
+private final Duration m_Timeout;
 
    /*===================================================*/
    /*===================================================*/
-   // private Field(s)
+   // Public Method(es)
 
-   private final String m_apiKey;
-   private final String m_baseUrl;
-   private final Duration m_timeout;
-
-   /*===================================================*/
-   /*===================================================*/
-   // public Interface(s)
-
-   public String getApiKey(){
-      return m_apiKey;
-   }
-
-   public String getBaseUrl(){
-      return m_baseUrl;
-   }
-
-   public Duration getTimeout(){
-      return m_timeout;
-   }
+   public String getApiKey(){ return m_ApiKey; }
+   public String getBaseUrl(){ return m_BaseUrl; }
+   public Duration getTimeout(){ return m_Timeout; }
 
    /*===================================================*/
    /*===================================================*/
-   // private Interface(s)
+   // Private Method(es)
 
    /**
     *  Loads API key from .env file.
@@ -55,7 +47,7 @@ public final class FinnhubConfig {
    private static String loadApiKeyFromEnv() {
       final Properties properties = new Properties();
 
-      try(FileInputStream input = new FileInputStream(ENV_FILE)){
+      try(FileInputStream input = new FileInputStream(s_ENV_FILE)){
          properties.load(input);
       } catch(IOException ex){
          throw new IllegalStateException(
@@ -64,7 +56,7 @@ public final class FinnhubConfig {
          );
       }
 
-      final String apiKey = properties.getProperty(FINNHUB_API_KEY_NAME);
+      final String apiKey = properties.getProperty(s_FINNHUB_API_KEY_NAME);
 
       if (apiKey == null || apiKey.isBlank()){
          throw new IllegalStateException(
@@ -97,13 +89,13 @@ public final class FinnhubConfig {
 
    /*===================================================*/
    /*===================================================*/
-   // constructor(s)
+   // Constructor(s)
 
    /**
     * Initializes Finnhub configuration with default values.
     */
    public FinnhubConfig(){
-      this(DEFAULT_BASE_URL, DEFAULT_TIMEOUT);
+      this(s_DEFAULT_BASE_URL, s_DEFAULT_TIMEOUT);
    }
 
    /**
@@ -112,7 +104,7 @@ public final class FinnhubConfig {
     * @param timeout maximum time allowed for Finnhub API requests.
     */
    public FinnhubConfig(final Duration timeout){
-      this(DEFAULT_BASE_URL, timeout);
+      this(s_DEFAULT_BASE_URL, timeout);
    }
 
    /**
@@ -128,7 +120,9 @@ public final class FinnhubConfig {
       validateTimeout(timeout);
       this.m_apiKey = loadApiKeyFromEnv();
       this.m_baseUrl = baseUrl;
-      this.m_timeout = timeout;
+this.m_ApiKey = loadApiKeyFromEnv();
+this.m_BaseUrl = baseUrl;
+this.m_Timeout = timeout;
    }
 
 }

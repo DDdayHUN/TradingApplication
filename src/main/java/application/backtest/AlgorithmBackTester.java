@@ -5,7 +5,6 @@ import java.util.List;
 
 import application.signal.SignalGenerator;
 import domain.algorithm.Algorithm;
-import domain.signal.SignalAction;
 import domain.signal.TradingSignal;
 import domain.stock.Holding;
 import domain.tax.Taxation;
@@ -47,7 +46,7 @@ public final class AlgorithmBackTester {
 
     //===========================================================//
     //===========================================================//
-    // Public Interface(s)
+    // Public Method(es)
 
     public void runBackTestWithDebug() {
         m_WithoutTax.reset(Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To));
@@ -69,7 +68,7 @@ public final class AlgorithmBackTester {
 
     //===========================================================//
     //===========================================================//
-    // Private Interface(s)
+    // Private Method(es)
 
     private void display(final boolean debug) {
         System.out.println("===============================================================");
@@ -96,6 +95,8 @@ public final class AlgorithmBackTester {
     // Constructor(s)
 
     public AlgorithmBackTester(final Taxation taxation, final Algorithm.Type type, final double capital, final String stockNev, final int from, final int to) {
+        if(capital <= 0d) throw new IllegalArgumentException("Capital");
+
         m_StockName = stockNev;
         m_From = from;
         m_To = to;
@@ -103,8 +104,8 @@ public final class AlgorithmBackTester {
         m_StartingCapital = capital;
         m_Type = type;
 
-        m_WithoutTax = new BackTesterWithTaxationContext(null, Algorithm.initForBackTest(type, stockNev, from, to), capital);
-        m_WithTax = new BackTesterWithTaxationContext(taxation, Algorithm.initForBackTest(type, stockNev, from, to), capital);
+        m_WithoutTax = new BackTesterWithTaxationContext(null, Algorithm.initForBackTest(type, stockNev, from, to));
+        m_WithTax = new BackTesterWithTaxationContext(taxation, Algorithm.initForBackTest(type, stockNev, from, to));
         m_Signals = new ArrayList<>();
     }
 
@@ -112,7 +113,7 @@ public final class AlgorithmBackTester {
     //===========================================================//
     // Helper Class(es)
 
-     private final class BackTesterWithTaxationContext {
+    private final class BackTesterWithTaxationContext {
         //===========================================================//
         //===========================================================//
         // Private Field(s)
@@ -125,7 +126,6 @@ public final class AlgorithmBackTester {
         private final List<Holding> m_Holdings;
         private final List<Double> m_CapitalHistory;
 
-        private final double m_StartingCapital;
         private double m_CurrentCapital;
 
         private int m_TotalSellsMade = 0;
@@ -136,7 +136,7 @@ public final class AlgorithmBackTester {
 
         //===========================================================//
         //===========================================================//
-        // Public Interface(s)
+        // Public Method(es)
 
         public void runBackTest() {
             for(final var history : m_HistoryWeRunAgainst) {
@@ -200,7 +200,7 @@ public final class AlgorithmBackTester {
 
         //===========================================================//
         //===========================================================//
-        // Private Interface(s)
+        // Private Method(es)
 
         private void runOneIteration(final double currentPrice) {
             final var ret = m_Algorithm.run(
@@ -227,9 +227,7 @@ public final class AlgorithmBackTester {
               projectedStockCount
             );
 
-            if(signal.action() != SignalAction.HOLD) {
-                m_Signals.add(signal);
-            }
+            if(signal.action() != TradingSignal.Action.HOLD) m_Signals.add(signal);
 
             if(ret.buy() != null) {
                 m_CurrentCapital -= ret.buy().amount() * currentPrice;
@@ -287,13 +285,11 @@ public final class AlgorithmBackTester {
         //===========================================================//
         // Constructor(s)
 
-        public BackTesterWithTaxationContext(final Taxation taxation, final Pair<List<History>, Algorithm> pair, final double capital) {
+        public BackTesterWithTaxationContext(final Taxation taxation, final Pair<List<History>, Algorithm> pair) {
             if(pair == null) throw new IllegalArgumentException("Pair");
-            if(capital <= 0d) throw new IllegalArgumentException("Capital");
 
             m_Taxation = taxation;
-            m_StartingCapital = capital;
-            m_CurrentCapital = capital;
+            m_CurrentCapital = m_StartingCapital;
 
             m_Algorithm = pair.second;
 

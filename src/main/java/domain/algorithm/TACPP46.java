@@ -30,7 +30,7 @@ final class TACPP46 extends Algorithm {
 
     //===========================================================//
     //===========================================================//
-    // Public Interface(s)
+    // Public Method(es)
 
     @Override
     public Algorithm.Output run(final List<Holding> holdings, final double allocatedToke, final double currentPrice) {
