@@ -46,7 +46,7 @@ public final class AlgorithmBackTester {
 
     //===========================================================//
     //===========================================================//
-    // Public Interface(s)
+    // Public Method(es)
 
     public void runBackTestWithDebug() {
         m_WithoutTax.reset(Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To));
@@ -68,7 +68,7 @@ public final class AlgorithmBackTester {
 
     //===========================================================//
     //===========================================================//
-    // Private Interface(s)
+    // Private Method(es)
 
     private void display(final boolean debug) {
         System.out.println("===============================================================");
@@ -136,7 +136,7 @@ public final class AlgorithmBackTester {
 
         //===========================================================//
         //===========================================================//
-        // Public Interface(s)
+        // Public Method(es)
 
         public void runBackTest() {
             for(final var history : m_HistoryWeRunAgainst) {
@@ -200,7 +200,7 @@ public final class AlgorithmBackTester {
 
         //===========================================================//
         //===========================================================//
-        // Private Interface(s)
+        // Private Method(es)
 
         private void runOneIteration(final double currentPrice) {
             final var ret = m_Algorithm.run(
