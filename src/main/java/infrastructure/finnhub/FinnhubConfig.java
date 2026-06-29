@@ -24,9 +24,9 @@ public final class FinnhubConfig {
    private static final String s_DEFAULT_BASE_URL = "https://finnhub.io/api/v1";
    private static final Duration s_DEFAULT_TIMEOUT = Duration.ofSeconds(10);
 
-   private final String m_apiKey;
-   private final String m_baseUrl;
-   private final Duration m_timeout;
+private final String m_ApiKey;
+private final String m_BaseUrl;
+private final Duration m_Timeout;
 
    /*===================================================*/
    /*===================================================*/
