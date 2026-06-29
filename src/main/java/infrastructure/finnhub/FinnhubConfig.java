@@ -118,11 +118,9 @@ private final Duration m_Timeout;
    public FinnhubConfig(String baseUrl, Duration timeout){
       validateBaseUrl(baseUrl);
       validateTimeout(timeout);
-      this.m_apiKey = loadApiKeyFromEnv();
-      this.m_baseUrl = baseUrl;
-this.m_ApiKey = loadApiKeyFromEnv();
-this.m_BaseUrl = baseUrl;
-this.m_Timeout = timeout;
+      this.m_ApiKey = loadApiKeyFromEnv();
+      this.m_BaseUrl = baseUrl;
+      this.m_Timeout = timeout;
    }
 
 }
