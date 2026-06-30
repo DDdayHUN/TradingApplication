@@ -12,8 +12,6 @@ import java.io.IOException;
 
 public final class Main {
     static public void main(String[] args) throws IOException, InterruptedException {
-        System.out.println("#==========================================#");
-        System.out.println(System.lineSeparator() + "### Internal testing ###" + System.lineSeparator());
         final var BT = new AlgorithmBackTester(Taxation.HUNGARY, Algorithm.Type.TACPP46, 10000d, "Cloudflare", 20, 24);
         BT.runBackTest();
         System.out.println("#==========================================#");
