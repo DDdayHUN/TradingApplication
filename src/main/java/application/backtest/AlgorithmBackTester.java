@@ -262,6 +262,8 @@ public final class AlgorithmBackTester {
             m_CapitalHistory.add(m_CurrentCapital + sum);
         }
 
+        //===========================================================//
+
         private long getCurrentStockCount(){
             long count = 0L;
 
@@ -271,6 +273,8 @@ public final class AlgorithmBackTester {
 
             return count;
         }
+
+        //===========================================================//
 
         private long getSellAmount(final Algorithm.Output.Sell sell){
             long amount = 0L;

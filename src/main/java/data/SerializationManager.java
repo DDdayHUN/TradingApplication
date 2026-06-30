@@ -17,7 +17,7 @@ import com.google.gson.GsonBuilder;
 public final class SerializationManager {
     //===========================================================//
     //===========================================================//
-    // Static Field(s)
+    // Private Field(s)
 
     static private final Gson s_GSON = new GsonBuilder()
         .setPrettyPrinting()

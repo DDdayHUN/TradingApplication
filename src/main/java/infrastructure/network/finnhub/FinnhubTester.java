@@ -30,5 +30,4 @@ public final class FinnhubTester {
       this.m_client = new FinnhubClient(m_config);
       this.m_provider = new FinnhubMarketDataProvider(this.m_client);
    }
-
 }

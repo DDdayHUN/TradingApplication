@@ -34,6 +34,7 @@ public abstract class Algorithm {
      */
     public abstract Algorithm.Output run(final List<Holding> holdings, final double allocatedCapital, final double currentPrice);
 
+    //===========================================================//
     /**
      * Updates the internal state of the algorithm.
      *

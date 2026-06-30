@@ -24,9 +24,9 @@ public final class FinnhubConfig {
    private static final String s_DEFAULT_BASE_URL = "https://finnhub.io/api/v1";
    private static final Duration s_DEFAULT_TIMEOUT = Duration.ofSeconds(10);
 
-private final String m_ApiKey;
-private final String m_BaseUrl;
-private final Duration m_Timeout;
+   private final String m_ApiKey;
+   private final String m_BaseUrl;
+   private final Duration m_Timeout;
 
    /*===================================================*/
    /*===================================================*/
@@ -67,6 +67,7 @@ private final Duration m_Timeout;
       return apiKey;
    }
 
+   //===========================================================//
    /**
     * Validates Finnhub requests timeout.
     * @param timeout maximum time allowed for Finnhub API requests
@@ -77,6 +78,7 @@ private final Duration m_Timeout;
       }
    }
 
+   //===========================================================//
    /**
     * Validates the Finnhub API base URL.
     * @param baseUrl base URL of the Finnhub API
@@ -98,6 +100,7 @@ private final Duration m_Timeout;
       this(s_DEFAULT_BASE_URL, s_DEFAULT_TIMEOUT);
    }
 
+   //===========================================================//
    /**
     * Initializes Finnhub configuration with custom timeout value.
     *
@@ -107,6 +110,7 @@ private final Duration m_Timeout;
       this(s_DEFAULT_BASE_URL, timeout);
    }
 
+   //===========================================================//
    /**
     * Initializes Finnhub configuration with custom values.
     * <p>
@@ -122,7 +126,4 @@ private final Duration m_Timeout;
       this.m_BaseUrl = baseUrl;
       this.m_Timeout = timeout;
    }
-
 }
-
-
