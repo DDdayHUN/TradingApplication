@@ -46,13 +46,13 @@ public abstract class Algorithm {
      * Initializes an algorithm instance configured for backtesting.
      *
      * @param type     - Type of algorithm to initialize.
-     * @param stockNev - Stock identifier/name.
+     * @param stockName - Stock identifier/name.
      * @param from     - Start date (inclusive).
      * @param to       - End date (inclusive).
      * @return         Pair containing the list of history that was not used up for initialisation and the algorithm instance.
      */
-    static public final Pair<List<History>, Algorithm> initForBackTest(final Type type, final String stockNev, final int from, final int to) {
-        return initialiser(type, Init.BACKTEST, stockNev, from, to);
+    static public final Pair<List<History>, Algorithm> initForBackTest(final Type type, final String stockName, final int from, final int to) {
+        return initialiser(type, Init.BACKTEST, stockName, from, to);
     }
 
     //===========================================================//
@@ -61,11 +61,11 @@ public abstract class Algorithm {
      * Initializes an algorithm instance configured for live trading.
      *
      * @param type     - Type of algorithm to initialize.
-     * @param stockNev - Stock identifier/name.
+     * @param stockName - Stock identifier/name.
      * @return         Initialized algorithm instance.
      */
-    static public final Algorithm initForTrading(final Type type, final String stockNev) {
-        return initialiser(type, Init.TRADING, stockNev, Integer.MIN_VALUE, Integer.MAX_VALUE).second;
+    static public final Algorithm initForTrading(final Type type, final String stockName) {
+        return initialiser(type, Init.TRADING, stockName, Integer.MIN_VALUE, Integer.MAX_VALUE).second;
     }
 
     //===========================================================//
@@ -77,14 +77,14 @@ public abstract class Algorithm {
      *
      * @param type     - Algorithm type.
      * @param init     - Initialization mode.
-     * @param stockNev - Stock identifier/name.
+     * @param stockName - Stock identifier/name.
      * @param from     - Start date (inclusive).
      * @param to       - End date (inclusive).
      * @return         Pair of history data and initialized algorithm.
      */
-    static private Pair<List<History>, Algorithm> initialiser(final Type type, final Init init, final String stockNev, final int from, final int to) {
+    static private Pair<List<History>, Algorithm> initialiser(final Type type, final Init init, final String stockName, final int from, final int to) {
         try {
-            final var retHistory = historyInitialiser(stockNev, from, to);
+            final var retHistory = historyInitialiser(stockName, from, to);
             final Algorithm retAlgorithm = switch (type){
                 case TACPP46 -> new TACPP46(init, retHistory);
             };
@@ -97,7 +97,7 @@ public abstract class Algorithm {
     /**
      * Loads historical data from files based on the given parameters.
      *
-     * @param stockNev - Stock identifier/name.
+     * @param stockName - Stock identifier/name.
      * @param from     - Start date (inclusive).
      * @param to       - End date (inclusive).
      * @return         List of historical data entries.
@@ -106,7 +106,7 @@ public abstract class Algorithm {
      * @throws IllegalArgumentException If the expected range of files is not fully available.
      */
 
-    static private final List<History> historyInitialiser(final String stockNev, final int from, final int to) throws IOException {
+    static private final List<History> historyInitialiser(final String stockName, final int from, final int to) throws IOException {
         final var backtestFiles = new File("src/main/resources/backtest/us/").listFiles();
         final List<Pair<File, Integer>> proxy = new ArrayList<>();
 
@@ -115,7 +115,7 @@ public abstract class Algorithm {
             final int date = Integer.parseInt(nameWithoutExtension.substring(nameWithoutExtension.length() - 2));
             final String nameWithoutExtensionAndDate = nameWithoutExtension.substring(0, nameWithoutExtension.length() - 2);
 
-            if(date >= from && date <= to && nameWithoutExtensionAndDate.equals(stockNev)) {
+            if(date >= from && date <= to && nameWithoutExtensionAndDate.equals(stockName)) {
                 proxy.add(new Pair<>(file, date));
             }
         }

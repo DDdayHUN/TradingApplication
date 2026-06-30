@@ -1,9 +1,9 @@
-package infrastructure.finnhub;
+package infrastructure.network.finnhub;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import domain.stock.Quote;
-import infrastructure.finnhub.dto.FinnhubQuoteDto;
+import infrastructure.network.finnhub.dto.FinnhubQuoteDto;
 
 import java.io.IOException;
 import java.net.URI;

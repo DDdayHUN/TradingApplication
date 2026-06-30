@@ -1,4 +1,4 @@
-package infrastructure.finnhub.dto;
+package infrastructure.network.finnhub.dto;
 
 import domain.stock.Quote;
 

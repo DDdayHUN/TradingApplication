@@ -1,4 +1,4 @@
-package infrastructure.finnhub;
+package infrastructure.network.finnhub;
 
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -17,7 +17,7 @@ final class HungaryTaxation extends Taxation {
     private double m_AccumulatedLosses = 0d;
 
     private final double SZJA = 0.15d;
-    private final double SZOCHO = 0.13d;
+    //private final double SZOCHO = 0.13d;
 
     //===========================================================//
     //===========================================================//

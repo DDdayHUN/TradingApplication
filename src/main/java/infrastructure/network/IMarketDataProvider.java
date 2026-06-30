@@ -1,4 +1,4 @@
-package infrastructure.finnhub.interfaces;
+package infrastructure.network;
 
 import domain.stock.Quote;
 
