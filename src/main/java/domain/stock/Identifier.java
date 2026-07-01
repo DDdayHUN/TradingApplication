@@ -16,8 +16,9 @@ package domain.stock;
 
 public record Identifier(
     String isin,
-    String exchange,
-    String symbol
+    String mic,
+    String tickerSymbol,
+    String currency
 ) {
     public Identifier {
         if(isin.length() != 12) throw new IllegalArgumentException("ISIN");
