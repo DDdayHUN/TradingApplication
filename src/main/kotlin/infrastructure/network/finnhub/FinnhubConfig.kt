@@ -26,9 +26,9 @@ class FinnhubConfig {
         /*===================================================*/
         // Private Field(s)
 
-        private val s_ENV_FILE = ".env"
-        private val s_FINNHUB_API_KEY_NAME = "FINNHUB_API_KEY"
-        private val s_DEFAULT_BASE_URL = "https://finnhub.io/api/v1"
+        private const val s_ENV_FILE = ".env"
+        private const val s_FINNHUB_API_KEY_NAME = "FINNHUB_API_KEY"
+        private const val s_DEFAULT_BASE_URL = "https://finnhub.io/api/v1"
         private val s_DEFAULT_TIMEOUT: Duration = Duration.ofSeconds(10)
 
         /*===================================================*/

@@ -2,6 +2,7 @@ package infrastructure.network
 
 import domain.assets.Quote
 import domain.assets.security.SecurityIdentifier
+import infrastructure.network.finnhub.FinnhubMarketDataProvider
 
 //===========================================================//
 /**

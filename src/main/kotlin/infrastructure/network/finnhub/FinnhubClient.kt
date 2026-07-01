@@ -3,6 +3,9 @@ package infrastructure.network.finnhub
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import domain.assets.security.SecurityIdentifier
+import infrastructure.network.finnhub.dto.FinnhubQuoteDto
+import infrastructure.network.finnhub.dto.FinnhubSymbolDto
+import infrastructure.network.httpRequestBuilder
 import java.io.IOException
 import java.net.URI
 import java.net.URLEncoder
@@ -33,6 +36,8 @@ class FinnhubClient {
         private val s_GSON: Gson = GsonBuilder()
             .setPrettyPrinting()
             .create()
+
+        private val s_HEADER_NAME = "X-Finnhub-Token"
     }
 
     /*===================================================*/
@@ -44,20 +49,13 @@ class FinnhubClient {
      * 
      * @param symbol stock ticker symbol, for example "NET", "AAPL", "MSFT"
      * @return latest quote as a clean domain object
-     *
-     * @throws IOException
-     * @throws InterruptedException
      */
-    fun getQuote(identifier: SecurityIdentifier): Result<FinnhubQuote> {
-        val encodedSymbol = URLEncoder.encode("identifier.tickerSymbol", StandardCharsets.UTF_8)
+
+    fun getQuote(identifier: SecurityIdentifier): Result<FinnhubQuoteDto> {
+        val encodedSymbol = getSymbol(identifier.isin).getOrNull()
         val url = m_Config.baseUrl + "/quote?symbol=" + encodedSymbol
 
-        val request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .timeout(m_Config.timeout)
-            .header("X-Finnhub-Token", m_Config.apiKey)
-            .GET()
-            .build()
+        val request = httpRequestBuilder(url, s_HEADER_NAME, m_Config.timeout, m_Config.apiKey)
 
         val response: HttpResponse<String?> = m_HttpClient.send(
             request,
@@ -68,9 +66,9 @@ class FinnhubClient {
             return Result.failure(IOException("Unexpected error"))
         }
 
-        val dto: FinnhubQuote? = s_GSON.fromJson(
+        val dto: FinnhubQuoteDto? = s_GSON.fromJson(
             response.body(),
-            FinnhubQuote::class.java
+            FinnhubQuoteDto::class.java
         )
 
         if (dto == null) {
@@ -78,6 +76,43 @@ class FinnhubClient {
         }
 
         return Result.success(dto)
+    }
+
+    /*===================================================*/
+    /*===================================================*/
+    // Private Method(es)
+
+    /**
+     * Gets Ticker Symbol for a given isin number.
+     *
+     * @param isin International Securities Identification Number
+     * @returns result ticker symbol
+     */
+    private fun getSymbol(isin: String): Result<String> {
+        val encodedIsin = URLEncoder.encode(isin, StandardCharsets.UTF_8)
+        val url = m_Config.baseUrl + "/search?q=" + encodedIsin
+
+        val request = httpRequestBuilder(url, s_HEADER_NAME, m_Config.timeout, m_Config.apiKey)
+
+        val response : HttpResponse<String?> = m_HttpClient.send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        )
+
+        if (response.statusCode() !in 200..<300) {
+            return Result.failure(IOException("Unexpected error"))
+        }
+
+        val dto: FinnhubSymbolDto? = s_GSON.fromJson(
+            response.body(),
+            FinnhubSymbolDto::class.java
+        )
+
+        if (dto == null) return Result.failure(IOException("Finnhub returned empty response from server"))
+        if (dto.count == 0) return Result.failure(IllegalStateException("Finnhub returned empty response from server"))
+
+
+        return Result.success(dto.result[0].symbol)
     }
 
     /*===================================================*/
