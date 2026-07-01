@@ -1,7 +1,6 @@
 package domain.stock
 
 //===========================================================//
-
 /**
  * Represents a stock holding in a portfolio.
  * 

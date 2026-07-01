@@ -79,7 +79,7 @@ class FinnhubConfig(
      */
     init {
         require(!baseUrl.isBlank()) { "Base URL is missing" }
-        require(!(!timeout.isNegative || timeout.isZero)) { "Timeout is invalid" }
+        require(!timeout.isNegative && !timeout.isZero) { "Timeout is invalid" }
 
         this.apiKey = loadApiKeyFromEnv()
         this.baseUrl = baseUrl

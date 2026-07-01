@@ -1,7 +1,6 @@
 package domain.stock
 
 //===========================================================//
-
 /**
  * Represents a financial instrument identifier consisting of an ISIN,
  * an exchange code, and a ticker symbol.
