@@ -36,14 +36,14 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
         val rsi: Double = utils.Math.rsi(ema)
         val ma: Double = utils.Math.average(ema)
 
-        val lowerBand = ma - 4 * std * ma
+        val lowerBand = ma - 4.0 * std * ma
 
         // Buy
-        if (rsi <= 30 && currentPrice <= lowerBand) {
+        if (rsi <= 30.0 && currentPrice <= lowerBand) {
             if (lastInputArr.isEmpty()) {
                 lastInputArr.add(currentPrice)
             } else if (utils.Math.average(ArrayList(lastInputArr)) <= currentPrice) {
-                val confidence: Double = Math.clamp(
+                val confidence = Math.clamp(
                     ((1.0 - std * 100.0) + (100.0 - rsi) / 100.0) / 2.0,
                     0.0,
                     0.3
@@ -76,7 +76,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
             }
 
             if (isMarked) {
-                var high: Double = trailingHigh.getOrDefault(item, currentPrice)!!
+                var high: Double = trailingHigh.getOrDefault(item, currentPrice)
 
                 // Update trailing high if still rising
                 if (currentPrice > high) {
@@ -113,10 +113,10 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
     //===========================================================//
 
     override fun updateHistory(history: History) {
-        val alpha: Double = 2.0 / (emaHistory.size + 1.0)
-        val last: Double = emaHistory.peekLast()
+        val alpha = 2.0 / (emaHistory.size + 1.0)
+        val last = emaHistory.peekLast()
 
-        val newEma: Double = alpha * history.closingPrice + (1.0 - alpha) * last
+        val newEma = alpha * history.closingPrice + (1.0 - alpha) * last
 
         emaHistory.pollFirst()
         emaHistory.addLast(newEma)
@@ -139,16 +139,16 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
         val historyQ1: List<History>
         when (init) {
             Init.TRADING -> {
-                val n: Int = emaInit.size
-                historyQ0 = emaInit.subList(n - 2 * SW, n - SW)
-                historyQ1 = emaInit.subList(n - SW, n)
+                val n = emaInit.size
+                historyQ0 = ArrayList(emaInit.subList(n - 2 * SW, n - SW))
+                historyQ1 = ArrayList(emaInit.subList(n - SW, n))
                 emaInit.subList(n - 2 * SW, n).clear()
             }
 
             Init.BACKTEST -> {
-                historyQ0 = emaInit.subList(0, SW)
-                historyQ1 = emaInit.subList(SW, 2 * SW)
-                emaInit.subList(0, 2 * SW)
+                historyQ0 = ArrayList(emaInit.subList(0, SW))
+                historyQ1 = ArrayList(emaInit.subList(SW, 2 * SW))
+                emaInit.subList(0, 2 * SW).clear()
             }
         }
 
@@ -159,7 +159,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
         var ema = utils.Math.average(q0) // initial Value
 
         for (price in q1) {
-            ema = alpha * price!! + (1.0 - alpha) * ema
+            ema = alpha * price + (1.0 - alpha) * ema
             emaHistory.add(ema)
         }
 
