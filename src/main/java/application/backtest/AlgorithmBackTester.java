@@ -221,7 +221,7 @@ public final class AlgorithmBackTester {
                 projectedStockCount -= getSellAmount(ret.sell());
             }
 
-            final var signal = m_SignalGenerator.createSignal(
+            final var signals = m_SignalGenerator.createSignal(
               m_StockName,
               ret,
               m_CurrentCapital,
@@ -229,7 +229,9 @@ public final class AlgorithmBackTester {
               projectedStockCount
             );
 
-            if(signal.action() != TradingSignal.Action.HOLD) m_Signals.add(signal);
+            signals.stream()
+                    .filter(signal -> signal.action() != TradingSignal.Action.HOLD)
+                    .forEach(m_Signals::add);
 
             if(ret.buy() != null) {
                 m_CurrentCapital -= ret.buy().amount() * currentPrice;
