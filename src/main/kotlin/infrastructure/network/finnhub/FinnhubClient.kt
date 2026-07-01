@@ -16,25 +16,19 @@ import java.nio.charset.StandardCharsets
 /**
  * Client class for communicating with the Finnhub API.
  * 
- * 
  * This class is responsible for HTTP communication with Finnhub.
  * It sends requests, receives JSON response, converts the response
  * DTO into Quote domain model
- *
- * Initializes Finnhub client with config
- * @param config Finnhub configuration API KEY, base URL and timeout
  */
 //===========================================================//
 
-class FinnhubClient(
-    config: FinnhubConfig
-) {
+class FinnhubClient {
     /*===================================================*/
     /*===================================================*/
     // Private Field(s)
 
-    private val m_config: FinnhubConfig
-    private val m_httpClient: HttpClient
+    private val m_Config: FinnhubConfig
+    private val m_HttpClient: HttpClient
 
     companion object {
         private val s_GSON: Gson = GsonBuilder()
@@ -51,24 +45,25 @@ class FinnhubClient(
      * 
      * @param symbol stock ticker symbol, for example "NET", "AAPL", "MSFT"
      * @return latest quote as a clean domain object
-     * @throws IOException if the Finnhub request fails
-     * @throws InterruptedException if the HTTP request is interrupted
+     *
+     * @throws IOException
+     * @throws InterruptedException
      */
     @Throws(IOException::class, InterruptedException::class)
     fun getQuote(symbol: String): Quote {
-        require(!(symbol == null || symbol.isEmpty())) { "Symbol is missing" }
+        require(!symbol.isEmpty()) { "Empty" }
 
-        val encodedSymbol: String? = URLEncoder.encode(symbol, StandardCharsets.UTF_8)
-        val url = m_config.baseUrl + "/quote?symbol=" + encodedSymbol
+        val encodedSymbol = URLEncoder.encode(symbol, StandardCharsets.UTF_8)
+        val url = m_Config.baseUrl + "/quote?symbol=" + encodedSymbol
 
-        val request: HttpRequest? = HttpRequest.newBuilder()
+        val request = HttpRequest.newBuilder()
             .uri(URI.create(url))
-            .timeout(m_config.timeout)
-            .header("X-Finnhub-Token", m_config.apiKey)
+            .timeout(m_Config.timeout)
+            .header("X-Finnhub-Token", m_Config.apiKey)
             .GET()
             .build()
 
-        val response: HttpResponse<String?> = m_httpClient.send(
+        val response: HttpResponse<String?> = m_HttpClient.send(
             request,
             HttpResponse.BodyHandlers.ofString()
         )
@@ -96,8 +91,12 @@ class FinnhubClient(
     /*===================================================*/
     // Constructor(s)
 
-    init {
-        this.m_config = config
-        this.m_httpClient = HttpClient.newHttpClient()
+    /**
+     * Initializes Finnhub client with config
+     * @param config Finnhub configuration API KEY, base URL and timeout
+     */
+    constructor(config: FinnhubConfig) {
+        this.m_Config = config
+        this.m_HttpClient = HttpClient.newHttpClient()
     }
 }

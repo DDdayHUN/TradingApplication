@@ -18,6 +18,7 @@ import domain.stock.Quote
  * @param pc previous close price
  */
 //===========================================================//
+
 data class FinnhubQuoteDto(
     val c: Double,
     val d: Double,

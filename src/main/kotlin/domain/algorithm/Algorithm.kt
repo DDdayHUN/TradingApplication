@@ -8,8 +8,7 @@ import java.io.File
 //===========================================================//
 /**
  * Abstract base class for all trading algorithms.
- * 
- *  Defines the required interface and provides factory methods for initializing algorithms in different modes.
+ * Defines the required interface and provides factory methods for initializing algorithms in different modes.
  */
 //===========================================================//
 
@@ -17,13 +16,14 @@ abstract class Algorithm {
     //===========================================================//
     //===========================================================//
     // Public Method(es)
+
     /**
      * Executes the algorithm based on current holdings and market conditions.
      *
-     * @param holdings      - List of currently owned assets.
-     * @param allocatedCapital - Amount of capital allocated for trading.
-     * @param currentPrice  - Current market price of the asset.
-     * @return              AlgorithmOutput containing the decision/results.
+     * @param holdings List of currently owned assets.
+     * @param allocatedCapital Amount of capital allocated for trading.
+     * @param currentPrice Current market price of the asset.
+     * @return AlgorithmOutput containing the decision/results.
      */
     abstract fun run(holdings: List<Holding>, allocatedCapital: Double, currentPrice: Double): Output
 
@@ -40,11 +40,11 @@ abstract class Algorithm {
         /**
          * Initializes an algorithm instance configured for backtesting.
          *
-         * @param type     - Type of algorithm to initialize.
-         * @param stockName - Stock identifier/name.
-         * @param from     - Start date (inclusive).
-         * @param to       - End date (inclusive).
-         * @return         Pair containing the list of history that was not used up for initialisation and the algorithm instance.
+         * @param type Type of algorithm to initialize.
+         * @param stockName Stock identifier/name.
+         * @param from Start date (inclusive).
+         * @param to End date (inclusive).
+         * @return Pair containing the list of history that was not used up for initialization and the algorithm instance.
          */
         fun initForBackTest(type: Type, stockName: String, from: Int, to: Int): Pair<List<History>, Algorithm> {
             return initialiser(type, Algorithm.Init.BACKTEST, stockName, from, to)

@@ -9,18 +9,10 @@ import java.util.Properties
 /**
  * Configuration class for Finnhub API access.
  * This Config loads API key from local .env file.
- *
- * Initializes Finnhub configuration with custom values.
- * Api key is still loaded from local .env file.
- *
- * @param baseUrl base URL of the Finnhub API
- * @param timeout maximum time allowed for Finnhub API requests
  */
 //===========================================================//
-class FinnhubConfig(
-    baseUrl: String = s_DEFAULT_BASE_URL,
-    timeout: Duration = s_DEFAULT_TIMEOUT
-) {
+
+class FinnhubConfig {
     /*===================================================*/
     /*===================================================*/
     // Public Field(s)
@@ -47,7 +39,7 @@ class FinnhubConfig(
          * Loads API key from .env file.
          * @return the Finnhub API key
          */
-        @Throws(IOException::class)
+        @Throws(IllegalStateException::class)
         private fun loadApiKeyFromEnv(): String {
             val properties = Properties()
 
@@ -75,9 +67,13 @@ class FinnhubConfig(
     // Constructor(s)
 
     /**
-     * Initializes Finnhub configuration with default values.
+     * Initializes Finnhub configuration with custom values.
+     * Api key is still loaded from local .env file.
+     *
+     * @param baseUrl base URL of the Finnhub API
+     * @param timeout maximum time allowed for Finnhub API requests
      */
-    init {
+    constructor(baseUrl: String = s_DEFAULT_BASE_URL, timeout: Duration = s_DEFAULT_TIMEOUT) {
         require(!baseUrl.isBlank()) { "Base URL is missing" }
         require(!timeout.isNegative && !timeout.isZero) { "Timeout is invalid" }
 

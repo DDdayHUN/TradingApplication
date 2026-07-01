@@ -25,19 +25,19 @@ data class TradingSignal(
     fun formatToReadableText(): String {
         val amountText = if(amount == null) "" else " | Amount:  $amount"
 
-        return (this.symbol + ": "
-                + this.action
+        return (symbol + ": "
+                + action
                 + " | "
-                + this.strength
+                + strength
                 + " | Price: "
-                + String.format("%.2f", this.currentPrice)
+                + String.format("%.2f", currentPrice)
                 + amountText
                 + " | Current Stock Count: "
-                + this.currentStockCount
+                + currentStockCount
                 + " | Reason: "
-                + this.reason
+                + reason
                 + " | At: "
-                + this.createdAt)
+                + createdAt)
     }
 
     //===========================================================//
