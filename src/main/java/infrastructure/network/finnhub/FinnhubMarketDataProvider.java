@@ -1,7 +1,7 @@
-package infrastructure.finnhub;
+package infrastructure.network.finnhub;
 
 import domain.stock.Quote;
-import infrastructure.finnhub.interfaces.IMarketDataProvider;
+import infrastructure.network.IMarketDataProvider;
 
 import java.io.IOException;
 

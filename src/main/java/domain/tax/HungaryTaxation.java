@@ -17,7 +17,7 @@ final class HungaryTaxation extends Taxation {
     private double m_AccumulatedLosses = 0d;
 
     private final double SZJA = 0.15d;
-    private final double SZOCHO = 0.13d;
+    //private final double SZOCHO = 0.13d;
 
     //===========================================================//
     //===========================================================//
@@ -51,6 +51,7 @@ final class HungaryTaxation extends Taxation {
         return revenue - taxableProfit * SZJA;
     }
 
+    //===========================================================//
     /**
      * SOURCE : https://bankmonitor.hu/mediatar/cikk/befekteteseid-adozasa-2025-ben-10-fontos-tudnivalo/
      * Kamatjövedelem (pl. bankbetét, vállalati kötvény kamata, pénzpiaci alap hozama): Itt már magasabb a teher: a 15% SZJA mellett 13% SZOCHO-t is kell fizetni, ami összesen 28%-os adóterhet jelent.
@@ -62,6 +63,7 @@ final class HungaryTaxation extends Taxation {
     }
     */
 
+    //===========================================================//
     /**
      * SOURCE : https://bankmonitor.hu/mediatar/cikk/befekteteseid-adozasa-2025-ben-10-fontos-tudnivalo/
      * Alapesetben 15% SZJA terheli. SZOCHO-t csak bizonyos összeghatárig (az éves minimálbér 24-szereséig terjedő összevont jövedelemig) kell fizetni, 
@@ -74,6 +76,7 @@ final class HungaryTaxation extends Taxation {
     }
     */
 
+    //===========================================================//
     /**
      * SOURCE : https://bankmonitor.hu/mediatar/cikk/befekteteseid-adozasa-2025-ben-10-fontos-tudnivalo/
      * Kriptovalutából származó jövedelem: Erre is 15% SZJA vonatkozik, de csak a realizált nyereség után.

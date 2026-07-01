@@ -42,7 +42,8 @@ public final class AlgorithmBackTester {
     private final BackTesterWithTaxationContext m_WithoutTax;
     private final BackTesterWithTaxationContext m_WithTax;
 
-    private List<TradingSignal> m_Signals;
+    private final SignalGenerator m_SignalGenerator;
+    private final List<TradingSignal> m_Signals;
 
     //===========================================================//
     //===========================================================//
@@ -71,15 +72,17 @@ public final class AlgorithmBackTester {
     // Private Method(es)
 
     private void display(final boolean debug) {
-        System.out.println("===============================================================");
+        System.out.println("#===============================================================#");
+        System.out.println(System.lineSeparator() + "### Algorithm back-tester ###" + System.lineSeparator());
+        System.out.println("#===============================================================#");
         System.out.println("Buy & Sale trades:");
         var counter = 1;
-        for(final var signal : m_Signals){
+        for(final var signal : m_Signals) {
             System.out.printf(counter++ + " ");
             System.out.println(signal.formatToReadableText());
         }
         System.out.println(System.lineSeparator());
-        System.out.println("#==========================================#");
+        System.out.println("#===============================================================#");
         System.out.println(System.lineSeparator());
         System.out.println("Stock: " + m_StockName + " " + "[" + Integer.toString(m_From) + "-" + Integer.toString(m_To) + "]");
         System.out.println("Kezdeti Toke: " + String.format("%.2f", m_StartingCapital) + System.lineSeparator());
@@ -87,7 +90,7 @@ public final class AlgorithmBackTester {
         if(debug) m_WithoutTax.displayDebugInfo();
         m_WithTax.display();
         if(debug) m_WithTax.displayDebugInfo();
-        System.out.println("===============================================================");
+        System.out.println("#===============================================================#");
     }
 
     //===========================================================//
@@ -106,6 +109,8 @@ public final class AlgorithmBackTester {
 
         m_WithoutTax = new BackTesterWithTaxationContext(null, Algorithm.initForBackTest(type, stockNev, from, to));
         m_WithTax = new BackTesterWithTaxationContext(taxation, Algorithm.initForBackTest(type, stockNev, from, to));
+
+        m_SignalGenerator = new SignalGenerator();
         m_Signals = new ArrayList<>();
     }
 
@@ -130,9 +135,6 @@ public final class AlgorithmBackTester {
 
         private int m_TotalSellsMade = 0;
         private int m_WinningTrades = 0;
-
-        private final SignalGenerator m_SignalGenerator;
-
 
         //===========================================================//
         //===========================================================//
@@ -219,7 +221,7 @@ public final class AlgorithmBackTester {
                 projectedStockCount -= getSellAmount(ret.sell());
             }
 
-            final var signal = m_SignalGenerator.createSignal(
+            final var signals = m_SignalGenerator.createSignal(
               m_StockName,
               ret,
               m_CurrentCapital,
@@ -227,7 +229,9 @@ public final class AlgorithmBackTester {
               projectedStockCount
             );
 
-            if(signal.action() != TradingSignal.Action.HOLD) m_Signals.add(signal);
+            signals.stream()
+                    .filter(signal -> signal.action() != TradingSignal.Action.HOLD)
+                    .forEach(m_Signals::add);
 
             if(ret.buy() != null) {
                 m_CurrentCapital -= ret.buy().amount() * currentPrice;
@@ -262,6 +266,8 @@ public final class AlgorithmBackTester {
             m_CapitalHistory.add(m_CurrentCapital + sum);
         }
 
+        //===========================================================//
+
         private long getCurrentStockCount(){
             long count = 0L;
 
@@ -271,6 +277,8 @@ public final class AlgorithmBackTester {
 
             return count;
         }
+
+        //===========================================================//
 
         private long getSellAmount(final Algorithm.Output.Sell sell){
             long amount = 0L;
@@ -296,8 +304,6 @@ public final class AlgorithmBackTester {
             m_HistoryWeRunAgainst = pair.first;
             m_Holdings = new ArrayList<>();
             m_CapitalHistory = new ArrayList<>();
-
-            m_SignalGenerator = new SignalGenerator();
         }
     }
 }
