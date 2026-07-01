@@ -10,6 +10,7 @@ package domain.tax
  * All taxation rules are exposed as static constants.
  */
 //===========================================================//
+
 abstract class Taxation internal constructor() {
     //===========================================================//
     //===========================================================//

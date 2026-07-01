@@ -26,14 +26,7 @@ import domain.tax.Taxation
  */
 //===========================================================//
 
-class AlgorithmBackTester(
-    taxation: Taxation,
-    type: Algorithm.Type,
-    startingCapital: Double,
-    stockName: String,
-    from: Int,
-    to: Int
-) {
+class AlgorithmBackTester {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -103,7 +96,7 @@ class AlgorithmBackTester(
     //===========================================================//
     // Constructor(s)
 
-    init {
+    constructor(taxation: Taxation, type: Algorithm.Type, startingCapital: Double, stockName: String, from: Int, to: Int) {
         require(startingCapital >= 0) { "Capital" }
 
         m_StockName = stockName
@@ -124,10 +117,7 @@ class AlgorithmBackTester(
     //===========================================================//
     // Helper Class(es)
 
-    private inner class BackTesterWithTaxationContext(
-        taxation: Taxation?,
-        pair: Pair<List<History>, Algorithm>
-    ) {
+    private inner class BackTesterWithTaxationContext {
         //===========================================================//
         //===========================================================//
         // Private Field(s)
@@ -144,6 +134,13 @@ class AlgorithmBackTester(
 
         private var m_TotalSellsMade: Long = 0
         private var m_WinningTrades: Long = 0
+
+        private val m_CurrentStockCount: Long
+            get() {
+                var count = 0L
+                for (holding in m_Holdings) count += holding.amount
+                return count
+            }
 
         //===========================================================//
         //===========================================================//
@@ -217,7 +214,7 @@ class AlgorithmBackTester(
         fun runOneIteration(currentPrice: Double) {
             val ret = m_Algorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
 
-            var projectedStockCount = currentStockCount
+            var projectedStockCount = m_CurrentStockCount
             if (ret.buy != null) projectedStockCount += ret.buy.amount
             if (ret.sell != null) projectedStockCount -= getSellAmount(ret.sell)
 
@@ -271,18 +268,6 @@ class AlgorithmBackTester(
             m_CapitalHistory.add(m_CurrentCapital + sum)
         }
 
-        val currentStockCount: Long
-            //===========================================================//
-            get() {
-                var count = 0L
-
-                for (holding in m_Holdings) {
-                    count += holding.amount
-                }
-
-                return count
-            }
-
         //===========================================================//
 
         fun getSellAmount(sell: Algorithm.Output.Sell): Long {
@@ -298,7 +283,7 @@ class AlgorithmBackTester(
         //===========================================================//
         // Constructor(s)
 
-        init {
+        constructor(taxation: Taxation?, pair: Pair<List<History>, Algorithm>) {
             m_Taxation = taxation
             m_CurrentCapital = m_StartingCapital
 
