@@ -1,8 +1,8 @@
 package domain.algorithm
 
 import data.SerializationManager
-import domain.stock.History
-import domain.stock.Holding
+import domain.assets.security.SecurityHistory
+import domain.assets.security.SecurityHolding
 import java.io.File
 
 //===========================================================//
@@ -12,7 +12,7 @@ import java.io.File
  */
 //===========================================================//
 
-abstract class Algorithm {
+abstract class TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Public Method(es)
@@ -25,7 +25,7 @@ abstract class Algorithm {
      * @param currentPrice Current market price of the asset.
      * @return AlgorithmOutput containing the decision/results.
      */
-    abstract fun run(holdings: List<Holding>, allocatedCapital: Double, currentPrice: Double): Output
+    abstract fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output
 
     //===========================================================//
     /**
@@ -33,7 +33,7 @@ abstract class Algorithm {
      *
      * @param history - Historical stock data to be incorporated.
      */
-    abstract fun updateHistory(history: History)
+    abstract fun updateHistory(history: SecurityHistory)
 
     companion object {
         //===========================================================//
@@ -46,8 +46,8 @@ abstract class Algorithm {
          * @param to End date (inclusive).
          * @return Pair containing the list of history that was not used up for initialization and the algorithm instance.
          */
-        fun initForBackTest(type: Type, stockName: String, from: Int, to: Int): Pair<List<History>, Algorithm> {
-            return initialiser(type, Algorithm.Init.BACKTEST, stockName, from, to)
+        fun initForBackTest(type: Type, stockName: String, from: Int, to: Int): Pair<List<SecurityHistory>, TradingAlgorithm> {
+            return initialiser(type, TradingAlgorithm.Init.BACKTEST, stockName, from, to)
         }
 
         //===========================================================//
@@ -58,7 +58,7 @@ abstract class Algorithm {
          * @param stockName - Stock identifier/name.
          * @return         Initialized algorithm instance.
          */
-        fun initForTrading(type: Algorithm.Type, stockName: String): Algorithm {
+        fun initForTrading(type: TradingAlgorithm.Type, stockName: String): TradingAlgorithm {
             return initialiser(type, Init.TRADING, stockName, Int.MIN_VALUE, Int.MAX_VALUE).second
         }
 
@@ -68,32 +68,32 @@ abstract class Algorithm {
         /**
          * Core initialization method used by both trading and backtesting setups.
          *
-         * @param type     - Algorithm type.
-         * @param init     - Initialization mode.
-         * @param stockName - Stock identifier/name.
-         * @param from     - Start date (inclusive).
-         * @param to       - End date (inclusive).
-         * @return         Pair of history data and initialized algorithm.
+         * @param type Algorithm type.
+         * @param init Initialization mode.
+         * @param stockName Stock name.
+         * @param from Start date (inclusive).
+         * @param to End date (inclusive).
+         * @return Pair of history data and initialized algorithm.
          */
-        private fun initialiser(type: Type, init: Init, stockName: String, from: Int, to: Int): Pair<List<History>, Algorithm> {
+        private fun initialiser(type: Type, init: Init, stockName: String, from: Int, to: Int): Pair<List<SecurityHistory>, TradingAlgorithm> {
             val retHistory = historyInitialiser(stockName, from, to)
-            val retAlgorithm: Algorithm = when (type) {
+            val retTradingAlgorithm: TradingAlgorithm = when (type) {
                 Type.TACPP46 -> TACPP46(init, retHistory)
             }
-            return Pair(retHistory, retAlgorithm)
+            return Pair(retHistory, retTradingAlgorithm)
         }
 
         //===========================================================//
         /**
          * Loads historical data from files based on the given parameters.
          *
-         * @param stockName - Stock identifier/name.
-         * @param from     - Start date (inclusive).
-         * @param to       - End date (inclusive).
-         * @return         List of historical data entries.
+         * @param stockName Stock name.
+         * @param from Start date (inclusive).
+         * @param to End date (inclusive).
+         * @return List of historical data entries.
          */
-        private fun historyInitialiser(stockName: String, from: Int, to: Int): MutableList<History> {
-            val backtestFiles = File("src/main/resources/backtest/us/").listFiles() ?: error("Backtest directory is missing or not a directory")
+        private fun historyInitialiser(stockName: String, from: Int, to: Int): MutableList<SecurityHistory> {
+            val backtestFiles = File("src/main/resources/backtest/old/us/").listFiles() ?: error("Backtest directory is missing or not a directory")
             val proxy: MutableList<Pair<File, Int>> = ArrayList()
 
             for (file in backtestFiles) {
@@ -109,9 +109,9 @@ abstract class Algorithm {
             // If 'from' and/or 'to' are MIN and/or MAX then we've loaded all, so we don't throw.
             require(!(from != Integer.MIN_VALUE && to != Integer.MAX_VALUE && proxy.size != (to - from + 1))) { "From-To" }
 
-            val ret: MutableList<History> = ArrayList()
+            val ret: MutableList<SecurityHistory> = ArrayList()
             for (item in proxy) {
-                val serData = SerializationManager.loadFromFile(item.first)
+                val serData = SerializationManager.loadFromFileForBackTest(item.first)
                 for (item2 in serData.stockHistory.entries) {
                     ret.addAll(item2.value)
                 }
@@ -150,7 +150,7 @@ abstract class Algorithm {
         val sell: Sell?
     ) {
         data class Buy(val amount: Long)
-        data class Sell(val batches: List<Pair<Holding, Long>>)
+        data class Sell(val batches: List<Pair<SecurityHolding, Long>>)
     }
 
     //===========================================================//

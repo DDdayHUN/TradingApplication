@@ -1,13 +1,14 @@
 package infrastructure.network
 
-import domain.stock.Quote
+import domain.assets.Quote
+import domain.assets.security.SecurityIdentifier
 
 //===========================================================//
 /**
- * Provides market data to the application
- * Implementations can load data from Finnhub
+ * Provides market data to the application.
  */
 //===========================================================//
+
 interface IMarketDataProvider {
-    fun getQuote(symbol: String): Quote
+    fun getQuote(identifier: SecurityIdentifier): Quote
 }

@@ -1,4 +1,4 @@
-package domain.stock
+package domain.assets.security
 
 //===========================================================//
 /**
@@ -9,7 +9,7 @@ package domain.stock
  */
 //===========================================================//
 
-data class Holding(
+data class SecurityHolding(
     val entryPrice: Double,
     val amount: Long
 ) {

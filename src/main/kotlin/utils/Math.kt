@@ -20,11 +20,10 @@ object Math {
     /**
      * Computes the arithmetic mean of a list of numeric values.
      * 
-     * 
      * The list must contain at least one element. The method does not modify
      * the input list.
      * 
-     * @param list - A non-empty list of numeric values.
+     * @param list A non-empty list of numeric values.
      * @return The arithmetic average of the list.
      */
     fun average(list: List<Double>): Double {
@@ -39,11 +38,10 @@ object Math {
     /**
      * Computes the standard deviation of returns derived from a price series.
      * 
-     * 
      * This method converts each consecutive price pair into a simple return.
      * It then computes the sample standard deviation of those returns.
      * 
-     * @param list - A list of prices in chronological order.
+     * @param list A list of prices in chronological order.
      * @return The standard deviation of returns.
      * @throws IllegalArgumentException If fewer than two prices are provided.
      */
@@ -70,9 +68,8 @@ object Math {
      * This method uses the unbiased estimator, dividing by (n - 1). The list
      * must contain at least two elements.
      * 
-     * @param list - A list of numeric values.
+     * @param list A list of numeric values.
      * @return The sample variance of the list.
-     * @throws IllegalArgumentException If the list contains fewer than two values.
      */
     fun variance(list: List<Double>): Double {
         require(list.size >= 2) { "Size" }
@@ -100,9 +97,8 @@ object Math {
      * Consecutive increases contribute to the gain list, while decreases or equal
      * values contribute to the loss list.
      * 
-     * @param list - A list of prices in chronological order.
+     * @param list A list of prices in chronological order.
      * @return The RSI value in the range [0, 100].
-     * @throws IllegalArgumentException If fewer than two prices are provided.
      */
     fun rsi(list: List<Double>): Double {
         require(list.size >= 2) { "RSI: size < 2" }
@@ -142,8 +138,8 @@ object Math {
      * Returns are computed internally as percentage changes between consecutive
      * capital values.
      * 
-     * @param capitalHistory    - A list of portfolio values over time.
-     * @param riskFreeRate      - The annual risk-free rate (e.g., 0.02 for 2%).
+     * @param capitalHistory A list of portfolio values over time.
+     * @param riskFreeRate The annual risk-free rate (e.g., 0.02 for 2%).
      * @return The annualized Sharpe Ratio or NaN if it can't be computed.
      */
     fun sharpeRatio(capitalHistory: List<Double>, riskFreeRate: Double): Double {

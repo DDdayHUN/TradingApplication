@@ -1,11 +1,11 @@
 package application.backtest
 
 import application.signal.SignalGenerator
-import domain.algorithm.Algorithm
+import domain.algorithm.TradingAlgorithm
 import domain.signal.TradingSignal
-import domain.stock.History
-import domain.stock.Holding
-import domain.tax.Taxation
+import domain.assets.security.SecurityHistory
+import domain.assets.security.SecurityHolding
+import domain.tax.ITaxation
 
 //===========================================================//
 /**
@@ -13,7 +13,7 @@ import domain.tax.Taxation
  * over historical market data.
  * 
  * 
- * It runs a specified [Algorithm] over a defined time range for a given stock,
+ * It runs a specified [TradingAlgorithm] over a defined time range for a given stock,
  * tracks virtual m_Holdings, capital changes, and performance metrics such as total trades and win rate.
  * 
  * 
@@ -36,7 +36,7 @@ class AlgorithmBackTester {
     private val m_To: Int
 
     private val m_StartingCapital: Double
-    private val m_Type: Algorithm.Type
+    private val m_Type: TradingAlgorithm.Type
 
     private val m_WithoutTax: BackTesterWithTaxationContext
     private val m_WithTax: BackTesterWithTaxationContext
@@ -49,8 +49,8 @@ class AlgorithmBackTester {
     // Public Method(es)
 
     fun runBackTest() {
-        m_WithoutTax.reset(Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To))
-        m_WithTax.reset(Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To))
+        m_WithoutTax.reset()
+        m_WithTax.reset()
         m_WithoutTax.runBackTest()
         m_WithTax.runBackTest()
         display(false)
@@ -59,8 +59,8 @@ class AlgorithmBackTester {
     //===========================================================//
 
     fun runBackTestWithDebug() {
-        m_WithoutTax.reset(Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To))
-        m_WithTax.reset(Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To))
+        m_WithoutTax.reset()
+        m_WithTax.reset()
         m_WithoutTax.runBackTest()
         m_WithTax.runBackTest()
         display(true)
@@ -96,7 +96,7 @@ class AlgorithmBackTester {
     //===========================================================//
     // Constructor(s)
 
-    constructor(taxation: Taxation, type: Algorithm.Type, startingCapital: Double, stockName: String, from: Int, to: Int) {
+    constructor(taxation: ITaxation, type: TradingAlgorithm.Type, startingCapital: Double, stockName: String, from: Int, to: Int) {
         require(startingCapital >= 0) { "Capital" }
 
         m_StockName = stockName
@@ -106,8 +106,8 @@ class AlgorithmBackTester {
         m_StartingCapital = startingCapital
         m_Type = type
 
-        m_WithoutTax = BackTesterWithTaxationContext(null, Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To))
-        m_WithTax = BackTesterWithTaxationContext(taxation, Algorithm.initForBackTest(m_Type, m_StockName, m_From, m_To))
+        m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_From, m_To))
+        m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_From, m_To))
 
         m_SignalGenerator = SignalGenerator()
         m_Signlas = ArrayList()
@@ -122,12 +122,12 @@ class AlgorithmBackTester {
         //===========================================================//
         // Private Field(s)
 
-        private val m_Taxation: Taxation?
+        private val m_Taxation: ITaxation?
 
-        private var m_Algorithm: Algorithm
-        private var m_HistoryWeRunAgainst: List<History>
+        private var m_TradingAlgorithm: TradingAlgorithm
+        private var m_HistoryWeRunAgainst: List<SecurityHistory>
 
-        private val m_Holdings: MutableList<Holding>
+        private val m_Holdings: MutableList<SecurityHolding>
         private val m_CapitalHistory: MutableList<Double>
 
         private var m_CurrentCapital: Double
@@ -150,14 +150,16 @@ class AlgorithmBackTester {
             for (history in m_HistoryWeRunAgainst) {
                 val currentPrice = history.closingPrice
                 runOneIteration(currentPrice)
-                m_Algorithm.updateHistory(history)
+                m_TradingAlgorithm.updateHistory(history)
             }
         }
 
         //===========================================================//
 
-        fun reset(pair: Pair<List<History>, Algorithm>) {
-            m_Algorithm = pair.second
+        fun reset() {
+            val pair = TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_From, m_To)
+
+            m_TradingAlgorithm = pair.second
             m_HistoryWeRunAgainst = pair.first
 
             m_Holdings.clear()
@@ -216,7 +218,7 @@ class AlgorithmBackTester {
         // Private Method(es)
 
         fun runOneIteration(currentPrice: Double) {
-            val ret = m_Algorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
+            val ret = m_TradingAlgorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
 
             var projectedStockCount = m_CurrentStockCount
             if (ret.buy != null) projectedStockCount += ret.buy.amount
@@ -236,7 +238,7 @@ class AlgorithmBackTester {
 
             if (ret.buy != null) {
                 m_CurrentCapital -= ret.buy.amount * currentPrice
-                m_Holdings.add(Holding(currentPrice, ret.buy.amount))
+                m_Holdings.add(SecurityHolding(currentPrice, ret.buy.amount))
             }
 
             if (ret.sell != null) {
@@ -256,7 +258,7 @@ class AlgorithmBackTester {
                     }
 
                     if (amount != bought.amount) m_Holdings.add(
-                        Holding(
+                        SecurityHolding(
                             bought.entryPrice,
                             bought.amount - amount
                         )
@@ -274,7 +276,7 @@ class AlgorithmBackTester {
 
         //===========================================================//
 
-        fun getSellAmount(sell: Algorithm.Output.Sell): Long {
+        fun getSellAmount(sell: TradingAlgorithm.Output.Sell): Long {
             var amount = 0L
             for (batch in sell.batches) {
                 amount += batch.second
@@ -287,11 +289,11 @@ class AlgorithmBackTester {
         //===========================================================//
         // Constructor(s)
 
-        constructor(taxation: Taxation?, pair: Pair<List<History>, Algorithm>) {
+        constructor(taxation: ITaxation?, pair: Pair<List<SecurityHistory>, TradingAlgorithm>) {
             m_Taxation = taxation
             m_CurrentCapital = m_StartingCapital
 
-            m_Algorithm = pair.second
+            m_TradingAlgorithm = pair.second
 
             m_HistoryWeRunAgainst = pair.first
             m_Holdings = ArrayList()
