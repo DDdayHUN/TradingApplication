@@ -188,6 +188,7 @@ class AlgorithmBackTester {
 
             println("    Profit: " + String.format("%.2f", profit))
             println("    Return: " + String.format("%.2f", percent) + "%")
+            println("    Revenue: " + String.format("%.2f", profit + m_StartingCapital))
             println()
 
             println("    Total Sells Made: $m_TotalSellsMade")

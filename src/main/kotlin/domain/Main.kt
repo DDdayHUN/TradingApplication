@@ -10,8 +10,8 @@ fun main() {
     val BT = AlgorithmBackTester(
         ITaxation.HUNGARY,
         TradingAlgorithm.Type.TACPP46,
-        10000.0,
-        "Cloudflare",
+        3000.0,
+        "Apple",
         20,
         24)
     BT.runBackTest()

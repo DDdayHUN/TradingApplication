@@ -46,16 +46,14 @@ class FinnhubClient {
 
     /**
      * Gets the latest quote for a given stock symbol.
-     * 
-     * @param symbol stock ticker symbol, for example "NET", "AAPL", "MSFT"
+     *
      * @return latest quote as a clean domain object
      */
 
     fun getQuote(identifier: SecurityIdentifier): Result<FinnhubQuoteDto> {
         val encodedSymbol = getSymbol(identifier.isin).getOrNull()
-        val url = m_Config.baseUrl + "/quote?symbol=" + encodedSymbol
 
-        val request = httpRequestBuilder(url, s_HEADER_NAME, m_Config.timeout, m_Config.apiKey)
+        val request = httpRequestBuilder(m_Config.baseUrl + "/quote?symbol=" + encodedSymbol, s_HEADER_NAME, m_Config.timeout, m_Config.apiKey)
 
         val response: HttpResponse<String?> = m_HttpClient.send(
             request,
@@ -90,9 +88,8 @@ class FinnhubClient {
      */
     private fun getSymbol(isin: String): Result<String> {
         val encodedIsin = URLEncoder.encode(isin, StandardCharsets.UTF_8)
-        val url = m_Config.baseUrl + "/search?q=" + encodedIsin
 
-        val request = httpRequestBuilder(url, s_HEADER_NAME, m_Config.timeout, m_Config.apiKey)
+        val request = httpRequestBuilder(m_Config.baseUrl + "/search?q=" + encodedIsin, s_HEADER_NAME, m_Config.timeout, m_Config.apiKey)
 
         val response : HttpResponse<String?> = m_HttpClient.send(
             request,
