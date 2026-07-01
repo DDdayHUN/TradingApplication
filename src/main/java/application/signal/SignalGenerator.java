@@ -4,6 +4,8 @@ import domain.algorithm.Algorithm;
 import domain.signal.TradingSignal;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 //===========================================================//
 /**
@@ -16,9 +18,11 @@ public final class SignalGenerator {
    //===========================================================//
    // Public Method(es)
 
-   public TradingSignal createSignal(final String symbol, final Algorithm.Output output, final double availableCapital, final double currentPrice, final long currentStockCount) {
+   public List<TradingSignal> createSignal(final String symbol, final Algorithm.Output output, final double availableCapital, final double currentPrice, final long currentStockCount) {
+      final List<TradingSignal> ret = new ArrayList<>();
+
       if (output.buy() != null) {
-         return new TradingSignal(
+         ret.add(new TradingSignal(
            symbol,
            TradingSignal.Action.BUY,
            calculateBuyStrength(
@@ -31,7 +35,7 @@ public final class SignalGenerator {
            currentStockCount,
            "Algorithm generated a buy signal.",
            Instant.now()
-         );
+         ));
       }
 
       if (output.sell() != null) {
@@ -41,7 +45,7 @@ public final class SignalGenerator {
                                      .mapToLong(batch -> batch.second)
                                      .sum();
 
-         return new TradingSignal(
+         ret.add(new TradingSignal(
            symbol,
            TradingSignal.Action.SELL,
            TradingSignal.Strength.MEDIUM,
@@ -50,10 +54,12 @@ public final class SignalGenerator {
            currentStockCount,
            "Algorithm generated a sell signal.",
            Instant.now()
-         );
+         ));
       }
 
-      return new TradingSignal(
+      if(!ret.isEmpty()) return ret;
+
+      ret.add(new TradingSignal(
         symbol,
         TradingSignal.Action.HOLD,
         TradingSignal.Strength.LOW,
@@ -62,7 +68,9 @@ public final class SignalGenerator {
         currentStockCount,
         "No buy or sell signal was generated.",
         Instant.now()
-      );
+      ));
+
+      return ret;
    }
 
    //===========================================================//
