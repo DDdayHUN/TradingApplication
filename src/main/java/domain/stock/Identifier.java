@@ -9,8 +9,8 @@ package domain.stock;
  * while the exchange and symbol define its specific listing context.
  *
  * @param isin - the 12-character International Securities Identification Number (ISIN).
- * @param exchange - the exchange code where the instrument is traded.
- * @param symbol - the ticker symbol of the instrument on the given exchange.
+ * @param mic- the market identifier code where the instrument is traded.
+ * @param tickerSymbol - the ticker symbol of the instrument on the given exchange.
  */
 //===========================================================//
 
