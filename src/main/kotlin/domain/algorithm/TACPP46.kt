@@ -125,7 +125,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
     //===========================================================//
     //===========================================================//
     // Constructor(s)
-    
+
     /**
      * Java equivalent of C++ Init::Init_EMA(q0, q1).
      * q0: first slidingWindow prices

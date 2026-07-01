@@ -145,6 +145,7 @@ class AlgorithmBackTester {
         //===========================================================//
         //===========================================================//
         // Public Method(es)
+
         fun runBackTest() {
             for (history in m_HistoryWeRunAgainst) {
                 val currentPrice = history.closingPrice
@@ -154,6 +155,7 @@ class AlgorithmBackTester {
         }
 
         //===========================================================//
+
         fun reset(pair: Pair<List<History>, Algorithm>) {
             m_Algorithm = pair.second
             m_HistoryWeRunAgainst = pair.first
@@ -167,6 +169,7 @@ class AlgorithmBackTester {
         }
 
         //===========================================================//
+
         fun display() {
             require(!m_CapitalHistory.isEmpty()) { "m_CapitalHistory is empty" }
 
@@ -197,6 +200,7 @@ class AlgorithmBackTester {
         }
 
         //===========================================================//
+
         fun displayDebugInfo() {
             println("    DEBUG:")
             print("  Holding: ")

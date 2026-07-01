@@ -8,10 +8,10 @@ package domain.stock
  * The ISIN provides a globally unique identifier for the security,
  * while the exchange and symbol define its specific listing context.
  * 
- * @param isin - the 12-character International Securities Identification Number (ISIN).
- * @param mic - the market identifier code where the instrument is traded.
- * @param tickerSymbol - the ticker symbol of the instrument on the given exchange.
- * @param currency - the currency in which the given instrument is traded at.
+ * @param isin  the 12-character International Securities Identification Number (ISIN).
+ * @param mic the market identifier code where the instrument is traded.
+ * @param tickerSymbol the ticker symbol of the instrument on the given exchange.
+ * @param currency the currency in which the given instrument is traded at.
  */
 //===========================================================//
 
