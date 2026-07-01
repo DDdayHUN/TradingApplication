@@ -250,8 +250,8 @@ class AlgorithmBackTester {
 
                     if (m_Taxation == null) m_CurrentCapital += amount * currentPrice
                     else {
-                        val revenue: Double = amount * currentPrice
-                        val costBasis: Double = amount * bought.entryPrice
+                        val revenue = amount * currentPrice
+                        val costBasis = amount * bought.entryPrice
                         m_CurrentCapital += m_Taxation.calculateRevenueAfterTax(revenue, costBasis)
                     }
 
