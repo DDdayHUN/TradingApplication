@@ -4,8 +4,8 @@ package domain.stock
 /**
  * Represents a stock holding in a portfolio.
  * 
- * @param entryPrice - the average purchase price per share.
- * @param amount - the number of shares held.
+ * @param entryPrice the average purchase price per share.
+ * @param amount the number of shares held.
  */
 //===========================================================//
 
