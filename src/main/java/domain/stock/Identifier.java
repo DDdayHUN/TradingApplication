@@ -21,8 +21,9 @@ public record Identifier(
     String currency
 ) {
     public Identifier {
-        if(isin.length() != 12) throw new IllegalArgumentException("ISIN");
-        if(exchange.isBlank()) throw new IllegalArgumentException("Exchange");
-        if(symbol.isBlank()) throw new IllegalArgumentException("Symbol");
+        if(isin == null || !isin.matches("[A-Za-z]{2}[A-Za-z0-9]{9}[0-9]")) throw new IllegalArgumentException("ISIN");
+        if(mic == null || !mic.matches("[A-Za-z0-9]{4}")) throw new IllegalArgumentException("MIC");
+        if(tickerSymbol == null || tickerSymbol.isBlank()) throw new IllegalArgumentException("Ticker Symbol");
+        if(currency == null || !currency.matches("[A-Za-z]{3}")) throw new IllegalArgumentException("Currency");
     }
 }
