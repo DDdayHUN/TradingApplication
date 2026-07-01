@@ -1,8 +1,8 @@
 package infrastructure.network.finnhub
 
-import domain.stock.Quote
+import domain.assets.Quote
+import domain.assets.security.SecurityIdentifier
 import infrastructure.network.IMarketDataProvider
-import java.io.IOException
 
 //===========================================================//
 /**
@@ -12,8 +12,9 @@ import java.io.IOException
 class FinnhubMarketDataProvider(
     private val client: FinnhubClient
 ) : IMarketDataProvider {
-    @Throws(IOException::class, InterruptedException::class)
-    override fun getQuote(symbol: String): Quote {
-        return client.getQuote(symbol)
+    override fun getQuote(identifier: SecurityIdentifier): Quote {
+        return client.getQuote(identifier)
+            .getOrThrow()
+            .toDomain()
     }
 }

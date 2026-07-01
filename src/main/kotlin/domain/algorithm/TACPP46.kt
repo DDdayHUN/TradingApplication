@@ -1,25 +1,25 @@
 package domain.algorithm
 
-import domain.stock.History
-import domain.stock.Holding
+import domain.assets.security.SecurityHistory
+import domain.assets.security.SecurityHolding
 import java.util.ArrayDeque
 import java.util.Deque
 
 //===========================================================//
 /**
- * An implementation of [Algorithm].
+ * An implementation of [TradingAlgorithm].
  */
 //===========================================================//
 
-internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(init) {
+internal class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : TradingAlgorithm(init) {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
     private val m_EmaHistory: Deque<Double> = ArrayDeque()
 
-    private val m_TrailingHigh: MutableMap<Holding, Double> = HashMap()
-    private val m_MarkedForSelling: MutableList<Holding> = ArrayList()
+    private val m_TrailingHigh: MutableMap<SecurityHolding, Double> = HashMap()
+    private val m_MarkedForSelling: MutableList<SecurityHolding> = ArrayList()
 
     private val m_LastInputArr: Deque<Double> = ArrayDeque()
 
@@ -27,7 +27,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
     //===========================================================//
     // Public Method(es)
     
-    override fun run(holdings: List<Holding>, allocatedCapital: Double, currentPrice: Double): Output {
+    override fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output {
         var buy: Output.Buy? = null
         var sell: Output.Sell? = null
 
@@ -62,7 +62,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
         val risk: Double = Math.clamp(std * 100.0, 0.05, 0.2) // to put it into percentages
 
         // Sell
-        val toBeSold: MutableList<Pair<Holding, Long>> = ArrayList()
+        val toBeSold: MutableList<Pair<SecurityHolding, Long>> = ArrayList()
 
         // Trailing-profit logic
         for (item in holdings) {
@@ -112,7 +112,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
 
     //===========================================================//
 
-    override fun updateHistory(history: History) {
+    override fun updateHistory(history: SecurityHistory) {
         val alpha = 2.0 / (m_EmaHistory.size + 1.0)
         val last = m_EmaHistory.peekLast()
 
@@ -136,8 +136,8 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
         val SW = 21
         require(emaInit.size >= 2 * SW) { "Init EMA: not enough history for Initialisation" }
 
-        val historyQ0: List<History>
-        val historyQ1: List<History>
+        val historyQ0: List<SecurityHistory>
+        val historyQ1: List<SecurityHistory>
         when (init) {
             Init.TRADING -> {
                 val n = emaInit.size

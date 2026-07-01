@@ -2,8 +2,7 @@ package infrastructure.network.finnhub
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import domain.stock.Quote
-import infrastructure.network.finnhub.dto.FinnhubQuoteDto
+import domain.assets.security.SecurityIdentifier
 import java.io.IOException
 import java.net.URI
 import java.net.URLEncoder
@@ -49,11 +48,8 @@ class FinnhubClient {
      * @throws IOException
      * @throws InterruptedException
      */
-    @Throws(IOException::class, InterruptedException::class)
-    fun getQuote(symbol: String): Quote {
-        require(!symbol.isEmpty()) { "Empty" }
-
-        val encodedSymbol = URLEncoder.encode(symbol, StandardCharsets.UTF_8)
+    fun getQuote(identifier: SecurityIdentifier): Result<FinnhubQuote> {
+        val encodedSymbol = URLEncoder.encode("identifier.tickerSymbol", StandardCharsets.UTF_8)
         val url = m_Config.baseUrl + "/quote?symbol=" + encodedSymbol
 
         val request = HttpRequest.newBuilder()
@@ -68,23 +64,20 @@ class FinnhubClient {
             HttpResponse.BodyHandlers.ofString()
         )
 
-        if (response.statusCode() < 200 || response.statusCode() >= 300) {
-            throw IOException(
-                ("Finnhub request failed. Status: " + response.statusCode()
-                        + " Body: " + response.body())
-            )
+        if (response.statusCode() !in 200..<300) {
+            return Result.failure(IOException("Unexpected error"))
         }
 
-        val dto = s_GSON.fromJson(
+        val dto: FinnhubQuote? = s_GSON.fromJson(
             response.body(),
-            FinnhubQuoteDto::class.java
+            FinnhubQuote::class.java
         )
 
         if (dto == null) {
-            throw IOException("Finnhub returned an empty quote response")
+            return Result.failure(IOException("Finnhub returned an empty quote response"))
         }
 
-        return dto.toDomain(symbol)
+        return Result.success(dto)
     }
 
     /*===================================================*/

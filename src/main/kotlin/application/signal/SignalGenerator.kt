@@ -1,12 +1,12 @@
 package application.signal
 
-import domain.algorithm.Algorithm
+import domain.algorithm.TradingAlgorithm
 import domain.signal.TradingSignal
 import java.time.Instant
 
 //===========================================================//
 /**
- * Converts algorithm outputs [Algorithm.Output] into final trading signals [TradingSignal].
+ * Converts algorithm outputs [TradingAlgorithm.Output] into final trading signals [TradingSignal].
  */
 //===========================================================//
 
@@ -15,7 +15,7 @@ class SignalGenerator {
     //===========================================================//
     // Public Method(es)
 
-    fun createSignal(symbol: String, output: Algorithm.Output, availableCapital: Double, currentPrice: Double, currentStockCount: Long): List<TradingSignal> {
+    fun createSignal(symbol: String, output: TradingAlgorithm.Output, availableCapital: Double, currentPrice: Double, currentStockCount: Long): List<TradingSignal> {
         val ret: MutableList<TradingSignal> = ArrayList()
 
         if (output.buy != null) {

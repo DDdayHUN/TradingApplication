@@ -1,14 +1,14 @@
-package infrastructure.network.finnhub.dto
+package infrastructure.network.finnhub
 
-import domain.stock.Quote
+import domain.assets.Quote
 
 //===========================================================//
 /**
  * Data Transfer Object for Finnhub quote response.
- * 
- * 
+ *
+ *
  * This record represents the raw response format returned by Finnhub.
- * 
+ *
  * @param c current price
  * @param d change
  * @param dp percent change
@@ -19,7 +19,7 @@ import domain.stock.Quote
  */
 //===========================================================//
 
-data class FinnhubQuoteDto(
+data class FinnhubQuote(
     val c: Double,
     val d: Double,
     val dp: Double,
@@ -28,17 +28,9 @@ data class FinnhubQuoteDto(
     val o: Double,
     val pc: Double
 ) {
-    fun toDomain(symbol: String): Quote {
+    fun toDomain(): Quote {
         return Quote(
-            symbol,
             c,
-            d,
-            dp,
-            h,
-            l,
-            o,
-            pc,
-            System.currentTimeMillis()
         )
     }
 }

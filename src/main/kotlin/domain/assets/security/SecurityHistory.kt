@@ -1,4 +1,4 @@
-package domain.stock
+package domain.assets.security
 
 //===========================================================//
 /**
@@ -8,7 +8,7 @@ package domain.stock
  */
 //===========================================================//
 
-data class History(
+data class SecurityHistory(
     val closingPrice: Double
 ) {
     init {

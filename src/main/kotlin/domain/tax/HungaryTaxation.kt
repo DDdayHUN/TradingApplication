@@ -4,13 +4,13 @@ import kotlin.math.abs
 
 //===========================================================//
 /**
- * An implementation of [Taxation].
+ * An implementation of [ITaxation].
  */
 //===========================================================//
 // TODO : Ellenőrizni mégegyszer, hogy legálisan ezek tényleg így vannak-e, meg logikailag is.
 // NOTE : Ez nem teljesen igaz a magyar rendszerre, de asszem ha jól olvastam az elmúlt 3 évben deducable a stock loss, de az accumulated losses-hez kéne egy timer.
 //        Egy szó mint száz: Ez egy szar és majd újra kell gondolni, megbeszélni, de most egyenlőre jó lesz, cuz I fucking don't care XDD.
-internal class HungaryTaxation : Taxation() {
+internal class HungaryTaxation : ITaxation {
     //===========================================================//
     //===========================================================//
     // Private Field(s)

@@ -25,16 +25,8 @@ object SerializationManager {
     //===========================================================//
     // Public Interface(s)
 
-    fun saveToFile(file: File, serData: SerializationData?) {
-        if (!file.exists()) file.createNewFile()
-        OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8).use { writer ->
-            s_GSON.toJson(serData, writer)
-        }
-    }
-
-    //===========================================================//
-
-    fun loadFromFile(file: File): SerializationData {
+    @Deprecated("This only used for old serialized data")
+    fun loadFromFileForBackTest(file: File): SerializationData {
         InputStreamReader(FileInputStream(file), StandardCharsets.UTF_8).use { reader ->
             return s_GSON.fromJson(reader, SerializationData::class.java)
         }

@@ -1,5 +1,6 @@
 package infrastructure.network.finnhub
 
+import domain.assets.security.SecurityIdentifier
 import java.io.IOException
 
 class FinnhubTester {
@@ -8,19 +9,12 @@ class FinnhubTester {
     private val m_provider: FinnhubMarketDataProvider
 
     @Throws(IOException::class, InterruptedException::class)
-    fun runFinnhubTester(symbol: String) {
+    fun runFinnhubTester(identifier: SecurityIdentifier) {
         try {
-            val quote = m_provider.getQuote(symbol)
+            val quote = m_provider.getQuote(identifier)
 
-            println("Symbol: " + quote.symbol)
+            println("Symbol: " + "identifier.tickerSymbol")
             println("Current Price: " + quote.currentPrice)
-            println("Change: " + quote.change)
-            println("Percent Change: " + quote.percentChange + "%")
-            println("High: " + quote.highPrice)
-            println("Low: " + quote.lowPrice)
-            println("Open: " + quote.openPrice)
-            println("Previous Close: " + quote.prevClosePrice)
-            println("Received at: " + quote.formattedReceivedAt)
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
