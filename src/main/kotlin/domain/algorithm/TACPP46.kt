@@ -26,7 +26,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
     //===========================================================//
     //===========================================================//
     // Public Method(es)
-
+    
     override fun run(holdings: List<Holding>, allocatedCapital: Double, currentPrice: Double): Output {
         var buy: Output.Buy? = null
         var sell: Output.Sell? = null
