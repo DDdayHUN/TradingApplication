@@ -1,6 +1,5 @@
 package domain.tax
 
-import domain.tax.Taxation
 import kotlin.math.abs
 
 //===========================================================//
@@ -16,13 +15,14 @@ internal class HungaryTaxation : Taxation() {
     //===========================================================//
     // Private Field(s)
 
-    private var accumulatedLosses: Double = 0.0
-    private val SZJA: Double = 0.15
-    private val SZOCHO: Double = 0.13
+    private var m_AccumulatedLosses: Double = 0.0
+    private val m_SZJA: Double = 0.15
+    private val m_SZOCHO: Double = 0.13
 
     //===========================================================//
     //===========================================================//
     // Public Method(es)
+
     /**
      * SOURCE : https://bankmonitor.hu/mediatar/cikk/befekteteseid-adozasa-2025-ben-10-fontos-tudnivalo/
      * Ellenőrzött tőkepiaci ügylet (pl. tőzsdei részvény eladásából származó nyereség): 15% személyi jövedelemadót (SZJA) kell fizetni, és nincs szociális hozzájárulási adó (SZOCHO).
@@ -31,22 +31,22 @@ internal class HungaryTaxation : Taxation() {
         val profitOrLoss = revenue - costBasis
 
         if (profitOrLoss < 0) {
-            accumulatedLosses += abs(profitOrLoss)
+            m_AccumulatedLosses += abs(profitOrLoss)
             return revenue
         }
 
         var taxableProfit = profitOrLoss
 
-        if (accumulatedLosses > 0) {
-            if (taxableProfit >= accumulatedLosses) {
-                taxableProfit -= accumulatedLosses
-                accumulatedLosses = 0.0
+        if (m_AccumulatedLosses > 0) {
+            if (taxableProfit >= m_AccumulatedLosses) {
+                taxableProfit -= m_AccumulatedLosses
+                m_AccumulatedLosses = 0.0
             } else {
-                accumulatedLosses -= taxableProfit
+                m_AccumulatedLosses -= taxableProfit
                 taxableProfit = 0.0
             }
         }
 
-        return revenue - taxableProfit * SZJA
+        return revenue - taxableProfit * m_SZJA
     }
 }

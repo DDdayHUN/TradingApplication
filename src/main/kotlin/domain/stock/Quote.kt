@@ -41,7 +41,7 @@ data class Quote(
     val prevClosePrice: Double,
     val receivedAtMillis: Long
 ) {
-    val formattedReceivedAt = s_Formatter.format(Instant.ofEpochMilli(receivedAtMillis))
+    val formattedReceivedAt: String = s_Formatter.format(Instant.ofEpochMilli(receivedAtMillis))
 
     companion object {
         private val s_Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")

@@ -1,7 +1,6 @@
 package domain.stock
 
 //===========================================================//
-
 /**
  * Represents the historical data of a stock for a single trading day.
  * 

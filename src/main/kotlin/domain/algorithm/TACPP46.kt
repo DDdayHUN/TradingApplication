@@ -16,12 +16,12 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
     //===========================================================//
     // Private Field(s)
 
-    private val emaHistory: Deque<Double> = ArrayDeque()
+    private val m_EmaHistory: Deque<Double> = ArrayDeque()
 
-    private val trailingHigh: MutableMap<Holding, Double> = HashMap()
-    private val markedForSelling: MutableList<Holding> = ArrayList()
+    private val m_TrailingHigh: MutableMap<Holding, Double> = HashMap()
+    private val m_MarkedForSelling: MutableList<Holding> = ArrayList()
 
-    private val lastInputArr: Deque<Double> = ArrayDeque()
+    private val m_LastInputArr: Deque<Double> = ArrayDeque()
 
     //===========================================================//
     //===========================================================//
@@ -31,7 +31,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
         var buy: Output.Buy? = null
         var sell: Output.Sell? = null
 
-        val ema: List<Double> = ArrayList(emaHistory)
+        val ema: List<Double> = ArrayList(m_EmaHistory)
         val std: Double = utils.Math.stdDev(ema)
         val rsi: Double = utils.Math.rsi(ema)
         val ma: Double = utils.Math.average(ema)
@@ -40,9 +40,9 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
 
         // Buy
         if (rsi <= 30.0 && currentPrice <= lowerBand) {
-            if (lastInputArr.isEmpty()) {
-                lastInputArr.add(currentPrice)
-            } else if (utils.Math.average(ArrayList(lastInputArr)) <= currentPrice) {
+            if (m_LastInputArr.isEmpty()) {
+                m_LastInputArr.add(currentPrice)
+            } else if (utils.Math.average(ArrayList(m_LastInputArr)) <= currentPrice) {
                 val confidence = Math.clamp(
                     ((1.0 - std * 100.0) + (100.0 - rsi) / 100.0) / 2.0,
                     0.0,
@@ -52,11 +52,11 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
 
                 if (amount != 0L) buy = Output.Buy(amount)
             } else {
-                lastInputArr.add(currentPrice)
-                if (lastInputArr.size > 5) lastInputArr.poll()
+                m_LastInputArr.add(currentPrice)
+                if (m_LastInputArr.size > 5) m_LastInputArr.poll()
             }
         } else {
-            lastInputArr.clear()
+            m_LastInputArr.clear()
         }
 
         val risk: Double = Math.clamp(std * 100.0, 0.05, 0.2) // to put it into percentages
@@ -66,22 +66,22 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
 
         // Trailing-profit logic
         for (item in holdings) {
-            var isMarked = markedForSelling.contains(item)
+            var isMarked = m_MarkedForSelling.contains(item)
 
             // Activate trailing if gained > risk
             if (!isMarked && currentPrice > item.entryPrice * (1.0 + risk)) {
-                markedForSelling.add(item)
-                trailingHigh[item] = currentPrice
+                m_MarkedForSelling.add(item)
+                m_TrailingHigh[item] = currentPrice
                 isMarked = true
             }
 
             if (isMarked) {
-                var high: Double = trailingHigh.getOrDefault(item, currentPrice)
+                var high: Double = m_TrailingHigh.getOrDefault(item, currentPrice)
 
                 // Update trailing high if still rising
                 if (currentPrice > high) {
                     high = currentPrice
-                    trailingHigh[item] = high
+                    m_TrailingHigh[item] = high
                 }
 
                 // Sell if price falls more than risk from peak
@@ -89,8 +89,8 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
                     toBeSold.add(Pair(item, item.amount))
 
                     // cleanup
-                    markedForSelling.remove(item)
-                    trailingHigh.remove(item)
+                    m_MarkedForSelling.remove(item)
+                    m_TrailingHigh.remove(item)
                 }
             }
         }
@@ -101,8 +101,8 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
                 toBeSold.add(Pair(item, item.amount))
 
                 // cleanup
-                markedForSelling.remove(item)
-                trailingHigh.remove(item)
+                m_MarkedForSelling.remove(item)
+                m_TrailingHigh.remove(item)
             }
         }
 
@@ -113,13 +113,13 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
     //===========================================================//
 
     override fun updateHistory(history: History) {
-        val alpha = 2.0 / (emaHistory.size + 1.0)
-        val last = emaHistory.peekLast()
+        val alpha = 2.0 / (m_EmaHistory.size + 1.0)
+        val last = m_EmaHistory.peekLast()
 
         val newEma = alpha * history.closingPrice + (1.0 - alpha) * last
 
-        emaHistory.pollFirst()
-        emaHistory.addLast(newEma)
+        m_EmaHistory.pollFirst()
+        m_EmaHistory.addLast(newEma)
     }
 
     //===========================================================//
@@ -160,9 +160,9 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
 
         for (price in q1) {
             ema = alpha * price + (1.0 - alpha) * ema
-            emaHistory.add(ema)
+            m_EmaHistory.add(ema)
         }
 
-        check(!emaHistory.isEmpty()) { "EMA is Empty" }
+        check(!m_EmaHistory.isEmpty()) { "EMA is Empty" }
     }
 }
