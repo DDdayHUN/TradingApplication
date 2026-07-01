@@ -76,9 +76,9 @@ abstract class Algorithm {
          * @return         Pair of history data and initialized algorithm.
          */
         private fun initialiser(type: Type, init: Init, stockName: String, from: Int, to: Int): Pair<List<History>, Algorithm> {
-            val retHistory: List<History> = historyInitialiser(stockName, from, to)
+            val retHistory = historyInitialiser(stockName, from, to)
             val retAlgorithm: Algorithm = when (type) {
-                Type.TACPP46 -> TACPP46(init, retHistory.toMutableList())
+                Type.TACPP46 -> TACPP46(init, retHistory)
             }
             return Pair(retHistory, retAlgorithm)
         }
@@ -92,7 +92,7 @@ abstract class Algorithm {
          * @param to       - End date (inclusive).
          * @return         List of historical data entries.
          */
-        private fun historyInitialiser(stockName: String, from: Int, to: Int): List<History> {
+        private fun historyInitialiser(stockName: String, from: Int, to: Int): MutableList<History> {
             val backtestFiles = File("src/main/resources/backtest/us/").listFiles() ?: error("Backtest directory is missing or not a directory")
             val proxy: MutableList<Pair<File, Int>> = ArrayList()
 

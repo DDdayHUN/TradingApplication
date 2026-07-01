@@ -140,14 +140,14 @@ internal class TACPP46(init: Init, emaInit: MutableList<History>) : Algorithm(in
         when (init) {
             Init.TRADING -> {
                 val n = emaInit.size
-                historyQ0 = ArrayList(emaInit.subList(n - 2 * SW, n - SW))
-                historyQ1 = ArrayList(emaInit.subList(n - SW, n))
+                historyQ0 = emaInit.subList(n - 2 * SW, n - SW).toList()
+                historyQ1 = emaInit.subList(n - SW, n).toList()
                 emaInit.subList(n - 2 * SW, n).clear()
             }
 
             Init.BACKTEST -> {
-                historyQ0 = ArrayList(emaInit.subList(0, SW))
-                historyQ1 = ArrayList(emaInit.subList(SW, 2 * SW))
+                historyQ0 = emaInit.subList(0, SW).toList()
+                historyQ1 = emaInit.subList(SW, 2 * SW).toList()
                 emaInit.subList(0, 2 * SW).clear()
             }
         }
