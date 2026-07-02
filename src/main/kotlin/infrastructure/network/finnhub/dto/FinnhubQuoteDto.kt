@@ -1,4 +1,4 @@
-package infrastructure.network.finnhub
+package infrastructure.network.finnhub.dto
 
 import domain.assets.Quote
 
@@ -19,7 +19,7 @@ import domain.assets.Quote
  */
 //===========================================================//
 
-data class FinnhubQuote(
+data class FinnhubQuoteDto(
     val c: Double,
     val d: Double,
     val dp: Double,

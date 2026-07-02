@@ -2,12 +2,15 @@ package infrastructure.network.finnhub
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonSyntaxException
+import com.sun.tools.javac.tree.DCTree.isBlank
 import domain.assets.security.SecurityIdentifier
+import infrastructure.network.finnhub.dto.FinnhubQuoteDto
+import infrastructure.network.finnhub.dto.FinnhubSymbolDto
+import infrastructure.network.httpGetRequestBuilder
 import java.io.IOException
-import java.net.URI
 import java.net.URLEncoder
 import java.net.http.HttpClient
-import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 
@@ -21,18 +24,18 @@ import java.nio.charset.StandardCharsets
  */
 //===========================================================//
 
-class FinnhubClient {
-    /*===================================================*/
-    /*===================================================*/
-    // Private Field(s)
-
-    private val m_Config: FinnhubConfig
-    private val m_HttpClient: HttpClient
-
+class FinnhubClient (
+    private val m_Config: FinnhubConfig,
+    private val m_HttpClient: HttpClient = HttpClient.newHttpClient(),
+)
+{
     companion object {
         private val s_GSON: Gson = GsonBuilder()
             .setPrettyPrinting()
             .create()
+        private val s_HEADER_NAME = "X-Finnhub-Token"
+        private const val s_HTTP_MIN = 200
+        private const val s_HTTP_MAX = 299
     }
 
     /*===================================================*/
@@ -41,55 +44,98 @@ class FinnhubClient {
 
     /**
      * Gets the latest quote for a given stock symbol.
-     * 
-     * @param symbol stock ticker symbol, for example "NET", "AAPL", "MSFT"
-     * @return latest quote as a clean domain object
      *
-     * @throws IOException
-     * @throws InterruptedException
+     * @param identifier The security identifier containing the isin number
+     * @return [Result] containing finnhub quote dto.
      */
-    fun getQuote(identifier: SecurityIdentifier): Result<FinnhubQuote> {
-        val encodedSymbol = URLEncoder.encode("identifier.tickerSymbol", StandardCharsets.UTF_8)
-        val url = m_Config.baseUrl + "/quote?symbol=" + encodedSymbol
 
-        val request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .timeout(m_Config.timeout)
-            .header("X-Finnhub-Token", m_Config.apiKey)
-            .GET()
-            .build()
-
-        val response: HttpResponse<String?> = m_HttpClient.send(
-            request,
-            HttpResponse.BodyHandlers.ofString()
-        )
-
-        if (response.statusCode() !in 200..<300) {
-            return Result.failure(IOException("Unexpected error"))
+    fun getQuote(identifier: SecurityIdentifier): Result<FinnhubQuoteDto> {
+        val symbol = getSymbol(identifier.isin).getOrElse {
+            error -> return Result.failure(error)
         }
 
-        val dto: FinnhubQuote? = s_GSON.fromJson(
-            response.body(),
-            FinnhubQuote::class.java
-        )
+        val encodedSymbol = URLEncoder.encode(symbol, StandardCharsets.UTF_8)
 
-        if (dto == null) {
-            return Result.failure(IOException("Finnhub returned an empty quote response"))
-        }
-
-        return Result.success(dto)
+        return getJson("/quote?symbol=$encodedSymbol")
     }
 
     /*===================================================*/
     /*===================================================*/
-    // Constructor(s)
+    // Private Method(es)
 
     /**
-     * Initializes Finnhub client with config
-     * @param config Finnhub configuration API KEY, base URL and timeout
+     * Gets Ticker Symbol for a given isin number.
+     *
+     * @param isin International Securities Identification Number
+     * @returns result ticker symbol
      */
-    constructor(config: FinnhubConfig) {
-        this.m_Config = config
-        this.m_HttpClient = HttpClient.newHttpClient()
+    private fun getSymbol(isin: String): Result<String> {
+        val encodedIsin = URLEncoder.encode(isin, StandardCharsets.UTF_8)
+
+        val dto = getJson<FinnhubSymbolDto>("/search/?q=$encodedIsin").getOrElse{
+            error -> return Result.failure(error)
+        }
+
+        val symbol = dto.result.firstOrNull()?.symbol
+
+        if(symbol == null || symbol.isBlank()){
+            return Result.failure(
+                IllegalStateException("Finnhub did not return a ticker symbol")
+            )
+        }
+
+        return Result.success(symbol)
+    }
+
+    /**
+     * Sends Get request to the given Finnhub endpoint and parses JSON response
+     *
+     * @param endpoint finnhub endpoint, including query parameter
+     * @return [Result] containing the dto
+     */
+    private inline fun <reified T> getJson(endpoint: String): Result<T> {
+        val url = m_Config.baseUrl + endpoint
+
+        val request = httpGetRequestBuilder(url,
+            s_HEADER_NAME,
+            m_Config.timeout,
+            m_Config.apiKey
+        )
+
+        return try {
+            val response: HttpResponse<String> = m_HttpClient.send(
+                request,
+                HttpResponse.BodyHandlers.ofString()
+            )
+
+            if (response.statusCode() !in s_HTTP_MIN..s_HTTP_MAX) {
+                return Result.failure(
+                    IOException("Finnhub request failed. Status code: ${response.statusCode()}, URL: $url")
+                )
+            }
+
+            val body = response.body()
+
+            if (body.isNullOrBlank()) {
+                return Result.failure(
+                    IOException("Finnhub returned an empty response. URL: $url")
+                )
+            }
+
+            val dto = s_GSON.fromJson(body, T::class.java)
+
+            if (dto == null) {
+                Result.failure(IOException("Failed to parse Finnhub response. URL: $url"))
+            } else {
+                Result.success(dto)
+            }
+
+        } catch (exception: IOException) {
+            Result.failure(exception)
+        } catch (exception: JsonSyntaxException) {
+            Result.failure(IOException("Finnhub returned invalid JSON. URL: $url", exception))
+        } catch (exception: IllegalArgumentException) {
+            Result.failure(IOException("Invalid Finnhub request URL: $url", exception))
+        }
     }
 }
