@@ -21,30 +21,22 @@ abstract class TradingAlgorithm {
     /**
      * Executes the algorithm based on current holdings and market conditions.
      *
-     * @param holdings List of currently owned assets.
-     * @param allocatedCapital Amount of capital allocated for trading.
-     * @param currentPrice Current market price of the asset.
-     * @return AlgorithmOutput containing the decision/results.
+     * @param holdings the list of currently owned assets.
+     * @param allocatedCapital the amount of capital allocated for trading.
+     * @param currentPrice the current market price of the asset.
+     * @return the [TradingAlgorithm.Output] containing the decision/results.
      */
     abstract fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output
-
-    //===========================================================//
-    /**
-     * Updates the internal state of the algorithm.
-     *
-     * @param history - Historical stock data to be incorporated.
-     */
-    abstract fun updateState(currentPrice: Double, history: SecurityHistory)
 
     companion object {
         //===========================================================//
         /**
          * Initializes an algorithm instance configured for backtesting.
          *
-         * @param type Type of algorithm to initialize.
-         * @param stockName Stock identifier/name.
-         * @param from Start date (inclusive).
-         * @param to End date (inclusive).
+         * @param type the type of algorithm to initialize.
+         * @param stockName the stock name.
+         * @param from the start date (inclusive).
+         * @param to the end date (inclusive).
          * @return Pair containing the list of history that was not used up for initialization and the algorithm instance.
          */
         @Deprecated("This will get phased out in favor of the other initialiser")
