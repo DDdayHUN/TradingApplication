@@ -1,14 +1,6 @@
 package data
 
-import domain.assets.security.SecurityHistory
-import domain.assets.security.SecurityHolding
 import kotlin.time.Instant
-
-@Deprecated("This only used for old serialized data")
-data class SerializationData(
-    val stockHistory: Map<String, List<SecurityHistory>>,
-    val holdings: Map<String, List<SecurityHolding>>
-)
 
 data class SecuritySerializationData(
     val identifier: Identifier,

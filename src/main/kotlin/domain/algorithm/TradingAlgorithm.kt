@@ -65,6 +65,7 @@ abstract class TradingAlgorithm {
         //===========================================================//
         //===========================================================//
         // Private Method(es)
+
         /**
          * Core initialization method used by both trading and backtesting setups.
          *
@@ -76,48 +77,11 @@ abstract class TradingAlgorithm {
          * @return Pair of history data and initialized algorithm.
          */
         private fun initialiser(type: Type, init: Init, stockName: String, from: Int, to: Int): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            val retHistory = historyInitialiser(stockName, from, to)
+            val retHistory = SerializationManager.loadHistoryForAlgorithms(stockName, from, to)
             val retTradingAlgorithm: TradingAlgorithm = when (type) {
                 Type.TACPP46 -> TACPP46(init, retHistory)
             }
             return Pair(retHistory, retTradingAlgorithm)
-        }
-
-        //===========================================================//
-        /**
-         * Loads historical data from files based on the given parameters.
-         *
-         * @param stockName Stock name.
-         * @param from Start date (inclusive).
-         * @param to End date (inclusive).
-         * @return List of historical data entries.
-         */
-        private fun historyInitialiser(stockName: String, from: Int, to: Int): MutableList<SecurityHistory> {
-            val backtestFiles = File("src/main/resources/backtest/old/us/").listFiles() ?: error("Backtest directory is missing or not a directory")
-            val proxy: MutableList<Pair<File, Int>> = ArrayList()
-
-            for (file in backtestFiles) {
-                val nameWithoutExtension = file.nameWithoutExtension
-                val date = Integer.parseInt(nameWithoutExtension.substring(nameWithoutExtension.length - 2))
-                val nameWithoutExtensionAndDate = nameWithoutExtension.substring(0, nameWithoutExtension.length - 2)
-
-                if (date in from..to && nameWithoutExtensionAndDate == stockName) proxy.add(Pair(file, date))
-            }
-
-
-            proxy.sortWith(Comparator.comparingInt { h -> h.second }) // Sort chronologically by the date
-            // If 'from' and/or 'to' are MIN and/or MAX then we've loaded all, so we don't throw.
-            require(!(from != Integer.MIN_VALUE && to != Integer.MAX_VALUE && proxy.size != (to - from + 1))) { "From-To" }
-
-            val ret: MutableList<SecurityHistory> = ArrayList()
-            for (item in proxy) {
-                val serData = SerializationManager.loadFromFileForBackTest(item.first)
-                for (item2 in serData.stockHistory.entries) {
-                    ret.addAll(item2.value)
-                }
-            }
-
-            return ret
         }
     }
 
@@ -143,7 +107,7 @@ abstract class TradingAlgorithm {
 
     //===========================================================//
     //===========================================================//
-    // Helper class(es)
+    // Helper Class(es)
 
     data class Output(
         val buy: Buy?,
