@@ -16,12 +16,12 @@ internal class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : Trad
     //===========================================================//
     // Private Field(s)
 
-    private val m_EmaHistory: Deque<Double> = ArrayDeque()
+    private val m_EmaHistory: Deque<Double>
 
-    private val m_TrailingHigh: MutableMap<SecurityHolding, Double> = HashMap()
-    private val m_MarkedForSelling: MutableList<SecurityHolding> = ArrayList()
+    private val m_TrailingHigh: MutableMap<SecurityHolding, Double>
+    private val m_MarkedForSelling: MutableList<SecurityHolding>
 
-    private val m_LastInputArr: Deque<Double> = ArrayDeque()
+    private val m_LastInputArr: Deque<Double>
 
     //===========================================================//
     //===========================================================//
@@ -106,20 +106,19 @@ internal class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : Trad
             }
         }
 
+        // Update State
+        run {
+            val alpha = 2.0 / (m_EmaHistory.size + 1.0)
+            val last = m_EmaHistory.peekLast()
+
+            val newEma = alpha * currentPrice + (1.0 - alpha) * last
+
+            m_EmaHistory.pollFirst()
+            m_EmaHistory.addLast(newEma)
+        }
+
         if (!toBeSold.isEmpty()) sell = Output.Sell(toBeSold)
         return Output(buy, sell)
-    }
-
-    //===========================================================//
-
-    override fun updateHistory(history: SecurityHistory) {
-        val alpha = 2.0 / (m_EmaHistory.size + 1.0)
-        val last = m_EmaHistory.peekLast()
-
-        val newEma = alpha * history.closingPrice + (1.0 - alpha) * last
-
-        m_EmaHistory.pollFirst()
-        m_EmaHistory.addLast(newEma)
     }
 
     //===========================================================//
@@ -132,6 +131,13 @@ internal class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : Trad
      * q1: next slidingWindow prices
      */
     init {
+        m_EmaHistory = ArrayDeque()
+
+        m_TrailingHigh = HashMap()
+        m_MarkedForSelling = ArrayList()
+
+        m_LastInputArr = ArrayDeque()
+
         // SlidingWindow
         val SW = 21
         require(emaInit.size >= 2 * SW) { "Init EMA: not enough history for Initialisation" }
