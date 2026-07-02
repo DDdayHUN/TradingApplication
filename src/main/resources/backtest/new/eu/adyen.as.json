@@ -1,0 +1,8257 @@
+{
+  "identifier": {
+    "isin": "NL0012969182",
+    "tickerSymbol": "ADYEN.AS",
+    "exchange": "EURONEXT_AMSTERDAM"
+  },
+  "history": [
+    {
+      "date": "2018-06-13",
+      "closingPrice": 455.0
+    },
+    {
+      "date": "2018-06-14",
+      "closingPrice": 438.0
+    },
+    {
+      "date": "2018-06-15",
+      "closingPrice": 420.0
+    },
+    {
+      "date": "2018-06-18",
+      "closingPrice": 411.0
+    },
+    {
+      "date": "2018-06-19",
+      "closingPrice": 412.5
+    },
+    {
+      "date": "2018-06-20",
+      "closingPrice": 415.85
+    },
+    {
+      "date": "2018-06-21",
+      "closingPrice": 440.0
+    },
+    {
+      "date": "2018-06-22",
+      "closingPrice": 487.8
+    },
+    {
+      "date": "2018-06-25",
+      "closingPrice": 486.0
+    },
+    {
+      "date": "2018-06-26",
+      "closingPrice": 479.65
+    },
+    {
+      "date": "2018-06-27",
+      "closingPrice": 479.5
+    },
+    {
+      "date": "2018-06-28",
+      "closingPrice": 471.0
+    },
+    {
+      "date": "2018-06-29",
+      "closingPrice": 471.75
+    },
+    {
+      "date": "2018-07-02",
+      "closingPrice": 458.0
+    },
+    {
+      "date": "2018-07-03",
+      "closingPrice": 471.85
+    },
+    {
+      "date": "2018-07-04",
+      "closingPrice": 492.7
+    },
+    {
+      "date": "2018-07-05",
+      "closingPrice": 496.0
+    },
+    {
+      "date": "2018-07-06",
+      "closingPrice": 503.4
+    },
+    {
+      "date": "2018-07-09",
+      "closingPrice": 521.0
+    },
+    {
+      "date": "2018-07-10",
+      "closingPrice": 529.5
+    },
+    {
+      "date": "2018-07-11",
+      "closingPrice": 542.9
+    },
+    {
+      "date": "2018-07-12",
+      "closingPrice": 579.0
+    },
+    {
+      "date": "2018-07-13",
+      "closingPrice": 590.2
+    },
+    {
+      "date": "2018-07-16",
+      "closingPrice": 570.0
+    },
+    {
+      "date": "2018-07-17",
+      "closingPrice": 558.0
+    },
+    {
+      "date": "2018-07-18",
+      "closingPrice": 557.1
+    },
+    {
+      "date": "2018-07-19",
+      "closingPrice": 572.9
+    },
+    {
+      "date": "2018-07-20",
+      "closingPrice": 574.6
+    },
+    {
+      "date": "2018-07-23",
+      "closingPrice": 592.0
+    },
+    {
+      "date": "2018-07-24",
+      "closingPrice": 600.0
+    },
+    {
+      "date": "2018-07-25",
+      "closingPrice": 590.0
+    },
+    {
+      "date": "2018-07-26",
+      "closingPrice": 586.6
+    },
+    {
+      "date": "2018-07-27",
+      "closingPrice": 586.0
+    },
+    {
+      "date": "2018-07-30",
+      "closingPrice": 577.0
+    },
+    {
+      "date": "2018-07-31",
+      "closingPrice": 546.4
+    },
+    {
+      "date": "2018-08-01",
+      "closingPrice": 527.0
+    },
+    {
+      "date": "2018-08-02",
+      "closingPrice": 524.9
+    },
+    {
+      "date": "2018-08-03",
+      "closingPrice": 544.2
+    },
+    {
+      "date": "2018-08-06",
+      "closingPrice": 540.0
+    },
+    {
+      "date": "2018-08-07",
+      "closingPrice": 547.0
+    },
+    {
+      "date": "2018-08-08",
+      "closingPrice": 546.2
+    },
+    {
+      "date": "2018-08-09",
+      "closingPrice": 549.0
+    },
+    {
+      "date": "2018-08-10",
+      "closingPrice": 546.6
+    },
+    {
+      "date": "2018-08-13",
+      "closingPrice": 548.3
+    },
+    {
+      "date": "2018-08-14",
+      "closingPrice": 551.0
+    },
+    {
+      "date": "2018-08-15",
+      "closingPrice": 534.5
+    },
+    {
+      "date": "2018-08-16",
+      "closingPrice": 530.4
+    },
+    {
+      "date": "2018-08-17",
+      "closingPrice": 527.8
+    },
+    {
+      "date": "2018-08-20",
+      "closingPrice": 540.0
+    },
+    {
+      "date": "2018-08-21",
+      "closingPrice": 548.1
+    },
+    {
+      "date": "2018-08-22",
+      "closingPrice": 568.0
+    },
+    {
+      "date": "2018-08-23",
+      "closingPrice": 607.2
+    },
+    {
+      "date": "2018-08-24",
+      "closingPrice": 600.9
+    },
+    {
+      "date": "2018-08-27",
+      "closingPrice": 616.6
+    },
+    {
+      "date": "2018-08-28",
+      "closingPrice": 617.0
+    },
+    {
+      "date": "2018-08-29",
+      "closingPrice": 614.0
+    },
+    {
+      "date": "2018-08-30",
+      "closingPrice": 602.9
+    },
+    {
+      "date": "2018-08-31",
+      "closingPrice": 604.0
+    },
+    {
+      "date": "2018-09-03",
+      "closingPrice": 609.0
+    },
+    {
+      "date": "2018-09-04",
+      "closingPrice": 615.0
+    },
+    {
+      "date": "2018-09-05",
+      "closingPrice": 615.7
+    },
+    {
+      "date": "2018-09-06",
+      "closingPrice": 629.0
+    },
+    {
+      "date": "2018-09-07",
+      "closingPrice": 644.8
+    },
+    {
+      "date": "2018-09-10",
+      "closingPrice": 691.9
+    },
+    {
+      "date": "2018-09-11",
+      "closingPrice": 682.0
+    },
+    {
+      "date": "2018-09-12",
+      "closingPrice": 738.2
+    },
+    {
+      "date": "2018-09-13",
+      "closingPrice": 650.0
+    },
+    {
+      "date": "2018-09-14",
+      "closingPrice": 615.0
+    },
+    {
+      "date": "2018-09-17",
+      "closingPrice": 589.0
+    },
+    {
+      "date": "2018-09-18",
+      "closingPrice": 629.9
+    },
+    {
+      "date": "2018-09-19",
+      "closingPrice": 649.0
+    },
+    {
+      "date": "2018-09-20",
+      "closingPrice": 633.9
+    },
+    {
+      "date": "2018-09-21",
+      "closingPrice": 626.2
+    },
+    {
+      "date": "2018-09-24",
+      "closingPrice": 642.5
+    },
+    {
+      "date": "2018-09-25",
+      "closingPrice": 658.8
+    },
+    {
+      "date": "2018-09-26",
+      "closingPrice": 662.0
+    },
+    {
+      "date": "2018-09-27",
+      "closingPrice": 684.7
+    },
+    {
+      "date": "2018-09-28",
+      "closingPrice": 703.0
+    },
+    {
+      "date": "2018-10-01",
+      "closingPrice": 720.0
+    },
+    {
+      "date": "2018-10-02",
+      "closingPrice": 720.4
+    },
+    {
+      "date": "2018-10-03",
+      "closingPrice": 702.2
+    },
+    {
+      "date": "2018-10-04",
+      "closingPrice": 682.0
+    },
+    {
+      "date": "2018-10-05",
+      "closingPrice": 656.8
+    },
+    {
+      "date": "2018-10-08",
+      "closingPrice": 627.5
+    },
+    {
+      "date": "2018-10-09",
+      "closingPrice": 615.3
+    },
+    {
+      "date": "2018-10-10",
+      "closingPrice": 580.2
+    },
+    {
+      "date": "2018-10-11",
+      "closingPrice": 547.5
+    },
+    {
+      "date": "2018-10-12",
+      "closingPrice": 573.3
+    },
+    {
+      "date": "2018-10-15",
+      "closingPrice": 556.2
+    },
+    {
+      "date": "2018-10-16",
+      "closingPrice": 584.4
+    },
+    {
+      "date": "2018-10-17",
+      "closingPrice": 602.4
+    },
+    {
+      "date": "2018-10-18",
+      "closingPrice": 599.0
+    },
+    {
+      "date": "2018-10-19",
+      "closingPrice": 609.8
+    },
+    {
+      "date": "2018-10-22",
+      "closingPrice": 622.3
+    },
+    {
+      "date": "2018-10-23",
+      "closingPrice": 560.0
+    },
+    {
+      "date": "2018-10-24",
+      "closingPrice": 545.9
+    },
+    {
+      "date": "2018-10-25",
+      "closingPrice": 554.1
+    },
+    {
+      "date": "2018-10-26",
+      "closingPrice": 519.3
+    },
+    {
+      "date": "2018-10-29",
+      "closingPrice": 540.0
+    },
+    {
+      "date": "2018-10-30",
+      "closingPrice": 545.0
+    },
+    {
+      "date": "2018-10-31",
+      "closingPrice": 571.1
+    },
+    {
+      "date": "2018-11-01",
+      "closingPrice": 574.6
+    },
+    {
+      "date": "2018-11-02",
+      "closingPrice": 581.0
+    },
+    {
+      "date": "2018-11-05",
+      "closingPrice": 565.5
+    },
+    {
+      "date": "2018-11-06",
+      "closingPrice": 580.9
+    },
+    {
+      "date": "2018-11-07",
+      "closingPrice": 609.1
+    },
+    {
+      "date": "2018-11-08",
+      "closingPrice": 599.7
+    },
+    {
+      "date": "2018-11-09",
+      "closingPrice": 583.5
+    },
+    {
+      "date": "2018-11-12",
+      "closingPrice": 573.3
+    },
+    {
+      "date": "2018-11-13",
+      "closingPrice": 592.3
+    },
+    {
+      "date": "2018-11-14",
+      "closingPrice": 536.3
+    },
+    {
+      "date": "2018-11-15",
+      "closingPrice": 513.0
+    },
+    {
+      "date": "2018-11-16",
+      "closingPrice": 507.5
+    },
+    {
+      "date": "2018-11-19",
+      "closingPrice": 470.0
+    },
+    {
+      "date": "2018-11-20",
+      "closingPrice": 436.05
+    },
+    {
+      "date": "2018-11-21",
+      "closingPrice": 439.45
+    },
+    {
+      "date": "2018-11-22",
+      "closingPrice": 426.95
+    },
+    {
+      "date": "2018-11-23",
+      "closingPrice": 437.0
+    },
+    {
+      "date": "2018-11-26",
+      "closingPrice": 455.2
+    },
+    {
+      "date": "2018-11-27",
+      "closingPrice": 452.5
+    },
+    {
+      "date": "2018-11-28",
+      "closingPrice": 453.05
+    },
+    {
+      "date": "2018-11-29",
+      "closingPrice": 461.2
+    },
+    {
+      "date": "2018-11-30",
+      "closingPrice": 457.05
+    },
+    {
+      "date": "2018-12-03",
+      "closingPrice": 469.8
+    },
+    {
+      "date": "2018-12-04",
+      "closingPrice": 450.95
+    },
+    {
+      "date": "2018-12-05",
+      "closingPrice": 446.7
+    },
+    {
+      "date": "2018-12-06",
+      "closingPrice": 438.7
+    },
+    {
+      "date": "2018-12-07",
+      "closingPrice": 450.0
+    },
+    {
+      "date": "2018-12-10",
+      "closingPrice": 440.65
+    },
+    {
+      "date": "2018-12-11",
+      "closingPrice": 457.05
+    },
+    {
+      "date": "2018-12-12",
+      "closingPrice": 450.05
+    },
+    {
+      "date": "2018-12-13",
+      "closingPrice": 462.0
+    },
+    {
+      "date": "2018-12-14",
+      "closingPrice": 455.4
+    },
+    {
+      "date": "2018-12-17",
+      "closingPrice": 453.1
+    },
+    {
+      "date": "2018-12-18",
+      "closingPrice": 437.7
+    },
+    {
+      "date": "2018-12-19",
+      "closingPrice": 443.3
+    },
+    {
+      "date": "2018-12-20",
+      "closingPrice": 420.65
+    },
+    {
+      "date": "2018-12-21",
+      "closingPrice": 428.2
+    },
+    {
+      "date": "2018-12-24",
+      "closingPrice": 411.0
+    },
+    {
+      "date": "2018-12-27",
+      "closingPrice": 444.25
+    },
+    {
+      "date": "2018-12-28",
+      "closingPrice": 464.4
+    },
+    {
+      "date": "2018-12-31",
+      "closingPrice": 475.05
+    },
+    {
+      "date": "2019-01-02",
+      "closingPrice": 470.9
+    },
+    {
+      "date": "2019-01-03",
+      "closingPrice": 463.05
+    },
+    {
+      "date": "2019-01-04",
+      "closingPrice": 500.0
+    },
+    {
+      "date": "2019-01-07",
+      "closingPrice": 531.2
+    },
+    {
+      "date": "2019-01-08",
+      "closingPrice": 569.9
+    },
+    {
+      "date": "2019-01-09",
+      "closingPrice": 570.6
+    },
+    {
+      "date": "2019-01-10",
+      "closingPrice": 552.0
+    },
+    {
+      "date": "2019-01-11",
+      "closingPrice": 551.0
+    },
+    {
+      "date": "2019-01-14",
+      "closingPrice": 547.0
+    },
+    {
+      "date": "2019-01-15",
+      "closingPrice": 563.4
+    },
+    {
+      "date": "2019-01-16",
+      "closingPrice": 574.0
+    },
+    {
+      "date": "2019-01-17",
+      "closingPrice": 588.0
+    },
+    {
+      "date": "2019-01-18",
+      "closingPrice": 618.1
+    },
+    {
+      "date": "2019-01-21",
+      "closingPrice": 636.0
+    },
+    {
+      "date": "2019-01-22",
+      "closingPrice": 642.6
+    },
+    {
+      "date": "2019-01-23",
+      "closingPrice": 652.5
+    },
+    {
+      "date": "2019-01-24",
+      "closingPrice": 664.0
+    },
+    {
+      "date": "2019-01-25",
+      "closingPrice": 663.8
+    },
+    {
+      "date": "2019-01-28",
+      "closingPrice": 642.6
+    },
+    {
+      "date": "2019-01-29",
+      "closingPrice": 654.9
+    },
+    {
+      "date": "2019-01-30",
+      "closingPrice": 646.5
+    },
+    {
+      "date": "2019-01-31",
+      "closingPrice": 647.7
+    },
+    {
+      "date": "2019-02-01",
+      "closingPrice": 630.0
+    },
+    {
+      "date": "2019-02-04",
+      "closingPrice": 653.8
+    },
+    {
+      "date": "2019-02-05",
+      "closingPrice": 655.2
+    },
+    {
+      "date": "2019-02-06",
+      "closingPrice": 661.0
+    },
+    {
+      "date": "2019-02-07",
+      "closingPrice": 643.0
+    },
+    {
+      "date": "2019-02-08",
+      "closingPrice": 639.1
+    },
+    {
+      "date": "2019-02-11",
+      "closingPrice": 650.0
+    },
+    {
+      "date": "2019-02-12",
+      "closingPrice": 650.9
+    },
+    {
+      "date": "2019-02-13",
+      "closingPrice": 652.1
+    },
+    {
+      "date": "2019-02-14",
+      "closingPrice": 661.0
+    },
+    {
+      "date": "2019-02-15",
+      "closingPrice": 664.0
+    },
+    {
+      "date": "2019-02-18",
+      "closingPrice": 675.5
+    },
+    {
+      "date": "2019-02-19",
+      "closingPrice": 677.2
+    },
+    {
+      "date": "2019-02-20",
+      "closingPrice": 678.5
+    },
+    {
+      "date": "2019-02-21",
+      "closingPrice": 661.6
+    },
+    {
+      "date": "2019-02-22",
+      "closingPrice": 670.0
+    },
+    {
+      "date": "2019-02-25",
+      "closingPrice": 671.4
+    },
+    {
+      "date": "2019-02-26",
+      "closingPrice": 672.6
+    },
+    {
+      "date": "2019-02-27",
+      "closingPrice": 659.0
+    },
+    {
+      "date": "2019-02-28",
+      "closingPrice": 660.0
+    },
+    {
+      "date": "2019-03-01",
+      "closingPrice": 655.6
+    },
+    {
+      "date": "2019-03-04",
+      "closingPrice": 644.3
+    },
+    {
+      "date": "2019-03-05",
+      "closingPrice": 644.0
+    },
+    {
+      "date": "2019-03-06",
+      "closingPrice": 633.8
+    },
+    {
+      "date": "2019-03-07",
+      "closingPrice": 632.3
+    },
+    {
+      "date": "2019-03-08",
+      "closingPrice": 640.0
+    },
+    {
+      "date": "2019-03-11",
+      "closingPrice": 656.2
+    },
+    {
+      "date": "2019-03-12",
+      "closingPrice": 623.9
+    },
+    {
+      "date": "2019-03-13",
+      "closingPrice": 664.0
+    },
+    {
+      "date": "2019-03-14",
+      "closingPrice": 679.3
+    },
+    {
+      "date": "2019-03-15",
+      "closingPrice": 659.3
+    },
+    {
+      "date": "2019-03-18",
+      "closingPrice": 671.3
+    },
+    {
+      "date": "2019-03-19",
+      "closingPrice": 680.0
+    },
+    {
+      "date": "2019-03-20",
+      "closingPrice": 677.1
+    },
+    {
+      "date": "2019-03-21",
+      "closingPrice": 677.3
+    },
+    {
+      "date": "2019-03-22",
+      "closingPrice": 657.8
+    },
+    {
+      "date": "2019-03-25",
+      "closingPrice": 661.0
+    },
+    {
+      "date": "2019-03-26",
+      "closingPrice": 686.4
+    },
+    {
+      "date": "2019-03-27",
+      "closingPrice": 680.8
+    },
+    {
+      "date": "2019-03-28",
+      "closingPrice": 680.2
+    },
+    {
+      "date": "2019-03-29",
+      "closingPrice": 698.0
+    },
+    {
+      "date": "2019-04-01",
+      "closingPrice": 705.0
+    },
+    {
+      "date": "2019-04-02",
+      "closingPrice": 730.8
+    },
+    {
+      "date": "2019-04-03",
+      "closingPrice": 720.6
+    },
+    {
+      "date": "2019-04-04",
+      "closingPrice": 719.0
+    },
+    {
+      "date": "2019-04-05",
+      "closingPrice": 720.2
+    },
+    {
+      "date": "2019-04-08",
+      "closingPrice": 704.0
+    },
+    {
+      "date": "2019-04-09",
+      "closingPrice": 688.6
+    },
+    {
+      "date": "2019-04-10",
+      "closingPrice": 697.8
+    },
+    {
+      "date": "2019-04-11",
+      "closingPrice": 686.8
+    },
+    {
+      "date": "2019-04-12",
+      "closingPrice": 693.8
+    },
+    {
+      "date": "2019-04-15",
+      "closingPrice": 689.0
+    },
+    {
+      "date": "2019-04-16",
+      "closingPrice": 689.8
+    },
+    {
+      "date": "2019-04-17",
+      "closingPrice": 687.8
+    },
+    {
+      "date": "2019-04-18",
+      "closingPrice": 670.0
+    },
+    {
+      "date": "2019-04-23",
+      "closingPrice": 707.0
+    },
+    {
+      "date": "2019-04-24",
+      "closingPrice": 718.8
+    },
+    {
+      "date": "2019-04-25",
+      "closingPrice": 722.2
+    },
+    {
+      "date": "2019-04-26",
+      "closingPrice": 714.0
+    },
+    {
+      "date": "2019-04-29",
+      "closingPrice": 719.4
+    },
+    {
+      "date": "2019-04-30",
+      "closingPrice": 725.6
+    },
+    {
+      "date": "2019-05-02",
+      "closingPrice": 708.0
+    },
+    {
+      "date": "2019-05-03",
+      "closingPrice": 677.0
+    },
+    {
+      "date": "2019-05-06",
+      "closingPrice": 663.4
+    },
+    {
+      "date": "2019-05-07",
+      "closingPrice": 659.4
+    },
+    {
+      "date": "2019-05-08",
+      "closingPrice": 675.2
+    },
+    {
+      "date": "2019-05-09",
+      "closingPrice": 660.2
+    },
+    {
+      "date": "2019-05-10",
+      "closingPrice": 655.8
+    },
+    {
+      "date": "2019-05-13",
+      "closingPrice": 638.8
+    },
+    {
+      "date": "2019-05-14",
+      "closingPrice": 665.4
+    },
+    {
+      "date": "2019-05-15",
+      "closingPrice": 669.8
+    },
+    {
+      "date": "2019-05-16",
+      "closingPrice": 681.0
+    },
+    {
+      "date": "2019-05-17",
+      "closingPrice": 685.6
+    },
+    {
+      "date": "2019-05-20",
+      "closingPrice": 682.2
+    },
+    {
+      "date": "2019-05-21",
+      "closingPrice": 700.0
+    },
+    {
+      "date": "2019-05-22",
+      "closingPrice": 715.2
+    },
+    {
+      "date": "2019-05-23",
+      "closingPrice": 708.2
+    },
+    {
+      "date": "2019-05-24",
+      "closingPrice": 721.0
+    },
+    {
+      "date": "2019-05-27",
+      "closingPrice": 721.4
+    },
+    {
+      "date": "2019-05-28",
+      "closingPrice": 732.2
+    },
+    {
+      "date": "2019-05-29",
+      "closingPrice": 696.0
+    },
+    {
+      "date": "2019-05-30",
+      "closingPrice": 719.0
+    },
+    {
+      "date": "2019-05-31",
+      "closingPrice": 720.8
+    },
+    {
+      "date": "2019-06-03",
+      "closingPrice": 704.0
+    },
+    {
+      "date": "2019-06-04",
+      "closingPrice": 690.0
+    },
+    {
+      "date": "2019-06-05",
+      "closingPrice": 701.0
+    },
+    {
+      "date": "2019-06-06",
+      "closingPrice": 697.0
+    },
+    {
+      "date": "2019-06-07",
+      "closingPrice": 707.8
+    },
+    {
+      "date": "2019-06-10",
+      "closingPrice": 714.0
+    },
+    {
+      "date": "2019-06-11",
+      "closingPrice": 709.2
+    },
+    {
+      "date": "2019-06-12",
+      "closingPrice": 709.8
+    },
+    {
+      "date": "2019-06-13",
+      "closingPrice": 708.0
+    },
+    {
+      "date": "2019-06-14",
+      "closingPrice": 700.2
+    },
+    {
+      "date": "2019-06-17",
+      "closingPrice": 670.0
+    },
+    {
+      "date": "2019-06-18",
+      "closingPrice": 689.0
+    },
+    {
+      "date": "2019-06-19",
+      "closingPrice": 675.0
+    },
+    {
+      "date": "2019-06-20",
+      "closingPrice": 682.4
+    },
+    {
+      "date": "2019-06-21",
+      "closingPrice": 680.8
+    },
+    {
+      "date": "2019-06-24",
+      "closingPrice": 669.8
+    },
+    {
+      "date": "2019-06-25",
+      "closingPrice": 655.0
+    },
+    {
+      "date": "2019-06-26",
+      "closingPrice": 663.2
+    },
+    {
+      "date": "2019-06-27",
+      "closingPrice": 669.0
+    },
+    {
+      "date": "2019-06-28",
+      "closingPrice": 678.6
+    },
+    {
+      "date": "2019-07-01",
+      "closingPrice": 665.8
+    },
+    {
+      "date": "2019-07-02",
+      "closingPrice": 650.6
+    },
+    {
+      "date": "2019-07-03",
+      "closingPrice": 666.2
+    },
+    {
+      "date": "2019-07-04",
+      "closingPrice": 657.8
+    },
+    {
+      "date": "2019-07-05",
+      "closingPrice": 648.8
+    },
+    {
+      "date": "2019-07-08",
+      "closingPrice": 656.6
+    },
+    {
+      "date": "2019-07-09",
+      "closingPrice": 648.6
+    },
+    {
+      "date": "2019-07-10",
+      "closingPrice": 652.6
+    },
+    {
+      "date": "2019-07-11",
+      "closingPrice": 677.0
+    },
+    {
+      "date": "2019-07-12",
+      "closingPrice": 676.0
+    },
+    {
+      "date": "2019-07-15",
+      "closingPrice": 684.0
+    },
+    {
+      "date": "2019-07-16",
+      "closingPrice": 686.0
+    },
+    {
+      "date": "2019-07-17",
+      "closingPrice": 686.0
+    },
+    {
+      "date": "2019-07-18",
+      "closingPrice": 698.0
+    },
+    {
+      "date": "2019-07-19",
+      "closingPrice": 694.6
+    },
+    {
+      "date": "2019-07-22",
+      "closingPrice": 701.2
+    },
+    {
+      "date": "2019-07-23",
+      "closingPrice": 708.4
+    },
+    {
+      "date": "2019-07-24",
+      "closingPrice": 703.0
+    },
+    {
+      "date": "2019-07-25",
+      "closingPrice": 701.8
+    },
+    {
+      "date": "2019-07-26",
+      "closingPrice": 711.8
+    },
+    {
+      "date": "2019-07-29",
+      "closingPrice": 704.0
+    },
+    {
+      "date": "2019-07-30",
+      "closingPrice": 688.0
+    },
+    {
+      "date": "2019-07-31",
+      "closingPrice": 687.0
+    },
+    {
+      "date": "2019-08-01",
+      "closingPrice": 686.6
+    },
+    {
+      "date": "2019-08-02",
+      "closingPrice": 673.8
+    },
+    {
+      "date": "2019-08-05",
+      "closingPrice": 644.2
+    },
+    {
+      "date": "2019-08-06",
+      "closingPrice": 648.0
+    },
+    {
+      "date": "2019-08-07",
+      "closingPrice": 649.0
+    },
+    {
+      "date": "2019-08-08",
+      "closingPrice": 671.6
+    },
+    {
+      "date": "2019-08-09",
+      "closingPrice": 670.0
+    },
+    {
+      "date": "2019-08-12",
+      "closingPrice": 670.0
+    },
+    {
+      "date": "2019-08-13",
+      "closingPrice": 676.8
+    },
+    {
+      "date": "2019-08-14",
+      "closingPrice": 655.0
+    },
+    {
+      "date": "2019-08-15",
+      "closingPrice": 655.2
+    },
+    {
+      "date": "2019-08-16",
+      "closingPrice": 659.4
+    },
+    {
+      "date": "2019-08-19",
+      "closingPrice": 668.0
+    },
+    {
+      "date": "2019-08-20",
+      "closingPrice": 670.0
+    },
+    {
+      "date": "2019-08-21",
+      "closingPrice": 677.4
+    },
+    {
+      "date": "2019-08-22",
+      "closingPrice": 643.8
+    },
+    {
+      "date": "2019-08-23",
+      "closingPrice": 643.6
+    },
+    {
+      "date": "2019-08-26",
+      "closingPrice": 639.2
+    },
+    {
+      "date": "2019-08-27",
+      "closingPrice": 649.0
+    },
+    {
+      "date": "2019-08-28",
+      "closingPrice": 653.2
+    },
+    {
+      "date": "2019-08-29",
+      "closingPrice": 658.8
+    },
+    {
+      "date": "2019-08-30",
+      "closingPrice": 658.8
+    },
+    {
+      "date": "2019-09-02",
+      "closingPrice": 649.6
+    },
+    {
+      "date": "2019-09-03",
+      "closingPrice": 653.0
+    },
+    {
+      "date": "2019-09-04",
+      "closingPrice": 652.8
+    },
+    {
+      "date": "2019-09-05",
+      "closingPrice": 662.8
+    },
+    {
+      "date": "2019-09-06",
+      "closingPrice": 667.0
+    },
+    {
+      "date": "2019-09-09",
+      "closingPrice": 650.4
+    },
+    {
+      "date": "2019-09-10",
+      "closingPrice": 618.0
+    },
+    {
+      "date": "2019-09-11",
+      "closingPrice": 620.0
+    },
+    {
+      "date": "2019-09-12",
+      "closingPrice": 637.8
+    },
+    {
+      "date": "2019-09-13",
+      "closingPrice": 625.4
+    },
+    {
+      "date": "2019-09-16",
+      "closingPrice": 620.4
+    },
+    {
+      "date": "2019-09-17",
+      "closingPrice": 632.0
+    },
+    {
+      "date": "2019-09-18",
+      "closingPrice": 638.0
+    },
+    {
+      "date": "2019-09-19",
+      "closingPrice": 634.4
+    },
+    {
+      "date": "2019-09-20",
+      "closingPrice": 639.0
+    },
+    {
+      "date": "2019-09-23",
+      "closingPrice": 623.2
+    },
+    {
+      "date": "2019-09-24",
+      "closingPrice": 617.6
+    },
+    {
+      "date": "2019-09-25",
+      "closingPrice": 614.2
+    },
+    {
+      "date": "2019-09-26",
+      "closingPrice": 615.0
+    },
+    {
+      "date": "2019-09-27",
+      "closingPrice": 619.0
+    },
+    {
+      "date": "2019-09-30",
+      "closingPrice": 604.4
+    },
+    {
+      "date": "2019-10-01",
+      "closingPrice": 595.2
+    },
+    {
+      "date": "2019-10-02",
+      "closingPrice": 570.0
+    },
+    {
+      "date": "2019-10-03",
+      "closingPrice": 576.0
+    },
+    {
+      "date": "2019-10-04",
+      "closingPrice": 596.6
+    },
+    {
+      "date": "2019-10-07",
+      "closingPrice": 601.8
+    },
+    {
+      "date": "2019-10-08",
+      "closingPrice": 599.2
+    },
+    {
+      "date": "2019-10-09",
+      "closingPrice": 602.6
+    },
+    {
+      "date": "2019-10-10",
+      "closingPrice": 621.8
+    },
+    {
+      "date": "2019-10-11",
+      "closingPrice": 641.8
+    },
+    {
+      "date": "2019-10-14",
+      "closingPrice": 638.4
+    },
+    {
+      "date": "2019-10-15",
+      "closingPrice": 644.4
+    },
+    {
+      "date": "2019-10-16",
+      "closingPrice": 635.0
+    },
+    {
+      "date": "2019-10-17",
+      "closingPrice": 629.6
+    },
+    {
+      "date": "2019-10-18",
+      "closingPrice": 620.2
+    },
+    {
+      "date": "2019-10-21",
+      "closingPrice": 618.0
+    },
+    {
+      "date": "2019-10-22",
+      "closingPrice": 603.4
+    },
+    {
+      "date": "2019-10-23",
+      "closingPrice": 602.0
+    },
+    {
+      "date": "2019-10-24",
+      "closingPrice": 613.8
+    },
+    {
+      "date": "2019-10-25",
+      "closingPrice": 629.4
+    },
+    {
+      "date": "2019-10-28",
+      "closingPrice": 629.2
+    },
+    {
+      "date": "2019-10-29",
+      "closingPrice": 635.0
+    },
+    {
+      "date": "2019-10-30",
+      "closingPrice": 634.0
+    },
+    {
+      "date": "2019-10-31",
+      "closingPrice": 629.4
+    },
+    {
+      "date": "2019-11-01",
+      "closingPrice": 631.6
+    },
+    {
+      "date": "2019-11-04",
+      "closingPrice": 640.0
+    },
+    {
+      "date": "2019-11-05",
+      "closingPrice": 639.0
+    },
+    {
+      "date": "2019-11-06",
+      "closingPrice": 645.0
+    },
+    {
+      "date": "2019-11-07",
+      "closingPrice": 640.8
+    },
+    {
+      "date": "2019-11-08",
+      "closingPrice": 635.4
+    },
+    {
+      "date": "2019-11-11",
+      "closingPrice": 642.0
+    },
+    {
+      "date": "2019-11-12",
+      "closingPrice": 638.2
+    },
+    {
+      "date": "2019-11-13",
+      "closingPrice": 644.4
+    },
+    {
+      "date": "2019-11-14",
+      "closingPrice": 650.8
+    },
+    {
+      "date": "2019-11-15",
+      "closingPrice": 647.4
+    },
+    {
+      "date": "2019-11-18",
+      "closingPrice": 646.0
+    },
+    {
+      "date": "2019-11-19",
+      "closingPrice": 653.0
+    },
+    {
+      "date": "2019-11-20",
+      "closingPrice": 660.0
+    },
+    {
+      "date": "2019-11-21",
+      "closingPrice": 660.0
+    },
+    {
+      "date": "2019-11-22",
+      "closingPrice": 662.8
+    },
+    {
+      "date": "2019-11-25",
+      "closingPrice": 668.0
+    },
+    {
+      "date": "2019-11-26",
+      "closingPrice": 681.0
+    },
+    {
+      "date": "2019-11-27",
+      "closingPrice": 686.8
+    },
+    {
+      "date": "2019-11-28",
+      "closingPrice": 691.6
+    },
+    {
+      "date": "2019-11-29",
+      "closingPrice": 696.2
+    },
+    {
+      "date": "2019-12-02",
+      "closingPrice": 683.0
+    },
+    {
+      "date": "2019-12-03",
+      "closingPrice": 690.8
+    },
+    {
+      "date": "2019-12-04",
+      "closingPrice": 701.6
+    },
+    {
+      "date": "2019-12-05",
+      "closingPrice": 705.2
+    },
+    {
+      "date": "2019-12-06",
+      "closingPrice": 701.8
+    },
+    {
+      "date": "2019-12-09",
+      "closingPrice": 697.0
+    },
+    {
+      "date": "2019-12-10",
+      "closingPrice": 687.4
+    },
+    {
+      "date": "2019-12-11",
+      "closingPrice": 683.8
+    },
+    {
+      "date": "2019-12-12",
+      "closingPrice": 698.0
+    },
+    {
+      "date": "2019-12-13",
+      "closingPrice": 699.2
+    },
+    {
+      "date": "2019-12-16",
+      "closingPrice": 708.0
+    },
+    {
+      "date": "2019-12-17",
+      "closingPrice": 721.2
+    },
+    {
+      "date": "2019-12-18",
+      "closingPrice": 730.0
+    },
+    {
+      "date": "2019-12-19",
+      "closingPrice": 734.8
+    },
+    {
+      "date": "2019-12-20",
+      "closingPrice": 742.6
+    },
+    {
+      "date": "2019-12-23",
+      "closingPrice": 728.6
+    },
+    {
+      "date": "2019-12-24",
+      "closingPrice": 736.8
+    },
+    {
+      "date": "2019-12-27",
+      "closingPrice": 737.8
+    },
+    {
+      "date": "2019-12-30",
+      "closingPrice": 731.0
+    },
+    {
+      "date": "2019-12-31",
+      "closingPrice": 731.0
+    },
+    {
+      "date": "2020-01-02",
+      "closingPrice": 743.6
+    },
+    {
+      "date": "2020-01-03",
+      "closingPrice": 741.8
+    },
+    {
+      "date": "2020-01-06",
+      "closingPrice": 736.2
+    },
+    {
+      "date": "2020-01-07",
+      "closingPrice": 741.0
+    },
+    {
+      "date": "2020-01-08",
+      "closingPrice": 741.0
+    },
+    {
+      "date": "2020-01-09",
+      "closingPrice": 746.8
+    },
+    {
+      "date": "2020-01-10",
+      "closingPrice": 749.0
+    },
+    {
+      "date": "2020-01-13",
+      "closingPrice": 756.8
+    },
+    {
+      "date": "2020-01-14",
+      "closingPrice": 759.2
+    },
+    {
+      "date": "2020-01-15",
+      "closingPrice": 767.0
+    },
+    {
+      "date": "2020-01-16",
+      "closingPrice": 772.0
+    },
+    {
+      "date": "2020-01-17",
+      "closingPrice": 777.8
+    },
+    {
+      "date": "2020-01-20",
+      "closingPrice": 783.0
+    },
+    {
+      "date": "2020-01-21",
+      "closingPrice": 786.0
+    },
+    {
+      "date": "2020-01-22",
+      "closingPrice": 804.0
+    },
+    {
+      "date": "2020-01-23",
+      "closingPrice": 812.2
+    },
+    {
+      "date": "2020-01-24",
+      "closingPrice": 835.2
+    },
+    {
+      "date": "2020-01-27",
+      "closingPrice": 811.4
+    },
+    {
+      "date": "2020-01-28",
+      "closingPrice": 826.0
+    },
+    {
+      "date": "2020-01-29",
+      "closingPrice": 838.2
+    },
+    {
+      "date": "2020-01-30",
+      "closingPrice": 830.0
+    },
+    {
+      "date": "2020-01-31",
+      "closingPrice": 831.0
+    },
+    {
+      "date": "2020-02-03",
+      "closingPrice": 852.4
+    },
+    {
+      "date": "2020-02-04",
+      "closingPrice": 862.2
+    },
+    {
+      "date": "2020-02-05",
+      "closingPrice": 885.0
+    },
+    {
+      "date": "2020-02-06",
+      "closingPrice": 879.8
+    },
+    {
+      "date": "2020-02-07",
+      "closingPrice": 870.6
+    },
+    {
+      "date": "2020-02-10",
+      "closingPrice": 869.0
+    },
+    {
+      "date": "2020-02-11",
+      "closingPrice": 880.2
+    },
+    {
+      "date": "2020-02-12",
+      "closingPrice": 884.6
+    },
+    {
+      "date": "2020-02-13",
+      "closingPrice": 871.6
+    },
+    {
+      "date": "2020-02-14",
+      "closingPrice": 883.6
+    },
+    {
+      "date": "2020-02-17",
+      "closingPrice": 883.2
+    },
+    {
+      "date": "2020-02-18",
+      "closingPrice": 886.0
+    },
+    {
+      "date": "2020-02-19",
+      "closingPrice": 893.8
+    },
+    {
+      "date": "2020-02-20",
+      "closingPrice": 869.8
+    },
+    {
+      "date": "2020-02-21",
+      "closingPrice": 871.6
+    },
+    {
+      "date": "2020-02-24",
+      "closingPrice": 826.2
+    },
+    {
+      "date": "2020-02-25",
+      "closingPrice": 819.6
+    },
+    {
+      "date": "2020-02-26",
+      "closingPrice": 805.2
+    },
+    {
+      "date": "2020-02-27",
+      "closingPrice": 804.0
+    },
+    {
+      "date": "2020-02-28",
+      "closingPrice": 797.2
+    },
+    {
+      "date": "2020-03-02",
+      "closingPrice": 784.0
+    },
+    {
+      "date": "2020-03-03",
+      "closingPrice": 816.8
+    },
+    {
+      "date": "2020-03-04",
+      "closingPrice": 813.2
+    },
+    {
+      "date": "2020-03-05",
+      "closingPrice": 820.6
+    },
+    {
+      "date": "2020-03-06",
+      "closingPrice": 803.0
+    },
+    {
+      "date": "2020-03-09",
+      "closingPrice": 766.0
+    },
+    {
+      "date": "2020-03-10",
+      "closingPrice": 754.0
+    },
+    {
+      "date": "2020-03-11",
+      "closingPrice": 747.6
+    },
+    {
+      "date": "2020-03-12",
+      "closingPrice": 708.8
+    },
+    {
+      "date": "2020-03-13",
+      "closingPrice": 746.0
+    },
+    {
+      "date": "2020-03-16",
+      "closingPrice": 719.8
+    },
+    {
+      "date": "2020-03-17",
+      "closingPrice": 720.0
+    },
+    {
+      "date": "2020-03-18",
+      "closingPrice": 682.6
+    },
+    {
+      "date": "2020-03-19",
+      "closingPrice": 707.0
+    },
+    {
+      "date": "2020-03-20",
+      "closingPrice": 736.0
+    },
+    {
+      "date": "2020-03-23",
+      "closingPrice": 708.4
+    },
+    {
+      "date": "2020-03-24",
+      "closingPrice": 720.8
+    },
+    {
+      "date": "2020-03-25",
+      "closingPrice": 735.6
+    },
+    {
+      "date": "2020-03-26",
+      "closingPrice": 775.6
+    },
+    {
+      "date": "2020-03-27",
+      "closingPrice": 790.0
+    },
+    {
+      "date": "2020-03-30",
+      "closingPrice": 783.8
+    },
+    {
+      "date": "2020-03-31",
+      "closingPrice": 770.6
+    },
+    {
+      "date": "2020-04-01",
+      "closingPrice": 739.8
+    },
+    {
+      "date": "2020-04-02",
+      "closingPrice": 740.2
+    },
+    {
+      "date": "2020-04-03",
+      "closingPrice": 691.2
+    },
+    {
+      "date": "2020-04-06",
+      "closingPrice": 732.4
+    },
+    {
+      "date": "2020-04-07",
+      "closingPrice": 760.0
+    },
+    {
+      "date": "2020-04-08",
+      "closingPrice": 774.6
+    },
+    {
+      "date": "2020-04-09",
+      "closingPrice": 775.4
+    },
+    {
+      "date": "2020-04-14",
+      "closingPrice": 781.2
+    },
+    {
+      "date": "2020-04-15",
+      "closingPrice": 774.2
+    },
+    {
+      "date": "2020-04-16",
+      "closingPrice": 764.4
+    },
+    {
+      "date": "2020-04-17",
+      "closingPrice": 780.4
+    },
+    {
+      "date": "2020-04-20",
+      "closingPrice": 792.4
+    },
+    {
+      "date": "2020-04-21",
+      "closingPrice": 865.0
+    },
+    {
+      "date": "2020-04-22",
+      "closingPrice": 844.0
+    },
+    {
+      "date": "2020-04-23",
+      "closingPrice": 851.0
+    },
+    {
+      "date": "2020-04-24",
+      "closingPrice": 867.0
+    },
+    {
+      "date": "2020-04-27",
+      "closingPrice": 881.6
+    },
+    {
+      "date": "2020-04-28",
+      "closingPrice": 875.0
+    },
+    {
+      "date": "2020-04-29",
+      "closingPrice": 879.0
+    },
+    {
+      "date": "2020-04-30",
+      "closingPrice": 901.2
+    },
+    {
+      "date": "2020-05-04",
+      "closingPrice": 890.0
+    },
+    {
+      "date": "2020-05-05",
+      "closingPrice": 916.4
+    },
+    {
+      "date": "2020-05-06",
+      "closingPrice": 947.2
+    },
+    {
+      "date": "2020-05-07",
+      "closingPrice": 953.6
+    },
+    {
+      "date": "2020-05-08",
+      "closingPrice": 981.0
+    },
+    {
+      "date": "2020-05-11",
+      "closingPrice": 990.0
+    },
+    {
+      "date": "2020-05-12",
+      "closingPrice": 973.8
+    },
+    {
+      "date": "2020-05-13",
+      "closingPrice": 1020.0
+    },
+    {
+      "date": "2020-05-14",
+      "closingPrice": 984.0
+    },
+    {
+      "date": "2020-05-15",
+      "closingPrice": 980.2
+    },
+    {
+      "date": "2020-05-18",
+      "closingPrice": 1034.5
+    },
+    {
+      "date": "2020-05-19",
+      "closingPrice": 1048.0
+    },
+    {
+      "date": "2020-05-20",
+      "closingPrice": 1079.5
+    },
+    {
+      "date": "2020-05-21",
+      "closingPrice": 1078.0
+    },
+    {
+      "date": "2020-05-22",
+      "closingPrice": 1132.0
+    },
+    {
+      "date": "2020-05-25",
+      "closingPrice": 1167.5
+    },
+    {
+      "date": "2020-05-26",
+      "closingPrice": 1115.0
+    },
+    {
+      "date": "2020-05-27",
+      "closingPrice": 1074.0
+    },
+    {
+      "date": "2020-05-28",
+      "closingPrice": 1125.0
+    },
+    {
+      "date": "2020-05-29",
+      "closingPrice": 1183.0
+    },
+    {
+      "date": "2020-06-01",
+      "closingPrice": 1192.5
+    },
+    {
+      "date": "2020-06-02",
+      "closingPrice": 1202.0
+    },
+    {
+      "date": "2020-06-03",
+      "closingPrice": 1200.0
+    },
+    {
+      "date": "2020-06-04",
+      "closingPrice": 1185.5
+    },
+    {
+      "date": "2020-06-05",
+      "closingPrice": 1151.0
+    },
+    {
+      "date": "2020-06-08",
+      "closingPrice": 1136.0
+    },
+    {
+      "date": "2020-06-09",
+      "closingPrice": 1147.5
+    },
+    {
+      "date": "2020-06-10",
+      "closingPrice": 1190.0
+    },
+    {
+      "date": "2020-06-11",
+      "closingPrice": 1200.0
+    },
+    {
+      "date": "2020-06-12",
+      "closingPrice": 1170.5
+    },
+    {
+      "date": "2020-06-15",
+      "closingPrice": 1210.0
+    },
+    {
+      "date": "2020-06-16",
+      "closingPrice": 1237.5
+    },
+    {
+      "date": "2020-06-17",
+      "closingPrice": 1280.0
+    },
+    {
+      "date": "2020-06-18",
+      "closingPrice": 1271.5
+    },
+    {
+      "date": "2020-06-19",
+      "closingPrice": 1276.0
+    },
+    {
+      "date": "2020-06-22",
+      "closingPrice": 1285.0
+    },
+    {
+      "date": "2020-06-23",
+      "closingPrice": 1300.0
+    },
+    {
+      "date": "2020-06-24",
+      "closingPrice": 1263.0
+    },
+    {
+      "date": "2020-06-25",
+      "closingPrice": 1283.0
+    },
+    {
+      "date": "2020-06-26",
+      "closingPrice": 1284.5
+    },
+    {
+      "date": "2020-06-29",
+      "closingPrice": 1293.0
+    },
+    {
+      "date": "2020-06-30",
+      "closingPrice": 1295.5
+    },
+    {
+      "date": "2020-07-01",
+      "closingPrice": 1314.0
+    },
+    {
+      "date": "2020-07-02",
+      "closingPrice": 1338.0
+    },
+    {
+      "date": "2020-07-03",
+      "closingPrice": 1351.5
+    },
+    {
+      "date": "2020-07-06",
+      "closingPrice": 1378.0
+    },
+    {
+      "date": "2020-07-07",
+      "closingPrice": 1397.0
+    },
+    {
+      "date": "2020-07-08",
+      "closingPrice": 1406.5
+    },
+    {
+      "date": "2020-07-09",
+      "closingPrice": 1398.5
+    },
+    {
+      "date": "2020-07-10",
+      "closingPrice": 1379.5
+    },
+    {
+      "date": "2020-07-13",
+      "closingPrice": 1400.0
+    },
+    {
+      "date": "2020-07-14",
+      "closingPrice": 1359.0
+    },
+    {
+      "date": "2020-07-15",
+      "closingPrice": 1380.0
+    },
+    {
+      "date": "2020-07-16",
+      "closingPrice": 1366.0
+    },
+    {
+      "date": "2020-07-17",
+      "closingPrice": 1402.5
+    },
+    {
+      "date": "2020-07-20",
+      "closingPrice": 1434.0
+    },
+    {
+      "date": "2020-07-21",
+      "closingPrice": 1416.5
+    },
+    {
+      "date": "2020-07-22",
+      "closingPrice": 1420.0
+    },
+    {
+      "date": "2020-07-23",
+      "closingPrice": 1436.5
+    },
+    {
+      "date": "2020-07-24",
+      "closingPrice": 1355.0
+    },
+    {
+      "date": "2020-07-27",
+      "closingPrice": 1400.0
+    },
+    {
+      "date": "2020-07-28",
+      "closingPrice": 1381.0
+    },
+    {
+      "date": "2020-07-29",
+      "closingPrice": 1413.0
+    },
+    {
+      "date": "2020-07-30",
+      "closingPrice": 1380.0
+    },
+    {
+      "date": "2020-07-31",
+      "closingPrice": 1417.0
+    },
+    {
+      "date": "2020-08-03",
+      "closingPrice": 1463.0
+    },
+    {
+      "date": "2020-08-04",
+      "closingPrice": 1438.0
+    },
+    {
+      "date": "2020-08-05",
+      "closingPrice": 1477.0
+    },
+    {
+      "date": "2020-08-06",
+      "closingPrice": 1470.0
+    },
+    {
+      "date": "2020-08-07",
+      "closingPrice": 1487.5
+    },
+    {
+      "date": "2020-08-10",
+      "closingPrice": 1427.0
+    },
+    {
+      "date": "2020-08-11",
+      "closingPrice": 1406.0
+    },
+    {
+      "date": "2020-08-12",
+      "closingPrice": 1418.0
+    },
+    {
+      "date": "2020-08-13",
+      "closingPrice": 1455.0
+    },
+    {
+      "date": "2020-08-14",
+      "closingPrice": 1415.5
+    },
+    {
+      "date": "2020-08-17",
+      "closingPrice": 1448.0
+    },
+    {
+      "date": "2020-08-18",
+      "closingPrice": 1445.0
+    },
+    {
+      "date": "2020-08-19",
+      "closingPrice": 1460.0
+    },
+    {
+      "date": "2020-08-20",
+      "closingPrice": 1420.5
+    },
+    {
+      "date": "2020-08-21",
+      "closingPrice": 1368.0
+    },
+    {
+      "date": "2020-08-24",
+      "closingPrice": 1379.0
+    },
+    {
+      "date": "2020-08-25",
+      "closingPrice": 1416.0
+    },
+    {
+      "date": "2020-08-26",
+      "closingPrice": 1472.0
+    },
+    {
+      "date": "2020-08-27",
+      "closingPrice": 1457.5
+    },
+    {
+      "date": "2020-08-28",
+      "closingPrice": 1415.0
+    },
+    {
+      "date": "2020-08-31",
+      "closingPrice": 1413.0
+    },
+    {
+      "date": "2020-09-01",
+      "closingPrice": 1417.0
+    },
+    {
+      "date": "2020-09-02",
+      "closingPrice": 1422.5
+    },
+    {
+      "date": "2020-09-03",
+      "closingPrice": 1333.5
+    },
+    {
+      "date": "2020-09-04",
+      "closingPrice": 1311.5
+    },
+    {
+      "date": "2020-09-07",
+      "closingPrice": 1340.0
+    },
+    {
+      "date": "2020-09-08",
+      "closingPrice": 1314.0
+    },
+    {
+      "date": "2020-09-09",
+      "closingPrice": 1344.0
+    },
+    {
+      "date": "2020-09-10",
+      "closingPrice": 1366.0
+    },
+    {
+      "date": "2020-09-11",
+      "closingPrice": 1375.0
+    },
+    {
+      "date": "2020-09-14",
+      "closingPrice": 1380.0
+    },
+    {
+      "date": "2020-09-15",
+      "closingPrice": 1399.0
+    },
+    {
+      "date": "2020-09-16",
+      "closingPrice": 1440.5
+    },
+    {
+      "date": "2020-09-17",
+      "closingPrice": 1442.0
+    },
+    {
+      "date": "2020-09-18",
+      "closingPrice": 1523.0
+    },
+    {
+      "date": "2020-09-21",
+      "closingPrice": 1521.5
+    },
+    {
+      "date": "2020-09-22",
+      "closingPrice": 1574.5
+    },
+    {
+      "date": "2020-09-23",
+      "closingPrice": 1576.0
+    },
+    {
+      "date": "2020-09-24",
+      "closingPrice": 1583.0
+    },
+    {
+      "date": "2020-09-25",
+      "closingPrice": 1595.5
+    },
+    {
+      "date": "2020-09-28",
+      "closingPrice": 1595.5
+    },
+    {
+      "date": "2020-09-29",
+      "closingPrice": 1602.5
+    },
+    {
+      "date": "2020-09-30",
+      "closingPrice": 1572.5
+    },
+    {
+      "date": "2020-10-01",
+      "closingPrice": 1605.0
+    },
+    {
+      "date": "2020-10-02",
+      "closingPrice": 1602.5
+    },
+    {
+      "date": "2020-10-05",
+      "closingPrice": 1630.0
+    },
+    {
+      "date": "2020-10-06",
+      "closingPrice": 1600.0
+    },
+    {
+      "date": "2020-10-07",
+      "closingPrice": 1615.0
+    },
+    {
+      "date": "2020-10-08",
+      "closingPrice": 1668.5
+    },
+    {
+      "date": "2020-10-09",
+      "closingPrice": 1703.5
+    },
+    {
+      "date": "2020-10-12",
+      "closingPrice": 1734.0
+    },
+    {
+      "date": "2020-10-13",
+      "closingPrice": 1716.0
+    },
+    {
+      "date": "2020-10-14",
+      "closingPrice": 1679.0
+    },
+    {
+      "date": "2020-10-15",
+      "closingPrice": 1644.5
+    },
+    {
+      "date": "2020-10-16",
+      "closingPrice": 1626.5
+    },
+    {
+      "date": "2020-10-19",
+      "closingPrice": 1629.5
+    },
+    {
+      "date": "2020-10-20",
+      "closingPrice": 1592.5
+    },
+    {
+      "date": "2020-10-21",
+      "closingPrice": 1593.5
+    },
+    {
+      "date": "2020-10-22",
+      "closingPrice": 1562.0
+    },
+    {
+      "date": "2020-10-23",
+      "closingPrice": 1568.5
+    },
+    {
+      "date": "2020-10-26",
+      "closingPrice": 1540.5
+    },
+    {
+      "date": "2020-10-27",
+      "closingPrice": 1577.5
+    },
+    {
+      "date": "2020-10-28",
+      "closingPrice": 1541.0
+    },
+    {
+      "date": "2020-10-29",
+      "closingPrice": 1508.0
+    },
+    {
+      "date": "2020-10-30",
+      "closingPrice": 1447.5
+    },
+    {
+      "date": "2020-11-02",
+      "closingPrice": 1456.5
+    },
+    {
+      "date": "2020-11-03",
+      "closingPrice": 1519.0
+    },
+    {
+      "date": "2020-11-04",
+      "closingPrice": 1626.5
+    },
+    {
+      "date": "2020-11-05",
+      "closingPrice": 1614.0
+    },
+    {
+      "date": "2020-11-06",
+      "closingPrice": 1610.0
+    },
+    {
+      "date": "2020-11-09",
+      "closingPrice": 1582.0
+    },
+    {
+      "date": "2020-11-10",
+      "closingPrice": 1548.0
+    },
+    {
+      "date": "2020-11-11",
+      "closingPrice": 1642.5
+    },
+    {
+      "date": "2020-11-12",
+      "closingPrice": 1640.0
+    },
+    {
+      "date": "2020-11-13",
+      "closingPrice": 1629.0
+    },
+    {
+      "date": "2020-11-16",
+      "closingPrice": 1631.0
+    },
+    {
+      "date": "2020-11-17",
+      "closingPrice": 1640.0
+    },
+    {
+      "date": "2020-11-18",
+      "closingPrice": 1593.0
+    },
+    {
+      "date": "2020-11-19",
+      "closingPrice": 1592.0
+    },
+    {
+      "date": "2020-11-20",
+      "closingPrice": 1608.0
+    },
+    {
+      "date": "2020-11-23",
+      "closingPrice": 1599.0
+    },
+    {
+      "date": "2020-11-24",
+      "closingPrice": 1551.5
+    },
+    {
+      "date": "2020-11-25",
+      "closingPrice": 1552.0
+    },
+    {
+      "date": "2020-11-26",
+      "closingPrice": 1575.0
+    },
+    {
+      "date": "2020-11-27",
+      "closingPrice": 1616.0
+    },
+    {
+      "date": "2020-11-30",
+      "closingPrice": 1602.0
+    },
+    {
+      "date": "2020-12-01",
+      "closingPrice": 1596.0
+    },
+    {
+      "date": "2020-12-02",
+      "closingPrice": 1621.5
+    },
+    {
+      "date": "2020-12-03",
+      "closingPrice": 1652.5
+    },
+    {
+      "date": "2020-12-04",
+      "closingPrice": 1659.0
+    },
+    {
+      "date": "2020-12-07",
+      "closingPrice": 1682.0
+    },
+    {
+      "date": "2020-12-08",
+      "closingPrice": 1724.0
+    },
+    {
+      "date": "2020-12-09",
+      "closingPrice": 1739.0
+    },
+    {
+      "date": "2020-12-10",
+      "closingPrice": 1752.0
+    },
+    {
+      "date": "2020-12-11",
+      "closingPrice": 1827.0
+    },
+    {
+      "date": "2020-12-14",
+      "closingPrice": 1837.0
+    },
+    {
+      "date": "2020-12-15",
+      "closingPrice": 1860.0
+    },
+    {
+      "date": "2020-12-16",
+      "closingPrice": 1878.0
+    },
+    {
+      "date": "2020-12-17",
+      "closingPrice": 1906.5
+    },
+    {
+      "date": "2020-12-18",
+      "closingPrice": 1949.5
+    },
+    {
+      "date": "2020-12-21",
+      "closingPrice": 1900.0
+    },
+    {
+      "date": "2020-12-22",
+      "closingPrice": 1940.5
+    },
+    {
+      "date": "2020-12-23",
+      "closingPrice": 1944.0
+    },
+    {
+      "date": "2020-12-24",
+      "closingPrice": 1969.5
+    },
+    {
+      "date": "2020-12-28",
+      "closingPrice": 1931.0
+    },
+    {
+      "date": "2020-12-29",
+      "closingPrice": 1932.0
+    },
+    {
+      "date": "2020-12-30",
+      "closingPrice": 1900.0
+    },
+    {
+      "date": "2020-12-31",
+      "closingPrice": 1905.0
+    },
+    {
+      "date": "2021-01-04",
+      "closingPrice": 1859.5
+    },
+    {
+      "date": "2021-01-05",
+      "closingPrice": 1829.0
+    },
+    {
+      "date": "2021-01-06",
+      "closingPrice": 1733.0
+    },
+    {
+      "date": "2021-01-07",
+      "closingPrice": 1714.5
+    },
+    {
+      "date": "2021-01-08",
+      "closingPrice": 1756.5
+    },
+    {
+      "date": "2021-01-11",
+      "closingPrice": 1744.5
+    },
+    {
+      "date": "2021-01-12",
+      "closingPrice": 1758.5
+    },
+    {
+      "date": "2021-01-13",
+      "closingPrice": 1791.0
+    },
+    {
+      "date": "2021-01-14",
+      "closingPrice": 1777.5
+    },
+    {
+      "date": "2021-01-15",
+      "closingPrice": 1789.0
+    },
+    {
+      "date": "2021-01-18",
+      "closingPrice": 1791.5
+    },
+    {
+      "date": "2021-01-19",
+      "closingPrice": 1785.0
+    },
+    {
+      "date": "2021-01-20",
+      "closingPrice": 1876.0
+    },
+    {
+      "date": "2021-01-21",
+      "closingPrice": 1913.0
+    },
+    {
+      "date": "2021-01-22",
+      "closingPrice": 1919.0
+    },
+    {
+      "date": "2021-01-25",
+      "closingPrice": 1875.0
+    },
+    {
+      "date": "2021-01-26",
+      "closingPrice": 1856.5
+    },
+    {
+      "date": "2021-01-27",
+      "closingPrice": 1775.0
+    },
+    {
+      "date": "2021-01-28",
+      "closingPrice": 1760.0
+    },
+    {
+      "date": "2021-01-29",
+      "closingPrice": 1719.5
+    },
+    {
+      "date": "2021-02-01",
+      "closingPrice": 1770.5
+    },
+    {
+      "date": "2021-02-02",
+      "closingPrice": 1800.0
+    },
+    {
+      "date": "2021-02-03",
+      "closingPrice": 1823.0
+    },
+    {
+      "date": "2021-02-04",
+      "closingPrice": 1903.0
+    },
+    {
+      "date": "2021-02-05",
+      "closingPrice": 1884.5
+    },
+    {
+      "date": "2021-02-08",
+      "closingPrice": 1897.0
+    },
+    {
+      "date": "2021-02-09",
+      "closingPrice": 1901.5
+    },
+    {
+      "date": "2021-02-10",
+      "closingPrice": 2066.0
+    },
+    {
+      "date": "2021-02-11",
+      "closingPrice": 2184.0
+    },
+    {
+      "date": "2021-02-12",
+      "closingPrice": 2190.0
+    },
+    {
+      "date": "2021-02-15",
+      "closingPrice": 2135.0
+    },
+    {
+      "date": "2021-02-16",
+      "closingPrice": 2192.0
+    },
+    {
+      "date": "2021-02-17",
+      "closingPrice": 2160.0
+    },
+    {
+      "date": "2021-02-18",
+      "closingPrice": 2167.0
+    },
+    {
+      "date": "2021-02-19",
+      "closingPrice": 2211.0
+    },
+    {
+      "date": "2021-02-22",
+      "closingPrice": 2152.0
+    },
+    {
+      "date": "2021-02-23",
+      "closingPrice": 1980.0
+    },
+    {
+      "date": "2021-02-24",
+      "closingPrice": 1978.5
+    },
+    {
+      "date": "2021-02-25",
+      "closingPrice": 1934.5
+    },
+    {
+      "date": "2021-02-26",
+      "closingPrice": 1916.0
+    },
+    {
+      "date": "2021-03-01",
+      "closingPrice": 1950.0
+    },
+    {
+      "date": "2021-03-02",
+      "closingPrice": 1943.5
+    },
+    {
+      "date": "2021-03-03",
+      "closingPrice": 1918.5
+    },
+    {
+      "date": "2021-03-04",
+      "closingPrice": 1875.5
+    },
+    {
+      "date": "2021-03-05",
+      "closingPrice": 1814.0
+    },
+    {
+      "date": "2021-03-08",
+      "closingPrice": 1860.0
+    },
+    {
+      "date": "2021-03-09",
+      "closingPrice": 1936.0
+    },
+    {
+      "date": "2021-03-10",
+      "closingPrice": 1882.5
+    },
+    {
+      "date": "2021-03-11",
+      "closingPrice": 1982.5
+    },
+    {
+      "date": "2021-03-12",
+      "closingPrice": 1935.0
+    },
+    {
+      "date": "2021-03-15",
+      "closingPrice": 1967.5
+    },
+    {
+      "date": "2021-03-16",
+      "closingPrice": 1991.0
+    },
+    {
+      "date": "2021-03-17",
+      "closingPrice": 1943.0
+    },
+    {
+      "date": "2021-03-18",
+      "closingPrice": 1909.5
+    },
+    {
+      "date": "2021-03-19",
+      "closingPrice": 1913.0
+    },
+    {
+      "date": "2021-03-22",
+      "closingPrice": 1920.0
+    },
+    {
+      "date": "2021-03-23",
+      "closingPrice": 1940.0
+    },
+    {
+      "date": "2021-03-24",
+      "closingPrice": 1896.0
+    },
+    {
+      "date": "2021-03-25",
+      "closingPrice": 1848.0
+    },
+    {
+      "date": "2021-03-26",
+      "closingPrice": 1889.5
+    },
+    {
+      "date": "2021-03-29",
+      "closingPrice": 1857.0
+    },
+    {
+      "date": "2021-03-30",
+      "closingPrice": 1877.5
+    },
+    {
+      "date": "2021-03-31",
+      "closingPrice": 1903.5
+    },
+    {
+      "date": "2021-04-01",
+      "closingPrice": 1982.0
+    },
+    {
+      "date": "2021-04-06",
+      "closingPrice": 1985.4
+    },
+    {
+      "date": "2021-04-07",
+      "closingPrice": 1996.4
+    },
+    {
+      "date": "2021-04-08",
+      "closingPrice": 1994.0
+    },
+    {
+      "date": "2021-04-09",
+      "closingPrice": 1989.2
+    },
+    {
+      "date": "2021-04-12",
+      "closingPrice": 1959.0
+    },
+    {
+      "date": "2021-04-13",
+      "closingPrice": 1990.0
+    },
+    {
+      "date": "2021-04-14",
+      "closingPrice": 1989.0
+    },
+    {
+      "date": "2021-04-15",
+      "closingPrice": 2008.0
+    },
+    {
+      "date": "2021-04-16",
+      "closingPrice": 2018.0
+    },
+    {
+      "date": "2021-04-19",
+      "closingPrice": 1996.2
+    },
+    {
+      "date": "2021-04-20",
+      "closingPrice": 1981.0
+    },
+    {
+      "date": "2021-04-21",
+      "closingPrice": 2012.5
+    },
+    {
+      "date": "2021-04-22",
+      "closingPrice": 2072.5
+    },
+    {
+      "date": "2021-04-23",
+      "closingPrice": 2107.0
+    },
+    {
+      "date": "2021-04-26",
+      "closingPrice": 2116.0
+    },
+    {
+      "date": "2021-04-27",
+      "closingPrice": 2100.5
+    },
+    {
+      "date": "2021-04-28",
+      "closingPrice": 2074.0
+    },
+    {
+      "date": "2021-04-29",
+      "closingPrice": 2084.5
+    },
+    {
+      "date": "2021-04-30",
+      "closingPrice": 2041.5
+    },
+    {
+      "date": "2021-05-03",
+      "closingPrice": 2062.0
+    },
+    {
+      "date": "2021-05-04",
+      "closingPrice": 1930.8
+    },
+    {
+      "date": "2021-05-05",
+      "closingPrice": 1974.8
+    },
+    {
+      "date": "2021-05-06",
+      "closingPrice": 1888.8
+    },
+    {
+      "date": "2021-05-07",
+      "closingPrice": 1913.0
+    },
+    {
+      "date": "2021-05-10",
+      "closingPrice": 1840.0
+    },
+    {
+      "date": "2021-05-11",
+      "closingPrice": 1779.0
+    },
+    {
+      "date": "2021-05-12",
+      "closingPrice": 1674.6
+    },
+    {
+      "date": "2021-05-13",
+      "closingPrice": 1706.4
+    },
+    {
+      "date": "2021-05-14",
+      "closingPrice": 1701.2
+    },
+    {
+      "date": "2021-05-17",
+      "closingPrice": 1699.0
+    },
+    {
+      "date": "2021-05-18",
+      "closingPrice": 1754.8
+    },
+    {
+      "date": "2021-05-19",
+      "closingPrice": 1709.2
+    },
+    {
+      "date": "2021-05-20",
+      "closingPrice": 1801.4
+    },
+    {
+      "date": "2021-05-21",
+      "closingPrice": 1845.0
+    },
+    {
+      "date": "2021-05-24",
+      "closingPrice": 1862.2
+    },
+    {
+      "date": "2021-05-25",
+      "closingPrice": 1906.4
+    },
+    {
+      "date": "2021-05-26",
+      "closingPrice": 1908.6
+    },
+    {
+      "date": "2021-05-27",
+      "closingPrice": 1888.0
+    },
+    {
+      "date": "2021-05-28",
+      "closingPrice": 1902.2
+    },
+    {
+      "date": "2021-05-31",
+      "closingPrice": 1890.4
+    },
+    {
+      "date": "2021-06-01",
+      "closingPrice": 1899.2
+    },
+    {
+      "date": "2021-06-02",
+      "closingPrice": 1860.2
+    },
+    {
+      "date": "2021-06-03",
+      "closingPrice": 1801.2
+    },
+    {
+      "date": "2021-06-04",
+      "closingPrice": 1863.2
+    },
+    {
+      "date": "2021-06-07",
+      "closingPrice": 1873.6
+    },
+    {
+      "date": "2021-06-08",
+      "closingPrice": 1898.2
+    },
+    {
+      "date": "2021-06-09",
+      "closingPrice": 1924.4
+    },
+    {
+      "date": "2021-06-10",
+      "closingPrice": 1909.6
+    },
+    {
+      "date": "2021-06-11",
+      "closingPrice": 1918.8
+    },
+    {
+      "date": "2021-06-14",
+      "closingPrice": 1931.6
+    },
+    {
+      "date": "2021-06-15",
+      "closingPrice": 1898.2
+    },
+    {
+      "date": "2021-06-16",
+      "closingPrice": 1899.8
+    },
+    {
+      "date": "2021-06-17",
+      "closingPrice": 1902.6
+    },
+    {
+      "date": "2021-06-18",
+      "closingPrice": 1934.4
+    },
+    {
+      "date": "2021-06-21",
+      "closingPrice": 1914.8
+    },
+    {
+      "date": "2021-06-22",
+      "closingPrice": 1947.4
+    },
+    {
+      "date": "2021-06-23",
+      "closingPrice": 1912.6
+    },
+    {
+      "date": "2021-06-24",
+      "closingPrice": 2021.0
+    },
+    {
+      "date": "2021-06-25",
+      "closingPrice": 2004.5
+    },
+    {
+      "date": "2021-06-28",
+      "closingPrice": 2036.5
+    },
+    {
+      "date": "2021-06-29",
+      "closingPrice": 2057.0
+    },
+    {
+      "date": "2021-06-30",
+      "closingPrice": 2060.5
+    },
+    {
+      "date": "2021-07-01",
+      "closingPrice": 2047.0
+    },
+    {
+      "date": "2021-07-02",
+      "closingPrice": 2080.0
+    },
+    {
+      "date": "2021-07-05",
+      "closingPrice": 2070.0
+    },
+    {
+      "date": "2021-07-06",
+      "closingPrice": 2097.5
+    },
+    {
+      "date": "2021-07-07",
+      "closingPrice": 2115.0
+    },
+    {
+      "date": "2021-07-08",
+      "closingPrice": 2074.5
+    },
+    {
+      "date": "2021-07-09",
+      "closingPrice": 2118.5
+    },
+    {
+      "date": "2021-07-12",
+      "closingPrice": 2155.5
+    },
+    {
+      "date": "2021-07-13",
+      "closingPrice": 2173.5
+    },
+    {
+      "date": "2021-07-14",
+      "closingPrice": 2191.0
+    },
+    {
+      "date": "2021-07-15",
+      "closingPrice": 2179.5
+    },
+    {
+      "date": "2021-07-16",
+      "closingPrice": 2197.5
+    },
+    {
+      "date": "2021-07-19",
+      "closingPrice": 2149.0
+    },
+    {
+      "date": "2021-07-20",
+      "closingPrice": 2127.5
+    },
+    {
+      "date": "2021-07-21",
+      "closingPrice": 2179.0
+    },
+    {
+      "date": "2021-07-22",
+      "closingPrice": 2280.5
+    },
+    {
+      "date": "2021-07-23",
+      "closingPrice": 2308.0
+    },
+    {
+      "date": "2021-07-26",
+      "closingPrice": 2296.5
+    },
+    {
+      "date": "2021-07-27",
+      "closingPrice": 2261.5
+    },
+    {
+      "date": "2021-07-28",
+      "closingPrice": 2326.5
+    },
+    {
+      "date": "2021-07-29",
+      "closingPrice": 2356.5
+    },
+    {
+      "date": "2021-07-30",
+      "closingPrice": 2289.5
+    },
+    {
+      "date": "2021-08-02",
+      "closingPrice": 2309.5
+    },
+    {
+      "date": "2021-08-03",
+      "closingPrice": 2318.5
+    },
+    {
+      "date": "2021-08-04",
+      "closingPrice": 2330.0
+    },
+    {
+      "date": "2021-08-05",
+      "closingPrice": 2366.5
+    },
+    {
+      "date": "2021-08-06",
+      "closingPrice": 2352.5
+    },
+    {
+      "date": "2021-08-09",
+      "closingPrice": 2360.0
+    },
+    {
+      "date": "2021-08-10",
+      "closingPrice": 2368.0
+    },
+    {
+      "date": "2021-08-11",
+      "closingPrice": 2340.0
+    },
+    {
+      "date": "2021-08-12",
+      "closingPrice": 2343.5
+    },
+    {
+      "date": "2021-08-13",
+      "closingPrice": 2356.5
+    },
+    {
+      "date": "2021-08-16",
+      "closingPrice": 2362.0
+    },
+    {
+      "date": "2021-08-17",
+      "closingPrice": 2375.5
+    },
+    {
+      "date": "2021-08-18",
+      "closingPrice": 2386.0
+    },
+    {
+      "date": "2021-08-19",
+      "closingPrice": 2523.5
+    },
+    {
+      "date": "2021-08-20",
+      "closingPrice": 2622.0
+    },
+    {
+      "date": "2021-08-23",
+      "closingPrice": 2703.5
+    },
+    {
+      "date": "2021-08-24",
+      "closingPrice": 2766.0
+    },
+    {
+      "date": "2021-08-25",
+      "closingPrice": 2717.5
+    },
+    {
+      "date": "2021-08-26",
+      "closingPrice": 2659.5
+    },
+    {
+      "date": "2021-08-27",
+      "closingPrice": 2725.5
+    },
+    {
+      "date": "2021-08-30",
+      "closingPrice": 2749.5
+    },
+    {
+      "date": "2021-08-31",
+      "closingPrice": 2734.5
+    },
+    {
+      "date": "2021-09-01",
+      "closingPrice": 2683.5
+    },
+    {
+      "date": "2021-09-02",
+      "closingPrice": 2692.5
+    },
+    {
+      "date": "2021-09-03",
+      "closingPrice": 2670.0
+    },
+    {
+      "date": "2021-09-06",
+      "closingPrice": 2705.0
+    },
+    {
+      "date": "2021-09-07",
+      "closingPrice": 2668.0
+    },
+    {
+      "date": "2021-09-08",
+      "closingPrice": 2613.0
+    },
+    {
+      "date": "2021-09-09",
+      "closingPrice": 2674.0
+    },
+    {
+      "date": "2021-09-10",
+      "closingPrice": 2691.5
+    },
+    {
+      "date": "2021-09-13",
+      "closingPrice": 2647.5
+    },
+    {
+      "date": "2021-09-14",
+      "closingPrice": 2678.5
+    },
+    {
+      "date": "2021-09-15",
+      "closingPrice": 2696.5
+    },
+    {
+      "date": "2021-09-16",
+      "closingPrice": 2744.0
+    },
+    {
+      "date": "2021-09-17",
+      "closingPrice": 2723.0
+    },
+    {
+      "date": "2021-09-20",
+      "closingPrice": 2673.0
+    },
+    {
+      "date": "2021-09-21",
+      "closingPrice": 2695.0
+    },
+    {
+      "date": "2021-09-22",
+      "closingPrice": 2709.5
+    },
+    {
+      "date": "2021-09-23",
+      "closingPrice": 2746.5
+    },
+    {
+      "date": "2021-09-24",
+      "closingPrice": 2671.0
+    },
+    {
+      "date": "2021-09-27",
+      "closingPrice": 2644.0
+    },
+    {
+      "date": "2021-09-28",
+      "closingPrice": 2500.5
+    },
+    {
+      "date": "2021-09-29",
+      "closingPrice": 2495.0
+    },
+    {
+      "date": "2021-09-30",
+      "closingPrice": 2415.0
+    },
+    {
+      "date": "2021-10-01",
+      "closingPrice": 2421.5
+    },
+    {
+      "date": "2021-10-04",
+      "closingPrice": 2354.5
+    },
+    {
+      "date": "2021-10-05",
+      "closingPrice": 2450.5
+    },
+    {
+      "date": "2021-10-06",
+      "closingPrice": 2434.0
+    },
+    {
+      "date": "2021-10-07",
+      "closingPrice": 2481.5
+    },
+    {
+      "date": "2021-10-08",
+      "closingPrice": 2397.0
+    },
+    {
+      "date": "2021-10-11",
+      "closingPrice": 2410.0
+    },
+    {
+      "date": "2021-10-12",
+      "closingPrice": 2415.0
+    },
+    {
+      "date": "2021-10-13",
+      "closingPrice": 2500.0
+    },
+    {
+      "date": "2021-10-14",
+      "closingPrice": 2610.5
+    },
+    {
+      "date": "2021-10-15",
+      "closingPrice": 2648.5
+    },
+    {
+      "date": "2021-10-18",
+      "closingPrice": 2633.5
+    },
+    {
+      "date": "2021-10-19",
+      "closingPrice": 2691.5
+    },
+    {
+      "date": "2021-10-20",
+      "closingPrice": 2713.0
+    },
+    {
+      "date": "2021-10-21",
+      "closingPrice": 2691.0
+    },
+    {
+      "date": "2021-10-22",
+      "closingPrice": 2667.0
+    },
+    {
+      "date": "2021-10-25",
+      "closingPrice": 2679.0
+    },
+    {
+      "date": "2021-10-26",
+      "closingPrice": 2721.5
+    },
+    {
+      "date": "2021-10-27",
+      "closingPrice": 2667.0
+    },
+    {
+      "date": "2021-10-28",
+      "closingPrice": 2630.5
+    },
+    {
+      "date": "2021-10-29",
+      "closingPrice": 2610.5
+    },
+    {
+      "date": "2021-11-01",
+      "closingPrice": 2564.5
+    },
+    {
+      "date": "2021-11-02",
+      "closingPrice": 2595.0
+    },
+    {
+      "date": "2021-11-03",
+      "closingPrice": 2634.5
+    },
+    {
+      "date": "2021-11-04",
+      "closingPrice": 2731.5
+    },
+    {
+      "date": "2021-11-05",
+      "closingPrice": 2745.0
+    },
+    {
+      "date": "2021-11-08",
+      "closingPrice": 2713.0
+    },
+    {
+      "date": "2021-11-09",
+      "closingPrice": 2606.0
+    },
+    {
+      "date": "2021-11-10",
+      "closingPrice": 2572.0
+    },
+    {
+      "date": "2021-11-11",
+      "closingPrice": 2575.0
+    },
+    {
+      "date": "2021-11-12",
+      "closingPrice": 2580.0
+    },
+    {
+      "date": "2021-11-15",
+      "closingPrice": 2596.0
+    },
+    {
+      "date": "2021-11-16",
+      "closingPrice": 2598.0
+    },
+    {
+      "date": "2021-11-17",
+      "closingPrice": 2596.0
+    },
+    {
+      "date": "2021-11-18",
+      "closingPrice": 2544.5
+    },
+    {
+      "date": "2021-11-19",
+      "closingPrice": 2616.5
+    },
+    {
+      "date": "2021-11-22",
+      "closingPrice": 2459.0
+    },
+    {
+      "date": "2021-11-23",
+      "closingPrice": 2399.5
+    },
+    {
+      "date": "2021-11-24",
+      "closingPrice": 2364.5
+    },
+    {
+      "date": "2021-11-25",
+      "closingPrice": 2458.5
+    },
+    {
+      "date": "2021-11-26",
+      "closingPrice": 2422.5
+    },
+    {
+      "date": "2021-11-29",
+      "closingPrice": 2460.5
+    },
+    {
+      "date": "2021-11-30",
+      "closingPrice": 2447.5
+    },
+    {
+      "date": "2021-12-01",
+      "closingPrice": 2443.5
+    },
+    {
+      "date": "2021-12-02",
+      "closingPrice": 2345.0
+    },
+    {
+      "date": "2021-12-03",
+      "closingPrice": 2296.0
+    },
+    {
+      "date": "2021-12-06",
+      "closingPrice": 2334.5
+    },
+    {
+      "date": "2021-12-07",
+      "closingPrice": 2482.5
+    },
+    {
+      "date": "2021-12-08",
+      "closingPrice": 2501.5
+    },
+    {
+      "date": "2021-12-09",
+      "closingPrice": 2470.5
+    },
+    {
+      "date": "2021-12-10",
+      "closingPrice": 2420.0
+    },
+    {
+      "date": "2021-12-13",
+      "closingPrice": 2426.0
+    },
+    {
+      "date": "2021-12-14",
+      "closingPrice": 2305.0
+    },
+    {
+      "date": "2021-12-15",
+      "closingPrice": 2329.5
+    },
+    {
+      "date": "2021-12-16",
+      "closingPrice": 2308.0
+    },
+    {
+      "date": "2021-12-17",
+      "closingPrice": 2175.0
+    },
+    {
+      "date": "2021-12-20",
+      "closingPrice": 2129.5
+    },
+    {
+      "date": "2021-12-21",
+      "closingPrice": 2181.0
+    },
+    {
+      "date": "2021-12-22",
+      "closingPrice": 2250.5
+    },
+    {
+      "date": "2021-12-23",
+      "closingPrice": 2256.0
+    },
+    {
+      "date": "2021-12-24",
+      "closingPrice": 2258.5
+    },
+    {
+      "date": "2021-12-27",
+      "closingPrice": 2329.5
+    },
+    {
+      "date": "2021-12-28",
+      "closingPrice": 2338.0
+    },
+    {
+      "date": "2021-12-29",
+      "closingPrice": 2292.0
+    },
+    {
+      "date": "2021-12-30",
+      "closingPrice": 2334.5
+    },
+    {
+      "date": "2021-12-31",
+      "closingPrice": 2311.5
+    },
+    {
+      "date": "2022-01-03",
+      "closingPrice": 2354.5
+    },
+    {
+      "date": "2022-01-04",
+      "closingPrice": 2271.0
+    },
+    {
+      "date": "2022-01-05",
+      "closingPrice": 2255.0
+    },
+    {
+      "date": "2022-01-06",
+      "closingPrice": 2187.5
+    },
+    {
+      "date": "2022-01-07",
+      "closingPrice": 2145.0
+    },
+    {
+      "date": "2022-01-10",
+      "closingPrice": 1965.6
+    },
+    {
+      "date": "2022-01-11",
+      "closingPrice": 2008.0
+    },
+    {
+      "date": "2022-01-12",
+      "closingPrice": 2035.5
+    },
+    {
+      "date": "2022-01-13",
+      "closingPrice": 1914.0
+    },
+    {
+      "date": "2022-01-14",
+      "closingPrice": 1772.0
+    },
+    {
+      "date": "2022-01-17",
+      "closingPrice": 1788.6
+    },
+    {
+      "date": "2022-01-18",
+      "closingPrice": 1764.0
+    },
+    {
+      "date": "2022-01-19",
+      "closingPrice": 1842.8
+    },
+    {
+      "date": "2022-01-20",
+      "closingPrice": 1891.8
+    },
+    {
+      "date": "2022-01-21",
+      "closingPrice": 1840.6
+    },
+    {
+      "date": "2022-01-24",
+      "closingPrice": 1678.2
+    },
+    {
+      "date": "2022-01-25",
+      "closingPrice": 1664.4
+    },
+    {
+      "date": "2022-01-26",
+      "closingPrice": 1746.0
+    },
+    {
+      "date": "2022-01-27",
+      "closingPrice": 1749.2
+    },
+    {
+      "date": "2022-01-28",
+      "closingPrice": 1726.8
+    },
+    {
+      "date": "2022-01-31",
+      "closingPrice": 1789.0
+    },
+    {
+      "date": "2022-02-01",
+      "closingPrice": 1822.2
+    },
+    {
+      "date": "2022-02-02",
+      "closingPrice": 1776.2
+    },
+    {
+      "date": "2022-02-03",
+      "closingPrice": 1619.0
+    },
+    {
+      "date": "2022-02-04",
+      "closingPrice": 1664.8
+    },
+    {
+      "date": "2022-02-07",
+      "closingPrice": 1702.8
+    },
+    {
+      "date": "2022-02-08",
+      "closingPrice": 1682.4
+    },
+    {
+      "date": "2022-02-09",
+      "closingPrice": 1876.6
+    },
+    {
+      "date": "2022-02-10",
+      "closingPrice": 1843.2
+    },
+    {
+      "date": "2022-02-11",
+      "closingPrice": 1862.2
+    },
+    {
+      "date": "2022-02-14",
+      "closingPrice": 1877.8
+    },
+    {
+      "date": "2022-02-15",
+      "closingPrice": 1957.8
+    },
+    {
+      "date": "2022-02-16",
+      "closingPrice": 2032.0
+    },
+    {
+      "date": "2022-02-17",
+      "closingPrice": 1925.0
+    },
+    {
+      "date": "2022-02-18",
+      "closingPrice": 1823.4
+    },
+    {
+      "date": "2022-02-21",
+      "closingPrice": 1822.0
+    },
+    {
+      "date": "2022-02-22",
+      "closingPrice": 1838.6
+    },
+    {
+      "date": "2022-02-23",
+      "closingPrice": 1782.6
+    },
+    {
+      "date": "2022-02-24",
+      "closingPrice": 1804.6
+    },
+    {
+      "date": "2022-02-25",
+      "closingPrice": 1812.4
+    },
+    {
+      "date": "2022-02-28",
+      "closingPrice": 1864.4
+    },
+    {
+      "date": "2022-03-01",
+      "closingPrice": 1785.2
+    },
+    {
+      "date": "2022-03-02",
+      "closingPrice": 1767.4
+    },
+    {
+      "date": "2022-03-03",
+      "closingPrice": 1683.8
+    },
+    {
+      "date": "2022-03-04",
+      "closingPrice": 1587.4
+    },
+    {
+      "date": "2022-03-07",
+      "closingPrice": 1487.0
+    },
+    {
+      "date": "2022-03-08",
+      "closingPrice": 1430.8
+    },
+    {
+      "date": "2022-03-09",
+      "closingPrice": 1605.6
+    },
+    {
+      "date": "2022-03-10",
+      "closingPrice": 1533.0
+    },
+    {
+      "date": "2022-03-11",
+      "closingPrice": 1576.0
+    },
+    {
+      "date": "2022-03-14",
+      "closingPrice": 1626.6
+    },
+    {
+      "date": "2022-03-15",
+      "closingPrice": 1681.8
+    },
+    {
+      "date": "2022-03-16",
+      "closingPrice": 1781.6
+    },
+    {
+      "date": "2022-03-17",
+      "closingPrice": 1802.4
+    },
+    {
+      "date": "2022-03-18",
+      "closingPrice": 1841.0
+    },
+    {
+      "date": "2022-03-21",
+      "closingPrice": 1815.0
+    },
+    {
+      "date": "2022-03-22",
+      "closingPrice": 1858.8
+    },
+    {
+      "date": "2022-03-23",
+      "closingPrice": 1811.8
+    },
+    {
+      "date": "2022-03-24",
+      "closingPrice": 1822.8
+    },
+    {
+      "date": "2022-03-25",
+      "closingPrice": 1845.4
+    },
+    {
+      "date": "2022-03-28",
+      "closingPrice": 1768.2
+    },
+    {
+      "date": "2022-03-29",
+      "closingPrice": 1928.2
+    },
+    {
+      "date": "2022-03-30",
+      "closingPrice": 1892.4
+    },
+    {
+      "date": "2022-03-31",
+      "closingPrice": 1809.0
+    },
+    {
+      "date": "2022-04-01",
+      "closingPrice": 1794.0
+    },
+    {
+      "date": "2022-04-04",
+      "closingPrice": 1855.6
+    },
+    {
+      "date": "2022-04-05",
+      "closingPrice": 1846.0
+    },
+    {
+      "date": "2022-04-06",
+      "closingPrice": 1713.2
+    },
+    {
+      "date": "2022-04-07",
+      "closingPrice": 1725.0
+    },
+    {
+      "date": "2022-04-08",
+      "closingPrice": 1715.4
+    },
+    {
+      "date": "2022-04-11",
+      "closingPrice": 1627.6
+    },
+    {
+      "date": "2022-04-12",
+      "closingPrice": 1688.8
+    },
+    {
+      "date": "2022-04-13",
+      "closingPrice": 1675.0
+    },
+    {
+      "date": "2022-04-14",
+      "closingPrice": 1687.4
+    },
+    {
+      "date": "2022-04-19",
+      "closingPrice": 1665.8
+    },
+    {
+      "date": "2022-04-20",
+      "closingPrice": 1716.6
+    },
+    {
+      "date": "2022-04-21",
+      "closingPrice": 1728.0
+    },
+    {
+      "date": "2022-04-22",
+      "closingPrice": 1642.4
+    },
+    {
+      "date": "2022-04-25",
+      "closingPrice": 1609.6
+    },
+    {
+      "date": "2022-04-26",
+      "closingPrice": 1565.0
+    },
+    {
+      "date": "2022-04-27",
+      "closingPrice": 1611.6
+    },
+    {
+      "date": "2022-04-28",
+      "closingPrice": 1656.6
+    },
+    {
+      "date": "2022-04-29",
+      "closingPrice": 1623.0
+    },
+    {
+      "date": "2022-05-02",
+      "closingPrice": 1580.6
+    },
+    {
+      "date": "2022-05-03",
+      "closingPrice": 1574.4
+    },
+    {
+      "date": "2022-05-04",
+      "closingPrice": 1545.8
+    },
+    {
+      "date": "2022-05-05",
+      "closingPrice": 1476.0
+    },
+    {
+      "date": "2022-05-06",
+      "closingPrice": 1417.6
+    },
+    {
+      "date": "2022-05-09",
+      "closingPrice": 1403.4
+    },
+    {
+      "date": "2022-05-10",
+      "closingPrice": 1378.4
+    },
+    {
+      "date": "2022-05-11",
+      "closingPrice": 1372.6
+    },
+    {
+      "date": "2022-05-12",
+      "closingPrice": 1370.0
+    },
+    {
+      "date": "2022-05-13",
+      "closingPrice": 1483.8
+    },
+    {
+      "date": "2022-05-16",
+      "closingPrice": 1482.6
+    },
+    {
+      "date": "2022-05-17",
+      "closingPrice": 1469.0
+    },
+    {
+      "date": "2022-05-18",
+      "closingPrice": 1414.2
+    },
+    {
+      "date": "2022-05-19",
+      "closingPrice": 1449.8
+    },
+    {
+      "date": "2022-05-20",
+      "closingPrice": 1466.0
+    },
+    {
+      "date": "2022-05-23",
+      "closingPrice": 1476.4
+    },
+    {
+      "date": "2022-05-24",
+      "closingPrice": 1374.2
+    },
+    {
+      "date": "2022-05-25",
+      "closingPrice": 1398.0
+    },
+    {
+      "date": "2022-05-26",
+      "closingPrice": 1469.2
+    },
+    {
+      "date": "2022-05-27",
+      "closingPrice": 1517.2
+    },
+    {
+      "date": "2022-05-30",
+      "closingPrice": 1499.8
+    },
+    {
+      "date": "2022-05-31",
+      "closingPrice": 1447.2
+    },
+    {
+      "date": "2022-06-01",
+      "closingPrice": 1447.8
+    },
+    {
+      "date": "2022-06-02",
+      "closingPrice": 1482.4
+    },
+    {
+      "date": "2022-06-03",
+      "closingPrice": 1444.0
+    },
+    {
+      "date": "2022-06-06",
+      "closingPrice": 1502.2
+    },
+    {
+      "date": "2022-06-07",
+      "closingPrice": 1456.6
+    },
+    {
+      "date": "2022-06-08",
+      "closingPrice": 1451.8
+    },
+    {
+      "date": "2022-06-09",
+      "closingPrice": 1417.6
+    },
+    {
+      "date": "2022-06-10",
+      "closingPrice": 1334.6
+    },
+    {
+      "date": "2022-06-13",
+      "closingPrice": 1222.6
+    },
+    {
+      "date": "2022-06-14",
+      "closingPrice": 1155.4
+    },
+    {
+      "date": "2022-06-15",
+      "closingPrice": 1203.4
+    },
+    {
+      "date": "2022-06-16",
+      "closingPrice": 1192.4
+    },
+    {
+      "date": "2022-06-17",
+      "closingPrice": 1240.2
+    },
+    {
+      "date": "2022-06-20",
+      "closingPrice": 1238.6
+    },
+    {
+      "date": "2022-06-21",
+      "closingPrice": 1266.4
+    },
+    {
+      "date": "2022-06-22",
+      "closingPrice": 1313.4
+    },
+    {
+      "date": "2022-06-23",
+      "closingPrice": 1329.2
+    },
+    {
+      "date": "2022-06-24",
+      "closingPrice": 1413.2
+    },
+    {
+      "date": "2022-06-27",
+      "closingPrice": 1419.8
+    },
+    {
+      "date": "2022-06-28",
+      "closingPrice": 1417.0
+    },
+    {
+      "date": "2022-06-29",
+      "closingPrice": 1415.0
+    },
+    {
+      "date": "2022-06-30",
+      "closingPrice": 1388.0
+    },
+    {
+      "date": "2022-07-01",
+      "closingPrice": 1403.0
+    },
+    {
+      "date": "2022-07-04",
+      "closingPrice": 1375.6
+    },
+    {
+      "date": "2022-07-05",
+      "closingPrice": 1343.8
+    },
+    {
+      "date": "2022-07-06",
+      "closingPrice": 1464.2
+    },
+    {
+      "date": "2022-07-07",
+      "closingPrice": 1447.2
+    },
+    {
+      "date": "2022-07-08",
+      "closingPrice": 1469.6
+    },
+    {
+      "date": "2022-07-11",
+      "closingPrice": 1459.2
+    },
+    {
+      "date": "2022-07-12",
+      "closingPrice": 1475.8
+    },
+    {
+      "date": "2022-07-13",
+      "closingPrice": 1429.0
+    },
+    {
+      "date": "2022-07-14",
+      "closingPrice": 1404.4
+    },
+    {
+      "date": "2022-07-15",
+      "closingPrice": 1509.6
+    },
+    {
+      "date": "2022-07-18",
+      "closingPrice": 1550.0
+    },
+    {
+      "date": "2022-07-19",
+      "closingPrice": 1577.8
+    },
+    {
+      "date": "2022-07-20",
+      "closingPrice": 1596.2
+    },
+    {
+      "date": "2022-07-21",
+      "closingPrice": 1662.4
+    },
+    {
+      "date": "2022-07-22",
+      "closingPrice": 1622.0
+    },
+    {
+      "date": "2022-07-25",
+      "closingPrice": 1654.2
+    },
+    {
+      "date": "2022-07-26",
+      "closingPrice": 1561.6
+    },
+    {
+      "date": "2022-07-27",
+      "closingPrice": 1673.0
+    },
+    {
+      "date": "2022-07-28",
+      "closingPrice": 1705.0
+    },
+    {
+      "date": "2022-07-29",
+      "closingPrice": 1745.0
+    },
+    {
+      "date": "2022-08-01",
+      "closingPrice": 1758.6
+    },
+    {
+      "date": "2022-08-02",
+      "closingPrice": 1750.0
+    },
+    {
+      "date": "2022-08-03",
+      "closingPrice": 1790.6
+    },
+    {
+      "date": "2022-08-04",
+      "closingPrice": 1806.0
+    },
+    {
+      "date": "2022-08-05",
+      "closingPrice": 1747.8
+    },
+    {
+      "date": "2022-08-08",
+      "closingPrice": 1820.0
+    },
+    {
+      "date": "2022-08-09",
+      "closingPrice": 1784.6
+    },
+    {
+      "date": "2022-08-10",
+      "closingPrice": 1850.0
+    },
+    {
+      "date": "2022-08-11",
+      "closingPrice": 1849.8
+    },
+    {
+      "date": "2022-08-12",
+      "closingPrice": 1846.2
+    },
+    {
+      "date": "2022-08-15",
+      "closingPrice": 1862.0
+    },
+    {
+      "date": "2022-08-16",
+      "closingPrice": 1788.4
+    },
+    {
+      "date": "2022-08-17",
+      "closingPrice": 1807.0
+    },
+    {
+      "date": "2022-08-18",
+      "closingPrice": 1739.8
+    },
+    {
+      "date": "2022-08-19",
+      "closingPrice": 1617.8
+    },
+    {
+      "date": "2022-08-22",
+      "closingPrice": 1600.6
+    },
+    {
+      "date": "2022-08-23",
+      "closingPrice": 1577.2
+    },
+    {
+      "date": "2022-08-24",
+      "closingPrice": 1668.4
+    },
+    {
+      "date": "2022-08-25",
+      "closingPrice": 1667.6
+    },
+    {
+      "date": "2022-08-26",
+      "closingPrice": 1602.0
+    },
+    {
+      "date": "2022-08-29",
+      "closingPrice": 1575.2
+    },
+    {
+      "date": "2022-08-30",
+      "closingPrice": 1571.6
+    },
+    {
+      "date": "2022-08-31",
+      "closingPrice": 1545.0
+    },
+    {
+      "date": "2022-09-01",
+      "closingPrice": 1484.0
+    },
+    {
+      "date": "2022-09-02",
+      "closingPrice": 1520.6
+    },
+    {
+      "date": "2022-09-05",
+      "closingPrice": 1504.8
+    },
+    {
+      "date": "2022-09-06",
+      "closingPrice": 1493.4
+    },
+    {
+      "date": "2022-09-07",
+      "closingPrice": 1499.6
+    },
+    {
+      "date": "2022-09-08",
+      "closingPrice": 1455.0
+    },
+    {
+      "date": "2022-09-09",
+      "closingPrice": 1487.6
+    },
+    {
+      "date": "2022-09-12",
+      "closingPrice": 1516.6
+    },
+    {
+      "date": "2022-09-13",
+      "closingPrice": 1395.2
+    },
+    {
+      "date": "2022-09-14",
+      "closingPrice": 1413.6
+    },
+    {
+      "date": "2022-09-15",
+      "closingPrice": 1393.0
+    },
+    {
+      "date": "2022-09-16",
+      "closingPrice": 1319.6
+    },
+    {
+      "date": "2022-09-19",
+      "closingPrice": 1315.4
+    },
+    {
+      "date": "2022-09-20",
+      "closingPrice": 1281.4
+    },
+    {
+      "date": "2022-09-21",
+      "closingPrice": 1315.2
+    },
+    {
+      "date": "2022-09-22",
+      "closingPrice": 1274.4
+    },
+    {
+      "date": "2022-09-23",
+      "closingPrice": 1265.4
+    },
+    {
+      "date": "2022-09-26",
+      "closingPrice": 1262.8
+    },
+    {
+      "date": "2022-09-27",
+      "closingPrice": 1282.8
+    },
+    {
+      "date": "2022-09-28",
+      "closingPrice": 1271.2
+    },
+    {
+      "date": "2022-09-29",
+      "closingPrice": 1240.6
+    },
+    {
+      "date": "2022-09-30",
+      "closingPrice": 1301.8
+    },
+    {
+      "date": "2022-10-03",
+      "closingPrice": 1313.8
+    },
+    {
+      "date": "2022-10-04",
+      "closingPrice": 1406.6
+    },
+    {
+      "date": "2022-10-05",
+      "closingPrice": 1388.4
+    },
+    {
+      "date": "2022-10-06",
+      "closingPrice": 1403.4
+    },
+    {
+      "date": "2022-10-07",
+      "closingPrice": 1319.4
+    },
+    {
+      "date": "2022-10-10",
+      "closingPrice": 1271.8
+    },
+    {
+      "date": "2022-10-11",
+      "closingPrice": 1266.6
+    },
+    {
+      "date": "2022-10-12",
+      "closingPrice": 1274.0
+    },
+    {
+      "date": "2022-10-13",
+      "closingPrice": 1268.6
+    },
+    {
+      "date": "2022-10-14",
+      "closingPrice": 1283.8
+    },
+    {
+      "date": "2022-10-17",
+      "closingPrice": 1367.8
+    },
+    {
+      "date": "2022-10-18",
+      "closingPrice": 1362.4
+    },
+    {
+      "date": "2022-10-19",
+      "closingPrice": 1326.0
+    },
+    {
+      "date": "2022-10-20",
+      "closingPrice": 1358.0
+    },
+    {
+      "date": "2022-10-21",
+      "closingPrice": 1315.0
+    },
+    {
+      "date": "2022-10-24",
+      "closingPrice": 1354.6
+    },
+    {
+      "date": "2022-10-25",
+      "closingPrice": 1432.6
+    },
+    {
+      "date": "2022-10-26",
+      "closingPrice": 1470.0
+    },
+    {
+      "date": "2022-10-27",
+      "closingPrice": 1453.8
+    },
+    {
+      "date": "2022-10-28",
+      "closingPrice": 1432.8
+    },
+    {
+      "date": "2022-10-31",
+      "closingPrice": 1452.6
+    },
+    {
+      "date": "2022-11-01",
+      "closingPrice": 1431.4
+    },
+    {
+      "date": "2022-11-02",
+      "closingPrice": 1427.2
+    },
+    {
+      "date": "2022-11-03",
+      "closingPrice": 1313.2
+    },
+    {
+      "date": "2022-11-04",
+      "closingPrice": 1291.2
+    },
+    {
+      "date": "2022-11-07",
+      "closingPrice": 1280.8
+    },
+    {
+      "date": "2022-11-08",
+      "closingPrice": 1315.4
+    },
+    {
+      "date": "2022-11-09",
+      "closingPrice": 1333.2
+    },
+    {
+      "date": "2022-11-10",
+      "closingPrice": 1512.2
+    },
+    {
+      "date": "2022-11-11",
+      "closingPrice": 1602.0
+    },
+    {
+      "date": "2022-11-14",
+      "closingPrice": 1543.2
+    },
+    {
+      "date": "2022-11-15",
+      "closingPrice": 1563.6
+    },
+    {
+      "date": "2022-11-16",
+      "closingPrice": 1494.0
+    },
+    {
+      "date": "2022-11-17",
+      "closingPrice": 1479.6
+    },
+    {
+      "date": "2022-11-18",
+      "closingPrice": 1521.6
+    },
+    {
+      "date": "2022-11-21",
+      "closingPrice": 1511.2
+    },
+    {
+      "date": "2022-11-22",
+      "closingPrice": 1489.2
+    },
+    {
+      "date": "2022-11-23",
+      "closingPrice": 1483.6
+    },
+    {
+      "date": "2022-11-24",
+      "closingPrice": 1502.4
+    },
+    {
+      "date": "2022-11-25",
+      "closingPrice": 1494.4
+    },
+    {
+      "date": "2022-11-28",
+      "closingPrice": 1474.2
+    },
+    {
+      "date": "2022-11-29",
+      "closingPrice": 1427.0
+    },
+    {
+      "date": "2022-11-30",
+      "closingPrice": 1463.8
+    },
+    {
+      "date": "2022-12-01",
+      "closingPrice": 1505.6
+    },
+    {
+      "date": "2022-12-02",
+      "closingPrice": 1484.6
+    },
+    {
+      "date": "2022-12-05",
+      "closingPrice": 1451.2
+    },
+    {
+      "date": "2022-12-06",
+      "closingPrice": 1405.2
+    },
+    {
+      "date": "2022-12-07",
+      "closingPrice": 1397.2
+    },
+    {
+      "date": "2022-12-08",
+      "closingPrice": 1404.2
+    },
+    {
+      "date": "2022-12-09",
+      "closingPrice": 1411.0
+    },
+    {
+      "date": "2022-12-12",
+      "closingPrice": 1440.2
+    },
+    {
+      "date": "2022-12-13",
+      "closingPrice": 1497.2
+    },
+    {
+      "date": "2022-12-14",
+      "closingPrice": 1504.0
+    },
+    {
+      "date": "2022-12-15",
+      "closingPrice": 1373.8
+    },
+    {
+      "date": "2022-12-16",
+      "closingPrice": 1371.8
+    },
+    {
+      "date": "2022-12-19",
+      "closingPrice": 1335.0
+    },
+    {
+      "date": "2022-12-20",
+      "closingPrice": 1317.2
+    },
+    {
+      "date": "2022-12-21",
+      "closingPrice": 1336.8
+    },
+    {
+      "date": "2022-12-22",
+      "closingPrice": 1291.8
+    },
+    {
+      "date": "2022-12-23",
+      "closingPrice": 1300.0
+    },
+    {
+      "date": "2022-12-27",
+      "closingPrice": 1298.4
+    },
+    {
+      "date": "2022-12-28",
+      "closingPrice": 1288.6
+    },
+    {
+      "date": "2022-12-29",
+      "closingPrice": 1319.0
+    },
+    {
+      "date": "2022-12-30",
+      "closingPrice": 1288.4
+    },
+    {
+      "date": "2023-01-02",
+      "closingPrice": 1306.4
+    },
+    {
+      "date": "2023-01-03",
+      "closingPrice": 1308.0
+    },
+    {
+      "date": "2023-01-04",
+      "closingPrice": 1325.6
+    },
+    {
+      "date": "2023-01-05",
+      "closingPrice": 1284.2
+    },
+    {
+      "date": "2023-01-06",
+      "closingPrice": 1311.0
+    },
+    {
+      "date": "2023-01-09",
+      "closingPrice": 1353.0
+    },
+    {
+      "date": "2023-01-10",
+      "closingPrice": 1340.0
+    },
+    {
+      "date": "2023-01-11",
+      "closingPrice": 1299.4
+    },
+    {
+      "date": "2023-01-12",
+      "closingPrice": 1313.2
+    },
+    {
+      "date": "2023-01-13",
+      "closingPrice": 1360.6
+    },
+    {
+      "date": "2023-01-16",
+      "closingPrice": 1353.2
+    },
+    {
+      "date": "2023-01-17",
+      "closingPrice": 1381.2
+    },
+    {
+      "date": "2023-01-18",
+      "closingPrice": 1394.0
+    },
+    {
+      "date": "2023-01-19",
+      "closingPrice": 1303.2
+    },
+    {
+      "date": "2023-01-20",
+      "closingPrice": 1323.2
+    },
+    {
+      "date": "2023-01-23",
+      "closingPrice": 1368.4
+    },
+    {
+      "date": "2023-01-24",
+      "closingPrice": 1353.0
+    },
+    {
+      "date": "2023-01-25",
+      "closingPrice": 1310.2
+    },
+    {
+      "date": "2023-01-26",
+      "closingPrice": 1347.6
+    },
+    {
+      "date": "2023-01-27",
+      "closingPrice": 1376.0
+    },
+    {
+      "date": "2023-01-30",
+      "closingPrice": 1375.0
+    },
+    {
+      "date": "2023-01-31",
+      "closingPrice": 1377.6
+    },
+    {
+      "date": "2023-02-01",
+      "closingPrice": 1437.0
+    },
+    {
+      "date": "2023-02-02",
+      "closingPrice": 1625.0
+    },
+    {
+      "date": "2023-02-03",
+      "closingPrice": 1617.6
+    },
+    {
+      "date": "2023-02-06",
+      "closingPrice": 1540.0
+    },
+    {
+      "date": "2023-02-07",
+      "closingPrice": 1527.4
+    },
+    {
+      "date": "2023-02-08",
+      "closingPrice": 1279.4
+    },
+    {
+      "date": "2023-02-09",
+      "closingPrice": 1344.2
+    },
+    {
+      "date": "2023-02-10",
+      "closingPrice": 1325.4
+    },
+    {
+      "date": "2023-02-13",
+      "closingPrice": 1351.6
+    },
+    {
+      "date": "2023-02-14",
+      "closingPrice": 1369.2
+    },
+    {
+      "date": "2023-02-15",
+      "closingPrice": 1417.2
+    },
+    {
+      "date": "2023-02-16",
+      "closingPrice": 1461.6
+    },
+    {
+      "date": "2023-02-17",
+      "closingPrice": 1466.8
+    },
+    {
+      "date": "2023-02-20",
+      "closingPrice": 1471.0
+    },
+    {
+      "date": "2023-02-21",
+      "closingPrice": 1440.8
+    },
+    {
+      "date": "2023-02-22",
+      "closingPrice": 1402.4
+    },
+    {
+      "date": "2023-02-23",
+      "closingPrice": 1388.4
+    },
+    {
+      "date": "2023-02-24",
+      "closingPrice": 1326.2
+    },
+    {
+      "date": "2023-02-27",
+      "closingPrice": 1350.0
+    },
+    {
+      "date": "2023-02-28",
+      "closingPrice": 1345.2
+    },
+    {
+      "date": "2023-03-01",
+      "closingPrice": 1326.2
+    },
+    {
+      "date": "2023-03-02",
+      "closingPrice": 1349.2
+    },
+    {
+      "date": "2023-03-03",
+      "closingPrice": 1402.6
+    },
+    {
+      "date": "2023-03-06",
+      "closingPrice": 1408.6
+    },
+    {
+      "date": "2023-03-07",
+      "closingPrice": 1383.6
+    },
+    {
+      "date": "2023-03-08",
+      "closingPrice": 1365.2
+    },
+    {
+      "date": "2023-03-09",
+      "closingPrice": 1372.6
+    },
+    {
+      "date": "2023-03-10",
+      "closingPrice": 1330.2
+    },
+    {
+      "date": "2023-03-13",
+      "closingPrice": 1307.0
+    },
+    {
+      "date": "2023-03-14",
+      "closingPrice": 1356.0
+    },
+    {
+      "date": "2023-03-15",
+      "closingPrice": 1375.6
+    },
+    {
+      "date": "2023-03-16",
+      "closingPrice": 1431.0
+    },
+    {
+      "date": "2023-03-17",
+      "closingPrice": 1385.0
+    },
+    {
+      "date": "2023-03-20",
+      "closingPrice": 1402.6
+    },
+    {
+      "date": "2023-03-21",
+      "closingPrice": 1424.4
+    },
+    {
+      "date": "2023-03-22",
+      "closingPrice": 1426.4
+    },
+    {
+      "date": "2023-03-23",
+      "closingPrice": 1454.6
+    },
+    {
+      "date": "2023-03-24",
+      "closingPrice": 1414.6
+    },
+    {
+      "date": "2023-03-27",
+      "closingPrice": 1428.0
+    },
+    {
+      "date": "2023-03-28",
+      "closingPrice": 1369.2
+    },
+    {
+      "date": "2023-03-29",
+      "closingPrice": 1400.4
+    },
+    {
+      "date": "2023-03-30",
+      "closingPrice": 1431.0
+    },
+    {
+      "date": "2023-03-31",
+      "closingPrice": 1459.2
+    },
+    {
+      "date": "2023-04-03",
+      "closingPrice": 1413.4
+    },
+    {
+      "date": "2023-04-04",
+      "closingPrice": 1435.4
+    },
+    {
+      "date": "2023-04-05",
+      "closingPrice": 1425.8
+    },
+    {
+      "date": "2023-04-06",
+      "closingPrice": 1419.2
+    },
+    {
+      "date": "2023-04-11",
+      "closingPrice": 1433.4
+    },
+    {
+      "date": "2023-04-12",
+      "closingPrice": 1445.2
+    },
+    {
+      "date": "2023-04-13",
+      "closingPrice": 1455.6
+    },
+    {
+      "date": "2023-04-14",
+      "closingPrice": 1447.6
+    },
+    {
+      "date": "2023-04-17",
+      "closingPrice": 1450.2
+    },
+    {
+      "date": "2023-04-18",
+      "closingPrice": 1466.2
+    },
+    {
+      "date": "2023-04-19",
+      "closingPrice": 1452.2
+    },
+    {
+      "date": "2023-04-20",
+      "closingPrice": 1430.8
+    },
+    {
+      "date": "2023-04-21",
+      "closingPrice": 1444.2
+    },
+    {
+      "date": "2023-04-24",
+      "closingPrice": 1446.4
+    },
+    {
+      "date": "2023-04-25",
+      "closingPrice": 1426.4
+    },
+    {
+      "date": "2023-04-26",
+      "closingPrice": 1425.6
+    },
+    {
+      "date": "2023-04-27",
+      "closingPrice": 1456.2
+    },
+    {
+      "date": "2023-04-28",
+      "closingPrice": 1452.0
+    },
+    {
+      "date": "2023-05-02",
+      "closingPrice": 1427.2
+    },
+    {
+      "date": "2023-05-03",
+      "closingPrice": 1408.4
+    },
+    {
+      "date": "2023-05-04",
+      "closingPrice": 1398.0
+    },
+    {
+      "date": "2023-05-05",
+      "closingPrice": 1433.4
+    },
+    {
+      "date": "2023-05-08",
+      "closingPrice": 1443.8
+    },
+    {
+      "date": "2023-05-09",
+      "closingPrice": 1415.0
+    },
+    {
+      "date": "2023-05-10",
+      "closingPrice": 1406.8
+    },
+    {
+      "date": "2023-05-11",
+      "closingPrice": 1457.0
+    },
+    {
+      "date": "2023-05-12",
+      "closingPrice": 1436.0
+    },
+    {
+      "date": "2023-05-15",
+      "closingPrice": 1437.6
+    },
+    {
+      "date": "2023-05-16",
+      "closingPrice": 1418.8
+    },
+    {
+      "date": "2023-05-17",
+      "closingPrice": 1414.0
+    },
+    {
+      "date": "2023-05-18",
+      "closingPrice": 1421.8
+    },
+    {
+      "date": "2023-05-19",
+      "closingPrice": 1454.8
+    },
+    {
+      "date": "2023-05-22",
+      "closingPrice": 1526.6
+    },
+    {
+      "date": "2023-05-23",
+      "closingPrice": 1502.6
+    },
+    {
+      "date": "2023-05-24",
+      "closingPrice": 1460.4
+    },
+    {
+      "date": "2023-05-25",
+      "closingPrice": 1488.4
+    },
+    {
+      "date": "2023-05-26",
+      "closingPrice": 1528.4
+    },
+    {
+      "date": "2023-05-29",
+      "closingPrice": 1497.2
+    },
+    {
+      "date": "2023-05-30",
+      "closingPrice": 1510.8
+    },
+    {
+      "date": "2023-05-31",
+      "closingPrice": 1526.8
+    },
+    {
+      "date": "2023-06-01",
+      "closingPrice": 1550.0
+    },
+    {
+      "date": "2023-06-02",
+      "closingPrice": 1582.0
+    },
+    {
+      "date": "2023-06-05",
+      "closingPrice": 1580.2
+    },
+    {
+      "date": "2023-06-06",
+      "closingPrice": 1584.4
+    },
+    {
+      "date": "2023-06-07",
+      "closingPrice": 1595.0
+    },
+    {
+      "date": "2023-06-08",
+      "closingPrice": 1583.0
+    },
+    {
+      "date": "2023-06-09",
+      "closingPrice": 1577.8
+    },
+    {
+      "date": "2023-06-12",
+      "closingPrice": 1586.0
+    },
+    {
+      "date": "2023-06-13",
+      "closingPrice": 1600.4
+    },
+    {
+      "date": "2023-06-14",
+      "closingPrice": 1625.0
+    },
+    {
+      "date": "2023-06-15",
+      "closingPrice": 1619.2
+    },
+    {
+      "date": "2023-06-16",
+      "closingPrice": 1579.8
+    },
+    {
+      "date": "2023-06-19",
+      "closingPrice": 1568.6
+    },
+    {
+      "date": "2023-06-20",
+      "closingPrice": 1538.8
+    },
+    {
+      "date": "2023-06-21",
+      "closingPrice": 1512.8
+    },
+    {
+      "date": "2023-06-22",
+      "closingPrice": 1552.0
+    },
+    {
+      "date": "2023-06-23",
+      "closingPrice": 1540.2
+    },
+    {
+      "date": "2023-06-26",
+      "closingPrice": 1541.0
+    },
+    {
+      "date": "2023-06-27",
+      "closingPrice": 1551.8
+    },
+    {
+      "date": "2023-06-28",
+      "closingPrice": 1597.8
+    },
+    {
+      "date": "2023-06-29",
+      "closingPrice": 1568.8
+    },
+    {
+      "date": "2023-06-30",
+      "closingPrice": 1585.8
+    },
+    {
+      "date": "2023-07-03",
+      "closingPrice": 1576.4
+    },
+    {
+      "date": "2023-07-04",
+      "closingPrice": 1584.6
+    },
+    {
+      "date": "2023-07-05",
+      "closingPrice": 1530.0
+    },
+    {
+      "date": "2023-07-06",
+      "closingPrice": 1466.2
+    },
+    {
+      "date": "2023-07-07",
+      "closingPrice": 1462.0
+    },
+    {
+      "date": "2023-07-10",
+      "closingPrice": 1475.0
+    },
+    {
+      "date": "2023-07-11",
+      "closingPrice": 1495.6
+    },
+    {
+      "date": "2023-07-12",
+      "closingPrice": 1519.6
+    },
+    {
+      "date": "2023-07-13",
+      "closingPrice": 1552.8
+    },
+    {
+      "date": "2023-07-14",
+      "closingPrice": 1567.6
+    },
+    {
+      "date": "2023-07-17",
+      "closingPrice": 1547.2
+    },
+    {
+      "date": "2023-07-18",
+      "closingPrice": 1545.8
+    },
+    {
+      "date": "2023-07-19",
+      "closingPrice": 1562.8
+    },
+    {
+      "date": "2023-07-20",
+      "closingPrice": 1557.0
+    },
+    {
+      "date": "2023-07-21",
+      "closingPrice": 1545.4
+    },
+    {
+      "date": "2023-07-24",
+      "closingPrice": 1566.6
+    },
+    {
+      "date": "2023-07-25",
+      "closingPrice": 1551.4
+    },
+    {
+      "date": "2023-07-26",
+      "closingPrice": 1544.2
+    },
+    {
+      "date": "2023-07-27",
+      "closingPrice": 1601.2
+    },
+    {
+      "date": "2023-07-28",
+      "closingPrice": 1674.0
+    },
+    {
+      "date": "2023-07-31",
+      "closingPrice": 1689.8
+    },
+    {
+      "date": "2023-08-01",
+      "closingPrice": 1648.6
+    },
+    {
+      "date": "2023-08-02",
+      "closingPrice": 1608.0
+    },
+    {
+      "date": "2023-08-03",
+      "closingPrice": 1563.2
+    },
+    {
+      "date": "2023-08-04",
+      "closingPrice": 1582.8
+    },
+    {
+      "date": "2023-08-07",
+      "closingPrice": 1573.4
+    },
+    {
+      "date": "2023-08-08",
+      "closingPrice": 1555.8
+    },
+    {
+      "date": "2023-08-09",
+      "closingPrice": 1562.0
+    },
+    {
+      "date": "2023-08-10",
+      "closingPrice": 1596.8
+    },
+    {
+      "date": "2023-08-11",
+      "closingPrice": 1558.0
+    },
+    {
+      "date": "2023-08-14",
+      "closingPrice": 1557.6
+    },
+    {
+      "date": "2023-08-15",
+      "closingPrice": 1496.2
+    },
+    {
+      "date": "2023-08-16",
+      "closingPrice": 1472.4
+    },
+    {
+      "date": "2023-08-17",
+      "closingPrice": 898.4
+    },
+    {
+      "date": "2023-08-18",
+      "closingPrice": 872.0
+    },
+    {
+      "date": "2023-08-21",
+      "closingPrice": 797.0
+    },
+    {
+      "date": "2023-08-22",
+      "closingPrice": 785.0
+    },
+    {
+      "date": "2023-08-23",
+      "closingPrice": 798.3
+    },
+    {
+      "date": "2023-08-24",
+      "closingPrice": 763.7
+    },
+    {
+      "date": "2023-08-25",
+      "closingPrice": 765.0
+    },
+    {
+      "date": "2023-08-28",
+      "closingPrice": 786.6
+    },
+    {
+      "date": "2023-08-29",
+      "closingPrice": 773.4
+    },
+    {
+      "date": "2023-08-30",
+      "closingPrice": 767.0
+    },
+    {
+      "date": "2023-08-31",
+      "closingPrice": 772.5
+    },
+    {
+      "date": "2023-09-01",
+      "closingPrice": 776.9
+    },
+    {
+      "date": "2023-09-04",
+      "closingPrice": 790.4
+    },
+    {
+      "date": "2023-09-05",
+      "closingPrice": 781.3
+    },
+    {
+      "date": "2023-09-06",
+      "closingPrice": 762.9
+    },
+    {
+      "date": "2023-09-07",
+      "closingPrice": 742.7
+    },
+    {
+      "date": "2023-09-08",
+      "closingPrice": 738.9
+    },
+    {
+      "date": "2023-09-11",
+      "closingPrice": 720.0
+    },
+    {
+      "date": "2023-09-12",
+      "closingPrice": 709.5
+    },
+    {
+      "date": "2023-09-13",
+      "closingPrice": 700.0
+    },
+    {
+      "date": "2023-09-14",
+      "closingPrice": 702.8
+    },
+    {
+      "date": "2023-09-15",
+      "closingPrice": 717.9
+    },
+    {
+      "date": "2023-09-18",
+      "closingPrice": 674.1
+    },
+    {
+      "date": "2023-09-19",
+      "closingPrice": 648.6
+    },
+    {
+      "date": "2023-09-20",
+      "closingPrice": 663.9
+    },
+    {
+      "date": "2023-09-21",
+      "closingPrice": 630.8
+    },
+    {
+      "date": "2023-09-22",
+      "closingPrice": 650.1
+    },
+    {
+      "date": "2023-09-25",
+      "closingPrice": 646.1
+    },
+    {
+      "date": "2023-09-26",
+      "closingPrice": 649.4
+    },
+    {
+      "date": "2023-09-27",
+      "closingPrice": 673.5
+    },
+    {
+      "date": "2023-09-28",
+      "closingPrice": 672.1
+    },
+    {
+      "date": "2023-09-29",
+      "closingPrice": 705.7
+    },
+    {
+      "date": "2023-10-02",
+      "closingPrice": 705.1
+    },
+    {
+      "date": "2023-10-03",
+      "closingPrice": 694.6
+    },
+    {
+      "date": "2023-10-04",
+      "closingPrice": 700.1
+    },
+    {
+      "date": "2023-10-05",
+      "closingPrice": 707.8
+    },
+    {
+      "date": "2023-10-06",
+      "closingPrice": 737.9
+    },
+    {
+      "date": "2023-10-09",
+      "closingPrice": 702.8
+    },
+    {
+      "date": "2023-10-10",
+      "closingPrice": 732.1
+    },
+    {
+      "date": "2023-10-11",
+      "closingPrice": 745.3
+    },
+    {
+      "date": "2023-10-12",
+      "closingPrice": 749.7
+    },
+    {
+      "date": "2023-10-13",
+      "closingPrice": 721.9
+    },
+    {
+      "date": "2023-10-16",
+      "closingPrice": 724.5
+    },
+    {
+      "date": "2023-10-17",
+      "closingPrice": 719.1
+    },
+    {
+      "date": "2023-10-18",
+      "closingPrice": 698.8
+    },
+    {
+      "date": "2023-10-19",
+      "closingPrice": 699.3
+    },
+    {
+      "date": "2023-10-20",
+      "closingPrice": 681.8
+    },
+    {
+      "date": "2023-10-23",
+      "closingPrice": 682.2
+    },
+    {
+      "date": "2023-10-24",
+      "closingPrice": 689.0
+    },
+    {
+      "date": "2023-10-25",
+      "closingPrice": 646.2
+    },
+    {
+      "date": "2023-10-26",
+      "closingPrice": 669.2
+    },
+    {
+      "date": "2023-10-27",
+      "closingPrice": 640.0
+    },
+    {
+      "date": "2023-10-30",
+      "closingPrice": 633.0
+    },
+    {
+      "date": "2023-10-31",
+      "closingPrice": 633.9
+    },
+    {
+      "date": "2023-11-01",
+      "closingPrice": 648.7
+    },
+    {
+      "date": "2023-11-02",
+      "closingPrice": 666.0
+    },
+    {
+      "date": "2023-11-03",
+      "closingPrice": 708.8
+    },
+    {
+      "date": "2023-11-06",
+      "closingPrice": 686.4
+    },
+    {
+      "date": "2023-11-07",
+      "closingPrice": 668.9
+    },
+    {
+      "date": "2023-11-08",
+      "closingPrice": 695.7
+    },
+    {
+      "date": "2023-11-09",
+      "closingPrice": 958.8
+    },
+    {
+      "date": "2023-11-10",
+      "closingPrice": 936.0
+    },
+    {
+      "date": "2023-11-13",
+      "closingPrice": 988.5
+    },
+    {
+      "date": "2023-11-14",
+      "closingPrice": 1038.4
+    },
+    {
+      "date": "2023-11-15",
+      "closingPrice": 1027.6
+    },
+    {
+      "date": "2023-11-16",
+      "closingPrice": 1015.2
+    },
+    {
+      "date": "2023-11-17",
+      "closingPrice": 1037.6
+    },
+    {
+      "date": "2023-11-20",
+      "closingPrice": 1038.2
+    },
+    {
+      "date": "2023-11-21",
+      "closingPrice": 1048.4
+    },
+    {
+      "date": "2023-11-22",
+      "closingPrice": 1059.2
+    },
+    {
+      "date": "2023-11-23",
+      "closingPrice": 1055.4
+    },
+    {
+      "date": "2023-11-24",
+      "closingPrice": 1073.6
+    },
+    {
+      "date": "2023-11-27",
+      "closingPrice": 1090.4
+    },
+    {
+      "date": "2023-11-28",
+      "closingPrice": 1088.8
+    },
+    {
+      "date": "2023-11-29",
+      "closingPrice": 1087.8
+    },
+    {
+      "date": "2023-11-30",
+      "closingPrice": 1071.0
+    },
+    {
+      "date": "2023-12-01",
+      "closingPrice": 1082.8
+    },
+    {
+      "date": "2023-12-04",
+      "closingPrice": 1119.8
+    },
+    {
+      "date": "2023-12-05",
+      "closingPrice": 1134.6
+    },
+    {
+      "date": "2023-12-06",
+      "closingPrice": 1154.0
+    },
+    {
+      "date": "2023-12-07",
+      "closingPrice": 1155.4
+    },
+    {
+      "date": "2023-12-08",
+      "closingPrice": 1186.8
+    },
+    {
+      "date": "2023-12-11",
+      "closingPrice": 1217.6
+    },
+    {
+      "date": "2023-12-12",
+      "closingPrice": 1209.0
+    },
+    {
+      "date": "2023-12-13",
+      "closingPrice": 1190.0
+    },
+    {
+      "date": "2023-12-14",
+      "closingPrice": 1186.4
+    },
+    {
+      "date": "2023-12-15",
+      "closingPrice": 1196.0
+    },
+    {
+      "date": "2023-12-18",
+      "closingPrice": 1177.2
+    },
+    {
+      "date": "2023-12-19",
+      "closingPrice": 1185.6
+    },
+    {
+      "date": "2023-12-20",
+      "closingPrice": 1172.0
+    },
+    {
+      "date": "2023-12-21",
+      "closingPrice": 1166.6
+    },
+    {
+      "date": "2023-12-22",
+      "closingPrice": 1168.0
+    },
+    {
+      "date": "2023-12-27",
+      "closingPrice": 1178.4
+    },
+    {
+      "date": "2023-12-28",
+      "closingPrice": 1169.6
+    },
+    {
+      "date": "2023-12-29",
+      "closingPrice": 1166.6
+    },
+    {
+      "date": "2024-01-02",
+      "closingPrice": 1159.2
+    },
+    {
+      "date": "2024-01-03",
+      "closingPrice": 1137.0
+    },
+    {
+      "date": "2024-01-04",
+      "closingPrice": 1123.0
+    },
+    {
+      "date": "2024-01-05",
+      "closingPrice": 1129.8
+    },
+    {
+      "date": "2024-01-08",
+      "closingPrice": 1144.2
+    },
+    {
+      "date": "2024-01-09",
+      "closingPrice": 1147.0
+    },
+    {
+      "date": "2024-01-10",
+      "closingPrice": 1152.0
+    },
+    {
+      "date": "2024-01-11",
+      "closingPrice": 1164.2
+    },
+    {
+      "date": "2024-01-12",
+      "closingPrice": 1198.2
+    },
+    {
+      "date": "2024-01-15",
+      "closingPrice": 1196.0
+    },
+    {
+      "date": "2024-01-16",
+      "closingPrice": 1191.6
+    },
+    {
+      "date": "2024-01-17",
+      "closingPrice": 1145.6
+    },
+    {
+      "date": "2024-01-18",
+      "closingPrice": 1148.6
+    },
+    {
+      "date": "2024-01-19",
+      "closingPrice": 1130.2
+    },
+    {
+      "date": "2024-01-22",
+      "closingPrice": 1154.8
+    },
+    {
+      "date": "2024-01-23",
+      "closingPrice": 1161.8
+    },
+    {
+      "date": "2024-01-24",
+      "closingPrice": 1183.6
+    },
+    {
+      "date": "2024-01-25",
+      "closingPrice": 1147.6
+    },
+    {
+      "date": "2024-01-26",
+      "closingPrice": 1161.0
+    },
+    {
+      "date": "2024-01-29",
+      "closingPrice": 1169.2
+    },
+    {
+      "date": "2024-01-30",
+      "closingPrice": 1182.2
+    },
+    {
+      "date": "2024-01-31",
+      "closingPrice": 1171.2
+    },
+    {
+      "date": "2024-02-01",
+      "closingPrice": 1197.6
+    },
+    {
+      "date": "2024-02-02",
+      "closingPrice": 1203.4
+    },
+    {
+      "date": "2024-02-05",
+      "closingPrice": 1201.6
+    },
+    {
+      "date": "2024-02-06",
+      "closingPrice": 1191.0
+    },
+    {
+      "date": "2024-02-07",
+      "closingPrice": 1183.6
+    },
+    {
+      "date": "2024-02-08",
+      "closingPrice": 1436.2
+    },
+    {
+      "date": "2024-02-09",
+      "closingPrice": 1473.0
+    },
+    {
+      "date": "2024-02-12",
+      "closingPrice": 1507.0
+    },
+    {
+      "date": "2024-02-13",
+      "closingPrice": 1444.2
+    },
+    {
+      "date": "2024-02-14",
+      "closingPrice": 1447.6
+    },
+    {
+      "date": "2024-02-15",
+      "closingPrice": 1477.6
+    },
+    {
+      "date": "2024-02-16",
+      "closingPrice": 1507.8
+    },
+    {
+      "date": "2024-02-19",
+      "closingPrice": 1494.8
+    },
+    {
+      "date": "2024-02-20",
+      "closingPrice": 1482.8
+    },
+    {
+      "date": "2024-02-21",
+      "closingPrice": 1446.4
+    },
+    {
+      "date": "2024-02-22",
+      "closingPrice": 1466.2
+    },
+    {
+      "date": "2024-02-23",
+      "closingPrice": 1467.6
+    },
+    {
+      "date": "2024-02-26",
+      "closingPrice": 1455.6
+    },
+    {
+      "date": "2024-02-27",
+      "closingPrice": 1463.8
+    },
+    {
+      "date": "2024-02-28",
+      "closingPrice": 1456.4
+    },
+    {
+      "date": "2024-02-29",
+      "closingPrice": 1460.0
+    },
+    {
+      "date": "2024-03-01",
+      "closingPrice": 1470.0
+    },
+    {
+      "date": "2024-03-04",
+      "closingPrice": 1455.6
+    },
+    {
+      "date": "2024-03-05",
+      "closingPrice": 1436.0
+    },
+    {
+      "date": "2024-03-06",
+      "closingPrice": 1460.0
+    },
+    {
+      "date": "2024-03-07",
+      "closingPrice": 1500.0
+    },
+    {
+      "date": "2024-03-08",
+      "closingPrice": 1482.6
+    },
+    {
+      "date": "2024-03-11",
+      "closingPrice": 1481.2
+    },
+    {
+      "date": "2024-03-12",
+      "closingPrice": 1484.4
+    },
+    {
+      "date": "2024-03-13",
+      "closingPrice": 1466.0
+    },
+    {
+      "date": "2024-03-14",
+      "closingPrice": 1450.0
+    },
+    {
+      "date": "2024-03-15",
+      "closingPrice": 1457.0
+    },
+    {
+      "date": "2024-03-18",
+      "closingPrice": 1443.8
+    },
+    {
+      "date": "2024-03-19",
+      "closingPrice": 1448.2
+    },
+    {
+      "date": "2024-03-20",
+      "closingPrice": 1462.0
+    },
+    {
+      "date": "2024-03-21",
+      "closingPrice": 1505.2
+    },
+    {
+      "date": "2024-03-22",
+      "closingPrice": 1500.0
+    },
+    {
+      "date": "2024-03-25",
+      "closingPrice": 1520.4
+    },
+    {
+      "date": "2024-03-26",
+      "closingPrice": 1536.4
+    },
+    {
+      "date": "2024-03-27",
+      "closingPrice": 1570.0
+    },
+    {
+      "date": "2024-03-28",
+      "closingPrice": 1568.0
+    },
+    {
+      "date": "2024-04-02",
+      "closingPrice": 1562.4
+    },
+    {
+      "date": "2024-04-03",
+      "closingPrice": 1549.8
+    },
+    {
+      "date": "2024-04-04",
+      "closingPrice": 1543.0
+    },
+    {
+      "date": "2024-04-05",
+      "closingPrice": 1487.6
+    },
+    {
+      "date": "2024-04-08",
+      "closingPrice": 1501.0
+    },
+    {
+      "date": "2024-04-09",
+      "closingPrice": 1471.4
+    },
+    {
+      "date": "2024-04-10",
+      "closingPrice": 1455.0
+    },
+    {
+      "date": "2024-04-11",
+      "closingPrice": 1458.6
+    },
+    {
+      "date": "2024-04-12",
+      "closingPrice": 1421.6
+    },
+    {
+      "date": "2024-04-15",
+      "closingPrice": 1449.6
+    },
+    {
+      "date": "2024-04-16",
+      "closingPrice": 1431.6
+    },
+    {
+      "date": "2024-04-17",
+      "closingPrice": 1434.8
+    },
+    {
+      "date": "2024-04-18",
+      "closingPrice": 1442.6
+    },
+    {
+      "date": "2024-04-19",
+      "closingPrice": 1399.2
+    },
+    {
+      "date": "2024-04-22",
+      "closingPrice": 1381.4
+    },
+    {
+      "date": "2024-04-23",
+      "closingPrice": 1409.6
+    },
+    {
+      "date": "2024-04-24",
+      "closingPrice": 1418.4
+    },
+    {
+      "date": "2024-04-25",
+      "closingPrice": 1157.0
+    },
+    {
+      "date": "2024-04-26",
+      "closingPrice": 1179.6
+    },
+    {
+      "date": "2024-04-29",
+      "closingPrice": 1151.0
+    },
+    {
+      "date": "2024-04-30",
+      "closingPrice": 1130.2
+    },
+    {
+      "date": "2024-05-02",
+      "closingPrice": 1128.8
+    },
+    {
+      "date": "2024-05-03",
+      "closingPrice": 1154.8
+    },
+    {
+      "date": "2024-05-06",
+      "closingPrice": 1176.8
+    },
+    {
+      "date": "2024-05-07",
+      "closingPrice": 1215.0
+    },
+    {
+      "date": "2024-05-08",
+      "closingPrice": 1215.0
+    },
+    {
+      "date": "2024-05-09",
+      "closingPrice": 1226.0
+    },
+    {
+      "date": "2024-05-10",
+      "closingPrice": 1246.6
+    },
+    {
+      "date": "2024-05-13",
+      "closingPrice": 1258.0
+    },
+    {
+      "date": "2024-05-14",
+      "closingPrice": 1261.0
+    },
+    {
+      "date": "2024-05-15",
+      "closingPrice": 1279.4
+    },
+    {
+      "date": "2024-05-16",
+      "closingPrice": 1282.2
+    },
+    {
+      "date": "2024-05-17",
+      "closingPrice": 1241.2
+    },
+    {
+      "date": "2024-05-20",
+      "closingPrice": 1246.0
+    },
+    {
+      "date": "2024-05-21",
+      "closingPrice": 1216.8
+    },
+    {
+      "date": "2024-05-22",
+      "closingPrice": 1216.4
+    },
+    {
+      "date": "2024-05-23",
+      "closingPrice": 1198.2
+    },
+    {
+      "date": "2024-05-24",
+      "closingPrice": 1216.4
+    },
+    {
+      "date": "2024-05-27",
+      "closingPrice": 1233.8
+    },
+    {
+      "date": "2024-05-28",
+      "closingPrice": 1211.6
+    },
+    {
+      "date": "2024-05-29",
+      "closingPrice": 1175.0
+    },
+    {
+      "date": "2024-05-30",
+      "closingPrice": 1192.6
+    },
+    {
+      "date": "2024-05-31",
+      "closingPrice": 1184.8
+    },
+    {
+      "date": "2024-06-03",
+      "closingPrice": 1184.6
+    },
+    {
+      "date": "2024-06-04",
+      "closingPrice": 1184.0
+    },
+    {
+      "date": "2024-06-05",
+      "closingPrice": 1238.2
+    },
+    {
+      "date": "2024-06-06",
+      "closingPrice": 1231.8
+    },
+    {
+      "date": "2024-06-07",
+      "closingPrice": 1231.8
+    },
+    {
+      "date": "2024-06-10",
+      "closingPrice": 1224.8
+    },
+    {
+      "date": "2024-06-11",
+      "closingPrice": 1198.4
+    },
+    {
+      "date": "2024-06-12",
+      "closingPrice": 1245.6
+    },
+    {
+      "date": "2024-06-13",
+      "closingPrice": 1209.0
+    },
+    {
+      "date": "2024-06-14",
+      "closingPrice": 1197.6
+    },
+    {
+      "date": "2024-06-17",
+      "closingPrice": 1200.0
+    },
+    {
+      "date": "2024-06-18",
+      "closingPrice": 1188.4
+    },
+    {
+      "date": "2024-06-19",
+      "closingPrice": 1153.8
+    },
+    {
+      "date": "2024-06-20",
+      "closingPrice": 1159.0
+    },
+    {
+      "date": "2024-06-21",
+      "closingPrice": 1131.4
+    },
+    {
+      "date": "2024-06-24",
+      "closingPrice": 1140.8
+    },
+    {
+      "date": "2024-06-25",
+      "closingPrice": 1147.6
+    },
+    {
+      "date": "2024-06-26",
+      "closingPrice": 1133.2
+    },
+    {
+      "date": "2024-06-27",
+      "closingPrice": 1124.8
+    },
+    {
+      "date": "2024-06-28",
+      "closingPrice": 1113.2
+    },
+    {
+      "date": "2024-07-01",
+      "closingPrice": 1113.2
+    },
+    {
+      "date": "2024-07-02",
+      "closingPrice": 1117.2
+    },
+    {
+      "date": "2024-07-03",
+      "closingPrice": 1139.0
+    },
+    {
+      "date": "2024-07-04",
+      "closingPrice": 1134.0
+    },
+    {
+      "date": "2024-07-05",
+      "closingPrice": 1138.2
+    },
+    {
+      "date": "2024-07-08",
+      "closingPrice": 1104.2
+    },
+    {
+      "date": "2024-07-09",
+      "closingPrice": 1104.8
+    },
+    {
+      "date": "2024-07-10",
+      "closingPrice": 1132.6
+    },
+    {
+      "date": "2024-07-11",
+      "closingPrice": 1128.2
+    },
+    {
+      "date": "2024-07-12",
+      "closingPrice": 1158.0
+    },
+    {
+      "date": "2024-07-15",
+      "closingPrice": 1139.4
+    },
+    {
+      "date": "2024-07-16",
+      "closingPrice": 1128.4
+    },
+    {
+      "date": "2024-07-17",
+      "closingPrice": 1132.2
+    },
+    {
+      "date": "2024-07-18",
+      "closingPrice": 1144.2
+    },
+    {
+      "date": "2024-07-19",
+      "closingPrice": 1116.2
+    },
+    {
+      "date": "2024-07-22",
+      "closingPrice": 1134.8
+    },
+    {
+      "date": "2024-07-23",
+      "closingPrice": 1108.8
+    },
+    {
+      "date": "2024-07-24",
+      "closingPrice": 1082.8
+    },
+    {
+      "date": "2024-07-25",
+      "closingPrice": 1051.2
+    },
+    {
+      "date": "2024-07-26",
+      "closingPrice": 1083.6
+    },
+    {
+      "date": "2024-07-29",
+      "closingPrice": 1066.2
+    },
+    {
+      "date": "2024-07-30",
+      "closingPrice": 1124.4
+    },
+    {
+      "date": "2024-07-31",
+      "closingPrice": 1130.6
+    },
+    {
+      "date": "2024-08-01",
+      "closingPrice": 1101.6
+    },
+    {
+      "date": "2024-08-02",
+      "closingPrice": 1043.8
+    },
+    {
+      "date": "2024-08-05",
+      "closingPrice": 1029.0
+    },
+    {
+      "date": "2024-08-06",
+      "closingPrice": 1027.0
+    },
+    {
+      "date": "2024-08-07",
+      "closingPrice": 1054.4
+    },
+    {
+      "date": "2024-08-08",
+      "closingPrice": 1067.6
+    },
+    {
+      "date": "2024-08-09",
+      "closingPrice": 1085.6
+    },
+    {
+      "date": "2024-08-12",
+      "closingPrice": 1098.0
+    },
+    {
+      "date": "2024-08-13",
+      "closingPrice": 1134.4
+    },
+    {
+      "date": "2024-08-14",
+      "closingPrice": 1138.2
+    },
+    {
+      "date": "2024-08-15",
+      "closingPrice": 1275.0
+    },
+    {
+      "date": "2024-08-16",
+      "closingPrice": 1298.4
+    },
+    {
+      "date": "2024-08-19",
+      "closingPrice": 1313.6
+    },
+    {
+      "date": "2024-08-20",
+      "closingPrice": 1299.4
+    },
+    {
+      "date": "2024-08-21",
+      "closingPrice": 1312.0
+    },
+    {
+      "date": "2024-08-22",
+      "closingPrice": 1329.0
+    },
+    {
+      "date": "2024-08-23",
+      "closingPrice": 1326.0
+    },
+    {
+      "date": "2024-08-26",
+      "closingPrice": 1315.2
+    },
+    {
+      "date": "2024-08-27",
+      "closingPrice": 1310.6
+    },
+    {
+      "date": "2024-08-28",
+      "closingPrice": 1321.0
+    },
+    {
+      "date": "2024-08-29",
+      "closingPrice": 1339.4
+    },
+    {
+      "date": "2024-08-30",
+      "closingPrice": 1329.0
+    },
+    {
+      "date": "2024-09-02",
+      "closingPrice": 1317.8
+    },
+    {
+      "date": "2024-09-03",
+      "closingPrice": 1297.8
+    },
+    {
+      "date": "2024-09-04",
+      "closingPrice": 1291.2
+    },
+    {
+      "date": "2024-09-05",
+      "closingPrice": 1268.4
+    },
+    {
+      "date": "2024-09-06",
+      "closingPrice": 1258.2
+    },
+    {
+      "date": "2024-09-09",
+      "closingPrice": 1302.4
+    },
+    {
+      "date": "2024-09-10",
+      "closingPrice": 1297.8
+    },
+    {
+      "date": "2024-09-11",
+      "closingPrice": 1298.8
+    },
+    {
+      "date": "2024-09-12",
+      "closingPrice": 1303.8
+    },
+    {
+      "date": "2024-09-13",
+      "closingPrice": 1312.0
+    },
+    {
+      "date": "2024-09-16",
+      "closingPrice": 1284.6
+    },
+    {
+      "date": "2024-09-17",
+      "closingPrice": 1334.4
+    },
+    {
+      "date": "2024-09-18",
+      "closingPrice": 1322.0
+    },
+    {
+      "date": "2024-09-19",
+      "closingPrice": 1396.2
+    },
+    {
+      "date": "2024-09-20",
+      "closingPrice": 1383.8
+    },
+    {
+      "date": "2024-09-23",
+      "closingPrice": 1385.8
+    },
+    {
+      "date": "2024-09-24",
+      "closingPrice": 1375.2
+    },
+    {
+      "date": "2024-09-25",
+      "closingPrice": 1347.8
+    },
+    {
+      "date": "2024-09-26",
+      "closingPrice": 1391.0
+    },
+    {
+      "date": "2024-09-27",
+      "closingPrice": 1408.6
+    },
+    {
+      "date": "2024-09-30",
+      "closingPrice": 1402.6
+    },
+    {
+      "date": "2024-10-01",
+      "closingPrice": 1362.0
+    },
+    {
+      "date": "2024-10-02",
+      "closingPrice": 1365.2
+    },
+    {
+      "date": "2024-10-03",
+      "closingPrice": 1353.0
+    },
+    {
+      "date": "2024-10-04",
+      "closingPrice": 1349.2
+    },
+    {
+      "date": "2024-10-07",
+      "closingPrice": 1355.0
+    },
+    {
+      "date": "2024-10-08",
+      "closingPrice": 1379.2
+    },
+    {
+      "date": "2024-10-09",
+      "closingPrice": 1397.2
+    },
+    {
+      "date": "2024-10-10",
+      "closingPrice": 1366.2
+    },
+    {
+      "date": "2024-10-11",
+      "closingPrice": 1361.6
+    },
+    {
+      "date": "2024-10-14",
+      "closingPrice": 1387.0
+    },
+    {
+      "date": "2024-10-15",
+      "closingPrice": 1369.6
+    },
+    {
+      "date": "2024-10-16",
+      "closingPrice": 1366.6
+    },
+    {
+      "date": "2024-10-17",
+      "closingPrice": 1392.0
+    },
+    {
+      "date": "2024-10-18",
+      "closingPrice": 1420.6
+    },
+    {
+      "date": "2024-10-21",
+      "closingPrice": 1418.0
+    },
+    {
+      "date": "2024-10-22",
+      "closingPrice": 1424.4
+    },
+    {
+      "date": "2024-10-23",
+      "closingPrice": 1419.6
+    },
+    {
+      "date": "2024-10-24",
+      "closingPrice": 1424.0
+    },
+    {
+      "date": "2024-10-25",
+      "closingPrice": 1417.6
+    },
+    {
+      "date": "2024-10-28",
+      "closingPrice": 1450.0
+    },
+    {
+      "date": "2024-10-29",
+      "closingPrice": 1458.0
+    },
+    {
+      "date": "2024-10-30",
+      "closingPrice": 1436.0
+    },
+    {
+      "date": "2024-10-31",
+      "closingPrice": 1406.4
+    },
+    {
+      "date": "2024-11-01",
+      "closingPrice": 1406.4
+    },
+    {
+      "date": "2024-11-04",
+      "closingPrice": 1395.8
+    },
+    {
+      "date": "2024-11-05",
+      "closingPrice": 1399.8
+    },
+    {
+      "date": "2024-11-06",
+      "closingPrice": 1376.4
+    },
+    {
+      "date": "2024-11-07",
+      "closingPrice": 1335.8
+    },
+    {
+      "date": "2024-11-08",
+      "closingPrice": 1272.6
+    },
+    {
+      "date": "2024-11-11",
+      "closingPrice": 1303.2
+    },
+    {
+      "date": "2024-11-12",
+      "closingPrice": 1268.8
+    },
+    {
+      "date": "2024-11-13",
+      "closingPrice": 1275.8
+    },
+    {
+      "date": "2024-11-14",
+      "closingPrice": 1276.8
+    },
+    {
+      "date": "2024-11-15",
+      "closingPrice": 1237.0
+    },
+    {
+      "date": "2024-11-18",
+      "closingPrice": 1238.4
+    },
+    {
+      "date": "2024-11-19",
+      "closingPrice": 1230.6
+    },
+    {
+      "date": "2024-11-20",
+      "closingPrice": 1214.0
+    },
+    {
+      "date": "2024-11-21",
+      "closingPrice": 1267.0
+    },
+    {
+      "date": "2024-11-22",
+      "closingPrice": 1290.4
+    },
+    {
+      "date": "2024-11-25",
+      "closingPrice": 1326.4
+    },
+    {
+      "date": "2024-11-26",
+      "closingPrice": 1385.2
+    },
+    {
+      "date": "2024-11-27",
+      "closingPrice": 1385.4
+    },
+    {
+      "date": "2024-11-28",
+      "closingPrice": 1372.4
+    },
+    {
+      "date": "2024-11-29",
+      "closingPrice": 1378.4
+    },
+    {
+      "date": "2024-12-02",
+      "closingPrice": 1413.4
+    },
+    {
+      "date": "2024-12-03",
+      "closingPrice": 1401.8
+    },
+    {
+      "date": "2024-12-04",
+      "closingPrice": 1440.8
+    },
+    {
+      "date": "2024-12-05",
+      "closingPrice": 1477.6
+    },
+    {
+      "date": "2024-12-06",
+      "closingPrice": 1493.2
+    },
+    {
+      "date": "2024-12-09",
+      "closingPrice": 1504.8
+    },
+    {
+      "date": "2024-12-10",
+      "closingPrice": 1495.0
+    },
+    {
+      "date": "2024-12-11",
+      "closingPrice": 1503.2
+    },
+    {
+      "date": "2024-12-12",
+      "closingPrice": 1503.4
+    },
+    {
+      "date": "2024-12-13",
+      "closingPrice": 1490.2
+    },
+    {
+      "date": "2024-12-16",
+      "closingPrice": 1495.2
+    },
+    {
+      "date": "2024-12-17",
+      "closingPrice": 1503.0
+    },
+    {
+      "date": "2024-12-18",
+      "closingPrice": 1503.4
+    },
+    {
+      "date": "2024-12-19",
+      "closingPrice": 1447.0
+    },
+    {
+      "date": "2024-12-20",
+      "closingPrice": 1441.0
+    },
+    {
+      "date": "2024-12-23",
+      "closingPrice": 1420.0
+    },
+    {
+      "date": "2024-12-24",
+      "closingPrice": 1435.6
+    },
+    {
+      "date": "2024-12-27",
+      "closingPrice": 1436.6
+    },
+    {
+      "date": "2024-12-30",
+      "closingPrice": 1417.4
+    },
+    {
+      "date": "2024-12-31",
+      "closingPrice": 1437.0
+    },
+    {
+      "date": "2025-01-02",
+      "closingPrice": 1428.0
+    },
+    {
+      "date": "2025-01-03",
+      "closingPrice": 1437.0
+    },
+    {
+      "date": "2025-01-06",
+      "closingPrice": 1479.4
+    },
+    {
+      "date": "2025-01-07",
+      "closingPrice": 1480.0
+    },
+    {
+      "date": "2025-01-08",
+      "closingPrice": 1478.4
+    },
+    {
+      "date": "2025-01-09",
+      "closingPrice": 1489.6
+    },
+    {
+      "date": "2025-01-10",
+      "closingPrice": 1472.4
+    },
+    {
+      "date": "2025-01-13",
+      "closingPrice": 1390.8
+    },
+    {
+      "date": "2025-01-14",
+      "closingPrice": 1432.2
+    },
+    {
+      "date": "2025-01-15",
+      "closingPrice": 1465.6
+    },
+    {
+      "date": "2025-01-16",
+      "closingPrice": 1488.0
+    },
+    {
+      "date": "2025-01-17",
+      "closingPrice": 1494.6
+    },
+    {
+      "date": "2025-01-20",
+      "closingPrice": 1490.0
+    },
+    {
+      "date": "2025-01-21",
+      "closingPrice": 1491.4
+    },
+    {
+      "date": "2025-01-22",
+      "closingPrice": 1506.6
+    },
+    {
+      "date": "2025-01-23",
+      "closingPrice": 1516.0
+    },
+    {
+      "date": "2025-01-24",
+      "closingPrice": 1520.4
+    },
+    {
+      "date": "2025-01-27",
+      "closingPrice": 1503.6
+    },
+    {
+      "date": "2025-01-28",
+      "closingPrice": 1552.8
+    },
+    {
+      "date": "2025-01-29",
+      "closingPrice": 1516.0
+    },
+    {
+      "date": "2025-01-30",
+      "closingPrice": 1563.0
+    },
+    {
+      "date": "2025-01-31",
+      "closingPrice": 1570.0
+    },
+    {
+      "date": "2025-02-03",
+      "closingPrice": 1552.4
+    },
+    {
+      "date": "2025-02-04",
+      "closingPrice": 1599.6
+    },
+    {
+      "date": "2025-02-05",
+      "closingPrice": 1601.0
+    },
+    {
+      "date": "2025-02-06",
+      "closingPrice": 1585.4
+    },
+    {
+      "date": "2025-02-07",
+      "closingPrice": 1553.2
+    },
+    {
+      "date": "2025-02-10",
+      "closingPrice": 1544.2
+    },
+    {
+      "date": "2025-02-11",
+      "closingPrice": 1551.0
+    },
+    {
+      "date": "2025-02-12",
+      "closingPrice": 1578.2
+    },
+    {
+      "date": "2025-02-13",
+      "closingPrice": 1805.0
+    },
+    {
+      "date": "2025-02-14",
+      "closingPrice": 1840.0
+    },
+    {
+      "date": "2025-02-17",
+      "closingPrice": 1841.2
+    },
+    {
+      "date": "2025-02-18",
+      "closingPrice": 1846.0
+    },
+    {
+      "date": "2025-02-19",
+      "closingPrice": 1835.8
+    },
+    {
+      "date": "2025-02-20",
+      "closingPrice": 1804.8
+    },
+    {
+      "date": "2025-02-21",
+      "closingPrice": 1787.0
+    },
+    {
+      "date": "2025-02-24",
+      "closingPrice": 1769.4
+    },
+    {
+      "date": "2025-02-25",
+      "closingPrice": 1726.6
+    },
+    {
+      "date": "2025-02-26",
+      "closingPrice": 1726.4
+    },
+    {
+      "date": "2025-02-27",
+      "closingPrice": 1698.2
+    },
+    {
+      "date": "2025-02-28",
+      "closingPrice": 1741.2
+    },
+    {
+      "date": "2025-03-03",
+      "closingPrice": 1747.2
+    },
+    {
+      "date": "2025-03-04",
+      "closingPrice": 1694.0
+    },
+    {
+      "date": "2025-03-05",
+      "closingPrice": 1711.6
+    },
+    {
+      "date": "2025-03-06",
+      "closingPrice": 1662.6
+    },
+    {
+      "date": "2025-03-07",
+      "closingPrice": 1593.6
+    },
+    {
+      "date": "2025-03-10",
+      "closingPrice": 1543.4
+    },
+    {
+      "date": "2025-03-11",
+      "closingPrice": 1505.6
+    },
+    {
+      "date": "2025-03-12",
+      "closingPrice": 1542.4
+    },
+    {
+      "date": "2025-03-13",
+      "closingPrice": 1497.6
+    },
+    {
+      "date": "2025-03-14",
+      "closingPrice": 1507.6
+    },
+    {
+      "date": "2025-03-17",
+      "closingPrice": 1511.6
+    },
+    {
+      "date": "2025-03-18",
+      "closingPrice": 1525.6
+    },
+    {
+      "date": "2025-03-19",
+      "closingPrice": 1556.6
+    },
+    {
+      "date": "2025-03-20",
+      "closingPrice": 1556.6
+    },
+    {
+      "date": "2025-03-21",
+      "closingPrice": 1535.6
+    },
+    {
+      "date": "2025-03-24",
+      "closingPrice": 1507.0
+    },
+    {
+      "date": "2025-03-25",
+      "closingPrice": 1504.4
+    },
+    {
+      "date": "2025-03-26",
+      "closingPrice": 1472.8
+    },
+    {
+      "date": "2025-03-27",
+      "closingPrice": 1450.0
+    },
+    {
+      "date": "2025-03-28",
+      "closingPrice": 1449.0
+    },
+    {
+      "date": "2025-03-31",
+      "closingPrice": 1406.0
+    },
+    {
+      "date": "2025-04-01",
+      "closingPrice": 1415.2
+    },
+    {
+      "date": "2025-04-02",
+      "closingPrice": 1420.8
+    },
+    {
+      "date": "2025-04-03",
+      "closingPrice": 1306.2
+    },
+    {
+      "date": "2025-04-04",
+      "closingPrice": 1259.6
+    },
+    {
+      "date": "2025-04-07",
+      "closingPrice": 1233.8
+    },
+    {
+      "date": "2025-04-08",
+      "closingPrice": 1308.2
+    },
+    {
+      "date": "2025-04-09",
+      "closingPrice": 1281.0
+    },
+    {
+      "date": "2025-04-10",
+      "closingPrice": 1353.2
+    },
+    {
+      "date": "2025-04-11",
+      "closingPrice": 1330.6
+    },
+    {
+      "date": "2025-04-14",
+      "closingPrice": 1419.8
+    },
+    {
+      "date": "2025-04-15",
+      "closingPrice": 1447.4
+    },
+    {
+      "date": "2025-04-16",
+      "closingPrice": 1441.0
+    },
+    {
+      "date": "2025-04-17",
+      "closingPrice": 1400.4
+    },
+    {
+      "date": "2025-04-22",
+      "closingPrice": 1415.0
+    },
+    {
+      "date": "2025-04-23",
+      "closingPrice": 1470.0
+    },
+    {
+      "date": "2025-04-24",
+      "closingPrice": 1468.4
+    },
+    {
+      "date": "2025-04-25",
+      "closingPrice": 1466.4
+    },
+    {
+      "date": "2025-04-28",
+      "closingPrice": 1440.8
+    },
+    {
+      "date": "2025-04-29",
+      "closingPrice": 1448.4
+    },
+    {
+      "date": "2025-04-30",
+      "closingPrice": 1417.8
+    },
+    {
+      "date": "2025-05-02",
+      "closingPrice": 1468.0
+    },
+    {
+      "date": "2025-05-05",
+      "closingPrice": 1479.0
+    },
+    {
+      "date": "2025-05-06",
+      "closingPrice": 1484.4
+    },
+    {
+      "date": "2025-05-07",
+      "closingPrice": 1527.2
+    },
+    {
+      "date": "2025-05-08",
+      "closingPrice": 1562.4
+    },
+    {
+      "date": "2025-05-09",
+      "closingPrice": 1583.6
+    },
+    {
+      "date": "2025-05-12",
+      "closingPrice": 1657.6
+    },
+    {
+      "date": "2025-05-13",
+      "closingPrice": 1687.6
+    },
+    {
+      "date": "2025-05-14",
+      "closingPrice": 1649.4
+    },
+    {
+      "date": "2025-05-15",
+      "closingPrice": 1621.8
+    },
+    {
+      "date": "2025-05-16",
+      "closingPrice": 1637.0
+    },
+    {
+      "date": "2025-05-19",
+      "closingPrice": 1655.6
+    },
+    {
+      "date": "2025-05-20",
+      "closingPrice": 1620.0
+    },
+    {
+      "date": "2025-05-21",
+      "closingPrice": 1623.0
+    },
+    {
+      "date": "2025-05-22",
+      "closingPrice": 1608.4
+    },
+    {
+      "date": "2025-05-23",
+      "closingPrice": 1586.2
+    },
+    {
+      "date": "2025-05-26",
+      "closingPrice": 1605.8
+    },
+    {
+      "date": "2025-05-27",
+      "closingPrice": 1621.0
+    },
+    {
+      "date": "2025-05-28",
+      "closingPrice": 1619.8
+    },
+    {
+      "date": "2025-05-29",
+      "closingPrice": 1680.0
+    },
+    {
+      "date": "2025-05-30",
+      "closingPrice": 1689.6
+    },
+    {
+      "date": "2025-06-02",
+      "closingPrice": 1655.2
+    },
+    {
+      "date": "2025-06-03",
+      "closingPrice": 1671.2
+    },
+    {
+      "date": "2025-06-04",
+      "closingPrice": 1682.8
+    },
+    {
+      "date": "2025-06-05",
+      "closingPrice": 1705.2
+    },
+    {
+      "date": "2025-06-06",
+      "closingPrice": 1724.8
+    },
+    {
+      "date": "2025-06-09",
+      "closingPrice": 1707.2
+    },
+    {
+      "date": "2025-06-10",
+      "closingPrice": 1744.8
+    },
+    {
+      "date": "2025-06-11",
+      "closingPrice": 1721.8
+    },
+    {
+      "date": "2025-06-12",
+      "closingPrice": 1700.0
+    },
+    {
+      "date": "2025-06-13",
+      "closingPrice": 1656.2
+    },
+    {
+      "date": "2025-06-16",
+      "closingPrice": 1687.4
+    },
+    {
+      "date": "2025-06-17",
+      "closingPrice": 1682.4
+    },
+    {
+      "date": "2025-06-18",
+      "closingPrice": 1603.8
+    },
+    {
+      "date": "2025-06-19",
+      "closingPrice": 1548.2
+    },
+    {
+      "date": "2025-06-20",
+      "closingPrice": 1531.6
+    },
+    {
+      "date": "2025-06-23",
+      "closingPrice": 1542.0
+    },
+    {
+      "date": "2025-06-24",
+      "closingPrice": 1596.2
+    },
+    {
+      "date": "2025-06-25",
+      "closingPrice": 1582.8
+    },
+    {
+      "date": "2025-06-26",
+      "closingPrice": 1532.0
+    },
+    {
+      "date": "2025-06-27",
+      "closingPrice": 1576.6
+    },
+    {
+      "date": "2025-06-30",
+      "closingPrice": 1558.4
+    },
+    {
+      "date": "2025-07-01",
+      "closingPrice": 1532.4
+    },
+    {
+      "date": "2025-07-02",
+      "closingPrice": 1530.6
+    },
+    {
+      "date": "2025-07-03",
+      "closingPrice": 1535.0
+    },
+    {
+      "date": "2025-07-04",
+      "closingPrice": 1518.0
+    },
+    {
+      "date": "2025-07-07",
+      "closingPrice": 1562.8
+    },
+    {
+      "date": "2025-07-08",
+      "closingPrice": 1563.6
+    },
+    {
+      "date": "2025-07-09",
+      "closingPrice": 1575.6
+    },
+    {
+      "date": "2025-07-10",
+      "closingPrice": 1511.0
+    },
+    {
+      "date": "2025-07-11",
+      "closingPrice": 1519.0
+    },
+    {
+      "date": "2025-07-14",
+      "closingPrice": 1509.8
+    },
+    {
+      "date": "2025-07-15",
+      "closingPrice": 1513.2
+    },
+    {
+      "date": "2025-07-16",
+      "closingPrice": 1511.4
+    },
+    {
+      "date": "2025-07-17",
+      "closingPrice": 1551.6
+    },
+    {
+      "date": "2025-07-18",
+      "closingPrice": 1556.2
+    },
+    {
+      "date": "2025-07-21",
+      "closingPrice": 1562.0
+    },
+    {
+      "date": "2025-07-22",
+      "closingPrice": 1549.6
+    },
+    {
+      "date": "2025-07-23",
+      "closingPrice": 1533.2
+    },
+    {
+      "date": "2025-07-24",
+      "closingPrice": 1542.4
+    },
+    {
+      "date": "2025-07-25",
+      "closingPrice": 1559.2
+    },
+    {
+      "date": "2025-07-28",
+      "closingPrice": 1583.4
+    },
+    {
+      "date": "2025-07-29",
+      "closingPrice": 1527.0
+    },
+    {
+      "date": "2025-07-30",
+      "closingPrice": 1528.6
+    },
+    {
+      "date": "2025-07-31",
+      "closingPrice": 1510.6
+    },
+    {
+      "date": "2025-08-01",
+      "closingPrice": 1448.4
+    },
+    {
+      "date": "2025-08-04",
+      "closingPrice": 1457.2
+    },
+    {
+      "date": "2025-08-05",
+      "closingPrice": 1452.2
+    },
+    {
+      "date": "2025-08-06",
+      "closingPrice": 1488.0
+    },
+    {
+      "date": "2025-08-07",
+      "closingPrice": 1521.0
+    },
+    {
+      "date": "2025-08-08",
+      "closingPrice": 1494.8
+    },
+    {
+      "date": "2025-08-11",
+      "closingPrice": 1495.6
+    },
+    {
+      "date": "2025-08-12",
+      "closingPrice": 1463.6
+    },
+    {
+      "date": "2025-08-13",
+      "closingPrice": 1465.0
+    },
+    {
+      "date": "2025-08-14",
+      "closingPrice": 1392.6
+    },
+    {
+      "date": "2025-08-15",
+      "closingPrice": 1396.4
+    },
+    {
+      "date": "2025-08-18",
+      "closingPrice": 1435.2
+    },
+    {
+      "date": "2025-08-19",
+      "closingPrice": 1450.0
+    },
+    {
+      "date": "2025-08-20",
+      "closingPrice": 1453.2
+    },
+    {
+      "date": "2025-08-21",
+      "closingPrice": 1443.4
+    },
+    {
+      "date": "2025-08-22",
+      "closingPrice": 1474.4
+    },
+    {
+      "date": "2025-08-25",
+      "closingPrice": 1472.0
+    },
+    {
+      "date": "2025-08-26",
+      "closingPrice": 1431.4
+    },
+    {
+      "date": "2025-08-27",
+      "closingPrice": 1440.0
+    },
+    {
+      "date": "2025-08-28",
+      "closingPrice": 1442.6
+    },
+    {
+      "date": "2025-08-29",
+      "closingPrice": 1434.4
+    },
+    {
+      "date": "2025-09-01",
+      "closingPrice": 1423.0
+    },
+    {
+      "date": "2025-09-02",
+      "closingPrice": 1376.2
+    },
+    {
+      "date": "2025-09-03",
+      "closingPrice": 1394.4
+    },
+    {
+      "date": "2025-09-04",
+      "closingPrice": 1377.8
+    },
+    {
+      "date": "2025-09-05",
+      "closingPrice": 1386.4
+    },
+    {
+      "date": "2025-09-08",
+      "closingPrice": 1390.6
+    },
+    {
+      "date": "2025-09-09",
+      "closingPrice": 1403.0
+    },
+    {
+      "date": "2025-09-10",
+      "closingPrice": 1365.8
+    },
+    {
+      "date": "2025-09-11",
+      "closingPrice": 1360.4
+    },
+    {
+      "date": "2025-09-12",
+      "closingPrice": 1345.2
+    },
+    {
+      "date": "2025-09-15",
+      "closingPrice": 1349.0
+    },
+    {
+      "date": "2025-09-16",
+      "closingPrice": 1321.0
+    },
+    {
+      "date": "2025-09-17",
+      "closingPrice": 1377.0
+    },
+    {
+      "date": "2025-09-18",
+      "closingPrice": 1395.2
+    },
+    {
+      "date": "2025-09-19",
+      "closingPrice": 1379.8
+    },
+    {
+      "date": "2025-09-22",
+      "closingPrice": 1379.2
+    },
+    {
+      "date": "2025-09-23",
+      "closingPrice": 1374.6
+    },
+    {
+      "date": "2025-09-24",
+      "closingPrice": 1386.4
+    },
+    {
+      "date": "2025-09-25",
+      "closingPrice": 1378.2
+    },
+    {
+      "date": "2025-09-26",
+      "closingPrice": 1353.0
+    },
+    {
+      "date": "2025-09-29",
+      "closingPrice": 1367.6
+    },
+    {
+      "date": "2025-09-30",
+      "closingPrice": 1365.0
+    },
+    {
+      "date": "2025-10-01",
+      "closingPrice": 1368.0
+    },
+    {
+      "date": "2025-10-02",
+      "closingPrice": 1456.0
+    },
+    {
+      "date": "2025-10-03",
+      "closingPrice": 1445.6
+    },
+    {
+      "date": "2025-10-06",
+      "closingPrice": 1476.6
+    },
+    {
+      "date": "2025-10-07",
+      "closingPrice": 1479.8
+    },
+    {
+      "date": "2025-10-08",
+      "closingPrice": 1498.0
+    },
+    {
+      "date": "2025-10-09",
+      "closingPrice": 1495.6
+    },
+    {
+      "date": "2025-10-10",
+      "closingPrice": 1467.6
+    },
+    {
+      "date": "2025-10-13",
+      "closingPrice": 1478.4
+    },
+    {
+      "date": "2025-10-14",
+      "closingPrice": 1460.4
+    },
+    {
+      "date": "2025-10-15",
+      "closingPrice": 1457.6
+    },
+    {
+      "date": "2025-10-16",
+      "closingPrice": 1464.4
+    },
+    {
+      "date": "2025-10-17",
+      "closingPrice": 1446.6
+    },
+    {
+      "date": "2025-10-20",
+      "closingPrice": 1464.0
+    },
+    {
+      "date": "2025-10-21",
+      "closingPrice": 1480.4
+    },
+    {
+      "date": "2025-10-22",
+      "closingPrice": 1492.2
+    },
+    {
+      "date": "2025-10-23",
+      "closingPrice": 1494.2
+    },
+    {
+      "date": "2025-10-24",
+      "closingPrice": 1512.6
+    },
+    {
+      "date": "2025-10-27",
+      "closingPrice": 1505.4
+    },
+    {
+      "date": "2025-10-28",
+      "closingPrice": 1448.8
+    },
+    {
+      "date": "2025-10-29",
+      "closingPrice": 1521.6
+    },
+    {
+      "date": "2025-10-30",
+      "closingPrice": 1516.4
+    },
+    {
+      "date": "2025-10-31",
+      "closingPrice": 1488.6
+    },
+    {
+      "date": "2025-11-03",
+      "closingPrice": 1437.0
+    },
+    {
+      "date": "2025-11-04",
+      "closingPrice": 1411.6
+    },
+    {
+      "date": "2025-11-05",
+      "closingPrice": 1407.2
+    },
+    {
+      "date": "2025-11-06",
+      "closingPrice": 1369.2
+    },
+    {
+      "date": "2025-11-07",
+      "closingPrice": 1337.2
+    },
+    {
+      "date": "2025-11-10",
+      "closingPrice": 1354.0
+    },
+    {
+      "date": "2025-11-11",
+      "closingPrice": 1467.2
+    },
+    {
+      "date": "2025-11-12",
+      "closingPrice": 1458.2
+    },
+    {
+      "date": "2025-11-13",
+      "closingPrice": 1416.2
+    },
+    {
+      "date": "2025-11-14",
+      "closingPrice": 1408.4
+    },
+    {
+      "date": "2025-11-17",
+      "closingPrice": 1369.0
+    },
+    {
+      "date": "2025-11-18",
+      "closingPrice": 1316.2
+    },
+    {
+      "date": "2025-11-19",
+      "closingPrice": 1324.0
+    },
+    {
+      "date": "2025-11-20",
+      "closingPrice": 1311.0
+    },
+    {
+      "date": "2025-11-21",
+      "closingPrice": 1301.0
+    },
+    {
+      "date": "2025-11-24",
+      "closingPrice": 1317.0
+    },
+    {
+      "date": "2025-11-25",
+      "closingPrice": 1326.0
+    },
+    {
+      "date": "2025-11-26",
+      "closingPrice": 1340.2
+    },
+    {
+      "date": "2025-11-27",
+      "closingPrice": 1345.8
+    },
+    {
+      "date": "2025-11-28",
+      "closingPrice": 1340.6
+    },
+    {
+      "date": "2025-12-01",
+      "closingPrice": 1347.4
+    },
+    {
+      "date": "2025-12-02",
+      "closingPrice": 1352.0
+    },
+    {
+      "date": "2025-12-03",
+      "closingPrice": 1363.8
+    },
+    {
+      "date": "2025-12-04",
+      "closingPrice": 1330.6
+    },
+    {
+      "date": "2025-12-05",
+      "closingPrice": 1349.4
+    },
+    {
+      "date": "2025-12-08",
+      "closingPrice": 1334.0
+    },
+    {
+      "date": "2025-12-09",
+      "closingPrice": 1318.6
+    },
+    {
+      "date": "2025-12-10",
+      "closingPrice": 1333.8
+    },
+    {
+      "date": "2025-12-11",
+      "closingPrice": 1331.0
+    },
+    {
+      "date": "2025-12-12",
+      "closingPrice": 1333.8
+    },
+    {
+      "date": "2025-12-15",
+      "closingPrice": 1352.0
+    },
+    {
+      "date": "2025-12-16",
+      "closingPrice": 1350.4
+    },
+    {
+      "date": "2025-12-17",
+      "closingPrice": 1329.6
+    },
+    {
+      "date": "2025-12-18",
+      "closingPrice": 1370.2
+    },
+    {
+      "date": "2025-12-19",
+      "closingPrice": 1377.4
+    },
+    {
+      "date": "2025-12-22",
+      "closingPrice": 1374.6
+    },
+    {
+      "date": "2025-12-23",
+      "closingPrice": 1363.2
+    },
+    {
+      "date": "2025-12-24",
+      "closingPrice": 1368.0
+    },
+    {
+      "date": "2025-12-29",
+      "closingPrice": 1374.8
+    },
+    {
+      "date": "2025-12-30",
+      "closingPrice": 1380.2
+    },
+    {
+      "date": "2025-12-31",
+      "closingPrice": 1375.0
+    },
+    {
+      "date": "2026-01-02",
+      "closingPrice": 1397.2
+    },
+    {
+      "date": "2026-01-05",
+      "closingPrice": 1443.8
+    },
+    {
+      "date": "2026-01-06",
+      "closingPrice": 1465.4
+    },
+    {
+      "date": "2026-01-07",
+      "closingPrice": 1460.0
+    },
+    {
+      "date": "2026-01-08",
+      "closingPrice": 1437.6
+    },
+    {
+      "date": "2026-01-09",
+      "closingPrice": 1451.6
+    },
+    {
+      "date": "2026-01-12",
+      "closingPrice": 1428.8
+    },
+    {
+      "date": "2026-01-13",
+      "closingPrice": 1397.8
+    },
+    {
+      "date": "2026-01-14",
+      "closingPrice": 1382.2
+    },
+    {
+      "date": "2026-01-15",
+      "closingPrice": 1413.6
+    },
+    {
+      "date": "2026-01-16",
+      "closingPrice": 1392.2
+    },
+    {
+      "date": "2026-01-19",
+      "closingPrice": 1371.0
+    },
+    {
+      "date": "2026-01-20",
+      "closingPrice": 1381.4
+    },
+    {
+      "date": "2026-01-21",
+      "closingPrice": 1408.2
+    },
+    {
+      "date": "2026-01-22",
+      "closingPrice": 1431.0
+    },
+    {
+      "date": "2026-01-23",
+      "closingPrice": 1396.8
+    },
+    {
+      "date": "2026-01-26",
+      "closingPrice": 1393.6
+    },
+    {
+      "date": "2026-01-27",
+      "closingPrice": 1334.8
+    },
+    {
+      "date": "2026-01-28",
+      "closingPrice": 1283.0
+    },
+    {
+      "date": "2026-01-29",
+      "closingPrice": 1270.6
+    },
+    {
+      "date": "2026-01-30",
+      "closingPrice": 1253.4
+    },
+    {
+      "date": "2026-02-02",
+      "closingPrice": 1265.6
+    },
+    {
+      "date": "2026-02-03",
+      "closingPrice": 1176.8
+    },
+    {
+      "date": "2026-02-04",
+      "closingPrice": 1171.0
+    },
+    {
+      "date": "2026-02-05",
+      "closingPrice": 1144.2
+    },
+    {
+      "date": "2026-02-06",
+      "closingPrice": 1134.8
+    },
+    {
+      "date": "2026-02-09",
+      "closingPrice": 1186.8
+    },
+    {
+      "date": "2026-02-10",
+      "closingPrice": 1236.4
+    },
+    {
+      "date": "2026-02-11",
+      "closingPrice": 1156.2
+    },
+    {
+      "date": "2026-02-12",
+      "closingPrice": 903.3
+    },
+    {
+      "date": "2026-02-13",
+      "closingPrice": 897.2
+    },
+    {
+      "date": "2026-02-16",
+      "closingPrice": 918.0
+    },
+    {
+      "date": "2026-02-17",
+      "closingPrice": 956.9
+    },
+    {
+      "date": "2026-02-18",
+      "closingPrice": 984.7
+    },
+    {
+      "date": "2026-02-19",
+      "closingPrice": 997.7
+    },
+    {
+      "date": "2026-02-20",
+      "closingPrice": 1001.6
+    },
+    {
+      "date": "2026-02-23",
+      "closingPrice": 947.3
+    },
+    {
+      "date": "2026-02-24",
+      "closingPrice": 932.5
+    },
+    {
+      "date": "2026-02-25",
+      "closingPrice": 964.1
+    },
+    {
+      "date": "2026-02-26",
+      "closingPrice": 992.3
+    },
+    {
+      "date": "2026-02-27",
+      "closingPrice": 994.8
+    },
+    {
+      "date": "2026-03-02",
+      "closingPrice": 965.7
+    },
+    {
+      "date": "2026-03-03",
+      "closingPrice": 949.1
+    },
+    {
+      "date": "2026-03-04",
+      "closingPrice": 957.6
+    },
+    {
+      "date": "2026-03-05",
+      "closingPrice": 931.5
+    },
+    {
+      "date": "2026-03-06",
+      "closingPrice": 930.4
+    },
+    {
+      "date": "2026-03-09",
+      "closingPrice": 942.7
+    },
+    {
+      "date": "2026-03-10",
+      "closingPrice": 935.0
+    },
+    {
+      "date": "2026-03-11",
+      "closingPrice": 926.5
+    },
+    {
+      "date": "2026-03-12",
+      "closingPrice": 917.3
+    },
+    {
+      "date": "2026-03-13",
+      "closingPrice": 913.6
+    },
+    {
+      "date": "2026-03-16",
+      "closingPrice": 894.2
+    },
+    {
+      "date": "2026-03-17",
+      "closingPrice": 911.5
+    },
+    {
+      "date": "2026-03-18",
+      "closingPrice": 890.1
+    },
+    {
+      "date": "2026-03-19",
+      "closingPrice": 865.6
+    },
+    {
+      "date": "2026-03-20",
+      "closingPrice": 863.5
+    },
+    {
+      "date": "2026-03-23",
+      "closingPrice": 877.9
+    },
+    {
+      "date": "2026-03-24",
+      "closingPrice": 888.5
+    },
+    {
+      "date": "2026-03-25",
+      "closingPrice": 906.5
+    },
+    {
+      "date": "2026-03-26",
+      "closingPrice": 877.8
+    },
+    {
+      "date": "2026-03-27",
+      "closingPrice": 855.5
+    },
+    {
+      "date": "2026-03-30",
+      "closingPrice": 864.4
+    },
+    {
+      "date": "2026-03-31",
+      "closingPrice": 850.6
+    },
+    {
+      "date": "2026-04-01",
+      "closingPrice": 863.7
+    },
+    {
+      "date": "2026-04-02",
+      "closingPrice": 845.2
+    },
+    {
+      "date": "2026-04-07",
+      "closingPrice": 844.2
+    },
+    {
+      "date": "2026-04-08",
+      "closingPrice": 878.1
+    },
+    {
+      "date": "2026-04-09",
+      "closingPrice": 860.0
+    },
+    {
+      "date": "2026-04-10",
+      "closingPrice": 858.8
+    },
+    {
+      "date": "2026-04-13",
+      "closingPrice": 892.4
+    },
+    {
+      "date": "2026-04-14",
+      "closingPrice": 926.1
+    },
+    {
+      "date": "2026-04-15",
+      "closingPrice": 964.0
+    },
+    {
+      "date": "2026-04-16",
+      "closingPrice": 958.0
+    },
+    {
+      "date": "2026-04-17",
+      "closingPrice": 984.9
+    },
+    {
+      "date": "2026-04-20",
+      "closingPrice": 970.8
+    },
+    {
+      "date": "2026-04-21",
+      "closingPrice": 981.3
+    },
+    {
+      "date": "2026-04-22",
+      "closingPrice": 970.4
+    },
+    {
+      "date": "2026-04-23",
+      "closingPrice": 930.6
+    },
+    {
+      "date": "2026-04-24",
+      "closingPrice": 975.1
+    },
+    {
+      "date": "2026-04-27",
+      "closingPrice": 966.1
+    },
+    {
+      "date": "2026-04-28",
+      "closingPrice": 954.0
+    },
+    {
+      "date": "2026-04-29",
+      "closingPrice": 957.2
+    },
+    {
+      "date": "2026-04-30",
+      "closingPrice": 958.5
+    },
+    {
+      "date": "2026-05-04",
+      "closingPrice": 970.8
+    },
+    {
+      "date": "2026-05-05",
+      "closingPrice": 972.3
+    },
+    {
+      "date": "2026-05-06",
+      "closingPrice": 957.6
+    },
+    {
+      "date": "2026-05-07",
+      "closingPrice": 948.9
+    },
+    {
+      "date": "2026-05-08",
+      "closingPrice": 942.8
+    },
+    {
+      "date": "2026-05-11",
+      "closingPrice": 921.0
+    },
+    {
+      "date": "2026-05-12",
+      "closingPrice": 908.7
+    },
+    {
+      "date": "2026-05-13",
+      "closingPrice": 880.0
+    },
+    {
+      "date": "2026-05-14",
+      "closingPrice": 898.0
+    },
+    {
+      "date": "2026-05-15",
+      "closingPrice": 890.8
+    },
+    {
+      "date": "2026-05-18",
+      "closingPrice": 909.3
+    },
+    {
+      "date": "2026-05-19",
+      "closingPrice": 952.6
+    },
+    {
+      "date": "2026-05-20",
+      "closingPrice": 956.3
+    },
+    {
+      "date": "2026-05-21",
+      "closingPrice": 943.0
+    },
+    {
+      "date": "2026-05-22",
+      "closingPrice": 957.9
+    },
+    {
+      "date": "2026-05-25",
+      "closingPrice": 987.6
+    },
+    {
+      "date": "2026-05-26",
+      "closingPrice": 969.6
+    },
+    {
+      "date": "2026-05-27",
+      "closingPrice": 966.0
+    },
+    {
+      "date": "2026-05-28",
+      "closingPrice": 927.4
+    },
+    {
+      "date": "2026-05-29",
+      "closingPrice": 939.3
+    },
+    {
+      "date": "2026-06-01",
+      "closingPrice": 911.8
+    },
+    {
+      "date": "2026-06-02",
+      "closingPrice": 890.0
+    },
+    {
+      "date": "2026-06-03",
+      "closingPrice": 848.2
+    },
+    {
+      "date": "2026-06-04",
+      "closingPrice": 897.0
+    },
+    {
+      "date": "2026-06-05",
+      "closingPrice": 817.4
+    },
+    {
+      "date": "2026-06-08",
+      "closingPrice": 833.3
+    },
+    {
+      "date": "2026-06-09",
+      "closingPrice": 823.1
+    },
+    {
+      "date": "2026-06-10",
+      "closingPrice": 803.1
+    },
+    {
+      "date": "2026-06-11",
+      "closingPrice": 785.2
+    },
+    {
+      "date": "2026-06-12",
+      "closingPrice": 828.4
+    },
+    {
+      "date": "2026-06-15",
+      "closingPrice": 858.9
+    },
+    {
+      "date": "2026-06-16",
+      "closingPrice": 890.3
+    },
+    {
+      "date": "2026-06-17",
+      "closingPrice": 888.3
+    },
+    {
+      "date": "2026-06-18",
+      "closingPrice": 903.8
+    },
+    {
+      "date": "2026-06-19",
+      "closingPrice": 875.8
+    },
+    {
+      "date": "2026-06-22",
+      "closingPrice": 874.2
+    },
+    {
+      "date": "2026-06-23",
+      "closingPrice": 833.0
+    },
+    {
+      "date": "2026-06-24",
+      "closingPrice": 844.0
+    },
+    {
+      "date": "2026-06-25",
+      "closingPrice": 821.9
+    },
+    {
+      "date": "2026-06-26",
+      "closingPrice": 824.9
+    },
+    {
+      "date": "2026-06-29",
+      "closingPrice": 829.0
+    },
+    {
+      "date": "2026-06-30",
+      "closingPrice": 820.4
+    },
+    {
+      "date": "2026-07-01",
+      "closingPrice": 849.3
+    },
+    {
+      "date": "2026-07-02",
+      "closingPrice": 841.1
+    }
+  ]
+}
