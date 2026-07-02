@@ -1,5 +1,6 @@
 package domain.signal
 
+import domain.algorithm.TradingAlgorithm
 import java.time.Instant
 
 //===========================================================//
@@ -8,31 +9,15 @@ import java.time.Instant
  */
 //===========================================================//
 
-data class TradingSignal(
-    val action: Action,
-    val strength: Strength,
+class TradingSignal private constructor(
+    val buy: TradingAlgorithm.Output.Buy?,
+    val sell: TradingAlgorithm.Output.Sell?,
     val currentPrice: Double,
-    val amount: Long?,
-    val currentStockCount: Long,
-    val reason: String,
-    val createdAt: Instant
+    val createdAt: Instant = Instant.now()
 ) {
-    /**
-     * Represents the calculated Signal strength of generated signal.
-     */
-    enum class Strength {
-        HIGH,
-        MEDIUM,
-        LOW
-    }
-
-    //===========================================================//
-    /**
-     * Represents the action suggested by the signal engine.
-     */
-    enum class Action {
-        BUY,
-        SELL,
-        HOLD
-    }
+    constructor(output: TradingAlgorithm.Output, currentPrice: Double) : this(
+        buy = output.buy,
+        sell = output.sell,
+        currentPrice = currentPrice
+    )
 }

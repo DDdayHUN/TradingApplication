@@ -1,6 +1,5 @@
 package application.backtest
 
-import application.signal.SignalGenerator
 import domain.algorithm.TradingAlgorithm
 import domain.signal.TradingSignal
 import domain.assets.security.SecurityHistory
@@ -39,8 +38,6 @@ class TradingAlgorithmBackTester {
 
     private val m_WithoutTax: BackTesterWithTaxationContext
     private val m_WithTax: BackTesterWithTaxationContext
-
-    private val m_SignalGenerator: SignalGenerator
 
     //===========================================================//
     //===========================================================//
@@ -111,8 +108,6 @@ class TradingAlgorithmBackTester {
 
         m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.create(m_Type, securityIdentifier, m_From, m_To))
         m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.create(m_Type, securityIdentifier, m_From, m_To))
-
-        m_SignalGenerator = SignalGenerator()
     }
 
     //===========================================================//
@@ -233,14 +228,10 @@ class TradingAlgorithmBackTester {
             if (ret.buy != null) projectedStockCount += ret.buy.amount
             if (ret.sell != null) projectedStockCount -= getSellAmount(ret.sell)
 
-            m_SignalGenerator.createSignal(
+            m_Signlas.add(TradingSignal(
                 ret,
-                m_CurrentCapital,
-                currentPrice,
-                projectedStockCount
-            ).forEach {
-                m_Signlas.add(it)
-            }
+                currentPrice
+            ))
 
             if (ret.buy != null) {
                 m_CurrentCapital -= ret.buy.amount * currentPrice
@@ -313,19 +304,19 @@ class TradingAlgorithmBackTester {
         // Extension(s)
 
         private fun TradingSignal.formatToReadableText(): String {
-            val amountText = if(amount == null) "" else " | Amount:  $amount"
+            val action = if(buy == null && sell == null) "HOLD"
+                         else if(buy != null && sell != null) "BUY, SELL"
+                         else if(buy != null) "BUY" else "SELL"
+
+            val amount = if(buy == null && sell == null) ""
+            else if(buy != null && sell != null) " | Buy Amount: ${buy.amount} | Sell Amount: ${sell.batches.sumOf { it.second }}"
+            else if(buy != null) " | Buy Amount: ${buy.amount}" else " | Sell Amount: ${sell!!.batches.sumOf { it.second }}"
 
             return ("" +
                     action
-                    + " | "
-                    + strength
                     + " | Price: "
                     + String.format("%.2f", currentPrice)
-                    + amountText
-                    + " | Current Stock Count: "
-                    + currentStockCount
-                    + " | Reason: "
-                    + reason
+                    + amount
                     + " | At: "
                     + createdAt)
         }
