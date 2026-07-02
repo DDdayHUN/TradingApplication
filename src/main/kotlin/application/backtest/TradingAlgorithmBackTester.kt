@@ -27,7 +27,7 @@ import kotlin.time.Instant
  */
 //===========================================================//
 
-class AlgorithmBackTester {
+class TradingAlgorithmBackTester {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -124,8 +124,8 @@ class AlgorithmBackTester {
         m_StartingCapital = startingCapital
         m_Type = type
 
-        m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_FromDEP, m_ToDEP))
-        m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_FromDEP, m_ToDEP))
+        m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.create(m_Type, m_StockName, m_FromDEP, m_ToDEP))
+        m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.create(m_Type, m_StockName, m_FromDEP, m_ToDEP))
 
         m_SignalGenerator = SignalGenerator()
 
@@ -143,8 +143,8 @@ class AlgorithmBackTester {
         m_StartingCapital = startingCapital
         m_Type = type
 
-        m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_From, m_To))
-        m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_From, m_To))
+        m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.create(m_Type, m_StockName, m_From, m_To))
+        m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.create(m_Type, m_StockName, m_From, m_To))
 
         m_SignalGenerator = SignalGenerator()
 
@@ -199,7 +199,7 @@ class AlgorithmBackTester {
 
         @Deprecated("This will get phased out in favor of the reset function")
         fun resetDEP() {
-            val pair = TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_FromDEP, m_ToDEP)
+            val pair = TradingAlgorithm.create(m_Type, m_StockName, m_FromDEP, m_ToDEP)
 
             m_TradingAlgorithm = pair.second
             m_HistoryWeRunAgainst = pair.first
@@ -213,7 +213,7 @@ class AlgorithmBackTester {
         }
 
         fun reset() {
-            val pair = TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_From, m_To)
+            val pair = TradingAlgorithm.create(m_Type, m_StockName, m_From, m_To)
 
             m_TradingAlgorithm = pair.second
             m_HistoryWeRunAgainst = pair.first
