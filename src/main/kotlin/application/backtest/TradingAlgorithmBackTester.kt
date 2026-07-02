@@ -5,6 +5,7 @@ import domain.algorithm.TradingAlgorithm
 import domain.signal.TradingSignal
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
+import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
 import kotlin.time.Instant
 
@@ -32,7 +33,7 @@ class TradingAlgorithmBackTester {
     //===========================================================//
     // Private Field(s)
 
-    private val m_StockName: String
+    private val m_SecurityIdentifier: SecurityIdentifier
     private val m_From: Instant
     private val m_To: Instant
 
@@ -43,9 +44,6 @@ class TradingAlgorithmBackTester {
     private val m_WithTax: BackTesterWithTaxationContext
 
     private val m_SignalGenerator: SignalGenerator
-
-    @Deprecated("This will be phased out") private val m_FromDEP: Int
-    @Deprecated("This will be phased out") private val m_ToDEP: Int
 
     //===========================================================//
     //===========================================================//
@@ -68,14 +66,8 @@ class TradingAlgorithmBackTester {
     // Private Method(es)
 
     private fun internalRunBackTest() {
-        if(m_FromDEP != Int.MIN_VALUE && m_ToDEP != Int.MAX_VALUE) {
-            m_WithoutTax.resetDEP()
-            m_WithTax.resetDEP()
-        }
-        else {
-            m_WithoutTax.reset()
-            m_WithTax.reset()
-        }
+        m_WithoutTax.reset()
+        m_WithTax.reset()
         m_WithoutTax.runBackTest()
         m_WithTax.runBackTest()
     }
@@ -86,18 +78,15 @@ class TradingAlgorithmBackTester {
         println("#===============================================================#")
         println("# Algorithm back-tester")
         println("#===============================================================#")
-        if(m_FromDEP != Int.MIN_VALUE && m_ToDEP != Int.MAX_VALUE) println("Stock: $m_StockName [$m_FromDEP-$m_ToDEP]")
-        else {
-            val zone = java.time.ZoneId.systemDefault()
-            val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
-            println("Stock: $m_StockName " +
-                    "[" +
-                    "${java.time.Instant.ofEpochMilli(m_From.toEpochMilliseconds()).atZone(zone).format(formatter)}" +
-                    "-" +
-                    "${java.time.Instant.ofEpochMilli(m_To.toEpochMilliseconds()).atZone(zone).format(formatter)}" +
-                    "]"
-            )
-        }
+        val zone = java.time.ZoneId.systemDefault()
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
+        println("Stock: ${m_SecurityIdentifier.name} " +
+                "[" +
+                "${java.time.Instant.ofEpochMilli(m_From.toEpochMilliseconds()).atZone(zone).format(formatter)}" +
+                "-" +
+                "${java.time.Instant.ofEpochMilli(m_To.toEpochMilliseconds()).atZone(zone).format(formatter)}" +
+                "]"
+        )
         println("Starting Capital: " + String.format("%.2f", m_StartingCapital) + System.lineSeparator())
         m_WithoutTax.display()
         m_WithTax.display()
@@ -113,43 +102,20 @@ class TradingAlgorithmBackTester {
     //===========================================================//
     // Constructor(s)
 
-    @Deprecated("This will get phased out in favor of the other constructor")
-    constructor(taxation: ITaxation, type: TradingAlgorithm.Type, startingCapital: Double, stockName: String, from: Int, to: Int) {
+    constructor(taxation: ITaxation, type: TradingAlgorithm.Type, securityIdentifier: SecurityIdentifier, startingCapital: Double, from: Instant, to: Instant) {
         require(startingCapital >= 0) { "Capital" }
 
-        m_StockName = stockName
-        m_FromDEP = from
-        m_ToDEP = to
-
-        m_StartingCapital = startingCapital
-        m_Type = type
-
-        m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.create(m_Type, m_StockName, m_FromDEP, m_ToDEP))
-        m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.create(m_Type, m_StockName, m_FromDEP, m_ToDEP))
-
-        m_SignalGenerator = SignalGenerator()
-
-        m_From = Instant.DISTANT_PAST
-        m_To = Instant.DISTANT_FUTURE
-    }
-
-    constructor(taxation: ITaxation, type: TradingAlgorithm.Type, startingCapital: Double, stockName: String, from: Instant, to: Instant) {
-        require(startingCapital >= 0) { "Capital" }
-
-        m_StockName = stockName
+        m_SecurityIdentifier = securityIdentifier
         m_From = from
         m_To = to
 
         m_StartingCapital = startingCapital
         m_Type = type
 
-        m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.create(m_Type, m_StockName, m_From, m_To))
-        m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.create(m_Type, m_StockName, m_From, m_To))
+        m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.create(m_Type, securityIdentifier, m_From, m_To))
+        m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.create(m_Type, securityIdentifier, m_From, m_To))
 
         m_SignalGenerator = SignalGenerator()
-
-        m_FromDEP = Int.MIN_VALUE
-        m_ToDEP = Int.MAX_VALUE
     }
 
     //===========================================================//
@@ -196,23 +162,8 @@ class TradingAlgorithmBackTester {
 
         //===========================================================//
 
-        @Deprecated("This will get phased out in favor of the reset function")
-        fun resetDEP() {
-            val pair = TradingAlgorithm.create(m_Type, m_StockName, m_FromDEP, m_ToDEP)
-
-            m_TradingAlgorithm = pair.second
-            m_HistoryWeRunAgainst = pair.first
-
-            m_Holdings.clear()
-            m_CapitalHistory.clear()
-
-            m_CurrentCapital = m_StartingCapital
-            m_TotalSellsMade = 0
-            m_WinningTrades = 0
-        }
-
         fun reset() {
-            val pair = TradingAlgorithm.create(m_Type, m_StockName, m_From, m_To)
+            val pair = TradingAlgorithm.create(m_Type, m_SecurityIdentifier, m_From, m_To)
 
             m_TradingAlgorithm = pair.second
             m_HistoryWeRunAgainst = pair.first
@@ -286,7 +237,7 @@ class TradingAlgorithmBackTester {
             if (ret.sell != null) projectedStockCount -= getSellAmount(ret.sell)
 
             m_SignalGenerator.createSignal(
-                m_StockName,
+                m_SecurityIdentifier.name,
                 ret,
                 m_CurrentCapital,
                 currentPrice,
@@ -368,8 +319,8 @@ class TradingAlgorithmBackTester {
         private fun TradingSignal.formatToReadableText(): String {
             val amountText = if(amount == null) "" else " | Amount:  $amount"
 
-            return (symbol + ": "
-                    + action
+            return ("" +
+                    action
                     + " | "
                     + strength
                     + " | Price: "

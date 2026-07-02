@@ -1,12 +1,14 @@
 package data
 
 import com.google.gson.GsonBuilder
+import domain.assets.security.SecurityIdentifier
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import kotlin.time.Instant
 
-object YahooMarketDataParser {
+internal object YahooMarketDataParser : IMarketDataParser {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -19,11 +21,29 @@ object YahooMarketDataParser {
     //===========================================================//
     // Public Method(es)
 
-    internal fun parse(file: File): YahooMarketData {
+    override fun parse(securityIdentifier: SecurityIdentifier): SecuritySerializationData {
+        val rootDir = File("src/main/resources/backtest/yahoo/")
+        val targetFile = rootDir.walkTopDown()
+            .filter { it.isFile } // Ignore directories, only look at files
+            .find { file ->
+                val yahooMarketData = loadFromFile(file)
+                yahooMarketData.isin == securityIdentifier.isin
+            }
+
+        require(targetFile != null) { "There is no files with the given identifier" }
+        return loadFromFile(targetFile).toSecuritySerializationData()
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Private Method(es)
+
+    private fun loadFromFile(file: File): YahooMarketData {
         InputStreamReader(FileInputStream(file), StandardCharsets.UTF_8).use { reader ->
             return s_GSON.fromJson(reader, YahooMarketData::class.java)
         }
     }
+
 
     //===========================================================//
     //===========================================================//
@@ -95,6 +115,27 @@ object YahooMarketDataParser {
                     val adjclose: List<Double>
                 )
             }
+        }
+
+        fun toSecuritySerializationData(): SecuritySerializationData {
+            val timestamps = result.timestamp
+            val closes = result.indicators.adjclose.first().adjclose
+
+            val history = timestamps.zip(closes) { time, price ->
+                SecuritySerializationData.MarketHistory(
+                    date = Instant.fromEpochSeconds(time),
+                    closingPrice = price
+                )
+            }
+
+            return SecuritySerializationData(
+                identifier = SecuritySerializationData.Identifier(
+                    isin,
+                    result.meta.fullExchangeName,
+                    result.meta.symbol
+                ),
+                history = history
+            )
         }
     }
 }
