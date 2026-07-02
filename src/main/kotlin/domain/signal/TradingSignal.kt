@@ -18,32 +18,6 @@ data class TradingSignal(
     val reason: String,
     val createdAt: Instant
 ) {
-    //===========================================================//
-    //===========================================================//
-    // Public Method(es)
-
-    fun formatToReadableText(): String {
-        val amountText = if(amount == null) "" else " | Amount:  $amount"
-
-        return (symbol + ": "
-                + action
-                + " | "
-                + strength
-                + " | Price: "
-                + String.format("%.2f", currentPrice)
-                + amountText
-                + " | Current Stock Count: "
-                + currentStockCount
-                + " | Reason: "
-                + reason
-                + " | At: "
-                + createdAt)
-    }
-
-    //===========================================================//
-    //===========================================================//
-    // Enum(s)
-
     /**
      * Represents the calculated Signal strength of generated signal.
      */
