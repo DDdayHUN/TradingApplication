@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 //===========================================================//
 
 interface IMarketDataProvider {
-    fun getQuote(identifier: SecurityIdentifier): Quote
+    suspend fun getQuote(identifier: SecurityIdentifier): Quote
 
     companion object {
         fun create(type: Type): IMarketDataProvider {
