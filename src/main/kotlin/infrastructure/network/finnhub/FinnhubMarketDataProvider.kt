@@ -12,7 +12,7 @@ import infrastructure.network.IMarketDataProvider
 class FinnhubMarketDataProvider(
     private val client: FinnhubClient
 ) : IMarketDataProvider {
-    override suspend fun getQuote(identifier: SecurityIdentifier): Quote {
+    override fun getQuote(identifier: SecurityIdentifier): Quote {
         return client.getQuoteAsync(identifier)
             .getOrThrow()
             .toDomain()

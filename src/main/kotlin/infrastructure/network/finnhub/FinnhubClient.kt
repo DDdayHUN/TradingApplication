@@ -49,14 +49,14 @@ class FinnhubClient (
      * @return [Result] containing finnhub quote dto.
      */
 
-    suspend fun getQuoteAsync(identifier: SecurityIdentifier): Result<FinnhubQuoteDto> {
+    fun getQuoteAsync(identifier: SecurityIdentifier): Result<FinnhubQuoteDto> {
         val symbol = getSymbol(identifier.isin).getOrElse {
             error -> return Result.failure(error)
         }
 
         val encodedSymbol = URLEncoder.encode(symbol, StandardCharsets.UTF_8)
 
-        return await getJson("/quote?symbol=$encodedSymbol")
+        return getJson("/quote?symbol=$encodedSymbol")
     }
 
     /*===================================================*/

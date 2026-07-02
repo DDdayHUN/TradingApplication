@@ -1,5 +1,7 @@
 package data
 
+import kotlin.time.Instant
+
 data class SecuritySerializationData(
     val identifier: Identifier,
     val history: List<MarketHistory>
@@ -11,7 +13,7 @@ data class SecuritySerializationData(
     )
 
     data class MarketHistory(
-        val date: String,
+        val date: Instant,
         val closingPrice: Double,
     )
 }
