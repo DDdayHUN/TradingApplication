@@ -21,7 +21,6 @@ class SignalGenerator {
         if (output.buy != null) {
             ret.add(
                 TradingSignal(
-                    symbol,
                     TradingSignal.Action.BUY,
                     calculateBuyStrength(
                         output.buy.amount,
@@ -46,7 +45,6 @@ class SignalGenerator {
 
             ret.add(
                 TradingSignal(
-                    symbol,
                     TradingSignal.Action.SELL,
                     TradingSignal.Strength.MEDIUM,
                     currentPrice,
@@ -62,7 +60,6 @@ class SignalGenerator {
 
         ret.add(
             TradingSignal(
-                symbol,
                 TradingSignal.Action.HOLD,
                 TradingSignal.Strength.LOW,
                 currentPrice,
