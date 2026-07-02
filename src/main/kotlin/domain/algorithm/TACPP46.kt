@@ -112,7 +112,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : Trad
 
     //===========================================================//
 
-    override fun updateHistory(history: SecurityHistory) {
+    override fun updateState(currentPrice: Double, history: SecurityHistory) {
         val alpha = 2.0 / (m_EmaHistory.size + 1.0)
         val last = m_EmaHistory.peekLast()
 

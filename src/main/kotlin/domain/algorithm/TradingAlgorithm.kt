@@ -34,7 +34,7 @@ abstract class TradingAlgorithm {
      *
      * @param history - Historical stock data to be incorporated.
      */
-    abstract fun updateHistory(history: SecurityHistory)
+    abstract fun updateState(currentPrice: Double, history: SecurityHistory)
 
     companion object {
         //===========================================================//

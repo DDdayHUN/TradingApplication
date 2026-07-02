@@ -191,7 +191,7 @@ class TradingAlgorithmBackTester {
             for (history in m_HistoryWeRunAgainst) {
                 val currentPrice = history.closingPrice
                 runOneIteration(currentPrice)
-                m_TradingAlgorithm.updateHistory(history)
+                m_TradingAlgorithm.updateState(currentPrice, history)
             }
         }
 
