@@ -6,10 +6,9 @@ import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.InputStreamReader
-import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
+import kotlin.time.Instant
 
 //===========================================================//
 //===========================================================//
@@ -65,8 +64,32 @@ object SerializationManager {
     }
 
     //===========================================================//
+    /**
+     * Loads historical data from files based on the given parameters for backtesting algorithms.
+     *
+     * @param securityName the name of the security.
+     * @param from the start date from which we want to include historical data (inclusive).
+     * @param to the end date from which we don't want to include historical data (inclusive).
+     * @return List of historical data entries.
+     */
+    fun loadBackTestData(securityName: String, from: Instant, to: Instant): MutableList<SecurityHistory> {
+        val allBacktestFiles: Array<File> = File("src/main/resources/backtest/us/").listFiles() ?: error("Backtest directory is missing or not a directory")
+        val backtestFile = allBacktestFiles.single { it.nameWithoutExtension == securityName }
+        val data = loadBacktestDataFromFile(backtestFile)
+        return data.history.filter { it.date in from..to }.map { SecurityHistory(it.closingPrice) }.toMutableList()
+    }
+
+    //===========================================================//
     //===========================================================//
     // Private Interface(s)
+
+    private fun loadBacktestDataFromFile(file: File): SecuritySerializationData {
+        InputStreamReader(FileInputStream(file), StandardCharsets.UTF_8).use { reader ->
+            return s_GSON.fromJson(reader, SecuritySerializationData::class.java)
+        }
+    }
+
+    //===========================================================//
 
     @Deprecated("This only used for old serialized data")
     private fun loadFromFileForBackTest(file: File): SerializationData {
