@@ -75,7 +75,7 @@ suspend fun main() {
         println("Currency: ${trader.securityIdentifier.currency}")
         println("Current price: ${quote.currentPrice}")
         println("Allocated capital: ${trader.getCurrentCapital()}")
-        println("Signal: $signal")
+        println("Signal: ${signal.formatToReadableText()}")
         println("Holdings: ${trader.getHoldings()}")
     }
 }

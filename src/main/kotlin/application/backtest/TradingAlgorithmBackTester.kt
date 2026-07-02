@@ -298,27 +298,5 @@ class TradingAlgorithmBackTester {
 
             m_Signlas = ArrayList()
         }
-
-        //===========================================================//
-        //===========================================================//
-        // Extension(s)
-
-        private fun TradingSignal.formatToReadableText(): String {
-            val action = if(buy == null && sell == null) "HOLD"
-                         else if(buy != null && sell != null) "BUY, SELL"
-                         else if(buy != null) "BUY" else "SELL"
-
-            val amount = if(buy == null && sell == null) ""
-            else if(buy != null && sell != null) " | Buy Amount: ${buy.amount} | Sell Amount: ${sell.batches.sumOf { it.second }}"
-            else if(buy != null) " | Buy Amount: ${buy.amount}" else " | Sell Amount: ${sell!!.batches.sumOf { it.second }}"
-
-            return ("" +
-                    action
-                    + " | Price: "
-                    + String.format("%.2f", currentPrice)
-                    + amount
-                    + " | At: "
-                    + createdAt)
-        }
     }
 }
