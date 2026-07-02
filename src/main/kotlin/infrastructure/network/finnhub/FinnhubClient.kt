@@ -3,7 +3,7 @@ package infrastructure.network.finnhub
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
-import com.sun.tools.javac.tree.DCTree.isBlank
+import kotlinx.coroutines.future.await
 import domain.assets.security.SecurityIdentifier
 import infrastructure.network.finnhub.dto.FinnhubQuoteDto
 import infrastructure.network.finnhub.dto.FinnhubSymbolDto
@@ -50,13 +50,13 @@ class FinnhubClient (
      */
 
     suspend fun getQuoteAsync(identifier: SecurityIdentifier): Result<FinnhubQuoteDto> {
-        val symbol = getSymbol(identifier.isin).getOrElse {
+        val symbol = getSymbolAsync(identifier.isin).getOrElse {
             error -> return Result.failure(error)
         }
 
         val encodedSymbol = URLEncoder.encode(symbol, StandardCharsets.UTF_8)
 
-        return await getJson("/quote?symbol=$encodedSymbol")
+        return getJsonAsync("/quote?symbol=$encodedSymbol")
     }
 
     /*===================================================*/
@@ -69,10 +69,10 @@ class FinnhubClient (
      * @param isin International Securities Identification Number
      * @returns result ticker symbol
      */
-    private fun getSymbol(isin: String): Result<String> {
+    private suspend fun getSymbolAsync(isin: String): Result<String> {
         val encodedIsin = URLEncoder.encode(isin, StandardCharsets.UTF_8)
 
-        val dto = getJson<FinnhubSymbolDto>("/search/?q=$encodedIsin").getOrElse{
+        val dto = getJsonAsync<FinnhubSymbolDto>("/search/?q=$encodedIsin").getOrElse{
             error -> return Result.failure(error)
         }
 
@@ -93,7 +93,7 @@ class FinnhubClient (
      * @param endpoint finnhub endpoint, including query parameter
      * @return [Result] containing the dto
      */
-    private inline fun <reified T> getJson(endpoint: String): Result<T> {
+    private suspend inline fun <reified T> getJsonAsync(endpoint: String): Result<T> {
         val url = m_Config.baseUrl + endpoint
 
         val request = httpGetRequestBuilder(url,
@@ -103,10 +103,10 @@ class FinnhubClient (
         )
 
         return try {
-            val response: HttpResponse<String> = m_HttpClient.send(
+            val response: HttpResponse<String> = m_HttpClient.sendAsync(
                 request,
                 HttpResponse.BodyHandlers.ofString()
-            )
+            ).await()
 
             if (response.statusCode() !in s_HTTP_MIN..s_HTTP_MAX) {
                 return Result.failure(
