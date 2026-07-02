@@ -21,26 +21,21 @@ suspend fun main() {
         "Apple"
     )
 
-    val bt = TradingAlgorithmBackTester(
+    TradingAlgorithmBackTester(
         ITaxation.HUNGARY,
         TradingAlgorithm.Type.TACPP46,
         identifier,
         10000.0,
         startDate,
-        endDate)
-    bt.runBackTest()
-
-/*   val holdings = mutableListOf(
+        endDate
+    ).runBackTest()
+/*
+    val holdings = mutableListOf(
         SecurityHolding( 250.0,  2),
         SecurityHolding( 270.0,  3),
         SecurityHolding( 290.0,  1),
         SecurityHolding( 310.0,  2),
         SecurityHolding( 860.0,  3)
-    )
-
-
-    val marketDataProvider = IMarketDataProvider.create(
-        IMarketDataProvider.Type.Finnhub
     )
 
     val appleIdentifier = SecurityIdentifier(
@@ -52,11 +47,9 @@ suspend fun main() {
     val appleAlg = TradingAlgorithm.create(
         TradingAlgorithm.Type.TACPP46,
         appleIdentifier,
-    ).second
+    )
 
     val appleTrader = Trader(
-        UUID.randomUUID(),
-        appleIdentifier.name,
         appleIdentifier,
         5_000.0,
         holdings,
@@ -71,13 +64,10 @@ suspend fun main() {
 
     val metaAlg = TradingAlgorithm.create(
         TradingAlgorithm.Type.TACPP46,
-        metaIdentifier,
-    ).second
-
+        identifier,
+    )
 
     val metaTrader = Trader(
-        UUID.randomUUID(),
-        metaIdentifier.name,
         metaIdentifier,
         10_000.0,
         holdings,
@@ -86,23 +76,24 @@ suspend fun main() {
 
     val traders = listOf(appleTrader, metaTrader)
 
+    val marketDataProvider = IMarketDataProvider.create(IMarketDataProvider.Type.Finnhub)
     traders.forEach { trader ->
         val quote = marketDataProvider.getQuote(trader.securityIdentifier)
 
         val signals = trader.createSignals(quote)
 
         println("#================================================#")
-        println("Trader: ${trader.stockName}")
+        println("Trader: ${trader.securityIdentifier.name}")
         println("ISIN: ${trader.securityIdentifier.isin}")
         println("Currency: ${trader.securityIdentifier.currency}")
         println("Current price: ${quote.currentPrice}")
         println("Allocated capital: ${trader.getAllocatedCapital()}")
         println("Holdings: ${trader.getHoldings()}")
 
-
         println("Signals:")
         signals.forEach { signal ->
             println(signal)
         }
-    } */
+    }
+ */
 }

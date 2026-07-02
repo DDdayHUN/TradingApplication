@@ -14,14 +14,11 @@ import kotlin.time.Instant
  * AlgorithmBackTester is responsible for simulating and evaluating a trading m_Algorithm
  * over historical market data.
  * 
- * 
  * It runs a specified [TradingAlgorithm] over a defined time range for a given stock,
  * tracks virtual m_Holdings, capital changes, and performance metrics such as total trades and win rate.
  * 
- * 
  * The backtester supports both normal execution and debug execution, where additional
  * internal state (such as current m_Holdings) is printed for inspection.
- * 
  * 
  * This class is immutable in configuration (stock, range, initial capital, m_Algorithm m_Type),
  * but maintains mutable state during backtesting execution.
@@ -140,14 +137,14 @@ class TradingAlgorithmBackTester {
         private var m_TotalSellsMade: Long = 0
         private var m_WinningTrades: Long = 0
 
+        private val m_Signlas: MutableList<TradingSignal>
+
         private val m_CurrentStockCount: Long
             get() {
                 var count = 0L
                 for (holding in m_Holdings) count += holding.amount
                 return count
             }
-
-        private val m_Signlas: MutableList<TradingSignal>
 
         //===========================================================//
         //===========================================================//
