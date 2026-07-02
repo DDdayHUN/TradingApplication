@@ -11,38 +11,24 @@ import infrastructure.network.IMarketDataProvider
 import java.util.UUID
 import kotlin.time.Instant
 
-//suspend fun main() {
-//    val startDate = Instant.parse("2018-01-01T00:00:00Z") // 2020.01.01 0:00:00
-//    val endDate = Instant.parse("2025-01-01T00:00:00Z") // 2024.01.01 0:00:00
-//
-//    val identifier = SecurityIdentifier(
-//        "US0378331005",
-//        "USD",
-//        "Apple"
-//    )
-//
-//    val bt = TradingAlgorithmBackTester(
-//        ITaxation.HUNGARY,
-//        TradingAlgorithm.Type.TACPP46,
-//        identifier,
-//        10000.0,
-//        startDate,
-//        endDate)
-//    bt.runBackTest()
-//
-//    /*
-//    val FN = FinnhubTester()
-//    FN.runFinnhubTester(
-//        SecurityIdentifier(
-//            "US0378331005",
-//            "USD",
-//            "Apple"
-//        )
-//    )
-//    */
-//}
-
 suspend fun main() {
+    val startDate = Instant.parse("2020-01-01T00:00:00Z") // 2020.01.01 0:00:00
+    val endDate = Instant.parse("2025-01-01T00:00:00Z") // 2024.01.01 0:00:00
+
+    val identifier = SecurityIdentifier(
+        "US0378331005",
+        "USD",
+        "Apple"
+    )
+
+    val bt = TradingAlgorithmBackTester(
+        ITaxation.HUNGARY,
+        TradingAlgorithm.Type.TACPP46,
+        identifier,
+        10000.0,
+        startDate,
+        endDate)
+    bt.runBackTest()
 
     val holdings = mutableListOf(
         SecurityHolding( 250.0,  2),
@@ -116,8 +102,7 @@ suspend fun main() {
 
         println("Signals:")
         signals.forEach { signal ->
-                println(signal)
-            }
+            println(signal)
+        }
     }
-
 }
