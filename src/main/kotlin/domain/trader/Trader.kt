@@ -144,8 +144,11 @@ class Trader(
     }
 
     //===========================================================//
-
-    fun changeAlgorithm(newAlgorithm: TradingAlgorithm){
+    /**
+     * This method should be called by the Algorithm Manager.
+     * @param newAlgorithm algorithm that manager decided would be best
+     */
+    fun setAlgorithm(newAlgorithm: TradingAlgorithm){
         m_Algorithm = newAlgorithm
     }
 
