@@ -9,7 +9,6 @@ import java.time.Instant
 //===========================================================//
 
 data class TradingSignal(
-    val symbol: String,
     val action: Action,
     val strength: Strength,
     val currentPrice: Double,
