@@ -15,7 +15,7 @@ class SignalGenerator {
     //===========================================================//
     // Public Method(es)
 
-    fun createSignal(symbol: String, output: TradingAlgorithm.Output, availableCapital: Double, currentPrice: Double, currentStockCount: Long): List<TradingSignal> {
+    fun createSignal(output: TradingAlgorithm.Output, availableCapital: Double, currentPrice: Double, currentStockCount: Long): List<TradingSignal> {
         val ret: MutableList<TradingSignal> = ArrayList()
 
         if (output.buy != null) {

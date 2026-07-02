@@ -237,7 +237,6 @@ class TradingAlgorithmBackTester {
             if (ret.sell != null) projectedStockCount -= getSellAmount(ret.sell)
 
             m_SignalGenerator.createSignal(
-                m_SecurityIdentifier.name,
                 ret,
                 m_CurrentCapital,
                 currentPrice,

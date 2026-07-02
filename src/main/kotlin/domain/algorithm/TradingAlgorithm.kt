@@ -41,7 +41,7 @@ abstract class TradingAlgorithm {
          * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
          */
         fun create(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            return initialiser(type, Init.BACKTEST, securityIdentifier, from, to)
+            return initialiser(type, Init.TRADING, securityIdentifier, from, to)
         }
 
         //===========================================================//
@@ -53,7 +53,7 @@ abstract class TradingAlgorithm {
          * @return the configured algorithm instance.
          */
         fun create(type: Type, securityIdentifier: SecurityIdentifier): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            return initialiser(type, Init.BACKTEST, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE)
+            return initialiser(type, Init.TRADING, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE)
         }
 
         //===========================================================//
