@@ -3,8 +3,6 @@ package infrastructure.network.finnhub.dto
 //===========================================================//
 /**
  * Data Transfer Object for Finnhub symbol response.
- *
- *
  * This record represents the raw response format returned by Finnhub.
  *
  * @property count number of returned result items
