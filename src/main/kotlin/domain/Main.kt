@@ -1,11 +1,11 @@
 package domain
 
-import application.backtest.AlgorithmBackTester
+import application.backtest.TradingAlgorithmBackTester
 import domain.algorithm.TradingAlgorithm
 import domain.tax.ITaxation
 
 fun main() {
-    val BT = AlgorithmBackTester(
+    val BT = TradingAlgorithmBackTester(
         ITaxation.HUNGARY,
         TradingAlgorithm.Type.TACPP46,
         10000.0,
