@@ -87,7 +87,18 @@ class AlgorithmBackTester {
         println("#===============================================================#")
         println("# Algorithm back-tester")
         println("#===============================================================#")
-        println("Stock: $m_StockName [$m_From-$m_To]")
+        if(m_FromDEP != Int.MIN_VALUE && m_ToDEP != Int.MAX_VALUE) println("Stock: $m_StockName [$m_From-$m_To]")
+        else {
+            val zone = java.time.ZoneId.systemDefault()
+            val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
+            println("Stock: $m_StockName " +
+                    "[" +
+                    "${java.time.Instant.ofEpochMilli(m_From.toEpochMilliseconds()).atZone(zone).format(formatter)}" +
+                    "-" +
+                    "${java.time.Instant.ofEpochMilli(m_To.toEpochMilliseconds()).atZone(zone).format(formatter)}" +
+                    "]"
+            )
+        }
         println("Starting Capital: " + String.format("%.2f", m_StartingCapital) + System.lineSeparator())
         m_WithoutTax.display()
         if (debug) m_WithoutTax.displayDebugInfo()
