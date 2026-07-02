@@ -6,6 +6,7 @@ import domain.signal.TradingSignal
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.tax.ITaxation
+import kotlin.time.Instant
 
 //===========================================================//
 /**
@@ -32,8 +33,8 @@ class AlgorithmBackTester {
     // Private Field(s)
 
     private val m_StockName: String
-    private val m_From: Int
-    private val m_To: Int
+    private val m_From: Instant
+    private val m_To: Instant
 
     private val m_StartingCapital: Double
     private val m_Type: TradingAlgorithm.Type
@@ -44,25 +45,22 @@ class AlgorithmBackTester {
     private val m_SignalGenerator: SignalGenerator
     private val m_Signlas: MutableList<TradingSignal>
 
+    @Deprecated("This will be phased out") private val m_FromDEP: Int
+    @Deprecated("This will be phased out") private val m_ToDEP: Int
+
     //===========================================================//
     //===========================================================//
     // Public Method(es)
 
     fun runBackTest() {
-        m_WithoutTax.reset()
-        m_WithTax.reset()
-        m_WithoutTax.runBackTest()
-        m_WithTax.runBackTest()
+        internalRunBackTest()
         display(false)
     }
 
     //===========================================================//
 
     fun runBackTestWithDebug() {
-        m_WithoutTax.reset()
-        m_WithTax.reset()
-        m_WithoutTax.runBackTest()
-        m_WithTax.runBackTest()
+        internalRunBackTest()
         display(true)
     }
 
@@ -70,25 +68,41 @@ class AlgorithmBackTester {
     //===========================================================//
     // Private Method(es)
 
+    private fun internalRunBackTest() {
+        if(m_FromDEP != Int.MIN_VALUE && m_ToDEP != Int.MAX_VALUE) {
+            m_WithoutTax.resetDEP()
+            m_WithTax.resetDEP()
+        }
+        else {
+            m_WithoutTax.reset()
+            m_WithTax.reset()
+        }
+        m_WithoutTax.runBackTest()
+        m_WithTax.runBackTest()
+    }
+
+    //===========================================================//
+
     private fun display(debug: Boolean) {
         println("#===============================================================#")
-        println(System.lineSeparator() + "### Algorithm back-tester ###" + System.lineSeparator())
+        println("# Algorithm back-tester")
         println("#===============================================================#")
-        println("Buy & Sale trades:")
-        var counter: Long = 1
-        for (signal in m_Signlas) {
-            System.out.printf((counter++).toString() + " ")
-            println(signal.formatToReadableText())
-        }
-        println(System.lineSeparator())
-        println("#===============================================================#")
-        println(System.lineSeparator())
         println("Stock: $m_StockName [$m_From-$m_To]")
         println("Starting Capital: " + String.format("%.2f", m_StartingCapital) + System.lineSeparator())
         m_WithoutTax.display()
         if (debug) m_WithoutTax.displayDebugInfo()
         m_WithTax.display()
         if (debug) m_WithTax.displayDebugInfo()
+        if(debug) {
+            println("#===============================================================#")
+            println("Buy & Sale trades:")
+            var counter: Long = 1
+            for (signal in m_Signlas) {
+                System.out.printf((counter++).toString() + " ")
+                println(signal.formatToReadableText())
+            }
+        }
+        println("#===============================================================#")
         println("#===============================================================#")
     }
 
@@ -96,7 +110,28 @@ class AlgorithmBackTester {
     //===========================================================//
     // Constructor(s)
 
+    @Deprecated("This will get phased out in favor of the other constructor")
     constructor(taxation: ITaxation, type: TradingAlgorithm.Type, startingCapital: Double, stockName: String, from: Int, to: Int) {
+        require(startingCapital >= 0) { "Capital" }
+
+        m_StockName = stockName
+        m_FromDEP = from
+        m_ToDEP = to
+
+        m_StartingCapital = startingCapital
+        m_Type = type
+
+        m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_FromDEP, m_ToDEP))
+        m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_FromDEP, m_ToDEP))
+
+        m_SignalGenerator = SignalGenerator()
+        m_Signlas = ArrayList()
+
+        m_From = Instant.DISTANT_PAST
+        m_To = Instant.DISTANT_FUTURE
+    }
+
+    constructor(taxation: ITaxation, type: TradingAlgorithm.Type, startingCapital: Double, stockName: String, from: Instant, to: Instant) {
         require(startingCapital >= 0) { "Capital" }
 
         m_StockName = stockName
@@ -111,6 +146,9 @@ class AlgorithmBackTester {
 
         m_SignalGenerator = SignalGenerator()
         m_Signlas = ArrayList()
+
+        m_FromDEP = Int.MIN_VALUE
+        m_ToDEP = Int.MAX_VALUE
     }
 
     //===========================================================//
@@ -155,6 +193,21 @@ class AlgorithmBackTester {
         }
 
         //===========================================================//
+
+        @Deprecated("This will get phased out in favor of the reset function")
+        fun resetDEP() {
+            val pair = TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_FromDEP, m_ToDEP)
+
+            m_TradingAlgorithm = pair.second
+            m_HistoryWeRunAgainst = pair.first
+
+            m_Holdings.clear()
+            m_CapitalHistory.clear()
+
+            m_CurrentCapital = m_StartingCapital
+            m_TotalSellsMade = 0
+            m_WinningTrades = 0
+        }
 
         fun reset() {
             val pair = TradingAlgorithm.initForBackTest(m_Type, m_StockName, m_From, m_To)
@@ -217,7 +270,7 @@ class AlgorithmBackTester {
         //===========================================================//
         // Private Method(es)
 
-        fun runOneIteration(currentPrice: Double) {
+        private fun runOneIteration(currentPrice: Double) {
             val ret = m_TradingAlgorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
 
             var projectedStockCount = m_CurrentStockCount
@@ -276,7 +329,7 @@ class AlgorithmBackTester {
 
         //===========================================================//
 
-        fun getSellAmount(sell: TradingAlgorithm.Output.Sell): Long {
+        private fun getSellAmount(sell: TradingAlgorithm.Output.Sell): Long {
             var amount = 0L
             for (batch in sell.batches) {
                 amount += batch.second
