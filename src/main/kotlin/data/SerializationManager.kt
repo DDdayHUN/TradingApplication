@@ -74,9 +74,14 @@ object SerializationManager {
      */
     fun loadBackTestData(securityName: String, from: Instant, to: Instant): MutableList<SecurityHistory> {
         val allBacktestFiles: Array<File> = File("src/main/resources/backtest/us/").listFiles() ?: error("Backtest directory is missing or not a directory")
-        val backtestFile = allBacktestFiles.single { it.nameWithoutExtension == securityName }
+        val backtestFile = allBacktestFiles
+            .single { it.nameWithoutExtension == securityName }
         val data = loadBacktestDataFromFile(backtestFile)
-        return data.history.filter { it.date in from..to }.map { SecurityHistory(it.closingPrice) }.toMutableList()
+        return data.history
+            .filter { it.date in from..to }
+            .sortedBy { it.date }
+            .map { SecurityHistory(it.closingPrice) }
+            .toMutableList()
     }
 
     //===========================================================//

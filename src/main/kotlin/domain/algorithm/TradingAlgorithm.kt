@@ -4,6 +4,7 @@ import data.SerializationManager
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import java.io.File
+import kotlin.time.Instant
 
 //===========================================================//
 /**
@@ -46,7 +47,22 @@ abstract class TradingAlgorithm {
          * @param to End date (inclusive).
          * @return Pair containing the list of history that was not used up for initialization and the algorithm instance.
          */
+        @Deprecated("This will get phased out in favor of the other initialiser")
         fun initForBackTest(type: Type, stockName: String, from: Int, to: Int): Pair<List<SecurityHistory>, TradingAlgorithm> {
+            return initialiser(type, TradingAlgorithm.Init.BACKTEST, stockName, from, to)
+        }
+
+        //===========================================================//
+        /**
+         * Initializes an algorithm instance configured for backtesting.
+         *
+         * @param type Type of algorithm to initialize.
+         * @param stockName Stock identifier/name.
+         * @param from Start date (inclusive).
+         * @param to End date (inclusive).
+         * @return Pair containing the list of history that was not used up for initialization and the algorithm instance.
+         */
+        fun initForBackTest(type: Type, stockName: String, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
             return initialiser(type, TradingAlgorithm.Init.BACKTEST, stockName, from, to)
         }
 
@@ -58,9 +74,11 @@ abstract class TradingAlgorithm {
          * @param stockName - Stock identifier/name.
          * @return         Initialized algorithm instance.
          */
+        /*
         fun initForTrading(type: TradingAlgorithm.Type, stockName: String): TradingAlgorithm {
             return initialiser(type, Init.TRADING, stockName, Int.MIN_VALUE, Int.MAX_VALUE).second
         }
+         */
 
         //===========================================================//
         //===========================================================//
@@ -76,8 +94,28 @@ abstract class TradingAlgorithm {
          * @param to End date (inclusive).
          * @return Pair of history data and initialized algorithm.
          */
+        @Deprecated("This will get phased out in favor of the other initialiser")
         private fun initialiser(type: Type, init: Init, stockName: String, from: Int, to: Int): Pair<List<SecurityHistory>, TradingAlgorithm> {
             val retHistory = SerializationManager.loadHistoryForAlgorithms(stockName, from, to)
+            val retTradingAlgorithm: TradingAlgorithm = when (type) {
+                Type.TACPP46 -> TACPP46(init, retHistory)
+            }
+            return Pair(retHistory, retTradingAlgorithm)
+        }
+
+        //===========================================================//
+        /**
+         * Core initialization method used by both trading and backtesting setups.
+         *
+         * @param type Algorithm type.
+         * @param init Initialization mode.
+         * @param stockName Stock name.
+         * @param from Start date (inclusive).
+         * @param to End date (inclusive).
+         * @return Pair of history data and initialized algorithm.
+         */
+        private fun initialiser(type: Type, init: Init, stockName: String, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
+            val retHistory = SerializationManager.loadBackTestData(stockName, from, to)
             val retTradingAlgorithm: TradingAlgorithm = when (type) {
                 Type.TACPP46 -> TACPP46(init, retHistory)
             }
