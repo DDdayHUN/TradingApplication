@@ -1,11 +1,12 @@
 package infrastructure.network.finnhub
 
 import domain.assets.security.SecurityIdentifier
+import infrastructure.network.IMarketDataProvider
 
 class FinnhubTester {
-    private val m_Config: FinnhubConfig = FinnhubConfig()
-    private val m_Client: FinnhubClient = FinnhubClient(this.m_Config)
-    private val m_Provider: FinnhubMarketDataProvider = FinnhubMarketDataProvider(this.m_Client)
+    private val m_Config = FinnhubConfig()
+    private val m_Client = FinnhubClient(this.m_Config)
+    private val m_Provider = IMarketDataProvider.FINNHUB(this.m_Client)
 
     fun runFinnhubTester(identifier: SecurityIdentifier) {
         try {
