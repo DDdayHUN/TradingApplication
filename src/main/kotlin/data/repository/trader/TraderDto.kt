@@ -8,4 +8,4 @@ data class TraderDto(
     val holdings: List<SecurityHolding>,
     val allocatedCapital: Double,
     val algorithmType: String
-    )
+)

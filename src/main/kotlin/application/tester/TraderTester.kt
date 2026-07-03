@@ -27,7 +27,7 @@ class TraderTester {
 
 
         val traderEntries = listOf(
-            createTraderEntry(nvdaConfig, traderRepository),
+            createTraderEntry(nvdaConfig, traderRepository)
         )
 
         val tradingService = FakeTradingService()
@@ -51,10 +51,7 @@ class TraderTester {
 
             val signal = tradingEngine.onQuote(trader, quote)
 
-            traderRepository.save(
-                trader,
-                entry.algorithmType
-            )
+            traderRepository.save(trader, entry.algorithmType)
 
             println("#================================================#")
             println("Trader: ${trader.securityIdentifier.name}")
@@ -81,20 +78,12 @@ class TraderTester {
         }
     }
 
-    private suspend fun createTraderEntry(
-        config: TraderTestConfig,
-        traderRepository: FakeTraderRepository
-    ): TraderEntry {
+    private suspend fun createTraderEntry(config: TraderTestConfig, traderRepository: FakeTraderRepository): TraderTestConfig.TraderEntry {
         val savedTrader = traderRepository.getBySecurityIdentifier(config.securityIdentifier)
 
-        val trader = savedTrader ?: Trader(
-            config.securityIdentifier,
-            mutableListOf<SecurityHolding>(),
-            config.startCapital,
-            config.algorithmType
-        )
+        val trader = savedTrader ?: createTestTrader(config)
 
-        return TraderEntry(
+        return TraderTestConfig.TraderEntry(
             trader,
             config.algorithmType
         )
@@ -107,18 +96,27 @@ class TraderTester {
         }
 
         holdings.forEach { holding ->
-            println("$holding")
+            println(holding.toString())
         }
+    }
+
+    private fun createTestTrader(config: TraderTestConfig): Trader {
+        return Trader(
+            config.securityIdentifier,
+            mutableListOf<SecurityHolding>(SecurityHolding(100.0,2L)),
+            config.startCapital,
+            config.algorithmType
+        )
     }
 
     private data class TraderTestConfig(
         val securityIdentifier: SecurityIdentifier,
         val startCapital: Double,
         val algorithmType: TradingAlgorithm.Type
-    )
-
-    private data class TraderEntry(
-        val trader: Trader,
-        val algorithmType: TradingAlgorithm.Type
-    )
+    ){
+        data class TraderEntry(
+            val trader: Trader,
+            val algorithmType: TradingAlgorithm.Type
+        )
+    }
 }
