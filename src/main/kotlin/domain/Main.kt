@@ -1,12 +1,10 @@
 package domain
 
-import application.backtest.TradingAlgorithmBackTester
+import application.tester.TraderTester
+import application.tester.TradingAlgorithmBackTester
 import domain.algorithm.TradingAlgorithm
-import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
-import domain.trader.Trader
-import infrastructure.network.IMarketDataProvider
 import kotlin.time.Instant
 
 suspend fun main() {
@@ -28,63 +26,9 @@ suspend fun main() {
         endDate
     )
     bt.runBackTest()
-    bt.runBackTest(TradingAlgorithmBackTester.DisplayMode.WithoutTaxes(TradingAlgorithmBackTester.DebugMode.Holding))
 
-
-    val holdings = mutableListOf(
-        SecurityHolding( 250.0,  2),
-        SecurityHolding( 270.0,  3),
-        SecurityHolding( 290.0,  1),
-        SecurityHolding( 310.0,  2),
-        SecurityHolding( 860.0,  3)
-    )
-
-    val appleIdentifier = SecurityIdentifier(
-        "US0378331005",
-        "USD",
-        "Apple"
-    )
-
-    val appleTrader = Trader(
-        appleIdentifier,
-        holdings,
-        5_000.0,
-        TradingAlgorithm.Type.TACPP46,
-    )
-
-    val metaIdentifier = SecurityIdentifier(
-        "US30303M1027",
-        "USD",
-        "Meta"
-    )
-
-    val metaTrader = Trader(
-        metaIdentifier,
-        holdings,
-        10_000.0,
-        TradingAlgorithm.Type.TACPP46,
-    )
-
-    val traders = listOf(appleTrader, metaTrader)
-
-    val marketDataProvider = IMarketDataProvider.create(IMarketDataProvider.Type.Finnhub)
-    traders.forEach { trader ->
-        val quote = marketDataProvider.getQuote(trader.securityIdentifier)
-        val signal = trader.createSignal(quote)
-
-        println("#================================================#")
-        println("Trader: ${trader.securityIdentifier.name}")
-        println("ISIN: ${trader.securityIdentifier.isin}")
-        println("Currency: ${trader.securityIdentifier.currency}")
-        println("Current price: ${quote.currentPrice}")
-        println("Allocated capital: ${trader.getCurrentCapital()}")
-        println("Signal: ${signal.toReadableText()}")
-        print("  Holdings: ")
-        val holdings = trader.getHoldings()
-        if (holdings.isEmpty()) println("None")
-        else {
-            println()
-            for (item in holdings) println("        $item")
-        }
-    }
+    /*
+    val t = TraderTester()
+    t.runTest()
+     */
 }

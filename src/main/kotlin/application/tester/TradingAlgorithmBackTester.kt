@@ -1,4 +1,4 @@
-package application.backtest
+package application.tester
 
 import domain.algorithm.TradingAlgorithm
 import domain.signal.TradingSignal
