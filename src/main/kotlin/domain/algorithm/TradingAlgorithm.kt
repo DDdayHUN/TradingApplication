@@ -1,6 +1,6 @@
 package domain.algorithm
 
-import data.SerializationManager
+import data.HistoricalMarketData
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
@@ -52,7 +52,7 @@ abstract class TradingAlgorithm {
          * @return the configured algorithm instance.
          */
         fun create(type: Type, securityIdentifier: SecurityIdentifier): TradingAlgorithm {
-            return initialiser(type, Init.BACKTEST, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
+            return initialiser(type, Init.TRADING, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
         }
 
         //===========================================================//
@@ -70,7 +70,7 @@ abstract class TradingAlgorithm {
          * @return a pair that consists of history data that has not been used up in the initialization process and of an initialized algorithm.
          */
         private fun initialiser(type: Type, init: Init, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            val retHistory = SerializationManager.loadHistoricalDataFromFile(securityIdentifier, from, to)
+            val retHistory = HistoricalMarketData.loadFromFile(securityIdentifier, from, to).toMutableList()
             val retTradingAlgorithm: TradingAlgorithm = when (type) {
                 is Type.TACPP46 -> TACPP46(init, retHistory)
             }

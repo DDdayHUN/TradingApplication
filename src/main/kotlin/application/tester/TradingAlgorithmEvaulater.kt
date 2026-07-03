@@ -1,6 +1,7 @@
 package application.tester
 
 import domain.algorithm.TradingAlgorithm
+import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
 
 class TradingAlgorithmEvaulater {
@@ -8,6 +9,7 @@ class TradingAlgorithmEvaulater {
     //===========================================================//
     // Private Field(s)
 
+    private val m_Capital: Double
     private val m_TradingAlgorithmType: TradingAlgorithm.Type
 
     private val m_Taxation: ITaxation
@@ -26,14 +28,20 @@ class TradingAlgorithmEvaulater {
     // Private Method(es)
 
     private fun init() {
-        m_TradingAlgorithmBackTester = TradingAlgorithmBackTester(m_Taxation, m_TradingAlgorithmType)
+        m_TradingAlgorithmBackTester = TradingAlgorithmBackTester(
+            m_Taxation,
+            m_TradingAlgorithmType,
+            SecurityIdentifier("","", ""),
+            m_Capital
+        )
     }
 
     //===========================================================//
     //===========================================================//
     // Constructor(s)
 
-    constructor(taxation: ITaxation, tradingAlgorithmType: TradingAlgorithm.Type) {
+    constructor(capital: Double, taxation: ITaxation, tradingAlgorithmType: TradingAlgorithm.Type) {
+        m_Capital = capital
         m_Taxation = taxation
         m_TradingAlgorithmType = tradingAlgorithmType
     }

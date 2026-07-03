@@ -11,7 +11,7 @@ import java.util.Deque
  */
 //===========================================================//
 
-internal class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : TradingAlgorithm(init) {
+class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : TradingAlgorithm(init) {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -26,7 +26,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : Trad
     //===========================================================//
     //===========================================================//
     // Public Method(es)
-    
+
     override fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output {
         var buy: Output.Buy? = null
         var sell: Output.Sell? = null

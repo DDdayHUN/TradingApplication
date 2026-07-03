@@ -27,8 +27,6 @@ suspend fun main() {
     )
     bt.runBackTest()
 
-    /*
     val t = TraderTester()
     t.runTest()
-     */
 }
