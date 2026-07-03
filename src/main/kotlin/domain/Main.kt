@@ -17,15 +17,22 @@ suspend fun main() {
         "NVIDIA"
     )
 
-    val bt = TradingAlgorithmBackTester(
-        Taxation.get(Taxation.Type.Hungary),
-        TradingAlgorithm.Type.TACPP46,
-        identifier,
-        10000.0,
-        startDate,
-        endDate
-    )
-    bt.runBackTest()
+    TradingAlgorithmBackTester(
+        type = TradingAlgorithm.Type.TACPP46,
+        securityIdentifier = identifier,
+        startingCapital = 10000.0,
+        from = startDate,
+        to = endDate
+    ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
+
+    TradingAlgorithmBackTester(
+        type = TradingAlgorithm.Type.TACPP46,
+        securityIdentifier = identifier,
+        startingCapital = 10000.0,
+        taxation = Taxation.get(Taxation.Type.Hungary),
+        from = startDate,
+        to = endDate
+    ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display(TradingAlgorithmBackTester.DebugMode.Holding))
 
     val t = TraderTester()
     t.runTest()

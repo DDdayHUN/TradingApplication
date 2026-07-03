@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import data.repository.util.RepositoryUtil
 import domain.assets.security.SecurityIdentifier
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.time.Instant
 
@@ -20,7 +22,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     //===========================================================//
     // Public Method(es)
 
-    override fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto {
+    override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto = withContext(Dispatchers.IO) {
         val rootDir = File("src/main/resources/backtest/yahoo/")
         val targetFile = rootDir.walkTopDown()
             .filter { it.isFile }
@@ -30,7 +32,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
             }
 
         require(targetFile != null) { "There is no files with the given identifier" }
-        return RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
+        return@withContext RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
     }
 
     //===========================================================//

@@ -15,13 +15,14 @@ class FakeTraderRepository() : ITraderRepository {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
+
     private val s_DirectoryPath: String = "src/main/resources/traders"
     private val s_Gson = GsonBuilder().setPrettyPrinting().create()
-
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
+
     override suspend fun save(trader: Trader, algorithmType: TradingAlgorithm.Type) = withContext(Dispatchers.IO) {
         val directory = File(s_DirectoryPath)
         directory.mkdirs()

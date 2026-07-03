@@ -25,7 +25,7 @@ object HistoricalMarketDataProvider {
      * @param to the end date from which we don't want to include historical data (inclusive).
      * @return the list of historical data entries.
      */
-    fun loadFromFile(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<SecurityHistory> {
+    suspend fun loadFromFile(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<SecurityHistory> {
         val data = s_HistoricalMarketDataRepository.getBySecurityIdentifier(securityIdentifier)
 
         return data.history

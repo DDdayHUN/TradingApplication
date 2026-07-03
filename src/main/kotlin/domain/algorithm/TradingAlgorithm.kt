@@ -4,6 +4,8 @@ import data.HistoricalMarketDataProvider
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import kotlin.time.Instant
 
 //===========================================================//
@@ -38,9 +40,8 @@ object TradingAlgorithm {
      * @param securityIdentifier the identifier identifies a security.
      * @return the configured algorithm instance.
      */
-    @Deprecated("Mock implementation currently")
     fun create(type: Type, securityIdentifier: SecurityIdentifier): ITradingAlgorithm {
-        return initForBackTest(type, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
+        return initForTrading(type, securityIdentifier)
     }
 
     //===========================================================//
@@ -57,8 +58,11 @@ object TradingAlgorithm {
      * @return a pair that consists of history data that has not been used up in the initialization process and of an initialized algorithm.
      */
     private fun initForBackTest(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
-        val retHistory = HistoricalMarketDataProvider.loadFromFile(securityIdentifier, from, to).toMutableList()
-        val retTradingAlgorithm: ITradingAlgorithm = when (type) {
+        val retHistory = runBlocking {
+            val a1 = async { HistoricalMarketDataProvider.loadFromFile(securityIdentifier, from, to).toMutableList() }
+            a1.await()
+        }
+        val retTradingAlgorithm = when (type) {
             is Type.TACPP46 -> {
                 val init = retHistory.subList(0, 42).toList()
                 retHistory.subList(0, 42).clear()
@@ -69,16 +73,36 @@ object TradingAlgorithm {
     }
 
     //===========================================================//
+
+    /**
+     * Core initialization method used by trading setups.
+     *
+     * @param type the type of algorithm to initialize.
+     * @param securityIdentifier the identifier identifies a security.
+     * @return an initialized algorithm for trading.
+     */
+    private fun initForTrading(type: Type, securityIdentifier: SecurityIdentifier): ITradingAlgorithm {
+        val history = runBlocking {
+            val a1 = async { HistoricalMarketDataProvider.loadFromFile(securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE) }
+            a1.await()
+        }
+        return when (type) {
+            is Type.TACPP46 -> {
+                val init = history.takeLast(42)
+                TACPP46(init)
+            }
+        }
+    }
+
     //===========================================================//
-    // Enum(s)
+    //===========================================================//
+    // Helper Class(es)
 
     sealed interface Type {
         data object TACPP46 : Type
     }
 
     //===========================================================//
-    //===========================================================//
-    // Helper Class(es)
 
     data class Output(
         val buy: Buy?,

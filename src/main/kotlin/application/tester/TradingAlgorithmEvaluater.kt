@@ -4,7 +4,7 @@ import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
 
-class TradingAlgorithmEvaulater {
+class TradingAlgorithmEvaluater {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -27,12 +27,12 @@ class TradingAlgorithmEvaulater {
     //===========================================================//
     // Private Method(es)
 
-    private fun init() {
+    private fun initForOneRun() {
         m_TradingAlgorithmBackTester = TradingAlgorithmBackTester(
-            m_Taxation,
             m_TradingAlgorithmType,
             SecurityIdentifier("","", ""),
-            m_Capital
+            m_Capital,
+            m_Taxation,
         )
     }
 

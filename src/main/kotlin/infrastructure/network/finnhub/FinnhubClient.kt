@@ -78,7 +78,7 @@ class FinnhubClient (
 
         val symbol = dto.result.firstOrNull()?.symbol
 
-        if(symbol == null || symbol.isBlank()){
+        if(symbol.isNullOrBlank()){
             return Result.failure(
                 IllegalStateException("Finnhub did not return a ticker symbol")
             )
