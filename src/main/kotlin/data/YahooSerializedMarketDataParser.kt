@@ -1,5 +1,6 @@
 package data
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import domain.assets.security.SecurityIdentifier
 import java.io.File
@@ -8,12 +9,12 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import kotlin.time.Instant
 
-internal object YahooMarketDataParser : IMarketDataParser {
+internal object YahooSerializedMarketDataParser : SerializationManager() {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private val s_GSON = GsonBuilder()
+    private val s_GSON: Gson = GsonBuilder()
         .setPrettyPrinting()
         .create()
 
@@ -24,26 +25,15 @@ internal object YahooMarketDataParser : IMarketDataParser {
     override fun parse(securityIdentifier: SecurityIdentifier): SecuritySerializationData {
         val rootDir = File("src/main/resources/backtest/yahoo/")
         val targetFile = rootDir.walkTopDown()
-            .filter { it.isFile } // Ignore directories, only look at files
+            .filter { it.isFile }
             .find { file ->
-                val yahooMarketData = loadFromFile(file)
+                val yahooMarketData = loadFromFile<YahooMarketData>(s_GSON, file)
                 yahooMarketData.isin == securityIdentifier.isin
             }
 
         require(targetFile != null) { "There is no files with the given identifier" }
-        return loadFromFile(targetFile).toSecuritySerializationData()
+        return loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
     }
-
-    //===========================================================//
-    //===========================================================//
-    // Private Method(es)
-
-    private fun loadFromFile(file: File): YahooMarketData {
-        InputStreamReader(FileInputStream(file), StandardCharsets.UTF_8).use { reader ->
-            return s_GSON.fromJson(reader, YahooMarketData::class.java)
-        }
-    }
-
 
     //===========================================================//
     //===========================================================//
