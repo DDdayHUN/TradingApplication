@@ -1,5 +1,6 @@
 package application.tester
 
+import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
 import domain.signal.TradingSignal
 import domain.assets.security.SecurityHistory
@@ -136,7 +137,7 @@ class TradingAlgorithmBackTester {
 
         private val m_Taxation: ITaxation?
 
-        private var m_TradingAlgorithm: TradingAlgorithm
+        private var m_TradingAlgorithm: ITradingAlgorithm
         private var m_HistoryWeRunAgainst: List<SecurityHistory>
 
         private val m_Holdings: MutableList<SecurityHolding>
@@ -307,7 +308,7 @@ class TradingAlgorithmBackTester {
         //===========================================================//
         // Constructor(s)
 
-        constructor(taxation: ITaxation?, pair: Pair<List<SecurityHistory>, TradingAlgorithm>) {
+        constructor(taxation: ITaxation?, pair: Pair<List<SecurityHistory>, ITradingAlgorithm>) {
             m_Taxation = taxation
             m_CurrentCapital = m_StartingCapital
 

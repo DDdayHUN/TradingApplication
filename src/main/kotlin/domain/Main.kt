@@ -4,7 +4,7 @@ import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
-import domain.tax.ITaxation
+import domain.tax.Taxation
 import kotlin.time.Instant
 
 suspend fun main() {
@@ -18,7 +18,7 @@ suspend fun main() {
     )
 
     val bt = TradingAlgorithmBackTester(
-        ITaxation.HUNGARY,
+        Taxation.get(Taxation.Type.Hungary),
         TradingAlgorithm.Type.TACPP46,
         identifier,
         10000.0,

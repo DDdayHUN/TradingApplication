@@ -11,7 +11,7 @@ import java.util.Deque
  */
 //===========================================================//
 
-class TACPP46 private constructor() : TradingAlgorithm() {
+internal class TACPP46: ITradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -29,9 +29,9 @@ class TACPP46 private constructor() : TradingAlgorithm() {
     //===========================================================//
     // Public Method(es)
 
-    override fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output {
-        var buy: Output.Buy? = null
-        var sell: Output.Sell? = null
+    override fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): TradingAlgorithm.Output {
+        var buy: TradingAlgorithm.Output.Buy? = null
+        var sell: TradingAlgorithm.Output.Sell? = null
 
         val ema: List<Double> = ArrayList(m_EmaHistory)
         val std: Double = utils.Math.stdDev(ema)
@@ -52,7 +52,7 @@ class TACPP46 private constructor() : TradingAlgorithm() {
                 ) // changing confidence has a massive effect on returns
                 val amount = (allocatedCapital * confidence / currentPrice).toLong()
 
-                if (amount != 0L) buy = Output.Buy(amount)
+                if (amount != 0L) buy = TradingAlgorithm.Output.Buy(amount)
             } else {
                 m_LastInputArr.add(currentPrice)
                 if (m_LastInputArr.size > 5) m_LastInputArr.poll()
@@ -119,8 +119,8 @@ class TACPP46 private constructor() : TradingAlgorithm() {
             m_EmaHistory.addLast(newEma)
         }
 
-        if (!toBeSold.isEmpty()) sell = Output.Sell(toBeSold)
-        return Output(buy, sell)
+        if (!toBeSold.isEmpty()) sell = TradingAlgorithm.Output.Sell(toBeSold)
+        return TradingAlgorithm.Output(buy, sell)
     }
 
     //===========================================================//
@@ -132,7 +132,7 @@ class TACPP46 private constructor() : TradingAlgorithm() {
      * q0: first slidingWindow prices
      * q1: next slidingWindow prices
      */
-    constructor(emaInit: List<SecurityHistory>): this() {
+    constructor(emaInit: List<SecurityHistory>) {
         require(emaInit.size >= 2 * m_SlidingWindow) { "Init EMA" }
 
         val historyQ0 = emaInit.subList(0, m_SlidingWindow).toList()

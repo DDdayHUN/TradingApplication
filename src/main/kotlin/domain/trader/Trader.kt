@@ -1,5 +1,6 @@
 package domain.trader
 
+import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
 import domain.assets.Quote
 import domain.assets.security.SecurityHolding
@@ -30,7 +31,7 @@ class Trader {
 
     private var m_CurrentCapital: Double
     private val m_Holdings: MutableList<SecurityHolding>
-    private var m_Algorithm: TradingAlgorithm
+    private var m_Algorithm: ITradingAlgorithm
 
     //===========================================================//
     //===========================================================//

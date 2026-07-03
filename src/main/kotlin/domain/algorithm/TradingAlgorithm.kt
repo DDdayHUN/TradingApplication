@@ -13,73 +13,59 @@ import kotlin.time.Instant
  */
 //===========================================================//
 
-abstract class TradingAlgorithm {
+object TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Public Method(es)
+    /**
+     * Creates and initializes an algorithm instance configured for backtesting.
+     *
+     * @param type the type of algorithm to initialize.
+     * @param securityIdentifier the identifier identifies a security.
+     * @param from the start date (inclusive).
+     * @param to the end date (inclusive).
+     * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
+     */
+    fun create(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
+        return initForBackTest(type, securityIdentifier, from, to)
+    }
+
+    //===========================================================//
+    /**
+     * Creates and initializes an algorithm instance configured for trading.
+     *
+     * @param type the type of algorithm to initialize.
+     * @param securityIdentifier the identifier identifies a security.
+     * @return the configured algorithm instance.
+     */
+    @Deprecated("Mock implementation currently")
+    fun create(type: Type, securityIdentifier: SecurityIdentifier): ITradingAlgorithm {
+        return initForBackTest(type, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Private Method(es)
 
     /**
-     * Executes the algorithm based on current holdings and market conditions.
+     * Core initialization method used by backtesting setups.
      *
-     * @param holdings the list of currently owned assets.
-     * @param allocatedCapital the amount of capital allocated for trading.
-     * @param currentPrice the current market price of the asset.
-     * @return contains the decision/results.
+     * @param type the type of algorithm to initialize.
+     * @param securityIdentifier the identifier identifies a security.
+     * @param from the start date (inclusive).
+     * @param to the end date (inclusive).
+     * @return a pair that consists of history data that has not been used up in the initialization process and of an initialized algorithm.
      */
-    abstract fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output
-
-    companion object {
-        //===========================================================//
-        /**
-         * Creates and initializes an algorithm instance configured for backtesting.
-         *
-         * @param type the type of algorithm to initialize.
-         * @param securityIdentifier the identifier identifies a security.
-         * @param from the start date (inclusive).
-         * @param to the end date (inclusive).
-         * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
-         */
-        fun create(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            return initForBackTest(type, securityIdentifier, from, to)
-        }
-
-        //===========================================================//
-        /**
-         * Creates and initializes an algorithm instance configured for trading.
-         *
-         * @param type the type of algorithm to initialize.
-         * @param securityIdentifier the identifier identifies a security.
-         * @return the configured algorithm instance.
-         */
-        @Deprecated("Mock implementation currently")
-        fun create(type: Type, securityIdentifier: SecurityIdentifier): TradingAlgorithm {
-            return initForBackTest(type, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
-        }
-
-        //===========================================================//
-        //===========================================================//
-        // Private Method(es)
-
-        /**
-         * Core initialization method used by backtesting setups.
-         *
-         * @param type the type of algorithm to initialize.
-         * @param securityIdentifier the identifier identifies a security.
-         * @param from the start date (inclusive).
-         * @param to the end date (inclusive).
-         * @return a pair that consists of history data that has not been used up in the initialization process and of an initialized algorithm.
-         */
-        private fun initForBackTest(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            val retHistory = HistoricalMarketDataProvider.loadFromFile(securityIdentifier, from, to).toMutableList()
-            val retTradingAlgorithm: TradingAlgorithm = when (type) {
-                is Type.TACPP46 -> {
-                    val init = retHistory.subList(0, 42).toList()
-                    retHistory.subList(0, 42).clear()
-                    TACPP46(init)
-                }
+    private fun initForBackTest(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
+        val retHistory = HistoricalMarketDataProvider.loadFromFile(securityIdentifier, from, to).toMutableList()
+        val retTradingAlgorithm: ITradingAlgorithm = when (type) {
+            is Type.TACPP46 -> {
+                val init = retHistory.subList(0, 42).toList()
+                retHistory.subList(0, 42).clear()
+                TACPP46(init)
             }
-            return Pair(retHistory, retTradingAlgorithm)
         }
+        return Pair(retHistory, retTradingAlgorithm)
     }
 
     //===========================================================//
