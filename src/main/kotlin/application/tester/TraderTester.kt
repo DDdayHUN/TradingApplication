@@ -85,7 +85,7 @@ class TraderTester {
         config: TraderTestConfig,
         traderRepository: FakeTraderRepository
     ): TraderEntry {
-        val savedTrader = traderRepository.load(config.securityIdentifier)
+        val savedTrader = traderRepository.getBySecurityIdentifier(config.securityIdentifier)
 
         val trader = savedTrader ?: Trader(
             config.securityIdentifier,

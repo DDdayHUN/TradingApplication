@@ -38,7 +38,7 @@ class FakeTraderRepository() : ITraderRepository {
         file.writeText(s_Gson.toJson(dto))
     }
 
-    override suspend fun load(securityIdentifier: SecurityIdentifier): Trader? = withContext(Dispatchers.IO) {
+    override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): Trader? = withContext(Dispatchers.IO) {
         val file = File(s_DirectoryPath, "${securityIdentifier.isin}.json")
 
         if (!file.exists()) {
@@ -86,7 +86,7 @@ class FakeTraderRepository() : ITraderRepository {
     private fun parseAlgorithmType(value: String): TradingAlgorithm.Type {
         return when (value) {
             "TACPP46" -> TradingAlgorithm.Type.TACPP46
-            else -> throw IllegalArgumentException("Unknown algorithm type: $value")
+            else -> throw IllegalArgumentException("suck my dick")
         }
     }
 }

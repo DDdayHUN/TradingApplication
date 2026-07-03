@@ -6,6 +6,6 @@ import domain.trader.Trader
 
 interface ITraderRepository {
     suspend fun save(trader: Trader, algorithmType: TradingAlgorithm.Type)
-    suspend fun load(securityIdentifier: SecurityIdentifier): Trader?
+    suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): Trader?
     suspend fun loadAll(): List<Trader>
 }

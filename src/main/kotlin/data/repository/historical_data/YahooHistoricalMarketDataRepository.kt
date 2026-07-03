@@ -20,7 +20,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     //===========================================================//
     // Public Method(es)
 
-    override fun getById(securityIdentifier: SecurityIdentifier): HistoricalMarketData {
+    override fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketData {
         val rootDir = File("src/main/resources/backtest/yahoo/")
         val targetFile = rootDir.walkTopDown()
             .filter { it.isFile }
