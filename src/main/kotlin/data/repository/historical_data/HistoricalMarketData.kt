@@ -1,8 +1,8 @@
-package data
+package data.repository.historical_data
 
 import kotlin.time.Instant
 
-internal data class SecuritySerializationData(
+internal data class HistoricalMarketData(
     val identifier: Identifier,
     val history: List<MarketHistory>
 ) {

@@ -25,7 +25,7 @@ suspend fun main() {
         startDate,
         endDate
     )
-    bt.runBackTest(TradingAlgorithmBackTester.DisplayMode.WithoutTaxes(TradingAlgorithmBackTester.DebugMode.TradeSignal))
+    bt.runBackTest()
 
     val t = TraderTester()
     t.runTest()

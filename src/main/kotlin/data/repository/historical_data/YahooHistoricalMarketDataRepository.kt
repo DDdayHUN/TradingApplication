@@ -1,9 +1,8 @@
-package data.implementation
+package data.repository.historical_data
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import data.IHistoricalMarketDataRepository
-import data.SecuritySerializationData
+import data.repository.util.RepositoryUtil
 import domain.assets.security.SecurityIdentifier
 import java.io.File
 import kotlin.time.Instant
@@ -21,24 +20,24 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     //===========================================================//
     // Public Method(es)
 
-    override fun get(securityIdentifier: SecurityIdentifier): SecuritySerializationData {
+    override fun getById(securityIdentifier: SecurityIdentifier): HistoricalMarketData {
         val rootDir = File("src/main/resources/backtest/yahoo/")
         val targetFile = rootDir.walkTopDown()
             .filter { it.isFile }
             .find { file ->
-                val yahooMarketData = IHistoricalMarketDataRepository.loadFromFile<YahooMarketData>(s_GSON, file)
+                val yahooMarketData = RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, file)
                 yahooMarketData.isin == securityIdentifier.isin
             }
 
         require(targetFile != null) { "There is no files with the given identifier" }
-        return IHistoricalMarketDataRepository.loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
+        return RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
     }
 
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
 
-    data class YahooMarketData(
+    private data class YahooMarketData(
         val isin: String,
         val result: Result
     ) {
@@ -106,19 +105,19 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
             }
         }
 
-        fun toSecuritySerializationData(): SecuritySerializationData {
+        fun toSecuritySerializationData(): HistoricalMarketData {
             val timestamps = result.timestamp
             val closes = result.indicators.adjclose.first().adjclose
 
             val history = timestamps.zip(closes) { time, price ->
-                SecuritySerializationData.MarketHistory(
+                HistoricalMarketData.MarketHistory(
                     date = Instant.fromEpochSeconds(time),
                     closingPrice = price
                 )
             }
 
-            return SecuritySerializationData(
-                identifier = SecuritySerializationData.Identifier(
+            return HistoricalMarketData(
+                identifier = HistoricalMarketData.Identifier(
                     isin,
                     result.meta.fullExchangeName,
                     result.meta.symbol

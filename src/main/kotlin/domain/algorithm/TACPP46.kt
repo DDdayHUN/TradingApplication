@@ -1,6 +1,5 @@
-package domain.algorithm.implementation
+package domain.algorithm
 
-import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import java.util.ArrayDeque
@@ -8,11 +7,11 @@ import java.util.Deque
 
 //===========================================================//
 /**
- * An implementation of [domain.algorithm.TradingAlgorithm].
+ * An implementation of [TradingAlgorithm].
  */
 //===========================================================//
 
-internal class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : TradingAlgorithm(init) {
+class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : TradingAlgorithm(init) {
     //===========================================================//
     //===========================================================//
     // Private Field(s)

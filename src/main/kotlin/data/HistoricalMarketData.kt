@@ -1,11 +1,12 @@
 package data
 
-import data.implementation.YahooHistoricalMarketDataRepository
+import data.repository.historical_data.IHistoricalMarketDataRepository
+import data.repository.historical_data.YahooHistoricalMarketDataRepository
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityIdentifier
 import kotlin.time.Instant
 
-object SerializationManager {
+object HistoricalMarketData {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -22,10 +23,10 @@ object SerializationManager {
      * @param securityIdentifier the identifier of the security.
      * @param from the start date from which we want to include historical data (inclusive).
      * @param to the end date from which we don't want to include historical data (inclusive).
-     * @return List of historical data entries.
+     * @return the list of historical data entries.
      */
-    fun loadHistoricalDataFromFile(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): MutableList<SecurityHistory> {
-        val data = s_HistoricalMarketDataRepository.get(securityIdentifier)
+    fun loadFromFile(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<SecurityHistory> {
+        val data = s_HistoricalMarketDataRepository.getById(securityIdentifier)
 
         return data.history
             .filter { it.date in from..to }
