@@ -15,7 +15,7 @@ sealed class SerializationManager {
         //===========================================================//
         // Private Field(s)
 
-        private val s_MarketDataParser = get(Type.YahooMarketDataParser)
+        private val s_HistoricalMarketDataRepository = get(Type.YahooHistoricalMarketDataRepository)
 
         //===========================================================//
         //===========================================================//
@@ -30,7 +30,7 @@ sealed class SerializationManager {
          * @return List of historical data entries.
          */
         fun loadHistoricalDataFromFile(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): MutableList<SecurityHistory> {
-            val data = s_MarketDataParser.parse(securityIdentifier)
+            val data = s_HistoricalMarketDataRepository.parse(securityIdentifier)
 
             return data.history
                 .filter { it.date in from..to }
@@ -53,8 +53,8 @@ sealed class SerializationManager {
 
         private fun get(type: Type): SerializationManager {
             return when (type) {
-                Type.YahooMarketDataParser -> {
-                    YahooSerializedMarketDataParser
+                Type.YahooHistoricalMarketDataRepository -> {
+                    YahooHistoricalMarketDataRepository
                 }
             }
         }
@@ -69,6 +69,6 @@ sealed class SerializationManager {
     // Helper Class(es)
 
     sealed interface Type {
-        data object YahooMarketDataParser : Type
+        data object YahooHistoricalMarketDataRepository : Type
     }
 }
