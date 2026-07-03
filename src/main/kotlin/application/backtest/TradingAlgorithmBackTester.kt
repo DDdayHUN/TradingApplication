@@ -43,16 +43,9 @@ class TradingAlgorithmBackTester {
     //===========================================================//
     // Public Method(es)
 
-    fun runBackTest() {
+    fun runBackTest(display: DisplayMode = DisplayMode.Both(DebugMode.None)) {
         internalRunBackTest()
-        display(false)
-    }
-
-    //===========================================================//
-
-    fun runBackTestWithDebug() {
-        internalRunBackTest()
-        display(true)
+        display(display)
     }
 
     //===========================================================//
@@ -68,7 +61,7 @@ class TradingAlgorithmBackTester {
 
     //===========================================================//
 
-    private fun display(debug: Boolean) {
+    private fun display(display: DisplayMode) {
         println("#===============================================================#")
         println("# Algorithm back-tester")
         println("#===============================================================#")
@@ -82,14 +75,12 @@ class TradingAlgorithmBackTester {
                 "]"
         )
         println("Starting Capital: " + String.format("%.2f", m_StartingCapital) + System.lineSeparator())
-        m_WithoutTax.display()
-        m_WithTax.display()
-        if (debug) {
-            m_WithoutTax.displayDebugInfo()
-            m_WithTax.displayDebugInfo()
+        if(display is DisplayMode.Both || display is DisplayMode.WithoutTaxes) m_WithoutTax.display()
+        if(display is DisplayMode.Both || display is DisplayMode.WithTaxes) m_WithTax.display()
+        if(display.debug != DebugMode.None) {
+            if(display is DisplayMode.WithoutTaxes) m_WithoutTax.displayDebugInfo(display.debug)
+            if(display is DisplayMode.WithTaxes) m_WithTax.displayDebugInfo(display.debug)
         }
-        println("#===============================================================#")
-        println("#===============================================================#")
     }
 
     //===========================================================//
@@ -113,6 +104,23 @@ class TradingAlgorithmBackTester {
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
+
+    sealed interface DisplayMode {
+        val debug: DebugMode
+
+        data class Both(override val debug: DebugMode) : DisplayMode
+        data class WithTaxes(override val debug: DebugMode) : DisplayMode
+        data class WithoutTaxes(override val debug: DebugMode) : DisplayMode
+    }
+
+    sealed interface DebugMode {
+        data object None : DebugMode
+        data object Full : DebugMode
+        data object Holding : DebugMode
+        data object TradeSignal : DebugMode
+    }
+
+    //===========================================================//
 
     private inner class BackTesterWithTaxationContext {
         //===========================================================//
@@ -194,25 +202,30 @@ class TradingAlgorithmBackTester {
 
         //===========================================================//
 
-        fun displayDebugInfo() {
+        fun displayDebugInfo(debug: DebugMode) {
             println("#===============================================================#")
-            if (m_Taxation != null) print("# With taxes on trades: ")
-            else print("# Without taxes on trades: ")
-            println("DEBUG_INFO")
-            print("  Holding: ")
-            if (m_Holdings.isEmpty()) println("None")
-            else {
-                println()
-                for (item in m_Holdings) println("        Entry Price: " + String.format("%.2f", item.entryPrice) + " db: " + item.amount)
-            }
-            print("  Buy & Sale trades:")
-            if(m_Signlas.isEmpty()) println("None")
-            else {
-                println()
-                var counter = 1L
-                for (signal in m_Signlas) {
-                    print("        " + (counter++).toString() + " " + signal.formatToReadableText())
+            print("# DEBUG_INFO ")
+            if (m_Taxation != null) println("With taxes on trades: ")
+            else println("Without taxes on trades: ")
+
+            if(debug is DebugMode.Full || debug is DebugMode.Holding) {
+                print("  Holdings: ")
+                if (m_Holdings.isEmpty()) println("None")
+                else {
                     println()
+                    for (item in m_Holdings) println("        $item")
+                }
+            }
+
+            if(debug is DebugMode.Full || debug is DebugMode.TradeSignal) {
+                print("  Buy & Sale trades:")
+                if(m_Signlas.isEmpty()) println("None")
+                else {
+                    println()
+                    var counter = 1L
+                    for (signal in m_Signlas) {
+                        println("        ${(counter++)} ${signal.toReadableText()}")
+                    }
                 }
             }
         }

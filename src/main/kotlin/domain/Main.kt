@@ -19,14 +19,17 @@ suspend fun main() {
         "Apple"
     )
 
-    TradingAlgorithmBackTester(
+    val bt = TradingAlgorithmBackTester(
         ITaxation.HUNGARY,
         TradingAlgorithm.Type.TACPP46,
         identifier,
         10000.0,
         startDate,
         endDate
-    ).runBackTest()
+    )
+    bt.runBackTest()
+    bt.runBackTest(TradingAlgorithmBackTester.DisplayMode.WithoutTaxes(TradingAlgorithmBackTester.DebugMode.Holding))
+
 
     val holdings = mutableListOf(
         SecurityHolding( 250.0,  2),
@@ -75,7 +78,13 @@ suspend fun main() {
         println("Currency: ${trader.securityIdentifier.currency}")
         println("Current price: ${quote.currentPrice}")
         println("Allocated capital: ${trader.getCurrentCapital()}")
-        println("Signal: ${signal.formatToReadableText()}")
-        println("Holdings: ${trader.getHoldings()}")
+        println("Signal: ${signal.toReadableText()}")
+        print("  Holdings: ")
+        val holdings = trader.getHoldings()
+        if (holdings.isEmpty()) println("None")
+        else {
+            println()
+            for (item in holdings) println("        $item")
+        }
     }
 }
