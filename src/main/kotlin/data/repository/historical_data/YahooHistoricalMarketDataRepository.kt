@@ -20,7 +20,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     //===========================================================//
     // Public Method(es)
 
-    override fun getById(securityIdentifier: SecurityIdentifier): HistoricalMarketData {
+    override fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketData {
         val rootDir = File("src/main/resources/backtest/yahoo/")
         val targetFile = rootDir.walkTopDown()
             .filter { it.isFile }
@@ -100,7 +100,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
                 )
 
                 data class AdjustedClose(
-                    val adjclose: List<Double>
+                    val adjclose: List<Double?>
                 )
             }
         }
@@ -109,11 +109,15 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
             val timestamps = result.timestamp
             val closes = result.indicators.adjclose.first().adjclose
 
-            val history = timestamps.zip(closes) { time, price ->
-                HistoricalMarketData.MarketHistory(
-                    date = Instant.fromEpochSeconds(time),
-                    closingPrice = price
-                )
+            val history = timestamps.zip(closes).mapNotNull { (time, price) ->
+                if(price == null){
+                    null
+                }else {
+                    HistoricalMarketData.MarketHistory(
+                        date = Instant.fromEpochSeconds(time),
+                        closingPrice = price
+                    )
+                }
             }
 
             return HistoricalMarketData(

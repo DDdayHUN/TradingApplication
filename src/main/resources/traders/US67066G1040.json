@@ -1,0 +1,16 @@
+{
+  "securityIdentifier": {
+    "isin": "US67066G1040",
+    "currency": "USD",
+    "name": "NVIDIA"
+  },
+  "holdings": [
+    {
+      "uuid": "1aed6a0a-2f8b-474b-8a2a-fb9128908786",
+      "entryPrice": 100.0,
+      "amount": 2
+    }
+  ],
+  "allocatedCapital": 2000.0,
+  "algorithmType": "TACPP46"
+}

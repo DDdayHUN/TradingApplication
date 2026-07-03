@@ -26,7 +26,7 @@ object HistoricalMarketData {
      * @return the list of historical data entries.
      */
     fun loadFromFile(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<SecurityHistory> {
-        val data = s_HistoricalMarketDataRepository.getById(securityIdentifier)
+        val data = s_HistoricalMarketDataRepository.getBySecurityIdentifier(securityIdentifier)
 
         return data.history
             .filter { it.date in from..to }

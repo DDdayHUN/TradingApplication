@@ -12,9 +12,9 @@ suspend fun main() {
     val endDate = Instant.parse("2025-01-01T00:00:00Z") // 2024.01.01 0:00:00
 
     val identifier = SecurityIdentifier(
-        "US0378331005",
+        "US67066G1040",
         "USD",
-        "Apple"
+        "NVIDIA"
     )
 
     val bt = TradingAlgorithmBackTester(
