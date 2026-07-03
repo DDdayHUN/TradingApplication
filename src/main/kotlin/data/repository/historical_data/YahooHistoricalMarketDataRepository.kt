@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.time.Instant
@@ -147,10 +146,11 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
             }
 
             return HistoricalMarketDataDto(
-                identifier = HistoricalMarketDataDto.Identifier(
+                meta = HistoricalMarketDataDto.Meta(
                     isin,
                     result.meta.fullExchangeName,
-                    result.meta.symbol
+                    result.meta.symbol,
+                    result.meta.currency,
                 ),
                 history = history
             )

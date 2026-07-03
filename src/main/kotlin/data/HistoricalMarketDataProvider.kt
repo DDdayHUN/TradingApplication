@@ -38,21 +38,19 @@ object HistoricalMarketDataProvider {
     //===========================================================//
 
     /**
-     * Lists all files available.
+     * Extracts all available security identifiers from historical market data.
      *
-     * @return all files available.
+     * This function loads all persisted historical market data from the repository and maps each entry
+     * to a [SecurityIdentifier] using its metadata.
+     *
+     * @return a list of security identifiers derived from all stored market data entries.
      */
-    suspend fun loadAllFromFiles(from: Instant, to: Instant): List<List<SecurityHistory>> {
+    @Deprecated("We need to redo this, because this is too expensive")
+    suspend fun getAllSecurityIdentifiers(): List<SecurityIdentifier> {
         val data = s_HistoricalMarketDataRepository.getAll()
-
-        val temp = data.map { dto ->
-            dto.history
-                .filter { it.date in from..to }
-                .sortedBy { it.date }
-                .map { SecurityHistory(it.closingPrice) }
+        return data.map {
+            SecurityIdentifier(it.meta.isin, it.meta.currency, it.meta.tickerSymbol)
         }
-
-        return temp;
     }
 
     //===========================================================//

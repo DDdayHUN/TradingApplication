@@ -74,7 +74,7 @@ class TradingAlgorithmBackTester {
         val winRate = if (m_TotalSellsMade <= 0) Double.NaN else (m_WinningTrades * 100.0 / m_TotalSellsMade)
 
         println("#===============================================================#")
-        println("# Algorithm back-tester")
+        println("# Algorithm Backtesting")
         println("#===============================================================#")
         val zone = java.time.ZoneId.systemDefault()
         val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
@@ -91,7 +91,7 @@ class TradingAlgorithmBackTester {
 
         println("Total Capital: " + String.format("%.2f", last))
         println("Delta Capital: " + String.format("%.2f", deltaCapital))
-        println("Percent change: " + String.format("%.2f", deltaCapitalInPercent) + "%")
+        println("Percent Change: " + String.format("%.2f", deltaCapitalInPercent) + "%")
         println()
 
         println("Total Buys Made: $m_TotalBuysMade")

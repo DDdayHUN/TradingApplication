@@ -9,7 +9,6 @@ class TradingEngine {
 
     suspend fun onQuote(trader: Trader, quote: Quote): TradingSignal{
         val signal = trader.createSignal(quote)
-        println(signal.toReadableText())
 
         m_signalDispatcher.dispatch(trader, signal)
 
