@@ -38,7 +38,7 @@ suspend fun main() {
             to = endDate
         ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display(TradingAlgorithmBackTester.DebugMode.Holding))
 
-        TradingAlgorithmEvaluater(algType, taxation, startCapital, startDate, endDate)
+        TradingAlgorithmEvaluater(algType, taxation, startCapital)
             .runEvaluation()
     }
 
