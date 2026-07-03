@@ -1,6 +1,6 @@
 package domain.algorithm
 
-import data.HistoricalMarketData
+import data.HistoricalMarketDataProvider
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
@@ -40,7 +40,7 @@ abstract class TradingAlgorithm {
          * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
          */
         fun create(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            return initialiser(type, Init.BACKTEST, securityIdentifier, from, to)
+            return initForBackTest(type, securityIdentifier, from, to)
         }
 
         //===========================================================//
@@ -51,8 +51,9 @@ abstract class TradingAlgorithm {
          * @param securityIdentifier the identifier identifies a security.
          * @return the configured algorithm instance.
          */
+        @Deprecated("Mock implementation currently")
         fun create(type: Type, securityIdentifier: SecurityIdentifier): TradingAlgorithm {
-            return initialiser(type, Init.TRADING, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
+            return initForBackTest(type, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
         }
 
         //===========================================================//
@@ -60,19 +61,22 @@ abstract class TradingAlgorithm {
         // Private Method(es)
 
         /**
-         * Core initialization method used by both trading and backtesting setups.
+         * Core initialization method used by backtesting setups.
          *
          * @param type the type of algorithm to initialize.
-         * @param init the initialization mode of the algorithm.
          * @param securityIdentifier the identifier identifies a security.
          * @param from the start date (inclusive).
          * @param to the end date (inclusive).
          * @return a pair that consists of history data that has not been used up in the initialization process and of an initialized algorithm.
          */
-        private fun initialiser(type: Type, init: Init, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            val retHistory = HistoricalMarketData.loadFromFile(securityIdentifier, from, to).toMutableList()
+        private fun initForBackTest(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
+            val retHistory = HistoricalMarketDataProvider.loadFromFile(securityIdentifier, from, to).toMutableList()
             val retTradingAlgorithm: TradingAlgorithm = when (type) {
-                is Type.TACPP46 -> TACPP46(init, retHistory)
+                is Type.TACPP46 -> {
+                    val init = retHistory.subList(0, 42).toList()
+                    retHistory.subList(0, 42).clear()
+                    TACPP46(init)
+                }
             }
             return Pair(retHistory, retTradingAlgorithm)
         }
@@ -86,11 +90,6 @@ abstract class TradingAlgorithm {
         data object TACPP46 : Type
     }
 
-    sealed interface Init {
-        data object BACKTEST: Init
-        data object TRADING: Init
-    }
-
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
@@ -102,16 +101,4 @@ abstract class TradingAlgorithm {
         data class Buy(val amount: Long)
         data class Sell(val batches: List<Pair<SecurityHolding, Long>>)
     }
-
-    //===========================================================//
-    //===========================================================//
-    // Constructor(s)
-
-    /**
-     * Package constructor to enforce initialization mode handling
-     * in subclasses.
-     *
-     * @param init the initialization mode of the algorithm.
-     */
-    internal constructor(init: Init)
 }

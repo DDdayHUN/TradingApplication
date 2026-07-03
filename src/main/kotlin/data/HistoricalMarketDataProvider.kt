@@ -6,7 +6,7 @@ import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityIdentifier
 import kotlin.time.Instant
 
-object HistoricalMarketData {
+object HistoricalMarketDataProvider {
     //===========================================================//
     //===========================================================//
     // Private Field(s)

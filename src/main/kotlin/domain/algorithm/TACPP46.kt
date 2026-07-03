@@ -11,10 +11,12 @@ import java.util.Deque
  */
 //===========================================================//
 
-class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : TradingAlgorithm(init) {
+class TACPP46 private constructor() : TradingAlgorithm() {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
+
+    private val m_SlidingWindow = 21
 
     private val m_EmaHistory: Deque<Double>
 
@@ -130,34 +132,11 @@ class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : TradingAlgori
      * q0: first slidingWindow prices
      * q1: next slidingWindow prices
      */
-    init {
-        m_EmaHistory = ArrayDeque()
+    constructor(emaInit: List<SecurityHistory>): this() {
+        require(emaInit.size >= 2 * m_SlidingWindow) { "Init EMA" }
 
-        m_TrailingHigh = HashMap()
-        m_MarkedForSelling = ArrayList()
-
-        m_LastInputArr = ArrayDeque()
-
-        // SlidingWindow
-        val SW = 21
-        require(emaInit.size >= 2 * SW) { "Init EMA: not enough history for Initialisation" }
-
-        val historyQ0: List<SecurityHistory>
-        val historyQ1: List<SecurityHistory>
-        when (init) {
-            Init.TRADING -> {
-                val n = emaInit.size
-                historyQ0 = emaInit.subList(n - 2 * SW, n - SW).toList()
-                historyQ1 = emaInit.subList(n - SW, n).toList()
-                emaInit.subList(n - 2 * SW, n).clear()
-            }
-
-            Init.BACKTEST -> {
-                historyQ0 = emaInit.subList(0, SW).toList()
-                historyQ1 = emaInit.subList(SW, 2 * SW).toList()
-                emaInit.subList(0, 2 * SW).clear()
-            }
-        }
+        val historyQ0 = emaInit.subList(0, m_SlidingWindow).toList()
+        val historyQ1 = emaInit.subList(m_SlidingWindow, 2 * m_SlidingWindow).toList()
 
         val q0 = historyQ0.stream().map { it.closingPrice }.toList()
         val q1 = historyQ1.stream().map { it.closingPrice }.toList()
@@ -170,6 +149,15 @@ class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : TradingAlgori
             m_EmaHistory.add(ema)
         }
 
-        check(!m_EmaHistory.isEmpty()) { "EMA is Empty" }
+        check(m_EmaHistory.size == 21) { "EMA" }
+    }
+
+    init {
+        m_EmaHistory = ArrayDeque()
+
+        m_TrailingHigh = HashMap()
+        m_MarkedForSelling = ArrayList()
+
+        m_LastInputArr = ArrayDeque()
     }
 }

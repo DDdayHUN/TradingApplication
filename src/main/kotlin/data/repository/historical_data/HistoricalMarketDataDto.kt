@@ -2,7 +2,7 @@ package data.repository.historical_data
 
 import kotlin.time.Instant
 
-internal data class HistoricalMarketData(
+internal data class HistoricalMarketDataDto(
     val identifier: Identifier,
     val history: List<MarketHistory>
 ) {
