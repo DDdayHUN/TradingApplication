@@ -99,7 +99,7 @@ class Trader {
     //===========================================================//
 
     fun getHoldings(): List<SecurityHolding> {
-        return m_Holdings
+        return m_Holdings.toList()
     }
 
     //===========================================================//
