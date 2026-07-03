@@ -87,7 +87,14 @@ class TradingAlgorithmBackTester {
     //===========================================================//
     // Constructor(s)
 
-    constructor(taxation: ITaxation, type: TradingAlgorithm.Type, securityIdentifier: SecurityIdentifier, startingCapital: Double, from: Instant, to: Instant) {
+    constructor(
+        taxation: ITaxation,
+        type: TradingAlgorithm.Type,
+        securityIdentifier: SecurityIdentifier,
+        startingCapital: Double,
+        from: Instant = Instant.DISTANT_PAST,
+        to: Instant = Instant.DISTANT_FUTURE
+    ) {
         require(startingCapital >= 0) { "Capital" }
 
         m_SecurityIdentifier = securityIdentifier
