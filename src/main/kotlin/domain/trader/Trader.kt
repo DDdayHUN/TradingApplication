@@ -41,7 +41,8 @@ class Trader {
         val output = m_Algorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
 
         return TradingSignal(
-            output,
+            output.buy,
+            output.sell,
             currentPrice
         )
     }

@@ -1,5 +1,6 @@
-package domain.algorithm
+package domain.algorithm.implementation
 
+import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import java.util.ArrayDeque
@@ -7,7 +8,7 @@ import java.util.Deque
 
 //===========================================================//
 /**
- * An implementation of [TradingAlgorithm].
+ * An implementation of [domain.algorithm.TradingAlgorithm].
  */
 //===========================================================//
 
@@ -26,7 +27,7 @@ internal class TACPP46(init: Init, emaInit: MutableList<SecurityHistory>) : Trad
     //===========================================================//
     //===========================================================//
     // Public Method(es)
-    
+
     override fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output {
         var buy: Output.Buy? = null
         var sell: Output.Sell? = null

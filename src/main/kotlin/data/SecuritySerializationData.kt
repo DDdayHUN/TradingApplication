@@ -2,7 +2,7 @@ package data
 
 import kotlin.time.Instant
 
-data class SecuritySerializationData(
+internal data class SecuritySerializationData(
     val identifier: Identifier,
     val history: List<MarketHistory>
 ) {

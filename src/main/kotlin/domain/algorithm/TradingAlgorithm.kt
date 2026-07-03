@@ -1,6 +1,7 @@
 package domain.algorithm
 
 import data.SerializationManager
+import domain.algorithm.implementation.TACPP46
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
@@ -52,7 +53,7 @@ abstract class TradingAlgorithm {
          * @return the configured algorithm instance.
          */
         fun create(type: Type, securityIdentifier: SecurityIdentifier): TradingAlgorithm {
-            return initialiser(type, Init.BACKTEST, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
+            return initialiser(type, Init.TRADING, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
         }
 
         //===========================================================//

@@ -249,7 +249,8 @@ class TradingAlgorithmBackTester {
             if (ret.sell != null) projectedStockCount -= getSellAmount(ret.sell)
 
             m_Signlas.add(TradingSignal(
-                ret,
+                ret.buy,
+                ret.sell,
                 currentPrice
             ))
 

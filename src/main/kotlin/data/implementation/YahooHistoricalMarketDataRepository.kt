@@ -1,12 +1,14 @@
-package data
+package data.implementation
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import data.IHistoricalMarketDataRepository
+import data.SecuritySerializationData
 import domain.assets.security.SecurityIdentifier
 import java.io.File
 import kotlin.time.Instant
 
-internal object YahooHistoricalMarketDataRepository : SerializationManager() {
+internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepository {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -19,24 +21,24 @@ internal object YahooHistoricalMarketDataRepository : SerializationManager() {
     //===========================================================//
     // Public Method(es)
 
-    override fun parse(securityIdentifier: SecurityIdentifier): SecuritySerializationData {
+    override fun get(securityIdentifier: SecurityIdentifier): SecuritySerializationData {
         val rootDir = File("src/main/resources/backtest/yahoo/")
         val targetFile = rootDir.walkTopDown()
             .filter { it.isFile }
             .find { file ->
-                val yahooMarketData = loadFromFile<YahooMarketData>(s_GSON, file)
+                val yahooMarketData = IHistoricalMarketDataRepository.loadFromFile<YahooMarketData>(s_GSON, file)
                 yahooMarketData.isin == securityIdentifier.isin
             }
 
         require(targetFile != null) { "There is no files with the given identifier" }
-        return loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
+        return IHistoricalMarketDataRepository.loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
     }
 
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
 
-    internal data class YahooMarketData(
+    data class YahooMarketData(
         val isin: String,
         val result: Result
     ) {
