@@ -11,15 +11,11 @@ import java.util.UUID
  */
 //===========================================================//
 
-class SecurityHolding private constructor(
+data class SecurityHolding(
     val uuid: UUID,
     val entryPrice: Double,
     val amount: Long
 ) {
-    override fun toString(): String {
-        return "SecurityHolding(uuid=$uuid, entryPrice=$entryPrice, amount=$amount)"
-    }
-
     constructor(entryPrice: Double, amount: Long) : this(UUID.randomUUID(), entryPrice, amount)
 
     init {
