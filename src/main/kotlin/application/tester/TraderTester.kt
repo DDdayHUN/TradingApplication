@@ -51,7 +51,7 @@ class TraderTester {
         traders.forEach { trader ->
             val quote = marketDataProvider.getQuote(trader.securityIdentifier)
             val capitalBeforeSignal = trader.getCurrentCapital()
-            val holdingsBeforeSignal = trader.getHoldings()
+            val holdingsBeforeSignal = trader.getHoldings().toList()
             val signal = tradingEngine.onQuote(trader, quote)
 
             println("#================================================#")
