@@ -9,8 +9,8 @@ package domain.assets.security
  * while the exchange and symbol define its specific listing context.
  *
  * @param isin the 12-character International Securities Identification Number (ISIN).
- * @param name the name of
- * @param currency the currency in which the security is traded in.
+ * @param name the informal name of the security (i.e: Apple).
+ * @param currency the currency in which the security is traded in. (i.e: USD)
  */
 //===========================================================//
 

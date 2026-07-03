@@ -1,6 +1,5 @@
-package application.backtest
+package application.tester
 
-import application.signal.SignalGenerator
 import domain.algorithm.TradingAlgorithm
 import domain.signal.TradingSignal
 import domain.assets.security.SecurityHistory
@@ -14,14 +13,11 @@ import kotlin.time.Instant
  * AlgorithmBackTester is responsible for simulating and evaluating a trading m_Algorithm
  * over historical market data.
  * 
- * 
  * It runs a specified [TradingAlgorithm] over a defined time range for a given stock,
  * tracks virtual m_Holdings, capital changes, and performance metrics such as total trades and win rate.
  * 
- * 
  * The backtester supports both normal execution and debug execution, where additional
  * internal state (such as current m_Holdings) is printed for inspection.
- * 
  * 
  * This class is immutable in configuration (stock, range, initial capital, m_Algorithm m_Type),
  * but maintains mutable state during backtesting execution.
@@ -43,22 +39,13 @@ class TradingAlgorithmBackTester {
     private val m_WithoutTax: BackTesterWithTaxationContext
     private val m_WithTax: BackTesterWithTaxationContext
 
-    private val m_SignalGenerator: SignalGenerator
-
     //===========================================================//
     //===========================================================//
     // Public Method(es)
 
-    fun runBackTest() {
+    fun runBackTest(display: DisplayMode = DisplayMode.Both(DebugMode.None)) {
         internalRunBackTest()
-        display(false)
-    }
-
-    //===========================================================//
-
-    fun runBackTestWithDebug() {
-        internalRunBackTest()
-        display(true)
+        display(display)
     }
 
     //===========================================================//
@@ -74,7 +61,7 @@ class TradingAlgorithmBackTester {
 
     //===========================================================//
 
-    private fun display(debug: Boolean) {
+    private fun display(display: DisplayMode) {
         println("#===============================================================#")
         println("# Algorithm back-tester")
         println("#===============================================================#")
@@ -88,14 +75,12 @@ class TradingAlgorithmBackTester {
                 "]"
         )
         println("Starting Capital: " + String.format("%.2f", m_StartingCapital) + System.lineSeparator())
-        m_WithoutTax.display()
-        m_WithTax.display()
-        if (debug) {
-            m_WithoutTax.displayDebugInfo()
-            m_WithTax.displayDebugInfo()
+        if(display is DisplayMode.Both || display is DisplayMode.WithoutTaxes) m_WithoutTax.display()
+        if(display is DisplayMode.Both || display is DisplayMode.WithTaxes) m_WithTax.display()
+        if(display.debug != DebugMode.None) {
+            if(display is DisplayMode.WithoutTaxes) m_WithoutTax.displayDebugInfo(display.debug)
+            if(display is DisplayMode.WithTaxes) m_WithTax.displayDebugInfo(display.debug)
         }
-        println("#===============================================================#")
-        println("#===============================================================#")
     }
 
     //===========================================================//
@@ -114,13 +99,28 @@ class TradingAlgorithmBackTester {
 
         m_WithoutTax = BackTesterWithTaxationContext(null, TradingAlgorithm.create(m_Type, securityIdentifier, m_From, m_To))
         m_WithTax = BackTesterWithTaxationContext(taxation, TradingAlgorithm.create(m_Type, securityIdentifier, m_From, m_To))
-
-        m_SignalGenerator = SignalGenerator()
     }
 
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
+
+    sealed interface DisplayMode {
+        val debug: DebugMode
+
+        data class Both(override val debug: DebugMode) : DisplayMode
+        data class WithTaxes(override val debug: DebugMode) : DisplayMode
+        data class WithoutTaxes(override val debug: DebugMode) : DisplayMode
+    }
+
+    sealed interface DebugMode {
+        data object None : DebugMode
+        data object Full : DebugMode
+        data object Holding : DebugMode
+        data object TradeSignal : DebugMode
+    }
+
+    //===========================================================//
 
     private inner class BackTesterWithTaxationContext {
         //===========================================================//
@@ -140,14 +140,14 @@ class TradingAlgorithmBackTester {
         private var m_TotalSellsMade: Long = 0
         private var m_WinningTrades: Long = 0
 
+        private val m_Signlas: MutableList<TradingSignal>
+
         private val m_CurrentStockCount: Long
             get() {
                 var count = 0L
                 for (holding in m_Holdings) count += holding.amount
                 return count
             }
-
-        private val m_Signlas: MutableList<TradingSignal>
 
         //===========================================================//
         //===========================================================//
@@ -202,25 +202,30 @@ class TradingAlgorithmBackTester {
 
         //===========================================================//
 
-        fun displayDebugInfo() {
+        fun displayDebugInfo(debug: DebugMode) {
             println("#===============================================================#")
-            if (m_Taxation != null) print("# With taxes on trades: ")
-            else print("# Without taxes on trades: ")
-            println("DEBUG_INFO")
-            print("  Holding: ")
-            if (m_Holdings.isEmpty()) println("None")
-            else {
-                println()
-                for (item in m_Holdings) println("        Entry Price: " + String.format("%.2f", item.entryPrice) + " db: " + item.amount)
-            }
-            print("  Buy & Sale trades:")
-            if(m_Signlas.isEmpty()) println("None")
-            else {
-                println()
-                var counter = 1L
-                for (signal in m_Signlas) {
-                    print("        " + (counter++).toString() + " " + signal.formatToReadableText())
+            print("# DEBUG_INFO ")
+            if (m_Taxation != null) println("With taxes on trades: ")
+            else println("Without taxes on trades: ")
+
+            if(debug is DebugMode.Full || debug is DebugMode.Holding) {
+                print("  Holdings: ")
+                if (m_Holdings.isEmpty()) println("None")
+                else {
                     println()
+                    for (item in m_Holdings) println("        $item")
+                }
+            }
+
+            if(debug is DebugMode.Full || debug is DebugMode.TradeSignal) {
+                print("  Buy & Sale trades:")
+                if(m_Signlas.isEmpty()) println("None")
+                else {
+                    println()
+                    var counter = 1L
+                    for (signal in m_Signlas) {
+                        println("        ${(counter++)} ${signal.toReadableText()}")
+                    }
                 }
             }
         }
@@ -236,14 +241,10 @@ class TradingAlgorithmBackTester {
             if (ret.buy != null) projectedStockCount += ret.buy.amount
             if (ret.sell != null) projectedStockCount -= getSellAmount(ret.sell)
 
-            m_SignalGenerator.createSignal(
+            m_Signlas.add(TradingSignal(
                 ret,
-                m_CurrentCapital,
-                currentPrice,
-                projectedStockCount
-            ).forEach {
-                m_Signlas.add(it)
-            }
+                currentPrice
+            ))
 
             if (ret.buy != null) {
                 m_CurrentCapital -= ret.buy.amount * currentPrice
@@ -309,28 +310,6 @@ class TradingAlgorithmBackTester {
             m_CapitalHistory = ArrayList()
 
             m_Signlas = ArrayList()
-        }
-
-        //===========================================================//
-        //===========================================================//
-        // Extension(s)
-
-        private fun TradingSignal.formatToReadableText(): String {
-            val amountText = if(amount == null) "" else " | Amount:  $amount"
-
-            return ("" +
-                    action
-                    + " | "
-                    + strength
-                    + " | Price: "
-                    + String.format("%.2f", currentPrice)
-                    + amountText
-                    + " | Current Stock Count: "
-                    + currentStockCount
-                    + " | Reason: "
-                    + reason
-                    + " | At: "
-                    + createdAt)
         }
     }
 }

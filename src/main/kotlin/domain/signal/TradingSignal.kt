@@ -1,5 +1,6 @@
 package domain.signal
 
+import domain.algorithm.TradingAlgorithm
 import java.time.Instant
 
 //===========================================================//
@@ -8,31 +9,41 @@ import java.time.Instant
  */
 //===========================================================//
 
-data class TradingSignal(
-    val action: Action,
-    val strength: Strength,
+class TradingSignal private constructor(
+    val buy: TradingAlgorithm.Output.Buy?,
+    val sell: TradingAlgorithm.Output.Sell?,
     val currentPrice: Double,
-    val amount: Long?,
-    val currentStockCount: Long,
-    val reason: String,
-    val createdAt: Instant
+    val createdAt: Instant = Instant.now()
 ) {
-    /**
-     * Represents the calculated Signal strength of generated signal.
-     */
-    enum class Strength {
-        HIGH,
-        MEDIUM,
-        LOW
+    //===========================================================//
+    //===========================================================//
+    // Public Method(es)
+
+    fun toReadableText(): String {
+        val action = if(buy == null && sell == null) "HOLD"
+        else if(buy != null && sell != null) "BUY, SELL"
+        else if(buy != null) "BUY" else "SELL"
+
+        val amount = if(buy == null && sell == null) ""
+        else if(buy != null && sell != null) " | Buy Amount: ${buy.amount} | Sell: ${sell.batches.map { it.first }.toList()}"
+        else if(buy != null) " | Buy Amount: ${buy.amount}" else " | Sell: ${sell!!.batches.map { it.first }.toList()}}"
+
+        return ("" +
+                action
+                + " | Price: "
+                + String.format("%.2f", currentPrice)
+                + amount
+                + " | At: "
+                + createdAt)
     }
 
     //===========================================================//
-    /**
-     * Represents the action suggested by the signal engine.
-     */
-    enum class Action {
-        BUY,
-        SELL,
-        HOLD
-    }
+    //===========================================================//
+    // Constructor(s)
+
+    constructor(output: TradingAlgorithm.Output, currentPrice: Double) : this(
+        buy = output.buy,
+        sell = output.sell,
+        currentPrice = currentPrice
+    )
 }

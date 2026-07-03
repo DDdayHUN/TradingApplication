@@ -1,176 +1,133 @@
 package domain.trader
 
-import application.signal.SignalGenerator
 import domain.algorithm.TradingAlgorithm
 import domain.assets.Quote
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.signal.TradingSignal
-import java.util.UUID
 
 //===========================================================//
 /**
  * Represents a virtual trader that is responsible for one security
  *
- * The trader owns allocated capital, current holding batches and activate
+ * The trader owns allocated capital, currently held securities and activate
  * trading algorithm that is (will be) decided by the Algorithm Manager.
- * It only created trading signals based on given quote
+ * It only creates trading signals based on given quote
  *
- * @param id the unique trader id
- * @param stockName the display name of the stock handled by the trader
- * @param securityIdentifier identifier of the traded security
- * @param m_AllocatedCapital the capital currently allocated by the trader
- * @param m_Holdings holding batches of this security
- * @param m_Algorithm currently used trading algorithm
  */
 // ===========================================================//
 
-class Trader(
-    val id: UUID,
-    val stockName: String,
-    val securityIdentifier: SecurityIdentifier,
-    private var m_AllocatedCapital: Double,
-    private var m_Holdings: MutableList<SecurityHolding>,
-    private var m_Algorithm: TradingAlgorithm,
-    private var m_SignalGenerator: SignalGenerator = SignalGenerator()
-) {
-    init {
-        require(!stockName.isBlank()) {"StockName"}
-        require(m_AllocatedCapital >= 0.0) {"AllocatedCapital"}
-    }
+class Trader {
+    //===========================================================//
+    //===========================================================//
+    // Public Field(s)
+
+    val securityIdentifier: SecurityIdentifier
+
+    //===========================================================//
+    //===========================================================//
+    // Private Field(s)
+
+    private var m_CurrentCapital: Double
+    private val m_Holdings: MutableList<SecurityHolding>
+    private var m_Algorithm: TradingAlgorithm
 
     //===========================================================//
     //===========================================================//
     // Public Method(es)
 
-
-    fun createSignals(quote: Quote): List<TradingSignal>{
+    fun createSignal(quote: Quote): TradingSignal {
         val currentPrice = quote.currentPrice
+        val output = m_Algorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
 
-        val output = m_Algorithm.run(
-            m_Holdings,
-            m_AllocatedCapital,
-            currentPrice,
-        )
-
-        var stockCount = getCurrentStockCount()
-
-        if(output.buy != null) stockCount += output.buy.amount
-
-        if(output.sell != null) stockCount -= getSellAmount(output.sell)
-
-        return m_SignalGenerator.createSignal(
+        return TradingSignal(
             output,
-            m_AllocatedCapital,
-            currentPrice,
-            stockCount
+            currentPrice
         )
     }
+
     //===========================================================//
     /**
-     * Applies a successfully executed buy order to this trader.
+     * Applies a successfully executed buy order.
      *
      * This method should only be called after the trading service has confirmed
      * that the buy order was executed successfully.
      *
-     * It decreases the allocated capital by the total buy cost and
-     * adds new holding batch
-     *
-     * @param amount the number of buy shares
-     * @param entryPrice the price which the shares were bought
+     * @param buy the buy order that has been accepted and finalized.
      */
-    //===========================================================//
-    fun applyExecutedBuy(amount: Long, entryPrice: Double){
-        require(amount > 0L) { "Amount"}
-        require(entryPrice >= 0.0) {"EntryPrice"}
-
-        val cost = amount * entryPrice
-
-        require(cost <= m_AllocatedCapital){
-            "Not enough capital"
-        }
-
-        m_AllocatedCapital -= cost
-        m_Holdings.add(
-            SecurityHolding(
-                entryPrice,
-                amount,
-            )
-        )
+    fun finalizeOrder(buy: TradingAlgorithm.Output.Buy, buyPrice: Double) {
+        m_CurrentCapital -= buy.amount * buyPrice
+        m_Holdings.add(SecurityHolding(
+            buyPrice,
+            buy.amount
+        ))
     }
+
     //===========================================================//
     /**
-     * Applies a successfully executed sell order to this trader.
+     * Applies a successfully executed sell order.
      *
      * This method should only be called after the trading service has confirmed
      * that the sell order was executed successfully.
      *
-     * @param sell the sell output generated by the algorithm
-     * @param entryPrice the price which the shares were sold
+     * @param sell the sell order that has been accepted and finalized.
      */
-    //===========================================================//
-    fun applyExecutionSell(sell: TradingAlgorithm.Output.Sell, entryPrice: Double){
-        require(entryPrice >= 0.0) {"EntryPrice"}
-
+    fun finalizeOrder(sell: TradingAlgorithm.Output.Sell, sellPrice: Double) {
         sell.batches.forEach{ batch ->
             val holding = batch.first
             val amountToSell = batch.second
 
-            require(amountToSell > 0L) {"SellAmount"}
-            require(amountToSell <= holding.amount) {"SellAmount"}
-            require(m_Holdings.contains(holding)) {"Holding"}
-
             m_Holdings.remove(holding)
 
             if(amountToSell != holding.amount){
-                m_Holdings.add(
-                    SecurityHolding(
-                        holding.entryPrice,
-                        holding.amount - amountToSell,
-                    )
-                )
+                m_Holdings.add(SecurityHolding(
+                    holding.entryPrice,
+                    holding.amount - amountToSell
+                ))
             }
 
-            m_AllocatedCapital += amountToSell * entryPrice
+            m_CurrentCapital += amountToSell * sellPrice
         }
     }
 
     //===========================================================//
 
-    fun getCurrentStockCount(): Long {
-        var ret = 0L
-        m_Holdings.forEach { ret += it.amount }
-        return ret
-    }
-
-    //===========================================================//
-    /**
-     * This method should be called by the Algorithm Manager.
-     * @param newAlgorithm algorithm that manager decided would be best
-     */
-    fun setAlgorithm(newAlgorithm: TradingAlgorithm){
-        m_Algorithm = newAlgorithm
-    }
-
-    //===========================================================//
-
-    fun getAllocatedCapital(): Double {
-        return m_AllocatedCapital
+    fun setAlgorithm(algorithm: TradingAlgorithm.Type) {
+        m_Algorithm = TradingAlgorithm.create(algorithm, securityIdentifier)
     }
 
     //===========================================================//
 
     fun getHoldings(): List<SecurityHolding> {
-        return m_Holdings.toList()
+        return m_Holdings
+    }
+
+    //===========================================================//
+
+    fun changeCurrentCapital(capital: Double) {
+        m_CurrentCapital += capital;
+    }
+
+    //===========================================================//
+
+    fun getCurrentCapital(): Double {
+        return m_CurrentCapital
     }
 
     //===========================================================//
     //===========================================================//
-    // Private Method(es)
+    // Constructor(s)
 
-    private fun getSellAmount(sell: TradingAlgorithm.Output.Sell): Long {
-        var ret = 0L
-        sell.batches.forEach{ ret += it.second }
-        return ret
+    /**
+     * @param securityIdentifier the identifier of the traded security.
+     * @param holdings the currently held securities with the given identifier.
+     * @param allocatedCapital the capital currently allocated to the trader.
+     * @param algorithmType the type of the algorithm used to create trades.
+     * */
+    constructor(securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithmType: TradingAlgorithm.Type) {
+        this.securityIdentifier = securityIdentifier
+        m_Holdings = holdings
+        m_CurrentCapital = allocatedCapital
+        m_Algorithm = TradingAlgorithm.create(algorithmType, securityIdentifier)
     }
 }

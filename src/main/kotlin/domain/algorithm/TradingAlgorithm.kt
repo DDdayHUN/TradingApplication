@@ -4,7 +4,6 @@ import data.SerializationManager
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
-import java.io.File
 import kotlin.time.Instant
 
 //===========================================================//
@@ -52,8 +51,8 @@ abstract class TradingAlgorithm {
          * @param securityIdentifier the identifier identifies a security.
          * @return the configured algorithm instance.
          */
-        fun create(type: Type, securityIdentifier: SecurityIdentifier): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            return initialiser(type, Init.BACKTEST, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE)
+        fun create(type: Type, securityIdentifier: SecurityIdentifier): TradingAlgorithm {
+            return initialiser(type, Init.BACKTEST, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
         }
 
         //===========================================================//
