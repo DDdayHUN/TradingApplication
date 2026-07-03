@@ -9,7 +9,7 @@ import java.time.Instant
  */
 //===========================================================//
 
-class TradingSignal private constructor(
+data class TradingSignal(
     val buy: TradingAlgorithm.Output.Buy?,
     val sell: TradingAlgorithm.Output.Sell?,
     val currentPrice: Double,
@@ -36,14 +36,4 @@ class TradingSignal private constructor(
                 + " | At: "
                 + createdAt)
     }
-
-    //===========================================================//
-    //===========================================================//
-    // Constructor(s)
-
-    constructor(output: TradingAlgorithm.Output, currentPrice: Double) : this(
-        buy = output.buy,
-        sell = output.sell,
-        currentPrice = currentPrice
-    )
 }

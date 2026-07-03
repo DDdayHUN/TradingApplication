@@ -1,4 +1,5 @@
-import application.tester.TradingAlgorithmBackTester
+package application.tester
+
 import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
@@ -30,7 +31,7 @@ class TradingAlgorithmEvaulater {
         m_TradingAlgorithmBackTester = TradingAlgorithmBackTester(
             m_Taxation,
             m_TradingAlgorithmType,
-            SecurityIdentifier("", "", ""),
+            SecurityIdentifier("","", ""),
             m_Capital
         )
     }
