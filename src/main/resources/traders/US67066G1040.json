@@ -1,0 +1,10 @@
+{
+  "securityIdentifier": {
+    "isin": "US67066G1040",
+    "currency": "USD",
+    "name": "NVIDIA"
+  },
+  "holdings": [],
+  "allocatedCapital": 2000.0,
+  "algorithmType": "TACPP46"
+}
