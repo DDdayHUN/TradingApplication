@@ -1,7 +1,5 @@
 package domain.assets.security
 
-import java.util.UUID
-
 //===========================================================//
 /**
  * Represents a financial instrument identifier consisting of an ISIN,
@@ -17,13 +15,10 @@ import java.util.UUID
 //===========================================================//
 
 data class SecurityIdentifier(
-    val uuid: UUID,
     val isin: String,
     val currency: String,
     val name: String
 ) {
-    constructor(isin: String, currency: String, name: String) : this(UUID.randomUUID(), isin, currency, name)
-
     init {
         require(isin.matches(Regex("[A-Z]{2}[A-Z0-9]{9}[0-9]"))) { "ISIN" }
         require(currency.matches(Regex("[A-Za-z]{3}"))) { "Currency" }
