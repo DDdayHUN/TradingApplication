@@ -33,7 +33,6 @@ class TradingAlgorithmEvaluater {
 
         val listOfSecurityIdentifiers = HistoricalMarketDataProvider.getAllSecurityIdentifiers()
 
-        // 1. Run all backtests in PARALLEL using async/awaitAll
         val deferredOutputs = listOfSecurityIdentifiers
             .filter { it.isin != "US84615Q1031" } // TODO: SpaceX initialization fix
             .map { securityIdentifier ->
