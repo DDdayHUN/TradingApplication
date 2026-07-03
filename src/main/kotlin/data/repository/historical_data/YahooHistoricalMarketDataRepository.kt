@@ -5,6 +5,10 @@ import com.google.gson.GsonBuilder
 import data.repository.util.RepositoryUtil
 import domain.assets.security.SecurityIdentifier
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.time.Instant
@@ -13,6 +17,8 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     //===========================================================//
     //===========================================================//
     // Private Field(s)
+
+    private val s_RootDir = File("src/main/resources/backtest/yahoo/")
 
     private val s_GSON: Gson = GsonBuilder()
         .setPrettyPrinting()
@@ -23,8 +29,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     // Public Method(es)
 
     override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto = withContext(Dispatchers.IO) {
-        val rootDir = File("src/main/resources/backtest/yahoo/")
-        val targetFile = rootDir.walkTopDown()
+        val targetFile = s_RootDir.walkTopDown()
             .filter { it.isFile }
             .find { file ->
                 val yahooMarketData = RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, file)
@@ -33,6 +38,25 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
 
         require(targetFile != null) { "There is no files with the given identifier" }
         return@withContext RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
+    }
+
+    //===========================================================//
+
+    override suspend fun getAll(): List<HistoricalMarketDataDto> = withContext(Dispatchers.IO) {
+        val files = s_RootDir
+            .walkTopDown()
+            .filter { it.isFile }
+            .toList()
+
+        coroutineScope {
+            files.map {
+                async {
+                    RepositoryUtil
+                        .loadFromFile<YahooMarketData>(s_GSON, it)
+                        .toSecuritySerializationData()
+                }
+            }.awaitAll()
+        }
     }
 
     //===========================================================//

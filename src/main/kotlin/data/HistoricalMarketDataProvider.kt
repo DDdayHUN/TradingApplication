@@ -36,6 +36,26 @@ object HistoricalMarketDataProvider {
     }
 
     //===========================================================//
+
+    /**
+     * Lists all files available.
+     *
+     * @return all files available.
+     */
+    suspend fun loadAllFromFiles(from: Instant, to: Instant): List<List<SecurityHistory>> {
+        val data = s_HistoricalMarketDataRepository.getAll()
+
+        val temp = data.map { dto ->
+            dto.history
+                .filter { it.date in from..to }
+                .sortedBy { it.date }
+                .map { SecurityHistory(it.closingPrice) }
+        }
+
+        return temp;
+    }
+
+    //===========================================================//
     //===========================================================//
     // Private Field(s)
 

@@ -34,6 +34,6 @@ suspend fun main() {
         to = endDate
     ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display(TradingAlgorithmBackTester.DebugMode.Holding))
 
-    val t = TraderTester()
-    t.runTest()
+    TraderTester()
+        .runTest()
 }

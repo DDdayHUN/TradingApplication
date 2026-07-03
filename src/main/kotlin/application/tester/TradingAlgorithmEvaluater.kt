@@ -1,8 +1,10 @@
 package application.tester
 
+import data.HistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
+import kotlin.time.Instant
 
 class TradingAlgorithmEvaluater {
     //===========================================================//
@@ -27,12 +29,13 @@ class TradingAlgorithmEvaluater {
     //===========================================================//
     // Private Method(es)
 
-    private fun initForOneRun() {
+    suspend private fun init() {
+        val allHistory = HistoricalMarketDataProvider.loadAllFromFiles(Instant.DISTANT_PAST, Instant.DISTANT_FUTURE)
         m_TradingAlgorithmBackTester = TradingAlgorithmBackTester(
-            m_TradingAlgorithmType,
-            SecurityIdentifier("","", ""),
-            m_Capital,
-            m_Taxation,
+            type = m_TradingAlgorithmType,
+            securityIdentifier = SecurityIdentifier("","", ""),
+            startingCapital = m_Capital,
+            taxation = m_Taxation,
         )
     }
 
