@@ -6,7 +6,11 @@ import domain.assets.security.SecurityIdentifier
 import java.io.File
 import kotlin.time.Instant
 
+<<<<<<<< HEAD:src/main/kotlin/data/YahooHistoricalMarketDataRepository.kt
 internal object YahooHistoricalMarketDataRepository : SerializationManager() {
+========
+internal object YahooSerializedMarketDataParser : SerializationManager() {
+>>>>>>>> 3d085313f4b75a377af4ecbcbd439ebfa7d39814:src/main/kotlin/data/YahooSerializedMarketDataParser.kt
     //===========================================================//
     //===========================================================//
     // Private Field(s)
