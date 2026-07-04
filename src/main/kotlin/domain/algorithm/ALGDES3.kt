@@ -5,12 +5,12 @@ import domain.assets.security.SecurityHolding
 import java.util.ArrayDeque
 import java.util.Deque
 
-class ALGDES3 : ITradingAlgorithm {
+internal class ALGDES3 : ITradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private val m_MWSize = 20
+    private val m_MWSize = 15
     private val m_MovingWindow: Deque<Double>
 
     //===========================================================//
@@ -34,7 +34,7 @@ class ALGDES3 : ITradingAlgorithm {
         // Buy
 
         if (currentPrice < lowerBand) {
-            val amount = (allocatedCapital * 1.div(risk) / currentPrice).toLong()
+            val amount = (allocatedCapital * Math.clamp(1.div(risk), 0.0, 1.0) / currentPrice).toLong()
 
             if (amount > 0) buy = TradingAlgorithm.Output.Buy(amount)
         }
@@ -49,9 +49,9 @@ class ALGDES3 : ITradingAlgorithm {
 
             when {
                 // Price is high relative to average
-                currentPrice > 4.0 * upperBand -> toSell.add(holding to holding.amount)
+                currentPrice > 2 * upperBand -> toSell.add(holding to holding.amount)
                 // Small stop-loss
-                gain < -risk -> toSell.add(holding to holding.amount)
+                gain < -0.05 -> toSell.add(holding to holding.amount)
             }
         }
 

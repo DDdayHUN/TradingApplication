@@ -179,6 +179,8 @@ class TradingAlgorithmBackTester {
 
         if (ret.buy != null) {
             m_CurrentCapital -= ret.buy.amount * currentPrice
+            check(m_CurrentCapital > 0.0)
+
             m_Holdings.add(SecurityHolding(currentPrice, ret.buy.amount))
             m_TotalBuysMade++
         }

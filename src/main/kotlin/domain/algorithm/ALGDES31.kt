@@ -5,16 +5,12 @@ import domain.assets.security.SecurityHolding
 import java.util.ArrayDeque
 import java.util.Deque
 
-/**
- * AI Generalt ez is soooo, we will seee.
- * Nem is rossz, kellett egy sok tweaking, de nem is rossz.
- */
-internal class ALGDES2 : ITradingAlgorithm {
+internal class ALGDES31 : ITradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private val m_MWSize = 20 // 30-as ertek sem rossz.
+    private val m_MWSize = 20
     private val m_MovingWindow: Deque<Double>
 
     //===========================================================//
@@ -29,19 +25,24 @@ internal class ALGDES2 : ITradingAlgorithm {
 
         val mean = utils.Math.average(history)
         val std = utils.Math.stdDev(history)
-        val risk = Math.clamp(std * 100.0, 0.05, 0.2)
+        val risk = Math.clamp(std * 100.0, 0.1, 0.3)
 
-        val lowerBand = mean - std * 2
-        val upperBand = mean + std * 2
+        val lowerBand = mean - std
+        val upperBand = mean + std
+
+        val deviation = (lowerBand - currentPrice) / mean
+        val volatilityFactor = 1.0 / (std + 1e-6)
+        val rawScore = deviation * volatilityFactor
+        val confidence = Math.clamp(rawScore, 0.01, 0.1)
+        val capitalToUse = allocatedCapital * confidence
+
 
         //-------------------------------------------------------
         // Buy
 
         if (currentPrice < lowerBand) {
-            val confidence = Math.clamp(1.div(risk), 0.05, 0.25)
-            val amount = (allocatedCapital * confidence / currentPrice).toLong()
-
-            if (amount > 0) buy = TradingAlgorithm.Output.Buy(amount)
+            val amount = (capitalToUse / currentPrice).toLong()
+            if (amount > 0L) buy = TradingAlgorithm.Output.Buy(amount)
         }
 
         //-------------------------------------------------------
@@ -54,9 +55,9 @@ internal class ALGDES2 : ITradingAlgorithm {
 
             when {
                 // Price is high relative to average
-                currentPrice > 2 * upperBand * (1.0 - risk) -> toSell.add(holding to holding.amount)
+                currentPrice > 4.0 * upperBand -> toSell.add(holding to holding.amount)
                 // Small stop-loss
-                gain < -0.1 -> toSell.add(holding to holding.amount)
+                gain < (-1).div(risk) -> toSell.add(holding to holding.amount)
             }
         }
 
