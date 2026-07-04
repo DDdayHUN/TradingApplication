@@ -152,6 +152,8 @@ internal class TACPP46: ITradingAlgorithm {
         check(m_EmaHistory.size == 21) { "EMA" }
     }
 
+    //===========================================================//
+
     init {
         m_EmaHistory = ArrayDeque()
 

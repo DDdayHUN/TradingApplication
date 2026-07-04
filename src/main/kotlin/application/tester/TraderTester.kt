@@ -26,10 +26,10 @@ class TraderTester {
 
     suspend fun runTest() {
         val trader = Trader(
-            m_SecurityIdentifier,
-            m_Holdings,
-            m_Capital,
-            TradingAlgorithm.create(m_AlgorithmType, m_SecurityIdentifier)
+            securityIdentifier = m_SecurityIdentifier,
+            holdings = m_Holdings,
+            allocatedCapital = m_Capital,
+            algorithm = TradingAlgorithm.create(m_AlgorithmType, m_SecurityIdentifier)
         )
         println("#================================================#")
         println("# Trader Testing")

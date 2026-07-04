@@ -97,6 +97,9 @@ class Trader {
 
     private fun buy(price: Double, amount: Long) {
         require(amount * price <= m_Capital) { "Insufficient Capital" }
+
+        changeCapital(-(amount * price))
+
         m_Holdings.add(
             SecurityHolding(
                 price,
@@ -111,7 +114,7 @@ class Trader {
         require(amount <= holding.amount) { "Amount" }
         require(m_Holdings.remove(holding)) { "Not contained in the holdings list" }
 
-        m_Capital += amount * price
+        changeCapital(price * amount)
 
         if (amount != holding.amount) {
             m_Holdings.add(
@@ -132,8 +135,8 @@ class Trader {
      * @param holdings the currently held securities with the given identifier.
      * @param allocatedCapital the capital currently allocated to the trader.
      * @param algorithm the algorithm instance with which we create trades.
-     * */
-    constructor(securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm, uuid: UUID = UUID.randomUUID()) {
+     */
+    constructor(uuid: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm) {
         this.uuid = uuid
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings
