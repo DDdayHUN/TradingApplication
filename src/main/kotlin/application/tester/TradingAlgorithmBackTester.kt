@@ -8,6 +8,7 @@ import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
 import utils.format
+import java.util.UUID
 import kotlin.time.Instant
 
 //===========================================================//
@@ -169,6 +170,7 @@ class TradingAlgorithmBackTester {
         val ret = m_TradingAlgorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
 
         m_Signlas.add(TradingOrder(
+            traderUuid = UUID.randomUUID(),
             securityIdentifier = m_SecurityIdentifier,
             buy = ret.buy,
             sell = ret.sell,

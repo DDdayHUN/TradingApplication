@@ -1,5 +1,5 @@
 {
-  "uuid": "b7a90137-f244-45fe-b209-25e0fb4ab336",
+  "uuid": "a7cd761f-6f45-469d-9e3a-0f1d43154d26",
   "securityIdentifier": {
     "isin": "US67066G1040",
     "currency": "USD",
@@ -8,7 +8,7 @@
   "capital": 2000.0,
   "holdings": [
     {
-      "uuid": "ecafea7f-c475-4db4-9222-e7634c02779f",
+      "uuid": "d82f3035-0c01-4b0b-88b4-df3c79949f24",
       "entryPrice": 100.0,
       "amount": 2
     }
@@ -41,7 +41,7 @@
     "m_TrailingHigh": [
       [
         {
-          "uuid": "ecafea7f-c475-4db4-9222-e7634c02779f",
+          "uuid": "d82f3035-0c01-4b0b-88b4-df3c79949f24",
           "entryPrice": 100.0,
           "amount": 2
         },
@@ -50,7 +50,7 @@
     ],
     "m_MarkedForSelling": [
       {
-        "uuid": "ecafea7f-c475-4db4-9222-e7634c02779f",
+        "uuid": "d82f3035-0c01-4b0b-88b4-df3c79949f24",
         "entryPrice": 100.0,
         "amount": 2
       }

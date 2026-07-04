@@ -12,12 +12,13 @@ import java.util.UUID
 //===========================================================//
 
 data class TradingOrder(
-    val uuid: UUID = UUID.randomUUID(),
+    val orderUuid: UUID = UUID.randomUUID(),
+    val traderUuid: UUID,
     val securityIdentifier: SecurityIdentifier,
     val buy: TradingAlgorithm.Output.Buy?,
     val sell: TradingAlgorithm.Output.Sell?,
     val atPrice: Double,
-    val createdAt: Instant = Instant.now()
+    val createdAt: Instant = Instant.now(),
 ) {
     //===========================================================//
     //===========================================================//

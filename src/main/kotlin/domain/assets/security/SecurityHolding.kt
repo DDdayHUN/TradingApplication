@@ -20,6 +20,6 @@ data class SecurityHolding(
 
     init {
         require(entryPrice >= 0.0) { "Price" }
-        require(amount != 0L) { "Amount" }
+        require(amount > 0L) { "Amount" }
     }
 }

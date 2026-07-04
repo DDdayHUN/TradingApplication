@@ -1,6 +1,5 @@
 package data.repository.historical_data
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import data.repository.util.RepositoryUtil
 import domain.assets.security.SecurityIdentifier

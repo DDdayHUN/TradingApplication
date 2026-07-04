@@ -48,7 +48,7 @@ class Trader {
         val output = algorithm.run(holdings, capital, currentPrice)
 
         val order = TradingOrder(
-            uuid = uuid,
+            traderUuid = uuid,
             securityIdentifier = securityIdentifier,
             buy = output.buy,
             sell = output.sell,

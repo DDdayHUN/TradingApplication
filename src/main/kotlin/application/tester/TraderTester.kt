@@ -6,8 +6,6 @@ import domain.assets.security.SecurityIdentifier
 import data.repository.trader.FakeTraderRepository
 import domain.trader.Trader
 import infrastructure.network.MarketDataProvider
-import service.trader.FakeTradingService
-import service.trader.TradingResult
 
 class TraderTester {
     //===========================================================//
@@ -15,7 +13,6 @@ class TraderTester {
     // Private Field(s)
 
     private val m_TraderRepository = FakeTraderRepository
-    private val m_TradingService = FakeTradingService()
     private val m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
 
     private val m_SecurityIdentifier: SecurityIdentifier
@@ -56,11 +53,8 @@ class TraderTester {
         val quote = m_MarketDataProvider.getQuote(trader.securityIdentifier)
 
         val order = trader.createOrder(quote)
-        val result = m_TradingService.putOrder(order, quote.currentPrice)
+        trader.finalizeOrder(order)
 
-        if(result is TradingResult.Success) {
-            trader.finalizeOrder(result.order)
-        }
         println("Trader: ${trader.securityIdentifier.name}")
         println("UUID: ${trader.uuid}")
         println("ISIN: ${trader.securityIdentifier.isin}")
