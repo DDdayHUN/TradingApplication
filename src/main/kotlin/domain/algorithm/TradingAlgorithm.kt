@@ -69,20 +69,23 @@ object TradingAlgorithm {
                 retHistory.subList(0, initNum).clear()
                 TACPP46(init)
             }
-            is Type.RANDOMIZER -> {
-                RANDOMIZER()
-            }
-            is Type.ALGDES1 -> {
-                val initNum = 40
-                val init = retHistory.subList(0, initNum).toList()
-                retHistory.subList(0, initNum).clear()
-                ALGDES1(init)
-            }
             is Type.ALGDES2 -> {
                 val initNum = 20
                 val init = retHistory.subList(0, initNum).toList()
                 retHistory.subList(0, initNum).clear()
                 ALGDES2(init)
+            }
+            is Type.ALGDES3 -> {
+                val initNum = 15
+                val init = retHistory.subList(0, initNum).toList()
+                retHistory.subList(0, initNum).clear()
+                ALGDES3(init)
+            }
+            is Type.ALGDES31 -> {
+                val initNum = 20
+                val init = retHistory.subList(0, initNum).toList()
+                retHistory.subList(0, initNum).clear()
+                ALGDES31(init)
             }
         }
         return Pair(retHistory, retTradingAlgorithm)
@@ -107,16 +110,17 @@ object TradingAlgorithm {
                 val init = history.takeLast(42)
                 TACPP46(init)
             }
-            is Type.RANDOMIZER -> {
-                RANDOMIZER()
-            }
-            is Type.ALGDES1 -> {
-                val init = history.takeLast(40)
-                ALGDES1(init)
-            }
             is Type.ALGDES2 -> {
                 val init = history.takeLast(20)
                 ALGDES2(init)
+            }
+            is Type.ALGDES3 -> {
+                val init = history.takeLast(15)
+                ALGDES3(init)
+            }
+            is Type.ALGDES31 -> {
+                val init = history.takeLast(20)
+                ALGDES31(init)
             }
         }
     }
@@ -127,18 +131,19 @@ object TradingAlgorithm {
 
     sealed interface Type {
         data object TACPP46 : Type
-        data object RANDOMIZER : Type
-        data object ALGDES1 : Type
         data object ALGDES2 : Type
+        data object ALGDES3 : Type
+        data object ALGDES31 : Type
 
         companion object {
             val entries: List<Type> = listOf(
                 TACPP46,
-                RANDOMIZER,
-                ALGDES1,
-                ALGDES2
+                ALGDES2,
+                ALGDES3,
+                ALGDES31
             )
         }
+
     }
 
     //===========================================================//

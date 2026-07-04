@@ -37,9 +37,9 @@ sealed interface ITradingAlgorithm {
 
             val typeTag = when (src) {
                 is TACPP46 -> "TACPP46"
-                is RANDOMIZER -> "RANDOMIZER"
-                is ALGDES1 -> "ALGDES1"
                 is ALGDES2 -> "ALGDES2"
+                is ALGDES3 -> "ALGDES3"
+                is ALGDES31 -> "ALGDES31"
             }
             jsonElement.addProperty("algorithmType", typeTag)
 
@@ -52,9 +52,9 @@ sealed interface ITradingAlgorithm {
 
             return when (typeTag) {
                 "TACPP46" -> context.deserialize(jsonObject, TACPP46::class.java)
-                "RANDOMIZER" -> context.deserialize(jsonObject, RANDOMIZER::class.java)
-                "ALGDES1" -> context.deserialize(jsonObject, ALGDES1::class.java)
                 "ALGDES2" -> context.deserialize(jsonObject, ALGDES2::class.java)
+                "ALGDES3" -> context.deserialize(jsonObject, ALGDES3::class.java)
+                "ALGDES31" -> context.deserialize(jsonObject, ALGDES31::class.java)
                 else -> throw JsonParseException("Unknown algorithm type tag: $typeTag")
             }
         }

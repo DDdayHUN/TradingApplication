@@ -5,16 +5,12 @@ import domain.assets.security.SecurityHolding
 import java.util.ArrayDeque
 import java.util.Deque
 
-/**
- * AI Generalt ez is soooo, we will seee.
- * Nem is rossz, kellett egy sok tweaking, de nem is rossz.
- */
-internal class ALGDES2 : ITradingAlgorithm {
+internal class ALGDES3 : ITradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private val m_MWSize = 20 // 30-as ertek sem rossz.
+    private val m_MWSize = 15
     private val m_MovingWindow: Deque<Double>
 
     //===========================================================//
@@ -29,17 +25,16 @@ internal class ALGDES2 : ITradingAlgorithm {
 
         val mean = utils.Math.average(history)
         val std = utils.Math.stdDev(history)
-        val risk = Math.clamp(std * 100.0, 0.05, 0.2)
+        val risk = Math.clamp(std * 100.0, 0.1, 0.3)
 
-        val lowerBand = mean - std * 2
-        val upperBand = mean + std * 2
+        val lowerBand = mean - std
+        val upperBand = mean + std
 
         //-------------------------------------------------------
         // Buy
 
         if (currentPrice < lowerBand) {
-            val confidence = Math.clamp(1.div(risk), 0.05, 0.25)
-            val amount = (allocatedCapital * confidence / currentPrice).toLong()
+            val amount = (allocatedCapital * Math.clamp(1.div(risk), 0.0, 1.0) / currentPrice).toLong()
 
             if (amount > 0) buy = TradingAlgorithm.Output.Buy(amount)
         }
@@ -54,9 +49,9 @@ internal class ALGDES2 : ITradingAlgorithm {
 
             when {
                 // Price is high relative to average
-                currentPrice > 2 * upperBand * (1.0 - risk) -> toSell.add(holding to holding.amount)
+                currentPrice > 2 * upperBand -> toSell.add(holding to holding.amount)
                 // Small stop-loss
-                gain < -0.1 -> toSell.add(holding to holding.amount)
+                gain < -0.05 -> toSell.add(holding to holding.amount)
             }
         }
 
