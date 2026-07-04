@@ -3,122 +3,104 @@ package application.tester
 import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
-import application.handlers.TradingOrderHandler
 import data.repository.trader.FakeTraderRepository
-import domain.signal.TradingDispatcher
 import domain.trader.Trader
-import domain.trader.TradingEngine
-import infrastructure.network.IMarketDataProvider
-import service.trader.fake.FakeTradingService
+import infrastructure.network.MarketDataProvider
 
 class TraderTester {
+    //===========================================================//
+    //===========================================================//
+    // Private Field(s)
+
+    private val m_TraderRepository = FakeTraderRepository
+    private val m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
+
+    private val m_SecurityIdentifier: SecurityIdentifier
+    private val m_Holdings: MutableList<SecurityHolding>
+    private val m_Capital: Double
+    private val m_AlgorithmType: TradingAlgorithm.Type
+
+    //===========================================================//
+    //===========================================================//
+    // Public Method(es)
+
     suspend fun runTest() {
-        val traderRepository = FakeTraderRepository()
-
-        val nvdaConfig = TraderTestConfig(
-            SecurityIdentifier(
-                "US67066G1040",
-                "USD",
-                "NVIDIA"
-            ),
-            2_000.0,
-            TradingAlgorithm.Type.TACPP46
+        val trader = Trader(
+            m_SecurityIdentifier,
+            m_Holdings,
+            m_Capital,
+            TradingAlgorithm.create(m_AlgorithmType, m_SecurityIdentifier)
         )
-
-
-        val traderEntries = listOf(
-            createTraderEntry(nvdaConfig, traderRepository)
-        )
-
-        val tradingService = FakeTradingService()
-
-        val signalDispatcher = TradingDispatcher()
-        signalDispatcher.register(TradingOrderHandler(tradingService))
-
-        val tradingEngine = TradingEngine(signalDispatcher)
-
-        val marketDataProvider = IMarketDataProvider.create(
-            IMarketDataProvider.Type.Finnhub
-        )
-
-        traderEntries.forEach { entry ->
-            val trader = entry.trader
-
-            val quote = marketDataProvider.getQuote(trader.securityIdentifier)
-
-            val capitalBeforeSignal = trader.getCurrentCapital()
-            val holdingsBeforeSignal = trader.getHoldings().toList()
-
-            val signal = tradingEngine.onQuote(trader, quote)
-
-            traderRepository.save(trader, entry.algorithmType)
-
-            println("#================================================#")
-            println("# Trader Testing")
-            println("#================================================#")
-            println("Trader: ${trader.securityIdentifier.name}")
-            println("ISIN: ${trader.securityIdentifier.isin}")
-            println("Currency: ${trader.securityIdentifier.currency}")
-            println("Current price: ${quote.currentPrice}")
-            println()
-
-            println("Capital before signal: $capitalBeforeSignal")
-            println("Capital after signal: ${trader.getCurrentCapital()}")
-            println()
-
-            println("Signal: ${signal.toReadableText()}")
-            println()
-
-            println("Holdings before signal:")
-            printHoldings(holdingsBeforeSignal)
-
-            println("Holdings after signal:")
-            printHoldings(trader.getHoldings())
-
-            println("#================================================#")
-            println()
-        }
+        println("#================================================#")
+        println("# Trader Testing")
+        println("#================================================#")
+        runInternal(trader)
+        println("# Trader after save and load")
+        println("")
+        m_TraderRepository.save(trader)
+        val trader2 = m_TraderRepository.getBySecurityIdentifier(m_SecurityIdentifier)
+        runInternal(trader2)
     }
 
-    private suspend fun createTraderEntry(config: TraderTestConfig, traderRepository: FakeTraderRepository): TraderTestConfig.TraderEntry {
-        val savedTrader = traderRepository.getBySecurityIdentifier(config.securityIdentifier)
+    //===========================================================//
+    //===========================================================//
+    // Private Method(es)
 
-        val trader = savedTrader ?: createTestTrader(config)
+    private suspend fun runInternal(trader: Trader) {
+        val capitalBeforeOrder = trader.capital
+        val holdingsBeforeOrder = trader.holdings
 
-        return TraderTestConfig.TraderEntry(
-            trader,
-            config.algorithmType
-        )
+        val quote = m_MarketDataProvider.getQuote(trader.securityIdentifier)
+
+        val order = trader.createOrder(quote)
+        trader.finalizeOrder(order)
+
+        println("Trader: ${trader.securityIdentifier.name}")
+        println("UUID: ${trader.uuid}")
+        println("ISIN: ${trader.securityIdentifier.isin}")
+        println("Currency: ${trader.securityIdentifier.currency}")
+        println("Current price: ${quote.currentPrice}")
+        println()
+
+        println("Capital before order: $capitalBeforeOrder")
+        println("Capital after order: ${trader.capital}")
+        println()
+
+        println("Order: ${order.toReadableText()}")
+        println()
+
+        print("Holdings before order:")
+        printHoldings(holdingsBeforeOrder)
+
+        print("Holdings after order:")
+        printHoldings(trader.holdings)
+
+        println("#================================================#")
     }
+
+    //===========================================================//
 
     private fun printHoldings(holdings: List<SecurityHolding>) {
         if (holdings.isEmpty()) {
-            println("None")
+            print("None")
+            println()
             return
         }
 
+        println()
         holdings.forEach { holding ->
             println(holding.toString())
         }
     }
 
-    private fun createTestTrader(config: TraderTestConfig): Trader {
-        return Trader(
-            config.securityIdentifier,
-            mutableListOf<SecurityHolding>(SecurityHolding(100.0,2L)),
-            config.startCapital,
-            config.algorithmType
-        )
-    }
+    //===========================================================//
+    //===========================================================//
+    // Constructor(s)
 
-    private data class TraderTestConfig(
-        val securityIdentifier: SecurityIdentifier,
-        val startCapital: Double,
-        val algorithmType: TradingAlgorithm.Type
-    ){
-        data class TraderEntry(
-            val trader: Trader,
-            val algorithmType: TradingAlgorithm.Type
-        )
+    constructor(securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, capital: Double, algorithmType: TradingAlgorithm.Type) {
+        m_SecurityIdentifier = securityIdentifier
+        m_Holdings = holdings
+        m_Capital = capital
+        m_AlgorithmType = algorithmType
     }
 }

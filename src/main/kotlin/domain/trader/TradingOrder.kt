@@ -1,7 +1,9 @@
-package domain.signal
+package domain.trader
 
 import domain.algorithm.TradingAlgorithm
+import domain.assets.security.SecurityIdentifier
 import java.time.Instant
+import java.util.UUID
 
 //===========================================================//
 /**
@@ -9,11 +11,14 @@ import java.time.Instant
  */
 //===========================================================//
 
-data class TradingSignal(
+data class TradingOrder(
+    val orderUuid: UUID = UUID.randomUUID(),
+    val traderUuid: UUID,
+    val securityIdentifier: SecurityIdentifier,
     val buy: TradingAlgorithm.Output.Buy?,
     val sell: TradingAlgorithm.Output.Sell?,
-    val currentPrice: Double,
-    val createdAt: Instant = Instant.now()
+    val atPrice: Double,
+    val createdAt: Instant = Instant.now(),
 ) {
     //===========================================================//
     //===========================================================//
@@ -31,7 +36,7 @@ data class TradingSignal(
         return ("" +
                 action
                 + " | Price: "
-                + String.format("%.2f", currentPrice)
+                + String.format("%.2f", atPrice)
                 + amount
                 + " | At: "
                 + createdAt)

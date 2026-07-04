@@ -2,12 +2,13 @@ package application.tester
 
 import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
-import domain.signal.TradingSignal
+import domain.trader.TradingOrder
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
 import utils.format
+import java.util.UUID
 import kotlin.time.Instant
 
 //===========================================================//
@@ -44,7 +45,7 @@ class TradingAlgorithmBackTester {
 
     private val m_Holdings: MutableList<SecurityHolding>
     private val m_CapitalHistory: MutableList<Double>
-    private val m_Signlas: MutableList<TradingSignal>
+    private val m_Signlas: MutableList<TradingOrder>
 
     private var m_CurrentCapital: Double
     private var m_TotalBuysMade: Long
@@ -168,10 +169,12 @@ class TradingAlgorithmBackTester {
     private fun runOneIteration(currentPrice: Double) {
         val ret = m_TradingAlgorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
 
-        m_Signlas.add(TradingSignal(
-            ret.buy,
-            ret.sell,
-            currentPrice
+        m_Signlas.add(TradingOrder(
+            traderUuid = UUID.randomUUID(),
+            securityIdentifier = m_SecurityIdentifier,
+            buy = ret.buy,
+            sell = ret.sell,
+            atPrice = currentPrice
         ))
 
         if (ret.buy != null) {
@@ -185,7 +188,7 @@ class TradingAlgorithmBackTester {
                 val bought = item.first
                 val amount = item.second
 
-                check(amount <= bought.amount) { "Sell Amount" }
+                require(amount <= bought.amount) { "Sell Amount" }
 
                 m_Holdings.remove(bought)
 

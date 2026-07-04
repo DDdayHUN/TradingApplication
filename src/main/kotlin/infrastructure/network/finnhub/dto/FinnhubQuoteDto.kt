@@ -1,6 +1,6 @@
 package infrastructure.network.finnhub.dto
 
-import domain.assets.Quote
+import infrastructure.network.Quote
 
 //===========================================================//
 /**

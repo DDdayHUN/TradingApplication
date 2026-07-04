@@ -1,4 +1,4 @@
-package domain.assets
+package infrastructure.network
 
 //===========================================================//
 /**

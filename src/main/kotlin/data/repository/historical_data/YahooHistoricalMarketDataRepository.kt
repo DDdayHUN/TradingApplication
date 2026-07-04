@@ -1,6 +1,5 @@
 package data.repository.historical_data
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import data.repository.util.RepositoryUtil
 import domain.assets.security.SecurityIdentifier
@@ -19,7 +18,8 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
 
     private val s_RootDir = File("src/main/resources/backtest/yahoo/")
 
-    private val s_GSON: Gson = GsonBuilder()
+    private val s_GSON = GsonBuilder()
+        .enableComplexMapKeySerialization()
         .setPrettyPrinting()
         .create()
 

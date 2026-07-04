@@ -1,9 +1,9 @@
 package application.tester
 
-import data.HistoricalMarketDataProvider
+import data.repository.HistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
-import domain.tax.ITaxation
+import domain.tax.Taxation
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -17,7 +17,7 @@ class TradingAlgorithmEvaluater {
     // Private Field(s)
 
     private val m_TradingAlgorithmType: TradingAlgorithm.Type
-    private val m_Taxation: ITaxation?
+    private val m_TaxationType: Taxation.Type?
     private val m_Capital: Double
 
     private val m_BackTestFilter: (SecurityIdentifier) -> Boolean
@@ -44,7 +44,7 @@ class TradingAlgorithmEvaluater {
         println("# Algorithm Evaluation")
         println("#===============================================================#")
         println("Starting Capital: ${m_Capital.format(2)}")
-        val tax = if(m_Taxation == null) "Without" else "With"
+        val tax = if(m_TaxationType == null) "Without" else "With"
         println("Taxes: $tax")
         println("(All subsequent values are averages)")
         println()
@@ -130,14 +130,15 @@ class TradingAlgorithmEvaluater {
     private suspend fun runBackTesters(listOfSecurityIdentifiers: List<SecurityIdentifier>, startDate: Instant = Instant.DISTANT_PAST, endDate: Instant = Instant.DISTANT_FUTURE): List<AverageOutput> = coroutineScope {
         val outputs: MutableList<TradingAlgorithmBackTester.Output> = ArrayList()
         val deferredOutputs = listOfSecurityIdentifiers
-            .filter(m_BackTestFilter) // TODO: SpaceX initialization fix
+            .filter(m_BackTestFilter)
             .map { securityIdentifier ->
                 async {
+                    val taxation = if(m_TaxationType == null) null else Taxation.create(m_TaxationType)
                     val out = TradingAlgorithmBackTester(
                         type = m_TradingAlgorithmType,
                         securityIdentifier = securityIdentifier,
                         startingCapital = m_Capital,
-                        taxation = m_Taxation,
+                        taxation = taxation,
                         from = startDate,
                         to = endDate
                     ).runBackTest()
@@ -154,14 +155,14 @@ class TradingAlgorithmEvaluater {
     //===========================================================//
     // Constructor(s)
 
-    constructor(tradingAlgorithmType: TradingAlgorithm.Type, taxation: ITaxation?, capital: Double) {
-        m_Capital = capital
-        m_Taxation = taxation
+    constructor(tradingAlgorithmType: TradingAlgorithm.Type, capital: Double, taxationType: Taxation.Type? = null) {
         m_TradingAlgorithmType = tradingAlgorithmType
+        m_Capital = capital
+        m_TaxationType = taxationType
 
-        when(tradingAlgorithmType) {
+        m_BackTestFilter = when(tradingAlgorithmType) {
             is TradingAlgorithm.Type.TACPP46 -> {
-                m_BackTestFilter = { it.isin != "US84615Q1031" }
+                { it.isin != "US84615Q1031" }
             }
         }
     }
