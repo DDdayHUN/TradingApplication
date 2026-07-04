@@ -11,7 +11,7 @@ import kotlin.time.Instant
 
 suspend fun main() {
     run {
-        val algType = TradingAlgorithm.Type.ALGDES2
+        val algType = TradingAlgorithm.Type.ALGDES3
         val identifier = SecurityIdentifier(
             "US67066G1040",
             "USD",

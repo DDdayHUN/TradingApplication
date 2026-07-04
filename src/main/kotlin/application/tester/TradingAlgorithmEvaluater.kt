@@ -160,7 +160,7 @@ class TradingAlgorithmEvaluater {
         m_Capital = capital
         m_TaxationType = taxationType
 
-        m_BackTestFilter = { it.isin != "US84615Q1031" } // TODO : Something is sus about the SpaceX stock, so we just ignore it.
+        m_BackTestFilter = { it.isin != "US84615Q1031" && it.isin != "US67066G1040" } // TODO : Something is sus about the SpaceX stock, so we just ignore it.
     }
 
     //===========================================================//
