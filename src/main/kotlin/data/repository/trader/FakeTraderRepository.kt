@@ -10,6 +10,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.UUID
 
 @Deprecated("Fake repo")
 object FakeTraderRepository : ITraderRepository {
@@ -36,7 +37,7 @@ object FakeTraderRepository : ITraderRepository {
             trader.holdings,
             trader.algorithm,
         )
-        val file = File(s_DirectoryPath, "${trader.securityIdentifier.isin}.json")
+        val file = File(s_DirectoryPath, "${trader.uuid}.json")
 
         RepositoryUtil.saveToFile<TraderDto>(s_Gson, file, dto)
     }
@@ -48,6 +49,20 @@ object FakeTraderRepository : ITraderRepository {
             val file = File(s_DirectoryPath, "${securityIdentifier.isin}.json")
 
             require(file.isFile) { "There is no file with the given identifier" }
+
+            val dto = RepositoryUtil.loadFromFile<TraderDto>(s_Gson, file)
+
+            return@withContext dto.toDomain()
+        }
+    //===========================================================//
+
+    override suspend fun getById(uuid: UUID): Trader? =
+        withContext(Dispatchers.IO){
+            val file = File(s_DirectoryPath, "${uuid}.json")
+            if(!file.exists()){
+                return@withContext null
+            }
+            require(file.isFile) { "There is no file with the given uuid" }
 
             val dto = RepositoryUtil.loadFromFile<TraderDto>(s_Gson, file)
 

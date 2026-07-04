@@ -130,6 +130,15 @@ object TradingAlgorithm {
         data object RANDOMIZER : Type
         data object ALGDES1 : Type
         data object ALGDES2 : Type
+
+        companion object {
+            val entries: List<Type> = listOf(
+                TACPP46,
+                RANDOMIZER,
+                ALGDES1,
+                ALGDES2
+            )
+        }
     }
 
     //===========================================================//

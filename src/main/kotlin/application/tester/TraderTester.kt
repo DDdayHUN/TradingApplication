@@ -6,6 +6,7 @@ import domain.assets.security.SecurityIdentifier
 import data.repository.trader.FakeTraderRepository
 import domain.trader.Trader
 import infrastructure.network.MarketDataProvider
+import java.util.UUID
 
 class TraderTester {
     //===========================================================//
@@ -24,8 +25,8 @@ class TraderTester {
     //===========================================================//
     // Public Method(es)
 
-    suspend fun runTest() {
-        val trader = Trader(
+    suspend fun runTest(uuid: UUID) {
+        val trader = m_TraderRepository.getById(uuid)?:Trader(
             securityIdentifier = m_SecurityIdentifier,
             holdings = m_Holdings,
             allocatedCapital = m_Capital,
@@ -38,8 +39,6 @@ class TraderTester {
         println("# Trader after save and load")
         println("")
         m_TraderRepository.save(trader)
-        val trader2 = m_TraderRepository.getBySecurityIdentifier(m_SecurityIdentifier)
-        runInternal(trader2)
     }
 
     //===========================================================//
