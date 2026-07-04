@@ -29,15 +29,6 @@ suspend fun main() {
             to = endDate
         ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
 
-        TradingAlgorithmBackTester(
-            type = algType,
-            securityIdentifier = identifier,
-            startingCapital = startCapital,
-            taxation = taxation,
-            from = startDate,
-            to = endDate
-        ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display(TradingAlgorithmBackTester.DebugMode.Holding))
-
         TradingAlgorithmEvaluater(algType, taxation, startCapital)
             .runEvaluation()
     }

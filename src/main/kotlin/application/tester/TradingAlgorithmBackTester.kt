@@ -7,6 +7,7 @@ import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
+import utils.format
 import kotlin.time.Instant
 
 //===========================================================//
@@ -49,6 +50,7 @@ class TradingAlgorithmBackTester {
     private var m_TotalBuysMade: Long
     private var m_TotalSellsMade: Long
     private var m_WinningTrades: Long
+    private var m_ForceClosedTrades: Long
 
     //===========================================================//
     //===========================================================//
@@ -87,31 +89,24 @@ class TradingAlgorithmBackTester {
         )
         val tax = if(m_Taxation == null) "Without" else "With"
         println("Taxes: $tax")
-        println("Starting Capital: " + String.format("%.2f", m_StartingCapital) + System.lineSeparator())
+        println("Starting Capital: ${m_StartingCapital.format(2)}")
+        println()
 
-        println("Total Capital: " + String.format("%.2f", last))
-        println("Delta Capital: " + String.format("%.2f", deltaCapital))
-        println("Percent Change: " + String.format("%.2f", deltaCapitalInPercent) + "%")
+        println("Total Capital: ${last.format(2)}")
+        println("Delta Capital: ${deltaCapital.format(2)}")
+        println("Percent Change: ${deltaCapitalInPercent.format(2)}%")
         println()
 
         println("Total Buys Made: $m_TotalBuysMade")
         println("Total Sells Made: $m_TotalSellsMade")
-        println("Winrate: " + String.format("%.2f", winRate) + "%")
-        println("Sharpe Ratio: " + String.format("%.2f", utils.Math.sharpeRatio(m_CapitalHistory)))
+        println("Force Closed Trades: $m_ForceClosedTrades")
+        println("Winrate: ${winRate.format(2)}%")
+        println("Sharpe Ratio: ${utils.Math.sharpeRatio(m_CapitalHistory).format(2)}")
         println()
+
         if(debug != DebugMode.None) {
             println("#===============================================================#")
             println("# DEBUG_INFO")
-
-            if(debug is DebugMode.Full || debug is DebugMode.Holding) {
-                print("  Holdings: ")
-                if (m_Holdings.isEmpty()) println("None")
-                else {
-                    println()
-                    for (item in m_Holdings) println("        $item")
-                }
-            }
-
             if(debug is DebugMode.Full || debug is DebugMode.TradeSignal) {
                 print("  Buy & Sale trades:")
                 if(m_Signlas.isEmpty()) println("None")
@@ -142,6 +137,7 @@ class TradingAlgorithmBackTester {
         m_TotalBuysMade = 0
         m_TotalSellsMade = 0
         m_WinningTrades = 0
+        m_ForceClosedTrades = 0
     }
 
     //===========================================================//
@@ -152,6 +148,8 @@ class TradingAlgorithmBackTester {
             runOneIteration(currentPrice)
         }
 
+        forceSell()
+
         val winRate = if (m_TotalSellsMade <= 0) Double.NaN else (m_WinningTrades.toDouble() / m_TotalSellsMade.toDouble())
 
         return Output(
@@ -159,6 +157,7 @@ class TradingAlgorithmBackTester {
             m_CapitalHistory.last(),
             m_TotalBuysMade,
             m_TotalSellsMade,
+            m_ForceClosedTrades,
             winRate,
             utils.Math.sharpeRatio(m_CapitalHistory)
         )
@@ -168,10 +167,6 @@ class TradingAlgorithmBackTester {
 
     private fun runOneIteration(currentPrice: Double) {
         val ret = m_TradingAlgorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
-
-        var projectedStockCount = getCurrentStockCount()
-        if (ret.buy != null) projectedStockCount += ret.buy.amount
-        if (ret.sell != null) projectedStockCount -= getSellAmount(ret.sell)
 
         m_Signlas.add(TradingSignal(
             ret.buy,
@@ -220,21 +215,19 @@ class TradingAlgorithmBackTester {
 
     //===========================================================//
 
-    private fun getSellAmount(sell: TradingAlgorithm.Output.Sell): Long {
-        var amount = 0L
-        for (batch in sell.batches) {
-            amount += batch.second
+    private fun forceSell() {
+        val lastPrice = m_HistoryWeRunAgainst.last().closingPrice
+        for(holding in m_Holdings) {
+            if (m_Taxation == null) m_CurrentCapital += holding.amount * lastPrice
+            else {
+                val revenue = holding.amount * lastPrice
+                val costBasis = holding.amount * holding.entryPrice
+                m_CurrentCapital += m_Taxation.calculateRevenueAfterTax(revenue, costBasis)
+            }
+            m_TotalSellsMade++
+            if (lastPrice > holding.entryPrice) m_WinningTrades++
+            m_ForceClosedTrades++
         }
-
-        return amount
-    }
-
-    //===========================================================//
-
-    private fun getCurrentStockCount(): Long {
-        var count = 0L
-        for (holding in m_Holdings) count += holding.amount
-        return count
     }
 
     //===========================================================//
@@ -271,6 +264,7 @@ class TradingAlgorithmBackTester {
         m_TotalBuysMade = 0
         m_TotalSellsMade = 0
         m_WinningTrades = 0
+        m_ForceClosedTrades = 0
     }
 
     //===========================================================//
@@ -287,7 +281,6 @@ class TradingAlgorithmBackTester {
     sealed interface DebugMode {
         data object None : DebugMode
         data object Full : DebugMode
-        data object Holding : DebugMode
         data object TradeSignal : DebugMode
     }
 
@@ -298,6 +291,7 @@ class TradingAlgorithmBackTester {
         val totalCapital: Double,
         val totalBuysMade: Long,
         val totalSellsMade: Long,
+        val forceClosedTrades: Long,
         val tradeWinrate: Double,
         val sharpieRatio: Double
     )

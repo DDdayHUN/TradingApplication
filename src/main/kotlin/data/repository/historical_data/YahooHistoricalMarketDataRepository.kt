@@ -35,7 +35,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
                 yahooMarketData.isin == securityIdentifier.isin
             }
 
-        require(targetFile != null) { "There is no files with the given identifier" }
+        require(targetFile != null) { "There is no file with the given identifier" }
         return@withContext RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
     }
 
