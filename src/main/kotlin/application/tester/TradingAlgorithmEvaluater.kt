@@ -160,11 +160,7 @@ class TradingAlgorithmEvaluater {
         m_Capital = capital
         m_TaxationType = taxationType
 
-        m_BackTestFilter = when(tradingAlgorithmType) {
-            is TradingAlgorithm.Type.TACPP46 -> {
-                { it.isin != "US84615Q1031" }
-            }
-        }
+        m_BackTestFilter = { it.isin != "US84615Q1031" } // TODO : Something is sus about the SpaceX stock, so we just ignore it.
     }
 
     //===========================================================//

@@ -15,11 +15,11 @@ data class TraderDto(
 ) {
     fun toDomain(): Trader {
         return Trader(
+            uuid,
             securityIdentifier,
             holdings.toMutableList(),
             capital,
-            algorithm,
-            uuid
+            algorithm
         )
     }
 }

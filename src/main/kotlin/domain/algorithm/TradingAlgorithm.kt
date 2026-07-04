@@ -68,6 +68,15 @@ object TradingAlgorithm {
                 retHistory.subList(0, 42).clear()
                 TACPP46(init)
             }
+            is Type.RANDOMIZER -> {
+                RANDOMIZER()
+            }
+            is Type.ALGDES1 -> {
+                val initNum = 40
+                val init = retHistory.subList(0, initNum).toList()
+                retHistory.subList(0, initNum).clear()
+                ALGDES1(init)
+            }
         }
         return Pair(retHistory, retTradingAlgorithm)
     }
@@ -91,6 +100,13 @@ object TradingAlgorithm {
                 val init = history.takeLast(42)
                 TACPP46(init)
             }
+            is Type.RANDOMIZER -> {
+                RANDOMIZER()
+            }
+            is Type.ALGDES1 -> {
+                val init = history.takeLast(40)
+                ALGDES1(init)
+            }
         }
     }
 
@@ -100,6 +116,8 @@ object TradingAlgorithm {
 
     sealed interface Type {
         data object TACPP46 : Type
+        data object RANDOMIZER : Type
+        data object ALGDES1 : Type
     }
 
     //===========================================================//
