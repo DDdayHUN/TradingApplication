@@ -6,7 +6,7 @@ import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityIdentifier
 import kotlin.time.Instant
 
-object HistoricalMarketData {
+object HistoricalMarketDataProvider {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -25,7 +25,7 @@ object HistoricalMarketData {
      * @param to the end date from which we don't want to include historical data (inclusive).
      * @return the list of historical data entries.
      */
-    fun loadFromFile(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<SecurityHistory> {
+    suspend fun loadFromFile(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<SecurityHistory> {
         val data = s_HistoricalMarketDataRepository.getBySecurityIdentifier(securityIdentifier)
 
         return data.history
@@ -33,6 +33,24 @@ object HistoricalMarketData {
             .sortedBy { it.date }
             .map { SecurityHistory(it.closingPrice) }
             .toMutableList()
+    }
+
+    //===========================================================//
+
+    /**
+     * Extracts all available security identifiers from historical market data.
+     *
+     * This function loads all persisted historical market data from the repository and maps each entry
+     * to a [SecurityIdentifier] using its metadata.
+     *
+     * @return a list of security identifiers derived from all stored market data entries.
+     */
+    @Deprecated("We need to redo this, because this is too expensive")
+    suspend fun getAllSecurityIdentifiers(): List<SecurityIdentifier> {
+        val data = s_HistoricalMarketDataRepository.getAll()
+        return data.map {
+            SecurityIdentifier(it.meta.isin, it.meta.currency, it.meta.tickerSymbol)
+        }
     }
 
     //===========================================================//

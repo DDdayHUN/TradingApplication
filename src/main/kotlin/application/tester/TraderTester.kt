@@ -54,6 +54,8 @@ class TraderTester {
             traderRepository.save(trader, entry.algorithmType)
 
             println("#================================================#")
+            println("# Trader Testing")
+            println("#================================================#")
             println("Trader: ${trader.securityIdentifier.name}")
             println("ISIN: ${trader.securityIdentifier.isin}")
             println("Currency: ${trader.securityIdentifier.currency}")

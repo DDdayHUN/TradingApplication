@@ -1,9 +1,11 @@
 package domain.algorithm
 
-import data.HistoricalMarketData
+import data.HistoricalMarketDataProvider
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import kotlin.time.Instant
 
 //===========================================================//
@@ -13,87 +15,94 @@ import kotlin.time.Instant
  */
 //===========================================================//
 
-abstract class TradingAlgorithm {
+object TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Public Method(es)
+    /**
+     * Creates and initializes an algorithm instance configured for backtesting.
+     *
+     * @param type the type of algorithm to initialize.
+     * @param securityIdentifier the identifier identifies a security.
+     * @param from the start date (inclusive).
+     * @param to the end date (inclusive).
+     * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
+     */
+    fun create(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
+        return initForBackTest(type, securityIdentifier, from, to)
+    }
+
+    //===========================================================//
+    /**
+     * Creates and initializes an algorithm instance configured for trading.
+     *
+     * @param type the type of algorithm to initialize.
+     * @param securityIdentifier the identifier identifies a security.
+     * @return the configured algorithm instance.
+     */
+    fun create(type: Type, securityIdentifier: SecurityIdentifier): ITradingAlgorithm {
+        return initForTrading(type, securityIdentifier)
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Private Method(es)
 
     /**
-     * Executes the algorithm based on current holdings and market conditions.
+     * Core initialization method used by backtesting setups.
      *
-     * @param holdings the list of currently owned assets.
-     * @param allocatedCapital the amount of capital allocated for trading.
-     * @param currentPrice the current market price of the asset.
-     * @return contains the decision/results.
+     * @param type the type of algorithm to initialize.
+     * @param securityIdentifier the identifier identifies a security.
+     * @param from the start date (inclusive).
+     * @param to the end date (inclusive).
+     * @return a pair that consists of history data that has not been used up in the initialization process and of an initialized algorithm.
      */
-    abstract fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output
-
-    companion object {
-        //===========================================================//
-        /**
-         * Creates and initializes an algorithm instance configured for backtesting.
-         *
-         * @param type the type of algorithm to initialize.
-         * @param securityIdentifier the identifier identifies a security.
-         * @param from the start date (inclusive).
-         * @param to the end date (inclusive).
-         * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
-         */
-        fun create(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            return initialiser(type, Init.BACKTEST, securityIdentifier, from, to)
+    private fun initForBackTest(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
+        val retHistory = runBlocking {
+            val a1 = async { HistoricalMarketDataProvider.loadFromFile(securityIdentifier, from, to).toMutableList() }
+            a1.await()
         }
-
-        //===========================================================//
-        /**
-         * Creates and initializes an algorithm instance configured for trading.
-         *
-         * @param type the type of algorithm to initialize.
-         * @param securityIdentifier the identifier identifies a security.
-         * @return the configured algorithm instance.
-         */
-        fun create(type: Type, securityIdentifier: SecurityIdentifier): TradingAlgorithm {
-            return initialiser(type, Init.TRADING, securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE).second
-        }
-
-        //===========================================================//
-        //===========================================================//
-        // Private Method(es)
-
-        /**
-         * Core initialization method used by both trading and backtesting setups.
-         *
-         * @param type the type of algorithm to initialize.
-         * @param init the initialization mode of the algorithm.
-         * @param securityIdentifier the identifier identifies a security.
-         * @param from the start date (inclusive).
-         * @param to the end date (inclusive).
-         * @return a pair that consists of history data that has not been used up in the initialization process and of an initialized algorithm.
-         */
-        private fun initialiser(type: Type, init: Init, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            val retHistory = HistoricalMarketData.loadFromFile(securityIdentifier, from, to).toMutableList()
-            val retTradingAlgorithm: TradingAlgorithm = when (type) {
-                is Type.TACPP46 -> TACPP46(init, retHistory)
+        val retTradingAlgorithm = when (type) {
+            is Type.TACPP46 -> {
+                val init = retHistory.subList(0, 42).toList()
+                retHistory.subList(0, 42).clear()
+                TACPP46(init)
             }
-            return Pair(retHistory, retTradingAlgorithm)
         }
+        return Pair(retHistory, retTradingAlgorithm)
     }
 
     //===========================================================//
-    //===========================================================//
-    // Enum(s)
 
-    sealed interface Type {
-        data object TACPP46 : Type
-    }
-
-    sealed interface Init {
-        data object BACKTEST: Init
-        data object TRADING: Init
+    /**
+     * Core initialization method used by trading setups.
+     *
+     * @param type the type of algorithm to initialize.
+     * @param securityIdentifier the identifier identifies a security.
+     * @return an initialized algorithm for trading.
+     */
+    private fun initForTrading(type: Type, securityIdentifier: SecurityIdentifier): ITradingAlgorithm {
+        val history = runBlocking {
+            val a1 = async { HistoricalMarketDataProvider.loadFromFile(securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE) }
+            a1.await()
+        }
+        return when (type) {
+            is Type.TACPP46 -> {
+                val init = history.takeLast(42)
+                TACPP46(init)
+            }
+        }
     }
 
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
+
+    sealed interface Type {
+        data object TACPP46 : Type
+    }
+
+    //===========================================================//
 
     data class Output(
         val buy: Buy?,
@@ -102,16 +111,4 @@ abstract class TradingAlgorithm {
         data class Buy(val amount: Long)
         data class Sell(val batches: List<Pair<SecurityHolding, Long>>)
     }
-
-    //===========================================================//
-    //===========================================================//
-    // Constructor(s)
-
-    /**
-     * Package constructor to enforce initialization mode handling
-     * in subclasses.
-     *
-     * @param init the initialization mode of the algorithm.
-     */
-    internal constructor(init: Init)
 }

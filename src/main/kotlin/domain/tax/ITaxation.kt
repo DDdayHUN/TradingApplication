@@ -11,16 +11,7 @@ package domain.tax
  */
 //===========================================================//
 
-interface ITaxation {
-    //===========================================================//
-    //===========================================================//
-    // Public Field(s)
-
-    // TODO : Maybe move this out to a Taxation object.
-    companion object {
-        val HUNGARY: ITaxation = HungaryTaxation()
-    }
-
+sealed interface ITaxation {
     //===========================================================//
     //===========================================================//
     // Public Method(es)

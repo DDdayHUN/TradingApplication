@@ -142,7 +142,7 @@ object Math {
      * @param riskFreeRate The annual risk-free rate (e.g., 0.02 for 2%).
      * @return The annualized Sharpe Ratio or NaN if it can't be computed.
      */
-    fun sharpeRatio(capitalHistory: List<Double>, riskFreeRate: Double): Double {
+    fun sharpeRatio(capitalHistory: List<Double>, riskFreeRate: Double = 0.03): Double {
         require(capitalHistory.size >= 2) { "Size" }
 
         // Compute returns

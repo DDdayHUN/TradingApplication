@@ -4,6 +4,11 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import data.repository.util.RepositoryUtil
 import domain.assets.security.SecurityIdentifier
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.time.Instant
 
@@ -11,6 +16,8 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     //===========================================================//
     //===========================================================//
     // Private Field(s)
+
+    private val s_RootDir = File("src/main/resources/backtest/yahoo/")
 
     private val s_GSON: Gson = GsonBuilder()
         .setPrettyPrinting()
@@ -20,9 +27,8 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     //===========================================================//
     // Public Method(es)
 
-    override fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketData {
-        val rootDir = File("src/main/resources/backtest/yahoo/")
-        val targetFile = rootDir.walkTopDown()
+    override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto? = withContext(Dispatchers.IO) {
+        val targetFile = s_RootDir.walkTopDown()
             .filter { it.isFile }
             .find { file ->
                 val yahooMarketData = RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, file)
@@ -30,7 +36,26 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
             }
 
         require(targetFile != null) { "There is no files with the given identifier" }
-        return RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
+        return@withContext RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
+    }
+
+    //===========================================================//
+
+    override suspend fun getAll(): List<HistoricalMarketDataDto> = withContext(Dispatchers.IO) {
+        val files = s_RootDir
+            .walkTopDown()
+            .filter { it.isFile }
+            .toList()
+
+        coroutineScope {
+            files.map {
+                async {
+                    RepositoryUtil
+                        .loadFromFile<YahooMarketData>(s_GSON, it)
+                        .toSecuritySerializationData()
+                }
+            }.awaitAll()
+        }
     }
 
     //===========================================================//
@@ -105,7 +130,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
             }
         }
 
-        fun toSecuritySerializationData(): HistoricalMarketData {
+        fun toSecuritySerializationData(): HistoricalMarketDataDto {
             val timestamps = result.timestamp
             val closes = result.indicators.adjclose.first().adjclose
 
@@ -113,18 +138,19 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
                 if(price == null){
                     null
                 }else {
-                    HistoricalMarketData.MarketHistory(
+                    HistoricalMarketDataDto.MarketHistory(
                         date = Instant.fromEpochSeconds(time),
                         closingPrice = price
                     )
                 }
             }
 
-            return HistoricalMarketData(
-                identifier = HistoricalMarketData.Identifier(
+            return HistoricalMarketDataDto(
+                meta = HistoricalMarketDataDto.Meta(
                     isin,
                     result.meta.fullExchangeName,
-                    result.meta.symbol
+                    result.meta.symbol,
+                    result.meta.currency,
                 ),
                 history = history
             )
