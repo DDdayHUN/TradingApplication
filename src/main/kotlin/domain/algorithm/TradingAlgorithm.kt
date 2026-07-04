@@ -152,7 +152,7 @@ object TradingAlgorithm {
         val buy: Buy?,
         val sell: Sell?
     ) {
-        data class Buy(val amount: Long)
-        data class Sell(val batches: List<Pair<SecurityHolding, Long>>)
+        data class Buy(val amount: Int)
+        data class Sell(val batches: List<Pair<SecurityHolding, Int>>)
     }
 }

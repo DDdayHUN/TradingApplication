@@ -50,9 +50,9 @@ internal class TACPP46: ITradingAlgorithm {
                     0.0,
                     0.3
                 ) // changing confidence has a massive effect on returns
-                val amount = (allocatedCapital * confidence / currentPrice).toLong()
+                val amount = (allocatedCapital * confidence / currentPrice).toInt()
 
-                if (amount != 0L) buy = TradingAlgorithm.Output.Buy(amount)
+                if (amount != 0) buy = TradingAlgorithm.Output.Buy(amount)
             } else {
                 m_LastInputArr.add(currentPrice)
                 if (m_LastInputArr.size > 5) m_LastInputArr.poll()
@@ -64,7 +64,7 @@ internal class TACPP46: ITradingAlgorithm {
         val risk: Double = Math.clamp(std * 100.0, 0.05, 0.2) // to put it into percentages
 
         // Sell
-        val toBeSold: MutableList<Pair<SecurityHolding, Long>> = ArrayList()
+        val toBeSold: MutableList<Pair<SecurityHolding, Int>> = ArrayList()
 
         // Trailing-profit logic
         for (item in holdings) {

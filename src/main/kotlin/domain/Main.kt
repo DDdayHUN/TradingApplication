@@ -13,9 +13,11 @@ import kotlin.time.Instant
 
 suspend fun main() {
     val s_RUN_TRADER_TEST = false
+    val s_RUN_ONE_BACKTEST = true
+    val s_AlgToRun = TradingAlgorithm.Type.ALGDES2
 
-    run {
-        TradingAlgorithm.Type.entries.forEach { type ->
+    if(s_RUN_ONE_BACKTEST){
+        run{
             val identifier = SecurityIdentifier(
                 "US67066G1040",
                 "USD",
@@ -26,19 +28,43 @@ suspend fun main() {
             val endDate = Instant.parse("2025-01-01T00:00:00Z")
 
             TradingAlgorithmBackTester(
-                type = type,
+                type = s_AlgToRun,
                 securityIdentifier = identifier,
                 startingCapital = startCapital,
                 taxation = Taxation.create(Taxation.Type.Hungary),
                 from = startDate,
                 to = endDate
             ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
-            println("Algorithm: $type")
-            TradingAlgorithmEvaluater(type, startCapital, Taxation.Type.Hungary)
+            println("Algorithm: $s_AlgToRun")
+            TradingAlgorithmEvaluater(s_AlgToRun, startCapital, Taxation.Type.Hungary)
                 .runEvaluation()
         }
-    }
+    }else{
+        run {
+            TradingAlgorithm.Type.entries.forEach { type ->
+                val identifier = SecurityIdentifier(
+                    "US67066G1040",
+                    "USD",
+                    "NVIDIA"
+                )
+                val startCapital = 10000.0
+                val startDate = Instant.parse("2020-01-01T00:00:00Z")
+                val endDate = Instant.parse("2025-01-01T00:00:00Z")
 
+                TradingAlgorithmBackTester(
+                    type = type,
+                    securityIdentifier = identifier,
+                    startingCapital = startCapital,
+                    taxation = Taxation.create(Taxation.Type.Hungary),
+                    from = startDate,
+                    to = endDate
+                ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
+                println("Algorithm: $type")
+                TradingAlgorithmEvaluater(type, startCapital, Taxation.Type.Hungary)
+                    .runEvaluation()
+            }
+        }
+    }
     if(s_RUN_TRADER_TEST){
         run {
             val repo = FakeTraderRepository

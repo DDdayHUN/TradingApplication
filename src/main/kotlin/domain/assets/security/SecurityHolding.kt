@@ -14,12 +14,12 @@ import java.util.UUID
 data class SecurityHolding(
     val uuid: UUID,
     val entryPrice: Double,
-    val amount: Long
+    val amount: Int
 ) {
-    constructor(entryPrice: Double, amount: Long) : this(UUID.randomUUID(), entryPrice, amount)
+    constructor(entryPrice: Double, amount: Int) : this(UUID.randomUUID(), entryPrice, amount)
 
     init {
         require(entryPrice >= 0.0) { "Price" }
-        require(amount > 0L) { "Amount" }
+        require(amount >= 0) { "Amount must be positive" }
     }
 }
