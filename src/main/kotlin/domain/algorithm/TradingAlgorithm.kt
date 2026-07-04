@@ -84,6 +84,12 @@ object TradingAlgorithm {
                 retHistory.subList(0, initNum).clear()
                 ALGDES2(init)
             }
+            is Type.ALGDES3 -> {
+                val initNum = 20
+                val init = retHistory.subList(0, initNum).toList()
+                retHistory.subList(0, initNum).clear()
+                ALGDES3(init)
+            }
         }
         return Pair(retHistory, retTradingAlgorithm)
     }
@@ -118,6 +124,10 @@ object TradingAlgorithm {
                 val init = history.takeLast(20)
                 ALGDES2(init)
             }
+            is Type.ALGDES3 -> {
+                val init = history.takeLast(20)
+                ALGDES3(init)
+            }
         }
     }
 
@@ -130,6 +140,7 @@ object TradingAlgorithm {
         data object RANDOMIZER : Type
         data object ALGDES1 : Type
         data object ALGDES2 : Type
+        data object ALGDES3 : Type
     }
 
     //===========================================================//
