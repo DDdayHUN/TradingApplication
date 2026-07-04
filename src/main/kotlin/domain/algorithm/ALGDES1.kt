@@ -6,6 +6,10 @@ import java.util.ArrayDeque
 import java.util.Deque
 
 internal class ALGDES1 : ITradingAlgorithm {
+    //===========================================================//
+    //===========================================================//
+    // Private Field(s)
+
     private val m_MWSize1 = 15
     private val m_MWSize2 = 25
 
@@ -14,6 +18,10 @@ internal class ALGDES1 : ITradingAlgorithm {
 
     private val m_TrailingHigh: MutableMap<SecurityHolding, Double>
     private val m_MarkedForSelling: MutableList<SecurityHolding>
+
+    //===========================================================//
+    //===========================================================//
+    // Public Method(es)
 
     override fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): TradingAlgorithm.Output {
         var buy: TradingAlgorithm.Output.Buy? = null

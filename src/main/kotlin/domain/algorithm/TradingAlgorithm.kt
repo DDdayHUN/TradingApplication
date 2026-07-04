@@ -64,8 +64,9 @@ object TradingAlgorithm {
         }
         val retTradingAlgorithm = when (type) {
             is Type.TACPP46 -> {
-                val init = retHistory.subList(0, 42).toList()
-                retHistory.subList(0, 42).clear()
+                val initNum = 42
+                val init = retHistory.subList(0, initNum).toList()
+                retHistory.subList(0, initNum).clear()
                 TACPP46(init)
             }
             is Type.RANDOMIZER -> {
@@ -76,6 +77,12 @@ object TradingAlgorithm {
                 val init = retHistory.subList(0, initNum).toList()
                 retHistory.subList(0, initNum).clear()
                 ALGDES1(init)
+            }
+            is Type.ALGDES2 -> {
+                val initNum = 20
+                val init = retHistory.subList(0, initNum).toList()
+                retHistory.subList(0, initNum).clear()
+                ALGDES2(init)
             }
         }
         return Pair(retHistory, retTradingAlgorithm)
@@ -107,6 +114,10 @@ object TradingAlgorithm {
                 val init = history.takeLast(40)
                 ALGDES1(init)
             }
+            is Type.ALGDES2 -> {
+                val init = history.takeLast(20)
+                ALGDES2(init)
+            }
         }
     }
 
@@ -118,6 +129,7 @@ object TradingAlgorithm {
         data object TACPP46 : Type
         data object RANDOMIZER : Type
         data object ALGDES1 : Type
+        data object ALGDES2 : Type
     }
 
     //===========================================================//
