@@ -160,9 +160,9 @@ class TradingAlgorithmEvaluater {
         m_Capital = capital
         m_TaxationType = taxationType
 
-        when(tradingAlgorithmType) {
+        m_BackTestFilter = when(tradingAlgorithmType) {
             is TradingAlgorithm.Type.TACPP46 -> {
-                m_BackTestFilter = { it.isin != "US84615Q1031" }
+                { it.isin != "US84615Q1031" }
             }
         }
     }
