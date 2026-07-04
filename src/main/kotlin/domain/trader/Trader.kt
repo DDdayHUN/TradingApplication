@@ -1,11 +1,13 @@
 package domain.trader
 
 import domain.algorithm.ITradingAlgorithm
-import domain.algorithm.TradingAlgorithm
-import domain.assets.Quote
+import infrastructure.network.Quote
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
-import domain.signal.TradingSignal
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import java.util.UUID
 
 //===========================================================//
 /**
@@ -23,9 +25,12 @@ class Trader {
     //===========================================================//
     // Public Field(s)
 
+    val uuid: UUID
     val securityIdentifier: SecurityIdentifier
+
     val capital: Double get() = m_Capital
-    val holdings: List<SecurityHolding> get() = m_Holdings
+    val holdings: List<SecurityHolding> get() = m_Holdings.toList()
+    var algorithm: ITradingAlgorithm
 
     //===========================================================//
     //===========================================================//
@@ -33,57 +38,44 @@ class Trader {
 
     private var m_Capital: Double
     private val m_Holdings: MutableList<SecurityHolding>
-    private var m_Algorithm: ITradingAlgorithm
 
     //===========================================================//
     //===========================================================//
     // Public Method(es)
 
-    fun createSignal(quote: Quote): TradingSignal {
+    fun createOrder(quote: Quote): TradingOrder {
         val currentPrice = quote.currentPrice
-        val output = m_Algorithm.run(holdings, capital, currentPrice)
+        val output = algorithm.run(holdings, capital, currentPrice)
 
-        return TradingSignal(
-            output.buy,
-            output.sell,
-            currentPrice
+        val order = TradingOrder(
+            uuid = uuid,
+            securityIdentifier = securityIdentifier,
+            buy = output.buy,
+            sell = output.sell,
+            atPrice = currentPrice,
         )
+
+        return order
     }
 
     //===========================================================//
     /**
-     * Applies a successfully executed buy order.
+     * Applies a successfully executed order.
      *
      * This method should only be called after the trading service has confirmed
      * that the buy order was executed successfully.
      *
-     * @param buy the buy order that has been accepted and finalized.
+     * @param order the order that has been accepted and should be finalized.
      */
-    fun finalizeOrder(buy: TradingAlgorithm.Output.Buy, buyPrice: Double) {
-        buy(buyPrice, buy.amount)
-    }
-
-    //===========================================================//
-    /**
-     * Applies a successfully executed sell order.
-     *
-     * This method should only be called after the trading service has confirmed
-     * that the sell order was executed successfully.
-     *
-     * @param sell the sell order that has been accepted and finalized.
-     */
-    fun finalizeOrder(sell: TradingAlgorithm.Output.Sell, sellPrice: Double) {
-        sell.batches.forEach{ batch ->
-            val holding = batch.first
-            val amountToSell = batch.second
-            sell(holding, sellPrice, amountToSell)
+    fun finalizeOrder(order: TradingOrder) {
+        if(order.buy != null) buy(order.atPrice, order.buy.amount)
+        if(order.sell != null) {
+            order.sell.batches.forEach{ batch ->
+                val holding = batch.first
+                val amountToSell = batch.second
+                sell(holding, order.atPrice, amountToSell)
+            }
         }
-    }
-
-    //===========================================================//
-
-    fun setAlgorithm(algorithm: TradingAlgorithm.Type) {
-        m_Algorithm = TradingAlgorithm.create(algorithm, securityIdentifier)
     }
 
     //===========================================================//
@@ -139,12 +131,13 @@ class Trader {
      * @param securityIdentifier the identifier of the traded security.
      * @param holdings the currently held securities with the given identifier.
      * @param allocatedCapital the capital currently allocated to the trader.
-     * @param algorithmType the type of the algorithm used to create trades.
+     * @param algorithm the algorithm instance with which we create trades.
      * */
-    constructor(securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithmType: TradingAlgorithm.Type) {
+    constructor(securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm, uuid: UUID = UUID.randomUUID()) {
+        this.uuid = uuid
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings
         m_Capital = allocatedCapital
-        m_Algorithm = TradingAlgorithm.create(algorithmType, securityIdentifier)
+        this.algorithm = algorithm
     }
 }

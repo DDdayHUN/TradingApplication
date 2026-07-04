@@ -1,9 +1,8 @@
 package application.tester
 
-import data.HistoricalMarketDataProvider
+import data.repository.HistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
-import domain.tax.ITaxation
 import domain.tax.Taxation
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

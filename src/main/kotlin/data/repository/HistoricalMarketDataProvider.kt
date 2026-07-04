@@ -1,4 +1,4 @@
-package data
+package data.repository
 
 import data.repository.historical_data.IHistoricalMarketDataRepository
 import data.repository.historical_data.YahooHistoricalMarketDataRepository

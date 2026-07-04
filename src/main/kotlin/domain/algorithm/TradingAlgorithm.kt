@@ -1,6 +1,6 @@
 package domain.algorithm
 
-import data.HistoricalMarketDataProvider
+import data.repository.HistoricalMarketDataProvider
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier

@@ -1,6 +1,6 @@
 package infrastructure.network.finnhub
 
-import domain.assets.Quote
+import infrastructure.network.Quote
 import domain.assets.security.SecurityIdentifier
 import infrastructure.network.IMarketDataProvider
 

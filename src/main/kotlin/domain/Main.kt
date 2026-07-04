@@ -4,6 +4,7 @@ import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluater
 import domain.algorithm.TradingAlgorithm
+import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.tax.Taxation
 import kotlin.time.Instant
@@ -29,12 +30,23 @@ suspend fun main() {
             to = endDate
         ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
 
-        TradingAlgorithmEvaluater(algType, Taxation.create(Taxation.Type.Hungary), startCapital)
+        TradingAlgorithmEvaluater(algType, startCapital, Taxation.Type.Hungary)
             .runEvaluation()
     }
 
     run {
-        TraderTester()
+        TraderTester(
+            SecurityIdentifier(
+                "US67066G1040",
+                "USD",
+                "NVIDIA"
+            ),
+            mutableListOf(
+                SecurityHolding(100.0,2L)
+            ),
+            2_000.0,
+            TradingAlgorithm.Type.TACPP46
+        )
             .runTest()
     }
 }
