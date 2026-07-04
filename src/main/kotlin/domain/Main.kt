@@ -12,45 +12,48 @@ import java.util.UUID
 import kotlin.time.Instant
 
 suspend fun main() {
+    //===========================================================//
+    //===========================================================//
+    // Settings
+
     val s_RUN_TRADER_TEST = false
     val s_RUN_ONE_BACKTEST = true
-    val s_AlgToRun = TradingAlgorithm.Type.ALGDES2
+    val s_ALGORITHM = TradingAlgorithm.Type.ALGDES2
+
+    //===========================================================//
+    //===========================================================//
+    // Config
+
+    val identifier = SecurityIdentifier(
+        "US67066G1040",
+        "USD",
+        "NVIDIA"
+    )
+
+    val startCapital = 10000.0
+    val startDate = Instant.parse("2020-01-01T00:00:00Z")
+    val endDate = Instant.parse("2025-01-01T00:00:00Z")
+
+    //===========================================================//
+    //===========================================================//
 
     if(s_RUN_ONE_BACKTEST){
         run{
-            val identifier = SecurityIdentifier(
-                "US67066G1040",
-                "USD",
-                "NVIDIA"
-            )
-            val startCapital = 10000.0
-            val startDate = Instant.parse("2020-01-01T00:00:00Z")
-            val endDate = Instant.parse("2025-01-01T00:00:00Z")
-
             TradingAlgorithmBackTester(
-                type = s_AlgToRun,
+                type = s_ALGORITHM,
                 securityIdentifier = identifier,
                 startingCapital = startCapital,
                 taxation = Taxation.create(Taxation.Type.Hungary),
                 from = startDate,
                 to = endDate
             ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
-            println("Algorithm: $s_AlgToRun")
-            TradingAlgorithmEvaluater(s_AlgToRun, startCapital, Taxation.Type.Hungary)
+            println("Algorithm: $s_ALGORITHM")
+            TradingAlgorithmEvaluater(s_ALGORITHM, startCapital, Taxation.Type.Hungary)
                 .runEvaluation()
         }
     }else{
         run {
             TradingAlgorithm.Type.entries.forEach { type ->
-                val identifier = SecurityIdentifier(
-                    "US67066G1040",
-                    "USD",
-                    "NVIDIA"
-                )
-                val startCapital = 10000.0
-                val startDate = Instant.parse("2020-01-01T00:00:00Z")
-                val endDate = Instant.parse("2025-01-01T00:00:00Z")
-
                 TradingAlgorithmBackTester(
                     type = type,
                     securityIdentifier = identifier,
@@ -65,22 +68,17 @@ suspend fun main() {
             }
         }
     }
+
     if(s_RUN_TRADER_TEST){
         run {
             val repo = FakeTraderRepository
             val traderList = repo.getAll()
 
-            val securityIdentifier = SecurityIdentifier(
-                "US67066G1040",
-                "USD",
-                "NVIDIA"
-            )
-
             TradingAlgorithm.Type.entries.forEachIndexed { index, type ->
                 val uuid = traderList.getOrNull(index)?.uuid ?: UUID.randomUUID()
 
                 TraderTester(
-                    securityIdentifier = securityIdentifier,
+                    securityIdentifier = identifier,
                     holdings = mutableListOf<SecurityHolding>(),
                     capital = 2_000.0,
                     algorithmType = type
