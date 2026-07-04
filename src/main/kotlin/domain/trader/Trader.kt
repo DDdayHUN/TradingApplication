@@ -24,12 +24,14 @@ class Trader {
     // Public Field(s)
 
     val securityIdentifier: SecurityIdentifier
+    val capital: Double get() = m_Capital
+    val holdings: List<SecurityHolding> get() = m_Holdings
 
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private var m_CurrentCapital: Double
+    private var m_Capital: Double
     private val m_Holdings: MutableList<SecurityHolding>
     private var m_Algorithm: ITradingAlgorithm
 
@@ -39,7 +41,7 @@ class Trader {
 
     fun createSignal(quote: Quote): TradingSignal {
         val currentPrice = quote.currentPrice
-        val output = m_Algorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
+        val output = m_Algorithm.run(holdings, capital, currentPrice)
 
         return TradingSignal(
             output.buy,
@@ -58,11 +60,7 @@ class Trader {
      * @param buy the buy order that has been accepted and finalized.
      */
     fun finalizeOrder(buy: TradingAlgorithm.Output.Buy, buyPrice: Double) {
-        m_CurrentCapital -= buy.amount * buyPrice
-        m_Holdings.add(SecurityHolding(
-            buyPrice,
-            buy.amount
-        ))
+        buy(buyPrice, buy.amount)
     }
 
     //===========================================================//
@@ -78,17 +76,7 @@ class Trader {
         sell.batches.forEach{ batch ->
             val holding = batch.first
             val amountToSell = batch.second
-
-            m_Holdings.remove(holding)
-
-            if(amountToSell != holding.amount){
-                m_Holdings.add(SecurityHolding(
-                    holding.entryPrice,
-                    holding.amount - amountToSell
-                ))
-            }
-
-            m_CurrentCapital += amountToSell * sellPrice
+            sell(holding, sellPrice, amountToSell)
         }
     }
 
@@ -100,20 +88,47 @@ class Trader {
 
     //===========================================================//
 
-    fun getHoldings(): List<SecurityHolding> {
-        return m_Holdings
+    fun changeCapital(capital: Double) {
+        if(capital < 0.0) require(m_Capital + capital >= 0.0) { "Capital must be greater or equal to 0 after change" }
+        m_Capital += capital
     }
 
     //===========================================================//
 
-    fun changeCurrentCapital(capital: Double) {
-        m_CurrentCapital += capital;
+    fun equity(currentPrice: Double): Double {
+        return m_Capital + m_Holdings.sumOf { it.amount * currentPrice }
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Private Method(es)
+
+    private fun buy(price: Double, amount: Long) {
+        require(amount * price <= m_Capital) { "Insufficient Capital" }
+        m_Holdings.add(
+            SecurityHolding(
+                price,
+                amount,
+            )
+        )
     }
 
     //===========================================================//
 
-    fun getCurrentCapital(): Double {
-        return m_CurrentCapital
+    private fun sell(holding: SecurityHolding, price: Double, amount: Long) {
+        require(amount <= holding.amount) { "Amount" }
+        require(m_Holdings.remove(holding)) { "Not contained in the holdings list" }
+
+        m_Capital += amount * price
+
+        if (amount != holding.amount) {
+            m_Holdings.add(
+                SecurityHolding(
+                    holding.entryPrice,
+                    holding.amount - amount
+                )
+            )
+        }
     }
 
     //===========================================================//
@@ -129,7 +144,7 @@ class Trader {
     constructor(securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithmType: TradingAlgorithm.Type) {
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings
-        m_CurrentCapital = allocatedCapital
+        m_Capital = allocatedCapital
         m_Algorithm = TradingAlgorithm.create(algorithmType, securityIdentifier)
     }
 }

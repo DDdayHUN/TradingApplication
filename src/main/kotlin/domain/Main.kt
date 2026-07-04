@@ -17,7 +17,6 @@ suspend fun main() {
             "NVIDIA"
         )
         val startCapital = 10000.0
-        val taxation = Taxation.get(Taxation.Type.Hungary)
         val startDate = Instant.parse("2020-01-01T00:00:00Z")
         val endDate = Instant.parse("2025-01-01T00:00:00Z")
 
@@ -25,11 +24,12 @@ suspend fun main() {
             type = algType,
             securityIdentifier = identifier,
             startingCapital = startCapital,
+            taxation = Taxation.create(Taxation.Type.Hungary),
             from = startDate,
             to = endDate
         ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
 
-        TradingAlgorithmEvaluater(algType, taxation, startCapital)
+        TradingAlgorithmEvaluater(algType, Taxation.create(Taxation.Type.Hungary), startCapital)
             .runEvaluation()
     }
 

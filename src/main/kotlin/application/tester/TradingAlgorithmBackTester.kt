@@ -185,7 +185,7 @@ class TradingAlgorithmBackTester {
                 val bought = item.first
                 val amount = item.second
 
-                check(amount <= bought.amount) { "Sell Amount" }
+                require(amount <= bought.amount) { "Sell Amount" }
 
                 m_Holdings.remove(bought)
 
