@@ -136,7 +136,7 @@ object TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
-    @JsonAdapter(TradingAlgorithmTypeAdapter::class)
+    @JsonAdapter(TypeAdapter::class)
     sealed interface Type {
         data object TACPP46 : Type
         data object ALGDES2 : Type
@@ -165,7 +165,7 @@ object TradingAlgorithm {
 
     //===========================================================//
 
-    class TradingAlgorithmTypeAdapter : JsonSerializer<Type>, JsonDeserializer<Type> {
+    class TypeAdapter : JsonSerializer<Type>, JsonDeserializer<Type> {
         override fun serialize(src: Type, typeOfT: java.lang.reflect.Type, context: JsonSerializationContext): JsonElement {
             val name = when (src) {
                 Type.TACPP46 -> "TACPP46"

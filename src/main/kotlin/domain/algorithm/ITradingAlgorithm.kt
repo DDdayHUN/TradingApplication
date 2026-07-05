@@ -11,7 +11,7 @@ import domain.algorithm.TradingAlgorithm.Output
 import domain.assets.security.SecurityHolding
 import java.lang.reflect.Type
 
-@JsonAdapter(ITradingAlgorithm.ITradingAlgorithmAdapter::class)
+@JsonAdapter(ITradingAlgorithm.Adapter::class)
 sealed interface ITradingAlgorithm {
     //===========================================================//
     //===========================================================//
@@ -31,7 +31,7 @@ sealed interface ITradingAlgorithm {
     //===========================================================//
     // Serialization(s)
 
-    class ITradingAlgorithmAdapter : JsonSerializer<ITradingAlgorithm>, JsonDeserializer<ITradingAlgorithm> {
+    class Adapter : JsonSerializer<ITradingAlgorithm>, JsonDeserializer<ITradingAlgorithm> {
         override fun serialize(src: ITradingAlgorithm, typeOfT: Type, context: JsonSerializationContext): JsonElement {
             val jsonElement = context.serialize(src, src.javaClass).asJsonObject
 
