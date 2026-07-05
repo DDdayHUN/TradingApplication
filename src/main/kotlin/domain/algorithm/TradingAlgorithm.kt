@@ -128,7 +128,6 @@ object TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
-
     sealed interface Type {
         data object TACPP46 : Type
         data object ALGDES2 : Type

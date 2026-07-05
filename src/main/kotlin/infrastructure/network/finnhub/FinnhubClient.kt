@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.future.await
 import domain.assets.security.SecurityIdentifier
-import infrastructure.network.finnhub.dto.FinnhubQuoteDto
-import infrastructure.network.finnhub.dto.FinnhubSymbolDto
+import infrastructure.network.finnhub.dto.FinnhubQuoteResponseDto
+import infrastructure.network.finnhub.dto.FinnhubSymbolResponseDto
 import infrastructure.network.httpGetRequestBuilder
 import java.io.IOException
 import java.net.URLEncoder
@@ -49,7 +49,7 @@ class FinnhubClient (
      * @return [Result] containing finnhub quote dto.
      */
 
-    suspend fun getQuoteAsync(identifier: SecurityIdentifier): Result<FinnhubQuoteDto> {
+    suspend fun getQuoteAsync(identifier: SecurityIdentifier): Result<FinnhubQuoteResponseDto> {
         val symbol = getSymbolAsync(identifier.isin).getOrElse {
             error -> return Result.failure(error)
         }
@@ -72,7 +72,7 @@ class FinnhubClient (
     private suspend fun getSymbolAsync(isin: String): Result<String> {
         val encodedIsin = URLEncoder.encode(isin, StandardCharsets.UTF_8)
 
-        val dto = getJsonAsync<FinnhubSymbolDto>("/search/?q=$encodedIsin").getOrElse{
+        val dto = getJsonAsync<FinnhubSymbolResponseDto>("/search/?q=$encodedIsin").getOrElse{
             error -> return Result.failure(error)
         }
 

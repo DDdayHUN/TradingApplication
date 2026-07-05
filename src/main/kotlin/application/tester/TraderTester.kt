@@ -1,39 +1,28 @@
 package application.tester
 
-import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityHolding
-import domain.assets.security.SecurityIdentifier
 import data.repository.trader.FakeTraderRepository
+import data.repository.trader.ITraderRepository
 import domain.trader.Trader
+import infrastructure.network.IMarketDataProvider
 import infrastructure.network.MarketDataProvider
-import java.util.UUID
 
 class TraderTester {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private val m_TraderRepository = FakeTraderRepository
-    private val m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
-
-    private val m_SecurityIdentifier: SecurityIdentifier
-    private val m_Holdings: MutableList<SecurityHolding>
-    private val m_Capital: Double
-    private val m_AlgorithmType: TradingAlgorithm.Type
+    private val m_TraderRepository: ITraderRepository
+    private val m_MarketDataProvider: IMarketDataProvider
+    private val trader: Trader
 
     //===========================================================//
     //===========================================================//
     // Public Method(es)
 
-    suspend fun runTest(uuid: UUID) {
-        val trader = m_TraderRepository.getById(uuid)?:Trader(
-            securityIdentifier = m_SecurityIdentifier,
-            holdings = m_Holdings,
-            allocatedCapital = m_Capital,
-            algorithm = TradingAlgorithm.create(m_AlgorithmType, m_SecurityIdentifier)
-        )
+    suspend fun runTest() {
         println("#================================================#")
-        println("# Trader Testing")
+        println("# Trader Testing | Algorithm: ${trader.algorithm}")
         println("#================================================#")
         runInternal(trader)
         println("# Trader after save and load")
@@ -96,10 +85,16 @@ class TraderTester {
     //===========================================================//
     // Constructor(s)
 
-    constructor(securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, capital: Double, algorithmType: TradingAlgorithm.Type) {
-        m_SecurityIdentifier = securityIdentifier
-        m_Holdings = holdings
-        m_Capital = capital
-        m_AlgorithmType = algorithmType
+    constructor(trader: Trader){
+        this.trader = trader
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Init
+
+    init{
+        m_TraderRepository = FakeTraderRepository
+        m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
     }
 }

@@ -3,7 +3,11 @@ package infrastructure.network
 import infrastructure.network.finnhub.FinnhubClient
 import infrastructure.network.finnhub.FinnhubConfig
 import infrastructure.network.finnhub.FinnhubMarketDataProvider
-
+//===========================================================//
+/**
+ * Factory object for creating market data provider implementations
+ */
+//===========================================================//
 object MarketDataProvider {
     fun create(type: Type): IMarketDataProvider {
         return when (type) {
