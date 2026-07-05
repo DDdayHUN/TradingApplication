@@ -12,8 +12,7 @@ class TraderTester {
 
     private val m_TraderRepository = FakeTraderRepository
     private val m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
-
-    val trader: Trader
+    private val trader: Trader
 
     //===========================================================//
     //===========================================================//

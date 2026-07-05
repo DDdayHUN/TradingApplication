@@ -25,7 +25,7 @@ suspend fun main() {
     val c_RUN_EVAL_ON_ONE = false
     val c_RUN_EVAL_ON_ALL = false    // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
     val c_RUN_TRADER_TEST = true
-    val c_CLEAR_TEST_FOLDER = false
+    val c_CLEAR_TEST_FOLDER = true
 
     val c_ALGORITHM = TradingAlgorithm.Type.TACPP46
 
@@ -36,9 +36,9 @@ suspend fun main() {
     val taxation = Taxation.Type.Hungary
 
     val identifier = SecurityIdentifier(
-        "US46625H1005",
+        "US0231351067",
         "USD",
-        "JPM"
+        "AMAZON"
     )
 
     val startCapital = 500.0
