@@ -3,10 +3,14 @@ package application.tester
 import data.repository.HistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
+import domain.tax.ITaxation
 import domain.tax.Taxation
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import utils.format
 import kotlin.math.pow
 import kotlin.time.Instant
@@ -41,7 +45,7 @@ class TradingAlgorithmEvaluater {
         val r4 = a4.await()
 
         println("#===============================================================#")
-        println("# Algorithm Evaluation")
+        println("# Algorithm Evaluation | Algorithm: $m_TradingAlgorithmType")
         println("#===============================================================#")
         println("Starting Capital: ${m_Capital.format(2)}")
         val tax = if(m_TaxationType == null) "Without" else "With"
