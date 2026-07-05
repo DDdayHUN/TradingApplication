@@ -17,7 +17,7 @@ suspend fun main() {
     //===========================================================//
     // Settings
 
-    val c_RUN_TRADER_TEST = true
+    val c_RUN_TRADER_TEST = false
     val c_RUN_ONE_BACKTEST = true
     val c_ALGORITHM = TradingAlgorithm.Type.ALGDES2
 
