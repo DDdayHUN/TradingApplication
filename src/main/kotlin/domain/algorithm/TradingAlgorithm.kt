@@ -136,7 +136,6 @@ object TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
-    @JsonAdapter(TypeAdapter::class)
     sealed interface Type {
         data object TACPP46 : Type
         data object ALGDES2 : Type
@@ -161,30 +160,5 @@ object TradingAlgorithm {
     ) {
         data class Buy(val amount: Int)
         data class Sell(val batches: List<Pair<SecurityHolding, Int>>)
-    }
-
-    //===========================================================//
-
-    class TypeAdapter : JsonSerializer<Type>, JsonDeserializer<Type> {
-        override fun serialize(src: Type, typeOfT: java.lang.reflect.Type, context: JsonSerializationContext): JsonElement {
-            val name = when (src) {
-                Type.TACPP46 -> "TACPP46"
-                Type.ALGDES2 -> "ALGDES2"
-                Type.ALGDES3 -> "ALGDES3"
-                Type.ALGDES31 -> "ALGDES31"
-            }
-
-            return JsonPrimitive(name)
-        }
-
-        override fun deserialize(json: JsonElement, typeOfT: java.lang.reflect.Type, context: JsonDeserializationContext): Type {
-            return when (val name = json.asString) {
-                "TACPP46" -> Type.TACPP46
-                "ALGDES2" -> Type.ALGDES2
-                "ALGDES3" -> Type.ALGDES3
-                "ALGDES31" -> Type.ALGDES31
-                else -> throw JsonParseException("Unknown TradingAlgorithm.Type: $name")
-            }
-        }
     }
 }
