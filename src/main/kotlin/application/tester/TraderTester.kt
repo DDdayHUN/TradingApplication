@@ -5,7 +5,7 @@ import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import data.repository.trader.FakeTraderRepository
 import domain.trader.Trader
-import infrastructure.network.MarketDataProvider
+import infrastructure.network.MarketDataProviderFactory
 import java.util.UUID
 
 class TraderTester {
@@ -14,7 +14,7 @@ class TraderTester {
     // Private Field(s)
 
     private val m_TraderRepository = FakeTraderRepository
-    private val m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
+    private val m_MarketDataProvider = MarketDataProviderFactory.create(MarketDataProviderFactory.Type.Finnhub)
 
     private val m_SecurityIdentifier: SecurityIdentifier
     private val m_Holdings: MutableList<SecurityHolding>

@@ -1,5 +1,40 @@
 package infrastructure.network.finnhub.dto
 
+import infrastructure.network.Quote
+
+//===========================================================//
+/**
+ * Data Transfer Object for Finnhub quote response.
+ *
+ *
+ * This record represents the raw response format returned by Finnhub.
+ *
+ * @param c current price
+ * @param d change
+ * @param dp percent change
+ * @param h high price of the day
+ * @param l low price of the day
+ * @param o open price of the day
+ * @param pc previous close price
+ */
+//===========================================================//
+
+data class FinnhubQuoteResponseDto(
+    val c: Double,
+    val d: Double,
+    val dp: Double,
+    val h: Double,
+    val l: Double,
+    val o: Double,
+    val pc: Double
+) {
+    fun toDomain(): Quote {
+        return Quote(
+            c,
+        )
+    }
+}
+
 //===========================================================//
 /**
  * Data Transfer Object for Finnhub symbol response.
@@ -11,7 +46,7 @@ package infrastructure.network.finnhub.dto
  */
 //===========================================================//
 
-data class FinnhubSymbolDto(
+data class FinnhubSymbolResponseDto(
     val count: Int,
     val result: List<ResultItem>
 ) {
