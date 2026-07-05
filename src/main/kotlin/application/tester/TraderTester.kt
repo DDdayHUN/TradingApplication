@@ -1,12 +1,9 @@
 package application.tester
 
-import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityHolding
-import domain.assets.security.SecurityIdentifier
 import data.repository.trader.FakeTraderRepository
 import domain.trader.Trader
 import infrastructure.network.MarketDataProviderFactory
-import java.util.UUID
 
 class TraderTester {
     //===========================================================//
@@ -16,25 +13,15 @@ class TraderTester {
     private val m_TraderRepository = FakeTraderRepository
     private val m_MarketDataProvider = MarketDataProviderFactory.create(MarketDataProviderFactory.Type.Finnhub)
 
-    private val m_SecurityIdentifier: SecurityIdentifier
-    private val m_Holdings: MutableList<SecurityHolding>
-    private val m_Capital: Double
-    private val m_AlgorithmType: TradingAlgorithm.Type
+    val trader: Trader
 
     //===========================================================//
     //===========================================================//
     // Public Method(es)
 
-    suspend fun runTest(uuid: UUID) {
-        val trader = m_TraderRepository.getById(uuid)?:Trader(
-            securityIdentifier = m_SecurityIdentifier,
-            holdings = m_Holdings,
-            allocatedCapital = m_Capital,
-            algorithmType = m_AlgorithmType,
-            algorithm = TradingAlgorithm.create(m_AlgorithmType,m_SecurityIdentifier)
-        )
+    suspend fun runTest() {
         println("#================================================#")
-        println("# Trader Testing | Algorithm: $m_AlgorithmType")
+        println("# Trader Testing | Algorithm: ${trader.algorithm}")
         println("#================================================#")
         runInternal(trader)
         println("# Trader after save and load")
@@ -97,10 +84,7 @@ class TraderTester {
     //===========================================================//
     // Constructor(s)
 
-    constructor(securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, capital: Double, algorithmType: TradingAlgorithm.Type) {
-        m_SecurityIdentifier = securityIdentifier
-        m_Holdings = holdings
-        m_Capital = capital
-        m_AlgorithmType = algorithmType
+    constructor(trader: Trader){
+        this.trader = trader
     }
 }

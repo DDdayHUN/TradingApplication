@@ -1,5 +1,5 @@
 {
-  "uuid": "a2dd47de-b9cd-469d-8b19-89c77c8faee2",
+  "uuid": "cc8e218b-4fc6-41ad-9ab0-6c47b8055f50",
   "securityIdentifier": {
     "isin": "US67066G1040",
     "currency": "USD",
@@ -8,7 +8,7 @@
   "capital": 110.33999999999997,
   "holdings": [
     {
-      "uuid": "9d54bb35-5db6-463e-9ac8-815a475c0370",
+      "uuid": "6866334f-c185-4d03-8675-c7e38b480d9a",
       "entryPrice": 194.83,
       "amount": 2
     }
@@ -33,6 +33,5 @@
       194.83
     ],
     "algorithmType": "ALGDES3"
-  },
-  "algorithmType": "ALGDES3"
+  }
 }

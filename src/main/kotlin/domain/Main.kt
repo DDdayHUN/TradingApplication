@@ -5,9 +5,9 @@ import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluater
 import data.repository.trader.FakeTraderRepository
 import domain.algorithm.TradingAlgorithm
-import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.tax.Taxation
+import domain.trader.Trader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
@@ -23,10 +23,11 @@ suspend fun main() {
 
     val c_RUN_BACKTEST_ON_ONE = true
     val c_RUN_EVAL_ON_ONE = true
-    val c_RUN_EVAL_ON_ALL = true    // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
+    val c_RUN_EVAL_ON_ALL = false    // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
     val c_RUN_TRADER_TEST = true
+    val c_CLEAR_TEST_FOLDER = false
 
-    val c_ALGORITHM = TradingAlgorithm.Type.ALGDES2
+    val c_ALGORITHM = TradingAlgorithm.Type.ALGDES3
 
     //===========================================================//
     //===========================================================//
@@ -86,22 +87,26 @@ suspend fun main() {
 
     if(c_RUN_TRADER_TEST){
         run {
+            if(c_CLEAR_TEST_FOLDER){
+                clearTestFolder()
+            }
             val traderList = FakeTraderRepository.getAll()
-
-            TradingAlgorithm.Type.entries.forEach { type ->
-                val existingTrader = traderList.firstOrNull { trader ->
-                    trader.securityIdentifier.isin == identifier.isin &&
-                            trader.algorithmType == type
-                }
-
-                val uuid = existingTrader?.uuid ?: UUID.randomUUID()
-
+            if(traderList.isEmpty()){
                 TraderTester(
-                    securityIdentifier = identifier,
-                    holdings = mutableListOf(),
-                    capital = startCapital,
-                    algorithmType = type
-                ).runTest(uuid)
+                    Trader(
+                        uuid = UUID.randomUUID(),
+                        securityIdentifier = identifier,
+                        holdings = mutableListOf(),
+                        allocatedCapital = startCapital,
+                        algorithm = TradingAlgorithm.create(
+                            c_ALGORITHM,
+                            securityIdentifier = identifier,
+                        )
+                    )
+                ).runTest()
+            }
+            traderList.forEach{ trader ->
+                TraderTester(trader).runTest()
             }
         }
     }

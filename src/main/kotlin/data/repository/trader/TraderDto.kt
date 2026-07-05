@@ -13,7 +13,6 @@ data class TraderDto(
     val capital: Double,
     val holdings: List<SecurityHolding>,
     val algorithm: ITradingAlgorithm,
-    val algorithmType: TradingAlgorithm.Type
 ) {
     fun toDomain(): Trader {
         return Trader(
@@ -21,8 +20,7 @@ data class TraderDto(
             securityIdentifier,
             holdings.toMutableList(),
             capital,
-            algorithm,
-            algorithmType
+            algorithm
         )
     }
 }

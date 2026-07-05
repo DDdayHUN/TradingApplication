@@ -29,8 +29,6 @@ class Trader {
     val capital: Double get() = m_Capital
     val holdings: List<SecurityHolding> get() = m_Holdings.toList()
     var algorithm: ITradingAlgorithm
-    val algorithmType: TradingAlgorithm.Type
-
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -133,14 +131,13 @@ class Trader {
      * @param securityIdentifier the identifier of the traded security.
      * @param holdings the currently held securities with the given identifier.
      * @param allocatedCapital the capital currently allocated to the trader.
-     * @param algorithmType the type of the algorithm.
+     * @param algorithm the algorithm instance with which we create trades.
      */
-    constructor(uuid: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm, algorithmType: TradingAlgorithm.Type){
+    constructor(uuid: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm){
         this.uuid = uuid
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings
         m_Capital = allocatedCapital
-        this.algorithmType = algorithmType
         this.algorithm = algorithm
     }
 }
