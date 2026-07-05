@@ -37,6 +37,11 @@ object FakeTraderRepository : ITraderRepository {
             trader.holdings,
             trader.algorithm,
         )
+
+        if (!s_DirectoryPath.exists()) {
+            s_DirectoryPath.mkdirs()
+        }
+
         val file = File(s_DirectoryPath, "${trader.uuid}.json")
 
         RepositoryUtil.saveToFile<TraderDto>(s_Gson, file, dto)
