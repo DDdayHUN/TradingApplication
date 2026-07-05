@@ -33,7 +33,7 @@ class TraderTester {
             algorithm = TradingAlgorithm.create(m_AlgorithmType, m_SecurityIdentifier)
         )
         println("#================================================#")
-        println("# Trader Testing")
+        println("# Trader Testing | Algorithm: $m_AlgorithmType")
         println("#================================================#")
         runInternal(trader)
         println("# Trader after save and load")
