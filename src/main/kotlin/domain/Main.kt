@@ -87,33 +87,33 @@ suspend fun main() {
 
     if(c_RUN_TRADER_TEST){
         run {
-            if (c_RUN_TRADER_TEST) {
-                if (c_CLEAR_TEST_FOLDER) {
-                    clearTestFolder()
-                }
 
-                val traderList = FakeTraderRepository.getAll()
-
-                val tradersToTest =
-                    if (traderList.any { it.securityIdentifier.isin == identifier.isin }) {
-                        traderList
-                    } else {
-                        traderList + Trader(
-                            uuid = UUID.randomUUID(),
-                            securityIdentifier = identifier,
-                            holdings = mutableListOf(),
-                            allocatedCapital = startCapital,
-                            algorithm = TradingAlgorithm.create(
-                                c_ALGORITHM,
-                                securityIdentifier = identifier,
-                            )
-                        )
-                    }
-
-                tradersToTest.forEach { trader ->
-                    TraderTester(trader).runTest()
-                }
+            if (c_CLEAR_TEST_FOLDER) {
+                clearTestFolder()
             }
+
+            val traderList = FakeTraderRepository.getAll()
+
+            val tradersToTest =
+                if (traderList.any { it.securityIdentifier.isin == identifier.isin }) {
+                    traderList
+                } else {
+                    traderList + Trader(
+                        uuid = UUID.randomUUID(),
+                        securityIdentifier = identifier,
+                        holdings = mutableListOf(),
+                        allocatedCapital = startCapital,
+                        algorithm = TradingAlgorithm.create(
+                            c_ALGORITHM,
+                            securityIdentifier = identifier,
+                        )
+                    )
+                }
+
+            tradersToTest.forEach { trader ->
+                TraderTester(trader).runTest()
+            }
+
         }
     }
 }
