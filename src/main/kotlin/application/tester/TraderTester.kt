@@ -14,7 +14,8 @@ class TraderTester {
 
     private val m_TraderRepository: ITraderRepository
     private val m_MarketDataProvider: IMarketDataProvider
-    private val trader: Trader
+
+    private val m_Trader: Trader
 
     //===========================================================//
     //===========================================================//
@@ -22,36 +23,25 @@ class TraderTester {
 
     suspend fun runTest() {
         println("#================================================#")
-        println("# Trader Testing | Algorithm: ${trader.algorithm}")
+        println("# Trader Testing | Algorithm: ${m_Trader.algorithm}")
         println("#================================================#")
-        runInternal(trader)
-        println("# Trader after save and load")
-        println("")
-        m_TraderRepository.save(trader)
-    }
+        val capitalBeforeOrder = m_Trader.capital
+        val holdingsBeforeOrder = m_Trader.holdings
 
-    //===========================================================//
-    //===========================================================//
-    // Private Method(es)
+        val quote = m_MarketDataProvider.getQuote(m_Trader.securityIdentifier)
 
-    private suspend fun runInternal(trader: Trader) {
-        val capitalBeforeOrder = trader.capital
-        val holdingsBeforeOrder = trader.holdings
+        val order = m_Trader.createOrder(quote)
+        m_Trader.finalizeOrder(order)
 
-        val quote = m_MarketDataProvider.getQuote(trader.securityIdentifier)
-
-        val order = trader.createOrder(quote)
-        trader.finalizeOrder(order)
-
-        println("Trader: ${trader.securityIdentifier.name}")
-        println("UUID: ${trader.uuid}")
-        println("ISIN: ${trader.securityIdentifier.isin}")
-        println("Currency: ${trader.securityIdentifier.currency}")
+        println("Trader: ${m_Trader.securityIdentifier.name}")
+        println("UUID: ${m_Trader.uuid}")
+        println("ISIN: ${m_Trader.securityIdentifier.isin}")
+        println("Currency: ${m_Trader.securityIdentifier.currency}")
         println("Current price: ${quote.currentPrice}")
         println()
 
         println("Capital before order: $capitalBeforeOrder")
-        println("Capital after order: ${trader.capital}")
+        println("Capital after order: ${m_Trader.capital}")
         println()
 
         println("Order: ${order.toReadableText()}")
@@ -61,12 +51,17 @@ class TraderTester {
         printHoldings(holdingsBeforeOrder)
 
         print("Holdings after order:")
-        printHoldings(trader.holdings)
+        printHoldings(m_Trader.holdings)
 
         println("#================================================#")
+        println("# Trader after save")
+        println("")
+        m_TraderRepository.save(m_Trader)
     }
 
     //===========================================================//
+    //===========================================================//
+    // Private Method(es)
 
     private fun printHoldings(holdings: List<SecurityHolding>) {
         if (holdings.isEmpty()) {
@@ -86,7 +81,7 @@ class TraderTester {
     // Constructor(s)
 
     constructor(trader: Trader){
-        this.trader = trader
+        m_Trader = trader
     }
 
     //===========================================================//

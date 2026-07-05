@@ -1,7 +1,6 @@
 package data.repository.trader
 
 import domain.algorithm.ITradingAlgorithm
-import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.trader.Trader
@@ -12,7 +11,7 @@ data class TraderDto(
     val securityIdentifier: SecurityIdentifier,
     val capital: Double,
     val holdings: List<SecurityHolding>,
-    val algorithm: ITradingAlgorithm,
+    val algorithm: ITradingAlgorithm
 ) {
     fun toDomain(): Trader {
         return Trader(
