@@ -8,6 +8,7 @@ import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.tax.Taxation
+import utils.clearTestFolder
 import java.util.UUID
 import kotlin.time.Instant
 
@@ -73,6 +74,11 @@ suspend fun main() {
         run {
             val repo = FakeTraderRepository
             val traderList = repo.getAll()
+
+            if(traderList[0].securityIdentifier.isin != identifier.isin){
+                clearTestFolder()
+            }
+
 
             TradingAlgorithm.Type.entries.forEachIndexed { index, type ->
                 val uuid = traderList.getOrNull(index)?.uuid ?: UUID.randomUUID()
