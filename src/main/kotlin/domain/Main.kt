@@ -17,7 +17,7 @@ suspend fun main() {
     //===========================================================//
     // Settings
 
-    val c_RUN_TRADER_TEST = false
+    val c_RUN_TRADER_TEST = true
     val c_RUN_ONE_BACKTEST = true
     val c_ALGORITHM = TradingAlgorithm.Type.ALGDES2
 
@@ -26,9 +26,9 @@ suspend fun main() {
     // Config
 
     val identifier = SecurityIdentifier(
-        "US67066G1040",
+        "US64110L1061",
         "USD",
-        "NVIDIA"
+        "NETFLIX"
     )
 
     val startCapital = 10000.0
@@ -75,7 +75,7 @@ suspend fun main() {
             val repo = FakeTraderRepository
             val traderList = repo.getAll()
 
-            if(traderList[0].securityIdentifier.isin != identifier.isin){
+            if(traderList.firstOrNull()?.securityIdentifier?.isin != identifier.isin){
                 clearTestFolder()
             }
 
