@@ -1,6 +1,7 @@
 package domain.trader
 
 import domain.algorithm.ITradingAlgorithm
+import domain.algorithm.TradingAlgorithm
 import infrastructure.network.Quote
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
@@ -28,6 +29,7 @@ class Trader {
     val capital: Double get() = m_Capital
     val holdings: List<SecurityHolding> get() = m_Holdings.toList()
     var algorithm: ITradingAlgorithm
+    val algorithmType: TradingAlgorithm.Type
 
     //===========================================================//
     //===========================================================//
@@ -131,13 +133,17 @@ class Trader {
      * @param securityIdentifier the identifier of the traded security.
      * @param holdings the currently held securities with the given identifier.
      * @param allocatedCapital the capital currently allocated to the trader.
-     * @param algorithm the algorithm instance with which we create trades.
+     * @param algorithmType the type of the algorithm.
      */
-    constructor(uuid: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm) {
+    constructor(uuid: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithmType: TradingAlgorithm.Type){
         this.uuid = uuid
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings
         m_Capital = allocatedCapital
-        this.algorithm = algorithm
+        this.algorithmType = algorithmType
+        this.algorithm = TradingAlgorithm.create(
+            this.algorithmType,
+            this.securityIdentifier
+        )
     }
 }

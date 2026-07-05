@@ -24,7 +24,7 @@ suspend fun main() {
     val c_RUN_BACKTEST_ON_ONE = true
     val c_RUN_EVAL_ON_ONE = true
     val c_RUN_EVAL_ON_ALL = false    // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
-    val c_RUN_TRADER_TEST = true
+    val c_RUN_TRADER_TEST = false
 
     val c_ALGORITHM = TradingAlgorithm.Type.ALGDES2
 
@@ -86,19 +86,19 @@ suspend fun main() {
 
     if(c_RUN_TRADER_TEST){
         run {
-            val repo = FakeTraderRepository
-            val traderList = repo.getAll()
+            val traderList = FakeTraderRepository.getAll()
 
-            if(traderList.firstOrNull()?.securityIdentifier?.isin != identifier.isin){
-                clearTestFolder()
-            }
+            TradingAlgorithm.Type.entries.forEach { type ->
+                val existingTrader = traderList.firstOrNull { trader ->
+                    trader.securityIdentifier.isin == identifier.isin &&
+                            trader.algorithmType == type
+                }
 
-            TradingAlgorithm.Type.entries.forEachIndexed { index, type ->
-                val uuid = traderList.getOrNull(index)?.uuid ?: UUID.randomUUID()
+                val uuid = existingTrader?.uuid ?: UUID.randomUUID()
 
                 TraderTester(
                     securityIdentifier = identifier,
-                    holdings = mutableListOf<SecurityHolding>(),
+                    holdings = mutableListOf(),
                     capital = startCapital,
                     algorithmType = type
                 ).runTest(uuid)
