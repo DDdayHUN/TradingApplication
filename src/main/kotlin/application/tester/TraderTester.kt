@@ -3,7 +3,7 @@ package application.tester
 import domain.assets.security.SecurityHolding
 import data.repository.trader.FakeTraderRepository
 import domain.trader.Trader
-import infrastructure.network.MarketDataProviderFactory
+import infrastructure.network.MarketDataProvider
 
 class TraderTester {
     //===========================================================//
@@ -11,7 +11,7 @@ class TraderTester {
     // Private Field(s)
 
     private val m_TraderRepository = FakeTraderRepository
-    private val m_MarketDataProvider = MarketDataProviderFactory.create(MarketDataProviderFactory.Type.Finnhub)
+    private val m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
 
     val trader: Trader
 

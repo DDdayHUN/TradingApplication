@@ -8,7 +8,7 @@ import infrastructure.network.finnhub.FinnhubMarketDataProvider
  * Factory object for creating market data provider implementations
  */
 //===========================================================//
-object MarketDataProviderFactory {
+object MarketDataProvider {
     fun create(type: Type): IMarketDataProvider {
         return when (type) {
             Type.Finnhub -> {
