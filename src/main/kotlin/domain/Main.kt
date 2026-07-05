@@ -21,13 +21,13 @@ suspend fun main() {
     //===========================================================//
     // Settings
 
-    val c_RUN_BACKTEST_ON_ONE = true
-    val c_RUN_EVAL_ON_ONE = true
+    val c_RUN_BACKTEST_ON_ONE = false
+    val c_RUN_EVAL_ON_ONE = false
     val c_RUN_EVAL_ON_ALL = false    // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
     val c_RUN_TRADER_TEST = true
     val c_CLEAR_TEST_FOLDER = false
 
-    val c_ALGORITHM = TradingAlgorithm.Type.ALGDES3
+    val c_ALGORITHM = TradingAlgorithm.Type.TACPP46
 
     //===========================================================//
     //===========================================================//
@@ -36,9 +36,9 @@ suspend fun main() {
     val taxation = Taxation.Type.Hungary
 
     val identifier = SecurityIdentifier(
-        "US67066G1040",
+        "US46625H1005",
         "USD",
-        "NVIDIA"
+        "JPM"
     )
 
     val startCapital = 500.0
@@ -87,26 +87,32 @@ suspend fun main() {
 
     if(c_RUN_TRADER_TEST){
         run {
-            if(c_CLEAR_TEST_FOLDER){
-                clearTestFolder()
-            }
-            val traderList = FakeTraderRepository.getAll()
-            if(traderList.isEmpty()){
-                TraderTester(
-                    Trader(
-                        uuid = UUID.randomUUID(),
-                        securityIdentifier = identifier,
-                        holdings = mutableListOf(),
-                        allocatedCapital = startCapital,
-                        algorithm = TradingAlgorithm.create(
-                            c_ALGORITHM,
+            if (c_RUN_TRADER_TEST) {
+                if (c_CLEAR_TEST_FOLDER) {
+                    clearTestFolder()
+                }
+
+                val traderList = FakeTraderRepository.getAll()
+
+                val tradersToTest =
+                    if (traderList.any { it.securityIdentifier.isin == identifier.isin }) {
+                        traderList
+                    } else {
+                        traderList + Trader(
+                            uuid = UUID.randomUUID(),
                             securityIdentifier = identifier,
+                            holdings = mutableListOf(),
+                            allocatedCapital = startCapital,
+                            algorithm = TradingAlgorithm.create(
+                                c_ALGORITHM,
+                                securityIdentifier = identifier,
+                            )
                         )
-                    )
-                ).runTest()
-            }
-            traderList.forEach{ trader ->
-                TraderTester(trader).runTest()
+                    }
+
+                tradersToTest.forEach { trader ->
+                    TraderTester(trader).runTest()
+                }
             }
         }
     }
