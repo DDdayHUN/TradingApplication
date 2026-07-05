@@ -2,7 +2,9 @@ package application.tester
 
 import domain.assets.security.SecurityHolding
 import data.repository.trader.FakeTraderRepository
+import data.repository.trader.ITraderRepository
 import domain.trader.Trader
+import infrastructure.network.IMarketDataProvider
 import infrastructure.network.MarketDataProvider
 
 class TraderTester {
@@ -10,8 +12,8 @@ class TraderTester {
     //===========================================================//
     // Private Field(s)
 
-    private val m_TraderRepository = FakeTraderRepository
-    private val m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
+    private val m_TraderRepository: ITraderRepository
+    private val m_MarketDataProvider: IMarketDataProvider
     private val trader: Trader
 
     //===========================================================//
@@ -85,5 +87,14 @@ class TraderTester {
 
     constructor(trader: Trader){
         this.trader = trader
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Init
+
+    init{
+        m_TraderRepository = FakeTraderRepository
+        m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
     }
 }
