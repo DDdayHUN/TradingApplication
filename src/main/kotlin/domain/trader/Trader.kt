@@ -4,9 +4,6 @@ import domain.algorithm.ITradingAlgorithm
 import infrastructure.network.Quote
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import java.util.UUID
 
 //===========================================================//
@@ -95,7 +92,7 @@ class Trader {
     //===========================================================//
     // Private Method(es)
 
-    private fun buy(price: Double, amount: Long) {
+    private fun buy(price: Double, amount: Int) {
         require(amount * price <= m_Capital) { "Insufficient Capital" }
 
         changeCapital(-(amount * price))
@@ -110,7 +107,7 @@ class Trader {
 
     //===========================================================//
 
-    private fun sell(holding: SecurityHolding, price: Double, amount: Long) {
+    private fun sell(holding: SecurityHolding, price: Double, amount: Int) {
         require(amount <= holding.amount) { "Amount" }
         require(m_Holdings.remove(holding)) { "Not contained in the holdings list" }
 

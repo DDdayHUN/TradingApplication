@@ -41,14 +41,14 @@ internal class ALGDES31 : ITradingAlgorithm {
         // Buy
 
         if (currentPrice < lowerBand) {
-            val amount = (capitalToUse / currentPrice).toLong()
-            if (amount > 0L) buy = TradingAlgorithm.Output.Buy(amount)
+            val amount = (capitalToUse / currentPrice).toInt()
+            if (amount > 0) buy = TradingAlgorithm.Output.Buy(amount)
         }
 
         //-------------------------------------------------------
         // Sell
 
-        val toSell = mutableListOf<Pair<SecurityHolding, Long>>()
+        val toSell = mutableListOf<Pair<SecurityHolding, Int>>()
 
         for (holding in holdings) {
             val gain = (currentPrice - holding.entryPrice) / holding.entryPrice

@@ -48,10 +48,10 @@ class TradingAlgorithmBackTester {
     private val m_Signlas: MutableList<TradingOrder>
 
     private var m_CurrentCapital: Double
-    private var m_TotalBuysMade: Long
-    private var m_TotalSellsMade: Long
-    private var m_WinningTrades: Long
-    private var m_ForceClosedTrades: Long
+    private var m_TotalBuysMade: Int
+    private var m_TotalSellsMade: Int
+    private var m_WinningTrades: Int
+    private var m_ForceClosedTrades: Int
 
     //===========================================================//
     //===========================================================//
@@ -294,9 +294,9 @@ class TradingAlgorithmBackTester {
     data class Output(
         val startingCapital: Double,
         val totalCapital: Double,
-        val totalBuysMade: Long,
-        val totalSellsMade: Long,
-        val forceClosedTrades: Long,
+        val totalBuysMade: Int,
+        val totalSellsMade: Int,
+        val forceClosedTrades: Int,
         val tradeWinrate: Double,
         val sharpieRatio: Double
     )

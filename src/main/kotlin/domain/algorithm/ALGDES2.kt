@@ -39,7 +39,7 @@ internal class ALGDES2 : ITradingAlgorithm {
 
         if (currentPrice < lowerBand) {
             val confidence = Math.clamp(1.div(risk), 0.05, 0.25)
-            val amount = (allocatedCapital * confidence / currentPrice).toLong()
+            val amount = (allocatedCapital * confidence / currentPrice).toInt()
 
             if (amount > 0) buy = TradingAlgorithm.Output.Buy(amount)
         }
@@ -47,7 +47,7 @@ internal class ALGDES2 : ITradingAlgorithm {
         //-------------------------------------------------------
         // Sell
 
-        val toSell = mutableListOf<Pair<SecurityHolding, Long>>()
+        val toSell = mutableListOf<Pair<SecurityHolding, Int>>()
 
         for (holding in holdings) {
             val gain = (currentPrice - holding.entryPrice) / holding.entryPrice

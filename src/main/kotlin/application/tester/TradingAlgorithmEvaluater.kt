@@ -30,10 +30,10 @@ class TradingAlgorithmEvaluater {
         val a0 = async { HistoricalMarketDataProvider.getAllSecurityIdentifiers() }
 
         val listOfSecurityIdentifiers = a0.await()
-        val a1 = async { years(10L, listOfSecurityIdentifiers) }
-        val a2 = async { years(5L,listOfSecurityIdentifiers) }
-        val a3 = async { years(2L,listOfSecurityIdentifiers) }
-        val a4 = async { years(1L, listOfSecurityIdentifiers) }
+        val a1 = async { years(10, listOfSecurityIdentifiers) }
+        val a2 = async { years(5,listOfSecurityIdentifiers) }
+        val a3 = async { years(2,listOfSecurityIdentifiers) }
+        val a4 = async { years(1, listOfSecurityIdentifiers) }
 
         val r1 = a1.await()
         val r2 = a2.await()
@@ -58,8 +58,8 @@ class TradingAlgorithmEvaluater {
     //===========================================================//
     // Private Method(es)
 
-    private suspend fun years(increment: Long, listOfSecurityIdentifiers: List<SecurityIdentifier>): AverageOutput = coroutineScope {
-        val results = (2015L until 2025L step increment).map { currentYear ->
+    private suspend fun years(increment: Int, listOfSecurityIdentifiers: List<SecurityIdentifier>): AverageOutput = coroutineScope {
+        val results = (2015 until 2025 step increment).map { currentYear ->
             async {
                 val startDate = Instant.parse("${currentYear}-01-01T00:00:00Z")
                 val endDate = Instant.parse("${currentYear + increment}-01-01T00:00:00Z")

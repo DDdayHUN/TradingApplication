@@ -134,6 +134,15 @@ object TradingAlgorithm {
         data object ALGDES2 : Type
         data object ALGDES3 : Type
         data object ALGDES31 : Type
+
+        companion object {
+            val entries: List<Type> = listOf(
+                TACPP46,
+                ALGDES2,
+                ALGDES3,
+                ALGDES31
+            )
+        }
     }
 
     //===========================================================//
@@ -142,7 +151,7 @@ object TradingAlgorithm {
         val buy: Buy?,
         val sell: Sell?
     ) {
-        data class Buy(val amount: Long)
-        data class Sell(val batches: List<Pair<SecurityHolding, Long>>)
+        data class Buy(val amount: Int)
+        data class Sell(val batches: List<Pair<SecurityHolding, Int>>)
     }
 }
