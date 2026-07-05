@@ -35,7 +35,9 @@ object FakeTraderRepository : ITraderRepository {
             trader.securityIdentifier,
             trader.capital,
             trader.holdings,
+            trader.algorithm,
             trader.algorithmType,
+
         )
 
         if (!s_DirectoryPath.exists()) {

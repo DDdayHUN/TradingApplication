@@ -135,15 +135,12 @@ class Trader {
      * @param allocatedCapital the capital currently allocated to the trader.
      * @param algorithmType the type of the algorithm.
      */
-    constructor(uuid: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithmType: TradingAlgorithm.Type){
+    constructor(uuid: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm, algorithmType: TradingAlgorithm.Type){
         this.uuid = uuid
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings
         m_Capital = allocatedCapital
         this.algorithmType = algorithmType
-        this.algorithm = TradingAlgorithm.create(
-            this.algorithmType,
-            this.securityIdentifier
-        )
+        this.algorithm = algorithm
     }
 }

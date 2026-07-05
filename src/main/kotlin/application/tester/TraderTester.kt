@@ -30,7 +30,8 @@ class TraderTester {
             securityIdentifier = m_SecurityIdentifier,
             holdings = m_Holdings,
             allocatedCapital = m_Capital,
-            algorithmType = m_AlgorithmType
+            algorithmType = m_AlgorithmType,
+            algorithm = TradingAlgorithm.create(m_AlgorithmType,m_SecurityIdentifier)
         )
         println("#================================================#")
         println("# Trader Testing | Algorithm: $m_AlgorithmType")

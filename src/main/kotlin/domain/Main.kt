@@ -23,8 +23,8 @@ suspend fun main() {
 
     val c_RUN_BACKTEST_ON_ONE = true
     val c_RUN_EVAL_ON_ONE = true
-    val c_RUN_EVAL_ON_ALL = false    // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
-    val c_RUN_TRADER_TEST = false
+    val c_RUN_EVAL_ON_ALL = true    // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
+    val c_RUN_TRADER_TEST = true
 
     val c_ALGORITHM = TradingAlgorithm.Type.ALGDES2
 
