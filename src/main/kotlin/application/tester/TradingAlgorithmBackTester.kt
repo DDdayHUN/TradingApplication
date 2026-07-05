@@ -22,7 +22,7 @@ import kotlin.time.Instant
  * The backtester supports both normal execution and debug execution, where additional
  * internal state (such as current m_Holdings) is printed for inspection.
  * 
- * This class is immutable in configuration (stock, range, initial capital, m_Algorithm m_Type),
+ * This class is immutable in configuration (stock, range, initial capital, m_Algorithm, m_TradingAlgorithmType)
  * but maintains mutable state during backtesting execution.
  */
 //===========================================================//
@@ -39,7 +39,7 @@ class TradingAlgorithmBackTester {
     private val m_StartingCapital: Double
     private val m_Taxation: ITaxation?
 
-    private val m_Type: TradingAlgorithm.Type
+    private val m_TradingAlgorithmType: TradingAlgorithm.Type
     private var m_TradingAlgorithm: ITradingAlgorithm
     private var m_HistoryWeRunAgainst: List<SecurityHistory>
 
@@ -77,7 +77,7 @@ class TradingAlgorithmBackTester {
         val winRate = if (m_TotalSellsMade <= 0) Double.NaN else (m_WinningTrades * 100.0 / m_TotalSellsMade)
 
         println("#===============================================================#")
-        println("# Algorithm Backtesting")
+        println("# Algorithm Backtesting | Algorithm: $m_TradingAlgorithmType")
         println("#===============================================================#")
         val zone = java.time.ZoneId.systemDefault()
         val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
@@ -125,7 +125,7 @@ class TradingAlgorithmBackTester {
     //===========================================================//
 
     private fun reset() {
-        val pair = TradingAlgorithm.create(m_Type, m_SecurityIdentifier, m_From, m_To)
+        val pair = TradingAlgorithm.create(m_TradingAlgorithmType, m_SecurityIdentifier, m_From, m_To)
 
         m_TradingAlgorithm = pair.second
         m_HistoryWeRunAgainst = pair.first
@@ -256,8 +256,8 @@ class TradingAlgorithmBackTester {
         m_StartingCapital = startingCapital
         m_Taxation = taxation
 
-        m_Type = type
-        val pair = TradingAlgorithm.create(m_Type, securityIdentifier, m_From, m_To)
+        m_TradingAlgorithmType = type
+        val pair = TradingAlgorithm.create(m_TradingAlgorithmType, securityIdentifier, m_From, m_To)
         m_TradingAlgorithm = pair.second
         m_HistoryWeRunAgainst = pair.first
 

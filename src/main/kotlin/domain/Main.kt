@@ -8,6 +8,10 @@ import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.tax.Taxation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import utils.clearTestFolder
 import java.util.UUID
 import kotlin.time.Instant
@@ -17,13 +21,18 @@ suspend fun main() {
     //===========================================================//
     // Settings
 
+    val c_RUN_BACKTEST_ON_ONE = true
+    val c_RUN_EVAL_ON_ONE = true
+    val c_RUN_EVAL_ON_ALL = false    // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
     val c_RUN_TRADER_TEST = false
-    val c_RUN_ONE_BACKTEST = true
-    val c_ALGORITHM = TradingAlgorithm.Type.ALGDES2
+
+    val c_ALGORITHM = TradingAlgorithm.Type.TACPP46
 
     //===========================================================//
     //===========================================================//
     // Config
+
+    val taxation = Taxation.Type.Hungary
 
     val identifier = SecurityIdentifier(
         "US64110L1061",
@@ -38,34 +47,39 @@ suspend fun main() {
     //===========================================================//
     //===========================================================//
 
-    if(c_RUN_ONE_BACKTEST){
+    if(c_RUN_BACKTEST_ON_ONE){
         run{
             TradingAlgorithmBackTester(
                 type = c_ALGORITHM,
                 securityIdentifier = identifier,
                 startingCapital = startCapital,
-                taxation = Taxation.create(Taxation.Type.Hungary),
+                taxation = Taxation.create(taxation),
                 from = startDate,
                 to = endDate
             ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
-            println("Algorithm: $c_ALGORITHM")
-            TradingAlgorithmEvaluater(c_ALGORITHM, startCapital, Taxation.Type.Hungary)
+        }
+    }
+
+    if(c_RUN_EVAL_ON_ONE){
+        run{
+            TradingAlgorithmEvaluater(c_ALGORITHM, startCapital, taxation)
                 .runEvaluation()
         }
-    }else{
+    }
+
+    if(c_RUN_EVAL_ON_ALL){
         run {
-            TradingAlgorithm.Type.entries.forEach { type ->
-                TradingAlgorithmBackTester(
-                    type = type,
-                    securityIdentifier = identifier,
-                    startingCapital = startCapital,
-                    taxation = Taxation.create(Taxation.Type.Hungary),
-                    from = startDate,
-                    to = endDate
-                ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
-                println("Algorithm: $type")
-                TradingAlgorithmEvaluater(type, startCapital, Taxation.Type.Hungary)
-                    .runEvaluation()
+            coroutineScope {
+                TradingAlgorithm.Type.entries
+                    .map { type ->
+                        launch(Dispatchers.Default) {
+                            TradingAlgorithmEvaluater(
+                                type,
+                                startCapital,
+                                taxation
+                            ).runEvaluation()
+                        }
+                    }.joinAll()
             }
         }
     }
@@ -78,7 +92,6 @@ suspend fun main() {
             if(traderList.firstOrNull()?.securityIdentifier?.isin != identifier.isin){
                 clearTestFolder()
             }
-
 
             TradingAlgorithm.Type.entries.forEachIndexed { index, type ->
                 val uuid = traderList.getOrNull(index)?.uuid ?: UUID.randomUUID()
