@@ -11,6 +11,7 @@ import utils.format
 import kotlin.math.pow
 import kotlin.time.Instant
 
+@Deprecated("I need to redo most of this shit, cuz its bad, so DON'T USE IT, IT'S INCOMPLETE")
 class TradingAlgorithmEvaluater {
     //===========================================================//
     //===========================================================//
@@ -26,7 +27,9 @@ class TradingAlgorithmEvaluater {
     //===========================================================//
     // Public Method(es)
 
-    suspend fun runEvaluation() = coroutineScope {
+    fun runEvaluation() {
+        error("Currently gives back incorrect data, please see deprecated message")
+        /*
         val a0 = async { HistoricalMarketDataProvider.getAllSecurityIdentifiers() }
 
         val listOfSecurityIdentifiers = a0.await()
@@ -48,10 +51,7 @@ class TradingAlgorithmEvaluater {
         println("Taxes: $tax")
         println("(All subsequent values are averages)")
         println()
-        display(r1, TimePeriod.Year10)
-        display(r2, TimePeriod.Year5)
-        display(r3, TimePeriod.Year2)
-        display(r4, TimePeriod.Year1)
+         */
     }
 
     //===========================================================//
@@ -104,29 +104,6 @@ class TradingAlgorithmEvaluater {
 
     //===========================================================//
 
-    private fun display(average: AverageOutput, timePeriod: TimePeriod) {
-        println("# Time Period: $timePeriod")
-        println()
-
-        val deltaCapital = average.totalCapital - m_Capital
-        val deltaCapitalInPercent = (deltaCapital / m_Capital) * 100.0
-        val yearlyPercentChange = ((average.totalCapital / m_Capital).pow(1.0 / timePeriod.toDouble()) - 1.0) * 100.0
-        println("Total Capital: ${average.totalCapital.format(2)}")
-        println("Delta Capital: ${deltaCapital.format(2)}")
-        println("Percent Change: ${deltaCapitalInPercent.format(2)}%")
-        println("Yearly Percent Change: ${yearlyPercentChange.format(2)}%")
-        println()
-
-        println("Total Buys Made: ${average.totalBuysMade.format(2)}")
-        println("Total Sells Made: ${average.totalSellsMade.format(2)}")
-        println("Force Closed Trades: ${average.forceClosedTrades.format(2)}")
-        println("Winrate: ${(average.tradeWinrate * 100.0).format(2)}%")
-        println("Sharpe Ratio: ${average.sharpieRatio.format(2)}")
-        println()
-    }
-
-    //===========================================================//
-
     private suspend fun runBackTesters(listOfSecurityIdentifiers: List<SecurityIdentifier>, startDate: Instant = Instant.DISTANT_PAST, endDate: Instant = Instant.DISTANT_FUTURE): List<AverageOutput> = coroutineScope {
         val outputs: MutableList<TradingAlgorithmBackTester.Output> = ArrayList()
         val deferredOutputs = listOfSecurityIdentifiers
@@ -155,7 +132,11 @@ class TradingAlgorithmEvaluater {
     //===========================================================//
     // Constructor(s)
 
-    constructor(tradingAlgorithmType: TradingAlgorithm.Type, capital: Double, taxationType: Taxation.Type? = null) {
+    constructor(
+        tradingAlgorithmType: TradingAlgorithm.Type,
+        capital: Double,
+        taxationType: Taxation.Type? = null
+    ) {
         m_TradingAlgorithmType = tradingAlgorithmType
         m_Capital = capital
         m_TaxationType = taxationType
