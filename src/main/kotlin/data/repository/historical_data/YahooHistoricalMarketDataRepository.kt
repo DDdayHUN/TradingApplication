@@ -30,13 +30,13 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto = withContext(Dispatchers.IO) {
         val targetFile = s_RootDir.walkTopDown()
             .filter { it.isFile }
-            .find { file ->
-                val yahooMarketData = RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, file)
+            .find {
+                val yahooMarketData = RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, it)
                 yahooMarketData.isin == securityIdentifier.isin
             }
 
         require(targetFile != null) { "There is no file with the given identifier" }
-        return@withContext RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, targetFile).toSecuritySerializationData()
+        return@withContext RepositoryUtil.loadFromFile<YahooMarketData>(s_GSON, targetFile).toHistoricalMarketDataDto()
     }
 
     //===========================================================//
@@ -52,7 +52,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
                 async {
                     RepositoryUtil
                         .loadFromFile<YahooMarketData>(s_GSON, it)
-                        .toSecuritySerializationData()
+                        .toHistoricalMarketDataDto()
                 }
             }.awaitAll()
         }
@@ -130,14 +130,13 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
             }
         }
 
-        fun toSecuritySerializationData(): HistoricalMarketDataDto {
+        fun toHistoricalMarketDataDto(): HistoricalMarketDataDto {
             val timestamps = result.timestamp
             val closes = result.indicators.adjclose.first().adjclose
 
             val history = timestamps.zip(closes).mapNotNull { (time, price) ->
-                if(price == null){
-                    null
-                }else {
+                if(price == null) null
+                else {
                     HistoricalMarketDataDto.MarketHistory(
                         date = Instant.fromEpochSeconds(time),
                         closingPrice = price

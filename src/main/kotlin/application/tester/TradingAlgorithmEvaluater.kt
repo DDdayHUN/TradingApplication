@@ -3,14 +3,10 @@ package application.tester
 import data.repository.HistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
-import domain.tax.ITaxation
 import domain.tax.Taxation
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import utils.format
 import kotlin.math.pow
 import kotlin.time.Instant
@@ -210,13 +206,13 @@ class TradingAlgorithmEvaluater {
 
     private fun TradingAlgorithmBackTester.Output.toAverageOutput(): AverageOutput {
         return AverageOutput(
-            startingCapital = this.startingCapital,
-            totalCapital = this.totalCapital,
-            totalBuysMade = this.totalBuysMade.toDouble(),
-            totalSellsMade = this.totalSellsMade.toDouble(),
-            forceClosedTrades = this.forceClosedTrades.toDouble(),
-            tradeWinrate = this.tradeWinrate,
-            sharpieRatio = this.sharpieRatio
+            startingCapital,
+            totalCapital,
+            totalBuysMade.toDouble(),
+            totalSellsMade.toDouble(),
+            forceClosedTrades.toDouble(),
+            tradeWinrate,
+            sharpieRatio
         )
     }
 }

@@ -3,6 +3,7 @@ package domain
 import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluater
+import data.repository.HistoricalMarketDataProvider
 import data.repository.trader.FakeTraderRepository
 import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
@@ -21,11 +22,12 @@ suspend fun main() {
     //===========================================================//
     // Settings
 
-    val c_RUN_BACKTEST_ON_ONE = false
-    val c_RUN_EVAL_ON_ONE = false
-    val c_RUN_EVAL_ON_ALL = false    // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
-    val c_RUN_TRADER_TEST = true
-    val c_CLEAR_TRADER_TEST_FOLDER = true
+    val c_RUN_BACKTEST_ON_ONE_SECURITY = false
+    val c_RUN_BACKTEST_ON_ALL_SECURITY = true  // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
+    val c_RUN_EVAL_ON_ONE_ALGORITHM = false
+    val c_RUN_EVAL_ON_ALL_ALGORITHM = false     // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
+    val c_RUN_TRADER_TEST = false
+    val c_CLEAR_TRADER_TEST_FOLDER = false
 
     //===========================================================//
     //===========================================================//
@@ -36,25 +38,27 @@ suspend fun main() {
 
     val identifier = SecurityIdentifier(
         "US0231351067",
-        "USD",
-        "AMAZON"
+        "AMAZON",
+        "USD"
     )
 
     val startCapital = 500.0
-    val startDate = Instant.parse("2020-01-01T00:00:00Z")
-    val endDate = Instant.parse("2025-01-01T00:00:00Z")
+    val startDate = Instant.parse("2018-01-01T00:00:00Z")
+    val endDate = Instant.parse("2022-01-01T00:00:00Z")
 
     //===========================================================//
     //===========================================================//
     // Config Checks
 
-    if(c_RUN_EVAL_ON_ONE && c_RUN_EVAL_ON_ALL) error("U can't run eval on one algorithm and on all at the same time")
+    if(c_RUN_EVAL_ON_ONE_ALGORITHM && c_RUN_EVAL_ON_ALL_ALGORITHM) error("You can't run eval on one algorithm and on all at the same time")
+    if(c_RUN_BACKTEST_ON_ONE_SECURITY && c_RUN_BACKTEST_ON_ALL_SECURITY) error("You can't run backtest on one security and on all at the same time")
+    if(c_RUN_BACKTEST_ON_ALL_SECURITY && c_RUN_EVAL_ON_ONE_ALGORITHM) error("You can't run backtest on all security and eval at the same time")
 
     //===========================================================//
     //===========================================================//
     // Tests
 
-    if(c_RUN_BACKTEST_ON_ONE) {
+    if(c_RUN_BACKTEST_ON_ONE_SECURITY) {
         run{
             TradingAlgorithmBackTester(
                 type = algorithm,
@@ -67,14 +71,29 @@ suspend fun main() {
         }
     }
 
-    if(c_RUN_EVAL_ON_ONE) {
+    if(c_RUN_BACKTEST_ON_ALL_SECURITY) {
+        run{
+            HistoricalMarketDataProvider.getAllSecurityIdentifiers().toList().forEach {
+                TradingAlgorithmBackTester(
+                    type = algorithm,
+                    securityIdentifier = it,
+                    startingCapital = startCapital,
+                    taxation = Taxation.create(taxation),
+                    from = startDate,
+                    to = endDate
+                ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
+            }
+        }
+    }
+
+    if(c_RUN_EVAL_ON_ONE_ALGORITHM) {
         run{
             TradingAlgorithmEvaluater(algorithm, startCapital, taxation)
                 .runEvaluation()
         }
     }
 
-    if(c_RUN_EVAL_ON_ALL) {
+    if(c_RUN_EVAL_ON_ALL_ALGORITHM) {
         run {
             coroutineScope {
                 TradingAlgorithm.Type.entries
