@@ -19,6 +19,7 @@ object TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Public Method(es)
+
     /**
      * Creates and initializes an algorithm instance configured for backtesting.
      *
@@ -64,27 +65,23 @@ object TradingAlgorithm {
         }
         val retTradingAlgorithm = when (type) {
             is Type.TACPP46 -> {
-                val initNum = 42
-                val init = retHistory.subList(0, initNum).toList()
-                retHistory.subList(0, initNum).clear()
+                val init = retHistory.subList(0, type.initSize).toList()
+                retHistory.subList(0, type.initSize).clear()
                 TACPP46(init)
             }
             is Type.ALGDES2 -> {
-                val initNum = 20
-                val init = retHistory.subList(0, initNum).toList()
-                retHistory.subList(0, initNum).clear()
+                val init = retHistory.subList(0, type.initSize).toList()
+                retHistory.subList(0, type.initSize).clear()
                 ALGDES2(init)
             }
             is Type.ALGDES3 -> {
-                val initNum = 15
-                val init = retHistory.subList(0, initNum).toList()
-                retHistory.subList(0, initNum).clear()
+                val init = retHistory.subList(0, type.initSize).toList()
+                retHistory.subList(0, type.initSize).clear()
                 ALGDES3(init)
             }
             is Type.ALGDES31 -> {
-                val initNum = 20
-                val init = retHistory.subList(0, initNum).toList()
-                retHistory.subList(0, initNum).clear()
+                val init = retHistory.subList(0, type.initSize).toList()
+                retHistory.subList(0, type.initSize).clear()
                 ALGDES31(init)
             }
         }
@@ -92,7 +89,6 @@ object TradingAlgorithm {
     }
 
     //===========================================================//
-
     /**
      * Core initialization method used by trading setups.
      *
@@ -107,20 +103,16 @@ object TradingAlgorithm {
         }
         return when (type) {
             is Type.TACPP46 -> {
-                val init = history.takeLast(42)
-                TACPP46(init)
+                TACPP46(history.takeLast(type.initSize))
             }
             is Type.ALGDES2 -> {
-                val init = history.takeLast(20)
-                ALGDES2(init)
+                ALGDES2(history.takeLast(type.initSize))
             }
             is Type.ALGDES3 -> {
-                val init = history.takeLast(15)
-                ALGDES3(init)
+                ALGDES3(history.takeLast(type.initSize))
             }
             is Type.ALGDES31 -> {
-                val init = history.takeLast(20)
-                ALGDES31(init)
+                ALGDES31(history.takeLast(type.initSize))
             }
         }
     }
@@ -128,11 +120,14 @@ object TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Helper Class(es)
+
     sealed interface Type {
-        data object TACPP46 : Type
-        data object ALGDES2 : Type
-        data object ALGDES3 : Type
-        data object ALGDES31 : Type
+        data object TACPP46 : Type { override val initSize: Int = 42 }
+        data object ALGDES2 : Type { override val initSize: Int = 20 }
+        data object ALGDES3 : Type { override val initSize: Int = 15 }
+        data object ALGDES31 : Type { override val initSize: Int = 20 }
+
+        val initSize: Int
 
         companion object {
             val entries: List<Type> = listOf(
