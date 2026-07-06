@@ -2,13 +2,12 @@ package application.tester
 
 import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
-import domain.trader.TradingOrder
 import domain.assets.security.SecurityHistory
 import domain.assets.security.SecurityHolding
 import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
+import domain.tax.Taxation
 import utils.format
-import java.util.UUID
 import kotlin.math.pow
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
@@ -47,7 +46,6 @@ class TradingAlgorithmBackTester {
 
     private val m_Holdings: MutableList<SecurityHolding>
     private val m_CapitalHistory: MutableList<Double>
-    private val m_Signlas: MutableList<TradingOrder>
 
     private var m_CurrentCapital: Double
     private var m_TotalBuysMade: Int
@@ -59,74 +57,14 @@ class TradingAlgorithmBackTester {
     //===========================================================//
     // Public Method(es)
 
-    fun runBackTest(display: DisplayMode = DisplayMode.NoDisplay): Output {
+    fun runBackTest(): Output {
         reset()
-        val ret = internalRunBackTest()
-        if(display is DisplayMode.Display) display(display.debug)
-        return ret;
+        return internalRunBackTest()
     }
 
     //===========================================================//
     //===========================================================//
     // Private Method(es)
-
-    private fun display(debug: DebugMode) {
-        require(!m_CapitalHistory.isEmpty()) { "CapitalHistory is empty" }
-
-        val zone = java.time.ZoneId.systemDefault()
-        val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
-
-        val fromDate = m_From.toJavaInstant()
-        val toDate = m_To.toJavaInstant()
-
-        val tax = if(m_Taxation == null) "Without" else "With"
-        val totalCapital = m_CapitalHistory.last()
-        val deltaCapital = totalCapital - m_StartingCapital
-        val deltaCapitalInPercent = (deltaCapital / m_StartingCapital) * 100.0
-        val winRate = if (m_TotalSellsMade <= 0) Double.NaN else (m_WinningTrades * 100.0 / m_TotalSellsMade)
-
-        val years = java.time.Duration.between(fromDate, toDate).toDays() / 365.2425
-        val yearlyPercentChange = ((totalCapital / m_StartingCapital).pow(1.0 / years) - 1.0) * 100.0
-
-        println("#===============================================================#")
-        println("# Algorithm Backtesting | Algorithm: $m_TradingAlgorithmType")
-        println("#===============================================================#")
-        println("Stock: ${m_SecurityIdentifier.tickerSymbol} [${fromDate.atZone(zone).format(formatter)}-${toDate.atZone(zone).format(formatter)}]")
-        println("Taxes: $tax")
-        println("Starting Capital: ${m_StartingCapital.format(2)}")
-        println()
-
-        println("Total Capital: ${totalCapital.format(2)}")
-        println("Delta Capital: ${deltaCapital.format(2)}")
-        println("Percent Change: ${deltaCapitalInPercent.format(2)}%")
-        println("Yearly Percent Change: ${yearlyPercentChange.format(2)}%")
-        println()
-
-        println("Total Buys Made: $m_TotalBuysMade")
-        println("Total Sells Made: $m_TotalSellsMade")
-        println("Force Closed Trades: $m_ForceClosedTrades")
-        println("Winrate: ${winRate.format(2)}%")
-        println("Sharpe Ratio: ${utils.Math.sharpeRatio(m_CapitalHistory).format(2)}")
-        println()
-
-        if(debug != DebugMode.None) {
-            println("#===============================================================#")
-            println("# DEBUG_INFO")
-            if(debug is DebugMode.Full || debug is DebugMode.TradeSignal) {
-                print("  Buy & Sale trades:")
-                if(m_Signlas.isEmpty()) println("None")
-                else {
-                    println()
-                    var counter = 1L
-                    for (signal in m_Signlas) {
-                        println("        ${(counter++)} ${signal.toReadableText()}")
-                    }
-                }
-            }
-        }
-    }
-
-    //===========================================================//
 
     private fun reset() {
         val pair = TradingAlgorithm.create(m_TradingAlgorithmType, m_SecurityIdentifier, m_From, m_To)
@@ -136,7 +74,6 @@ class TradingAlgorithmBackTester {
 
         m_Holdings.clear()
         m_CapitalHistory.clear()
-        m_Signlas.clear()
 
         m_CurrentCapital = m_StartingCapital
         m_TotalBuysMade = 0
@@ -158,9 +95,12 @@ class TradingAlgorithmBackTester {
         val winRate = if (m_TotalSellsMade <= 0) Double.NaN else (m_WinningTrades.toDouble() / m_TotalSellsMade.toDouble())
 
         return Output(
+            m_SecurityIdentifier,
+            m_TradingAlgorithmType,
             m_StartingCapital,
             m_From,
             m_To,
+            m_Taxation != null,
             m_CapitalHistory.last(),
             m_TotalBuysMade,
             m_TotalSellsMade,
@@ -174,14 +114,6 @@ class TradingAlgorithmBackTester {
 
     private fun runOneIteration(currentPrice: Double) {
         val ret = m_TradingAlgorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
-
-        m_Signlas.add(TradingOrder(
-            traderUuid = UUID.randomUUID(),
-            securityIdentifier = m_SecurityIdentifier,
-            buy = ret.buy,
-            sell = ret.sell,
-            atPrice = currentPrice
-        ))
 
         if (ret.buy != null) {
             m_CurrentCapital -= ret.buy.amount * currentPrice
@@ -269,7 +201,6 @@ class TradingAlgorithmBackTester {
 
         m_Holdings = ArrayList()
         m_CapitalHistory = ArrayList()
-        m_Signlas = ArrayList()
 
         m_CurrentCapital = m_StartingCapital
         m_TotalBuysMade = 0
@@ -282,30 +213,55 @@ class TradingAlgorithmBackTester {
     //===========================================================//
     // Helper Class(es)
 
-    sealed interface DisplayMode {
-        data class Display(val debug: DebugMode = DebugMode.None) : DisplayMode
-        data object NoDisplay : DisplayMode
-    }
-
-    //===========================================================//
-
-    sealed interface DebugMode {
-        data object None : DebugMode
-        data object Full : DebugMode
-        data object TradeSignal : DebugMode
-    }
-
-    //===========================================================//
-
     data class Output(
+        val securityIdentifier: SecurityIdentifier,
+        val tradingAlgorithmType: TradingAlgorithm.Type,
         val startingCapital: Double,
         val from: Instant,
         val to: Instant,
+        val taxation: Boolean,
         val totalCapital: Double,
         val totalBuysMade: Int,
         val totalSellsMade: Int,
         val forceClosedTrades: Int,
         val tradeWinrate: Double,
         val sharpieRatio: Double
-    )
+    ) {
+        fun display() {
+            val tax = if(taxation) "With" else "Without"
+
+            val zone = java.time.ZoneId.systemDefault()
+            val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
+
+            val fromDate = from.toJavaInstant()
+            val toDate = to.toJavaInstant()
+
+            val deltaCapital = totalCapital - startingCapital
+            val deltaCapitalInPercent = (deltaCapital / startingCapital) * 100.0
+
+            val years = java.time.Duration.between(fromDate, toDate).toDays() / 365.2425
+            val yearlyPercentChange = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0) * 100.0
+
+            println("#===============================================================#")
+            println("# Algorithm Backtesting | Algorithm: $tradingAlgorithmType")
+            println("#===============================================================#")
+            println("Stock: ${securityIdentifier.tickerSymbol} [${fromDate.atZone(zone).format(formatter)}-${toDate.atZone(zone).format(formatter)}]")
+            println("Taxation: $tax")
+            println("Starting Capital: ${startingCapital.format(2)}")
+            println()
+
+            println("Total Capital: ${totalCapital.format(2)}")
+            println("Delta Capital: ${deltaCapital.format(2)}")
+            println("Percent Change: ${deltaCapitalInPercent.format(2)}%")
+            println("Yearly Percent Change: ${yearlyPercentChange.format(2)}%")
+            println()
+
+            println("Total Buys Made: $totalBuysMade")
+            println("Total Sells Made: $totalSellsMade")
+            println("Force Closed Trades: $forceClosedTrades")
+            println("Winrate: ${tradeWinrate.format(2)}%")
+            println("Sharpe Ratio: ${sharpieRatio.format(2)}")
+            println()
+        }
+    }
 }

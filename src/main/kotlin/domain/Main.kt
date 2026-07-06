@@ -10,6 +10,8 @@ import domain.assets.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.trader.Trader
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -67,29 +69,40 @@ suspend fun main() {
                 taxation = Taxation.create(taxation),
                 from = startDate,
                 to = endDate
-            ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
+            ).runBackTest().display()
         }
     }
 
     if(c_RUN_BACKTEST_ON_ALL_SECURITY) {
         run{
-            HistoricalMarketDataProvider.getAllSecurityIdentifiers().toList().forEach {
-                TradingAlgorithmBackTester(
-                    type = algorithm,
-                    securityIdentifier = it,
-                    startingCapital = startCapital,
-                    taxation = Taxation.create(taxation),
-                    from = startDate,
-                    to = endDate
-                ).runBackTest(TradingAlgorithmBackTester.DisplayMode.Display())
+            coroutineScope {
+                val listOfOutput = HistoricalMarketDataProvider.getAllSecurityIdentifiers().map {
+                    async {
+                        TradingAlgorithmBackTester(
+                            type = algorithm,
+                            securityIdentifier = it,
+                            startingCapital = startCapital,
+                            taxation = Taxation.create(taxation),
+                            from = startDate,
+                            to = endDate
+                        ).runBackTest()
+                    }
+                }.awaitAll()
+
+                listOfOutput.forEach {
+                    it.display()
+                }
             }
         }
     }
 
     if(c_RUN_EVAL_ON_ONE_ALGORITHM) {
         run{
-            TradingAlgorithmEvaluater(algorithm, startCapital, taxation)
-                .runEvaluation()
+            TradingAlgorithmEvaluater(
+                algorithm,
+                startCapital,
+                taxation
+            ).runEvaluation()
         }
     }
 
