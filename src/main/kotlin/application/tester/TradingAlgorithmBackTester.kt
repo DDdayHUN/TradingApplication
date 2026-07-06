@@ -38,7 +38,9 @@ class TradingAlgorithmBackTester {
     private val m_To: Instant
 
     private val m_StartingCapital: Double
-    private val m_Taxation: ITaxation?
+
+    private val m_TaxationType: Taxation.Type?
+    private var m_Taxation: ITaxation?
 
     private val m_TradingAlgorithmType: TradingAlgorithm.Type
     private var m_TradingAlgorithm: ITradingAlgorithm
@@ -69,6 +71,8 @@ class TradingAlgorithmBackTester {
     private fun reset() {
         val pair = TradingAlgorithm.create(m_TradingAlgorithmType, m_SecurityIdentifier, m_From, m_To)
 
+        if(m_TaxationType != null) m_Taxation = Taxation.create(m_TaxationType)
+
         m_TradingAlgorithm = pair.second
         m_HistoryWeRunAgainst = pair.first
 
@@ -95,13 +99,13 @@ class TradingAlgorithmBackTester {
         val winRate = if (m_TotalSellsMade <= 0) Double.NaN else (m_WinningTrades.toDouble() / m_TotalSellsMade.toDouble())
 
         return Output(
-            m_SecurityIdentifier,
             m_TradingAlgorithmType,
+            m_SecurityIdentifier,
+            m_TaxationType,
             m_StartingCapital,
+            m_CapitalHistory.last(),
             m_From,
             m_To,
-            m_Taxation != null,
-            m_CapitalHistory.last(),
             m_TotalBuysMade,
             m_TotalSellsMade,
             m_ForceClosedTrades,
@@ -136,7 +140,7 @@ class TradingAlgorithmBackTester {
                 else {
                     val revenue = amount * currentPrice
                     val costBasis = amount * bought.entryPrice
-                    m_CurrentCapital += m_Taxation.calculateRevenueAfterTax(revenue, costBasis)
+                    m_CurrentCapital += m_Taxation!!.calculateRevenueAfterTax(revenue, costBasis)
                 }
 
                 if (amount != bought.amount) m_Holdings.add(
@@ -165,7 +169,7 @@ class TradingAlgorithmBackTester {
             else {
                 val revenue = holding.amount * lastPrice
                 val costBasis = holding.amount * holding.entryPrice
-                m_CurrentCapital += m_Taxation.calculateRevenueAfterTax(revenue, costBasis)
+                m_CurrentCapital += m_Taxation!!.calculateRevenueAfterTax(revenue, costBasis)
             }
             m_TotalSellsMade++
             if (lastPrice > holding.entryPrice) m_WinningTrades++
@@ -181,7 +185,7 @@ class TradingAlgorithmBackTester {
         type: TradingAlgorithm.Type,
         securityIdentifier: SecurityIdentifier,
         startingCapital: Double,
-        taxation: ITaxation? = null,
+        taxation: Taxation.Type? = null,
         from: Instant = Instant.DISTANT_PAST,
         to: Instant = Instant.DISTANT_FUTURE,
     ) {
@@ -192,7 +196,8 @@ class TradingAlgorithmBackTester {
         m_To = to
 
         m_StartingCapital = startingCapital
-        m_Taxation = taxation
+        m_TaxationType = taxation
+        m_Taxation = if(m_TaxationType != null) Taxation.create(m_TaxationType) else null
 
         m_TradingAlgorithmType = type
         val pair = TradingAlgorithm.create(m_TradingAlgorithmType, securityIdentifier, m_From, m_To)
@@ -213,14 +218,15 @@ class TradingAlgorithmBackTester {
     //===========================================================//
     // Helper Class(es)
 
+    @Suppress("DuplicatedCode")
     data class Output(
-        val securityIdentifier: SecurityIdentifier,
         val tradingAlgorithmType: TradingAlgorithm.Type,
+        val securityIdentifier: SecurityIdentifier,
+        val taxation: Taxation.Type?,
         val startingCapital: Double,
+        val totalCapital: Double,
         val from: Instant,
         val to: Instant,
-        val taxation: Boolean,
-        val totalCapital: Double,
         val totalBuysMade: Int,
         val totalSellsMade: Int,
         val forceClosedTrades: Int,
@@ -228,7 +234,7 @@ class TradingAlgorithmBackTester {
         val sharpieRatio: Double
     ) {
         fun display() {
-            val tax = if(taxation) "With" else "Without"
+            val tax = if(taxation != null) "With" else "Without"
 
             val zone = java.time.ZoneId.systemDefault()
             val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
@@ -239,7 +245,7 @@ class TradingAlgorithmBackTester {
             val deltaCapital = totalCapital - startingCapital
             val deltaCapitalInPercent = (deltaCapital / startingCapital) * 100.0
 
-            val years = java.time.Duration.between(fromDate, toDate).toDays() / 365.2425
+            val years = java.time.Duration.between(fromDate, toDate).toDays().toDouble() / 365.2425
             val yearlyPercentChange = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0) * 100.0
 
             println("#===============================================================#")
