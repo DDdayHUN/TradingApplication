@@ -25,7 +25,7 @@ suspend fun main() {
     // Settings
 
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
-    val c_RUN_BACKTEST_ON_ALL_SECURITY = true  // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
+    val c_RUN_BACKTEST_ON_ALL_SECURITY = true   // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
     val c_RUN_EVAL_ON_ONE_ALGORITHM = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false     // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
     val c_RUN_TRADER_TEST = false
@@ -54,7 +54,7 @@ suspend fun main() {
 
     if(c_RUN_EVAL_ON_ONE_ALGORITHM && c_RUN_EVAL_ON_ALL_ALGORITHM) error("You can't run eval on one algorithm and on all at the same time")
     if(c_RUN_BACKTEST_ON_ONE_SECURITY && c_RUN_BACKTEST_ON_ALL_SECURITY) error("You can't run backtest on one security and on all at the same time")
-    if(c_RUN_BACKTEST_ON_ALL_SECURITY && c_RUN_EVAL_ON_ONE_ALGORITHM) error("You can't run backtest on all security and eval at the same time")
+    if(c_RUN_BACKTEST_ON_ALL_SECURITY && c_RUN_EVAL_ON_ONE_ALGORITHM) error("You can't run backtest on all security and eval on the same algorithm at the same time")
 
     //===========================================================//
     //===========================================================//
@@ -66,7 +66,7 @@ suspend fun main() {
                 type = algorithm,
                 securityIdentifier = identifier,
                 startingCapital = startCapital,
-                taxation = Taxation.create(taxation),
+                taxation = taxation,
                 from = startDate,
                 to = endDate
             ).runBackTest().display()
@@ -82,7 +82,7 @@ suspend fun main() {
                             type = algorithm,
                             securityIdentifier = it,
                             startingCapital = startCapital,
-                            taxation = Taxation.create(taxation),
+                            taxation = taxation,
                             from = startDate,
                             to = endDate
                         ).runBackTest()
@@ -102,23 +102,26 @@ suspend fun main() {
                 algorithm,
                 startCapital,
                 taxation
-            ).runEvaluation()
+            ).runEvaluation().display()
         }
     }
 
     if(c_RUN_EVAL_ON_ALL_ALGORITHM) {
         run {
             coroutineScope {
-                TradingAlgorithm.Type.entries
-                    .map { type ->
-                        launch(Dispatchers.Default) {
-                            TradingAlgorithmEvaluater(
-                                type,
-                                startCapital,
-                                taxation
-                            ).runEvaluation()
-                        }
-                    }.joinAll()
+                val listOfOutput = TradingAlgorithm.Type.entries.map {
+                    async {
+                        TradingAlgorithmEvaluater(
+                            it,
+                            startCapital,
+                            taxation
+                        ).runEvaluation()
+                    }
+                }.awaitAll()
+
+                listOfOutput.forEach {
+                    it.display()
+                }
             }
         }
     }
