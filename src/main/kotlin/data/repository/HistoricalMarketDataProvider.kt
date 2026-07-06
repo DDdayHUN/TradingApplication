@@ -23,7 +23,7 @@ object HistoricalMarketDataProvider {
      * @param securityIdentifier the identifier of the security.
      * @param from the start date from which we want to include historical data (inclusive).
      * @param to the end date from which we don't want to include historical data (inclusive).
-     * @return the list of historical data entries.
+     * @return the list of historical data entries sorted by date.
      */
     suspend fun loadFromFile(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<SecurityHistory> {
         val data = s_HistoricalMarketDataRepository.getBySecurityIdentifier(securityIdentifier)
@@ -49,7 +49,7 @@ object HistoricalMarketDataProvider {
     suspend fun getAllSecurityIdentifiers(): List<SecurityIdentifier> {
         val data = s_HistoricalMarketDataRepository.getAll()
         return data.map {
-            SecurityIdentifier(it.meta.isin, it.meta.currency, it.meta.tickerSymbol)
+            SecurityIdentifier(it.meta.isin, it.meta.tickerSymbol, it.meta.currency)
         }
     }
 

@@ -9,7 +9,9 @@ import domain.assets.security.SecurityIdentifier
 import domain.tax.ITaxation
 import utils.format
 import java.util.UUID
+import kotlin.math.pow
 import kotlin.time.Instant
+import kotlin.time.toJavaInstant
 
 //===========================================================//
 /**
@@ -71,31 +73,33 @@ class TradingAlgorithmBackTester {
     private fun display(debug: DebugMode) {
         require(!m_CapitalHistory.isEmpty()) { "CapitalHistory is empty" }
 
-        val last = m_CapitalHistory.last()
-        val deltaCapital = last - m_StartingCapital
+        val zone = java.time.ZoneId.systemDefault()
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
+
+        val fromDate = m_From.toJavaInstant()
+        val toDate = m_To.toJavaInstant()
+
+        val tax = if(m_Taxation == null) "Without" else "With"
+        val totalCapital = m_CapitalHistory.last()
+        val deltaCapital = totalCapital - m_StartingCapital
         val deltaCapitalInPercent = (deltaCapital / m_StartingCapital) * 100.0
         val winRate = if (m_TotalSellsMade <= 0) Double.NaN else (m_WinningTrades * 100.0 / m_TotalSellsMade)
+
+        val years = java.time.Duration.between(fromDate, toDate).toDays() / 365.2425
+        val yearlyPercentChange = ((totalCapital / m_StartingCapital).pow(1.0 / years) - 1.0) * 100.0
 
         println("#===============================================================#")
         println("# Algorithm Backtesting | Algorithm: $m_TradingAlgorithmType")
         println("#===============================================================#")
-        val zone = java.time.ZoneId.systemDefault()
-        val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
-        println("Stock: ${m_SecurityIdentifier.name} " +
-                "[" +
-                "${java.time.Instant.ofEpochMilli(m_From.toEpochMilliseconds()).atZone(zone).format(formatter)}" +
-                "-" +
-                "${java.time.Instant.ofEpochMilli(m_To.toEpochMilliseconds()).atZone(zone).format(formatter)}" +
-                "]"
-        )
-        val tax = if(m_Taxation == null) "Without" else "With"
+        println("Stock: ${m_SecurityIdentifier.tickerSymbol} [${fromDate.atZone(zone).format(formatter)}-${toDate.atZone(zone).format(formatter)}]")
         println("Taxes: $tax")
         println("Starting Capital: ${m_StartingCapital.format(2)}")
         println()
 
-        println("Total Capital: ${last.format(2)}")
+        println("Total Capital: ${totalCapital.format(2)}")
         println("Delta Capital: ${deltaCapital.format(2)}")
         println("Percent Change: ${deltaCapitalInPercent.format(2)}%")
+        println("Yearly Percent Change: ${yearlyPercentChange.format(2)}%")
         println()
 
         println("Total Buys Made: $m_TotalBuysMade")
@@ -155,6 +159,8 @@ class TradingAlgorithmBackTester {
 
         return Output(
             m_StartingCapital,
+            m_From,
+            m_To,
             m_CapitalHistory.last(),
             m_TotalBuysMade,
             m_TotalSellsMade,
@@ -293,6 +299,8 @@ class TradingAlgorithmBackTester {
 
     data class Output(
         val startingCapital: Double,
+        val from: Instant,
+        val to: Instant,
         val totalCapital: Double,
         val totalBuysMade: Int,
         val totalSellsMade: Int,

@@ -33,7 +33,7 @@ class TraderTester {
         val order = m_Trader.createOrder(quote)
         m_Trader.finalizeOrder(order)
 
-        println("Trader: ${m_Trader.securityIdentifier.name}")
+        println("Trader: ${m_Trader.securityIdentifier.tickerSymbol}")
         println("UUID: ${m_Trader.uuid}")
         println("ISIN: ${m_Trader.securityIdentifier.isin}")
         println("Currency: ${m_Trader.securityIdentifier.currency}")
