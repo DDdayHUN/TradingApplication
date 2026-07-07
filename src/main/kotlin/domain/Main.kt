@@ -154,7 +154,6 @@ suspend fun main() {
         }
     }
 
-
     run{
         Application.launch(DemoWindow::class.java)
     }
