@@ -8,6 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import format
+import java.time.ZoneId
 import kotlin.math.pow
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
@@ -21,6 +22,10 @@ class TradingAlgorithmEvaluator {
     private val m_TaxationType: Taxation.Type?
     private val m_StartingCapital: Double
 
+    private val m_EvaluationStartDate: Instant
+    private val m_EvaluationEndDate: Instant
+    private val m_WindowStepYears: Int
+
     //===========================================================//
     //===========================================================//
     // Public Method(es)
@@ -28,31 +33,56 @@ class TradingAlgorithmEvaluator {
     suspend fun runEvaluation(): Output = coroutineScope {
         val listOfSecurityIdentifiers = HistoricalMarketDataProvider.getAllSecurityIdentifiers()
 
-        val a1 = async { years(TimePeriod.Year10, listOfSecurityIdentifiers) }
-        val a2 = async { years(TimePeriod.Year5,listOfSecurityIdentifiers) }
-        val a3 = async { years(TimePeriod.Year2,listOfSecurityIdentifiers) }
-        val a4 = async { years(TimePeriod.Year1, listOfSecurityIdentifiers) }
+        val timePeriods = listOf(
+            TimePeriod.Year10,
+            TimePeriod.Year5,
+            TimePeriod.Year2,
+            TimePeriod.Year1
+        )
 
-        val r = listOf(a1, a2, a3, a4).awaitAll()
+        val results = timePeriods.map { timePeriod ->
+            async{
+                years(timePeriod, listOfSecurityIdentifiers)
+            }
+        }.awaitAll().filterNotNull()
 
-        return@coroutineScope Output(r)
+        return@coroutineScope Output(results)
     }
 
     //===========================================================//
     //===========================================================//
     // Private Method(es)
 
-    private suspend fun years(cycle: TimePeriod, listOfSecurityIdentifiers: List<SecurityIdentifier>): Pair<AverageOutput, TimePeriod> = coroutineScope {
-        val increment = cycle.toInt()
-        val results = (2015 until 2025 step increment).map { currentYear ->
-            async {
-                val startDate = Instant.parse("${currentYear}-01-01T00:00:00Z")
-                val endDate = Instant.parse("${currentYear + increment}-01-01T00:00:00Z")
-                averager(runBackTesters(listOfSecurityIdentifiers, startDate, endDate))
-            }
-        }
+    private suspend fun years(cycle: TimePeriod, listOfSecurityIdentifiers: List<SecurityIdentifier>): Pair<AverageOutput, TimePeriod>? = coroutineScope {
+        val windowSizeYears = cycle.toInt()
 
-        return@coroutineScope Pair(averager(results.awaitAll()), cycle)
+        val startYear = m_EvaluationStartDate.toJavaInstant().atZone(ZoneId.systemDefault()).year
+        val endYear = m_EvaluationEndDate.toJavaInstant().atZone(ZoneId.systemDefault()).year
+
+        if((endYear-windowSizeYears) < startYear) return@coroutineScope null
+
+        val result = (startYear..endYear - windowSizeYears step m_WindowStepYears)
+            .map {year ->
+                async {
+                    val startDate = Instant.parse("${year}-01-01T00:00:00Z")
+                    val endDate = Instant.parse("${year + windowSizeYears}-01-01T00:00:00Z")
+
+                    averager(
+                        runBackTesters(
+                            listOfSecurityIdentifiers,
+                            startDate,
+                            endDate
+                        )
+                    )
+                }
+            }
+
+        if(result.isEmpty()) return@coroutineScope null
+
+        return@coroutineScope Pair(
+            averager(result.awaitAll()),
+            cycle
+        )
     }
 
     //===========================================================//
@@ -108,11 +138,18 @@ class TradingAlgorithmEvaluator {
     constructor(
         tradingAlgorithmType: TradingAlgorithm.Type,
         capital: Double,
-        taxation: Taxation.Type? = null
+        taxation: Taxation.Type? = null,
+        evaluationStartYear: Instant = Instant.parse("2015-01-01T00:00:00Z"),
+        evaluationEndYear: Instant = Instant.parse("2025-01-01T00:00:00Z"),
+        windowStepYears: Int = 1
+
     ) {
         m_TradingAlgorithmType = tradingAlgorithmType
         m_StartingCapital = capital
         m_TaxationType = taxation
+        m_EvaluationStartDate = evaluationStartYear
+        m_EvaluationEndDate = evaluationEndYear
+        m_WindowStepYears = windowStepYears
     }
 
     //===========================================================//
@@ -121,22 +158,69 @@ class TradingAlgorithmEvaluator {
 
     data class Output(val list: List<Pair<AverageOutput, TimePeriod>>) {
         fun display() {
-            val firstElement = list.firstOrNull()?.first ?: error("Empty")
-            val tax = if(firstElement.taxation == null) "Without" else "With"
 
+            if(list.isEmpty()){
+                println("No evaluation results available.")
+                return
+            }
+
+            val firstElement = list.first().first
+            val tax = if(firstElement.taxation == null) "Without" else "With"
             println("#===============================================================#")
             println("# Algorithm Evaluation | Algorithm: ${firstElement.tradingAlgorithmType}")
             println("#===============================================================#")
             println("Starting Capital: ${firstElement.startingCapital.format(2)}")
             println("Taxes: $tax")
-            println("(All subsequent values are averages)")
             println()
+            // NOTE: YEAH...that was not me xd, wtf is this gpt
+            println(
+                "| ${"Period".padEnd(8)} " +
+                        "| ${"Final Capital".padStart(14)} " +
+                        "| ${"Profit".padStart(12)} " +
+                        "| ${"Profit %".padStart(10)} " +
+                        "| ${"Yearly %".padStart(10)} " +
+                        "| ${"Buys".padStart(8)} " +
+                        "| ${"Sells".padStart(8)} " +
+                        "| ${"Forced".padStart(8)} " +
+                        "| ${"Winrate".padStart(9)} " +
+                        "| ${"Sharpe".padStart(8)} |"
+            )
 
-            list.forEach {
-                println("#===============================================================#")
-                println("TimePeriod: ${it.second}")
-                println()
-                it.first.display()
+            println("-".repeat(126))
+
+            list.forEach { result ->
+                val average = result.first
+                val period = result.second
+
+                val profit = average.totalCapital - average.startingCapital
+                val profitPercent = (profit / average.startingCapital) * 100.0
+
+                println(
+                    "| ${period.toString().padEnd(8)} " +
+                            "| ${average.totalCapital.format(2).padStart(14)} " +
+                            "| ${profit.format(2).padStart(12)} " +
+                            "| ${profitPercent.format(2).padStart(9)}% " +
+                            "| ${average.yearlyPercentChangeOfCapital.format(2).padStart(9)}% " +
+                            "| ${average.totalBuysMade.format(2).padStart(8)} " +
+                            "| ${average.totalSellsMade.format(2).padStart(8)} " +
+                            "| ${average.forceClosedTrades.format(2).padStart(8)} " +
+                            "| ${formatWinrate(average.tradeWinrate).padStart(9)} " +
+                            "| ${average.sharpieRatio.format(2).padStart(8)} |"
+                )
+            }
+
+            println()
+        }
+
+        //===========================================================//
+        //===========================================================//
+        // Helper Private Method(es)
+
+        private fun formatWinrate(value: Double): String {
+            return if (value <= 1.0) {
+                "${(value * 100.0).format(2)}%"
+            } else {
+                "${value.format(2)}%"
             }
         }
     }
@@ -155,25 +239,7 @@ class TradingAlgorithmEvaluator {
         val tradeWinrate: Double,
         val sharpieRatio: Double,
         val yearlyPercentChangeOfCapital: Double
-    ) {
-        fun display() {
-            val deltaCapital = totalCapital - startingCapital
-            val deltaCapitalInPercent = (deltaCapital / startingCapital) * 100.0
-
-            println("Total Capital: ${totalCapital.format(2)}")
-            println("Delta Capital: ${deltaCapital.format(2)}")
-            println("Percent Change: ${deltaCapitalInPercent.format(2)}%")
-            println("Yearly Percent Change: ${yearlyPercentChangeOfCapital.format(2)}%")
-            println()
-
-            println("Total Buys Made: ${totalBuysMade.format(2)}")
-            println("Total Sells Made: ${totalSellsMade.format(2)}")
-            println("Force Closed Trades: ${forceClosedTrades.format(2)}")
-            println("Winrate: ${tradeWinrate.format(2)}%")
-            println("Sharpe Ratio: ${sharpieRatio.format(2)}")
-            println()
-        }
-    }
+    )
 
     //===========================================================//
 
