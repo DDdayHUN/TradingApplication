@@ -1,8 +1,9 @@
 package data.repository.trader
 
 import com.google.gson.GsonBuilder
-import data.repository.util.RepositoryUtil
-import domain.assets.security.SecurityIdentifier
+import data.repository.utils.RepositoryUtils
+import domain.market.security.SecurityIdentifier
+import domain.interfaces.ITraderRepository
 import domain.trader.Trader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -10,10 +11,9 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.UUID
 
 @Deprecated("Fake repo")
-object FakeTraderRepository : ITraderRepository {
+internal object FakeTraderRepository : ITraderRepository {
 
     //===========================================================//
     //===========================================================//
@@ -44,7 +44,7 @@ object FakeTraderRepository : ITraderRepository {
 
         val file = File(s_DirectoryPath, "${trader.uuid}.json")
 
-        RepositoryUtil.saveToFile<TraderDto>(s_Gson, file, dto)
+        RepositoryUtils.saveToFile<TraderDto>(s_Gson, file, dto)
     }
 
     //===========================================================//
@@ -55,21 +55,7 @@ object FakeTraderRepository : ITraderRepository {
 
             require(file.isFile) { "There is no file with the given identifier" }
 
-            val dto = RepositoryUtil.loadFromFile<TraderDto>(s_Gson, file)
-
-            return@withContext dto.toDomain()
-        }
-    //===========================================================//
-
-    override suspend fun getById(uuid: UUID): Trader? =
-        withContext(Dispatchers.IO){
-            val file = File(s_DirectoryPath, "${uuid}.json")
-            if(!file.exists()){
-                return@withContext null
-            }
-            require(file.isFile) { "There is no file with the given uuid" }
-
-            val dto = RepositoryUtil.loadFromFile<TraderDto>(s_Gson, file)
+            val dto = RepositoryUtils.loadFromFile<TraderDto>(s_Gson, file)
 
             return@withContext dto.toDomain()
         }
@@ -83,7 +69,7 @@ object FakeTraderRepository : ITraderRepository {
             files.filter { it.isFile }
                 .map {
                     async {
-                        RepositoryUtil.loadFromFile<TraderDto>(s_Gson, it)
+                        RepositoryUtils.loadFromFile<TraderDto>(s_Gson, it)
                             .toDomain()
                     }
                 }.awaitAll()

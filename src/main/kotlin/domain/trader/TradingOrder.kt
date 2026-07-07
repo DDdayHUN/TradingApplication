@@ -1,7 +1,7 @@
 package domain.trader
 
 import domain.algorithm.TradingAlgorithm
-import domain.assets.security.SecurityIdentifier
+import domain.market.security.SecurityIdentifier
 import java.time.Instant
 import java.util.UUID
 

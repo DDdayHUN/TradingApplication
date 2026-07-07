@@ -8,7 +8,7 @@ import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.gson.annotations.JsonAdapter
 import domain.algorithm.TradingAlgorithm.Output
-import domain.assets.security.SecurityHolding
+import domain.market.security.SecurityHolding
 import java.lang.reflect.Type
 
 @JsonAdapter(ITradingAlgorithm.Adapter::class)
@@ -20,7 +20,7 @@ sealed interface ITradingAlgorithm {
     /**
      * Executes the algorithm based on current holdings and market conditions.
      *
-     * @param holdings the list of currently owned assets.
+     * @param holdings the list of currently owned market.
      * @param allocatedCapital the amount of capital allocated for trading.
      * @param currentPrice the current market price of the asset.
      * @return contains the decision/results.
