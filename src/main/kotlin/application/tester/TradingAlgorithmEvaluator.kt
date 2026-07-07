@@ -214,7 +214,7 @@ class TradingAlgorithmEvaluator {
 
         //===========================================================//
         //===========================================================//
-        // Helper Methods(es)
+        // Helper Private Method(es)
 
         private fun formatWinrate(value: Double): String {
             return if (value <= 1.0) {
