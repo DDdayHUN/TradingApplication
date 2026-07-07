@@ -9,14 +9,11 @@ import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.trader.Trader
-import gui.window.MainWindow
+import gui.window.DemoWindow
 import javafx.application.Application
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import utils.clearTestFolder
 import java.util.UUID
 import kotlin.time.Instant
@@ -159,6 +156,6 @@ suspend fun main() {
 
 
     run{
-        Application.launch(MainWindow::class.java)
+        Application.launch(DemoWindow::class.java)
     }
 }

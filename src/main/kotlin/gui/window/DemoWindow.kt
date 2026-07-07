@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox
 import kotlin.random.Random
 import javafx.util.Duration
 
-class MainWindow: Application() {
+class DemoWindow: Application() {
     override fun start(stage: Stage) {
         val title = Label("Trading App").apply {
             style = "-fx-font-size: 20px;"
@@ -41,6 +41,7 @@ class MainWindow: Application() {
 
             setOnAction{
                 text = "Closing..."
+                title.text = "LOL"
                 val delay = PauseTransition(Duration.seconds(1.0))
                 delay.setOnFinished {
                     stage.close()
