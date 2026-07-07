@@ -2,12 +2,12 @@ package application.tester
 
 import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
-import domain.assets.security.SecurityHistory
-import domain.assets.security.SecurityHolding
-import domain.assets.security.SecurityIdentifier
+import domain.market.security.SecurityHistory
+import domain.market.security.SecurityHolding
+import domain.market.security.SecurityIdentifier
 import domain.tax.ITaxation
 import domain.tax.Taxation
-import utils.format
+import format
 import kotlin.math.pow
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
@@ -110,7 +110,7 @@ class TradingAlgorithmBackTester {
             m_TotalSellsMade,
             m_ForceClosedTrades,
             winRate,
-            utils.Math.sharpeRatio(m_CapitalHistory)
+            domain.utils.Math.sharpeRatio(m_CapitalHistory)
         )
     }
 

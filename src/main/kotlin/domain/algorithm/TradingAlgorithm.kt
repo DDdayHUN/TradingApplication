@@ -1,9 +1,9 @@
 package domain.algorithm
 
-import data.repository.HistoricalMarketDataProvider
-import domain.assets.security.SecurityHistory
-import domain.assets.security.SecurityHolding
-import domain.assets.security.SecurityIdentifier
+import data.repository.historical_data.HistoricalMarketDataProvider
+import domain.market.security.SecurityHistory
+import domain.market.security.SecurityHolding
+import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlin.time.Instant
@@ -60,7 +60,7 @@ object TradingAlgorithm {
      */
     private fun initForBackTest(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
         val retHistory = runBlocking {
-            val a1 = async { HistoricalMarketDataProvider.loadFromFile(securityIdentifier, from, to).toMutableList() }
+            val a1 = async { HistoricalMarketDataProvider.getBySecurityIdentifier(securityIdentifier, from, to).toMutableList() }
             a1.await()
         }
         val retTradingAlgorithm = when (type) {
@@ -98,7 +98,7 @@ object TradingAlgorithm {
      */
     private fun initForTrading(type: Type, securityIdentifier: SecurityIdentifier): ITradingAlgorithm {
         val history = runBlocking {
-            val a1 = async { HistoricalMarketDataProvider.loadFromFile(securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE) }
+            val a1 = async { HistoricalMarketDataProvider.getBySecurityIdentifier(securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE) }
             a1.await()
         }
         return when (type) {

@@ -1,9 +1,9 @@
 package domain.trader
 
 import domain.algorithm.ITradingAlgorithm
-import infrastructure.network.Quote
-import domain.assets.security.SecurityHolding
-import domain.assets.security.SecurityIdentifier
+import domain.market.Quote
+import domain.market.security.SecurityHolding
+import domain.market.security.SecurityIdentifier
 import java.util.UUID
 
 //===========================================================//
@@ -59,7 +59,7 @@ class Trader {
     /**
      * Applies a successfully executed order.
      *
-     * This method should only be called after the trading service has confirmed
+     * This method should only be called after the trading data.service has confirmed
      * that the buy order was executed successfully.
      *
      * @param order the order that has been accepted and should be finalized.

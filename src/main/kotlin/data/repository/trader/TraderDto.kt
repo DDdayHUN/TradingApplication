@@ -1,8 +1,8 @@
 package data.repository.trader
 
 import domain.algorithm.ITradingAlgorithm
-import domain.assets.security.SecurityHolding
-import domain.assets.security.SecurityIdentifier
+import domain.market.security.SecurityHolding
+import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import java.util.UUID
 

@@ -1,8 +1,8 @@
 package data.repository.historical_data
 
-import domain.assets.security.SecurityIdentifier
+import domain.market.security.SecurityIdentifier
 
-internal sealed interface IHistoricalMarketDataRepository {
+interface IHistoricalMarketDataRepository {
     suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto
     suspend fun getAll(): List<HistoricalMarketDataDto>
 }

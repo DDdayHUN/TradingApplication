@@ -1,7 +1,7 @@
 package domain.algorithm
 
-import domain.assets.security.SecurityHistory
-import domain.assets.security.SecurityHolding
+import domain.market.security.SecurityHistory
+import domain.market.security.SecurityHolding
 import java.util.ArrayDeque
 import java.util.Deque
 
@@ -34,9 +34,9 @@ internal class TACPP46: ITradingAlgorithm {
         var sell: TradingAlgorithm.Output.Sell? = null
 
         val ema: List<Double> = ArrayList(m_EmaHistory)
-        val std: Double = utils.Math.stdDev(ema)
-        val rsi: Double = utils.Math.rsi(ema)
-        val ma: Double = utils.Math.average(ema)
+        val std: Double = domain.utils.Math.stdDev(ema)
+        val rsi: Double = domain.utils.Math.rsi(ema)
+        val ma: Double = domain.utils.Math.average(ema)
 
         val lowerBand = ma - 4.0 * std * ma
 
@@ -44,7 +44,7 @@ internal class TACPP46: ITradingAlgorithm {
         if (rsi <= 30.0 && currentPrice <= lowerBand) {
             if (m_LastInputArr.isEmpty()) {
                 m_LastInputArr.add(currentPrice)
-            } else if (utils.Math.average(ArrayList(m_LastInputArr)) <= currentPrice) {
+            } else if (domain.utils.Math.average(ArrayList(m_LastInputArr)) <= currentPrice) {
                 val confidence = Math.clamp(
                     ((1.0 - std * 100.0) + (100.0 - rsi) / 100.0) / 2.0,
                     0.0,
@@ -142,7 +142,7 @@ internal class TACPP46: ITradingAlgorithm {
         val q1 = historyQ1.stream().map { it.closingPrice }.toList()
 
         val alpha = 2.0 / (q1.size + 1.0)
-        var ema = utils.Math.average(q0) // initial Value
+        var ema = domain.utils.Math.average(q0) // initial Value
 
         for (price in q1) {
             ema = alpha * price + (1.0 - alpha) * ema
