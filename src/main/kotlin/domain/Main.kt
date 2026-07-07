@@ -29,6 +29,7 @@ suspend fun main() {
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false     // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
     val c_RUN_TRADER_TEST = false
     val c_CLEAR_TRADER_TEST_FOLDER = false
+    val c_SHOW_GUI = false
 
     //===========================================================//
     //===========================================================//
@@ -154,7 +155,9 @@ suspend fun main() {
         }
     }
 
-    run{
-        Application.launch(DemoWindow::class.java)
+    if(c_SHOW_GUI) {
+        run{
+            Application.launch(DemoWindow::class.java)
+        }
     }
 }
