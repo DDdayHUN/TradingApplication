@@ -239,25 +239,7 @@ class TradingAlgorithmEvaluator {
         val tradeWinrate: Double,
         val sharpieRatio: Double,
         val yearlyPercentChangeOfCapital: Double
-    ) {
-//        fun display() {
-//            val deltaCapital = totalCapital - startingCapital
-//            val deltaCapitalInPercent = (deltaCapital / startingCapital) * 100.0
-//
-//            println("Total Capital: ${totalCapital.format(2)}")
-//            println("Delta Capital: ${deltaCapital.format(2)}")
-//            println("Percent Change: ${deltaCapitalInPercent.format(2)}%")
-//            println("Yearly Percent Change: ${yearlyPercentChangeOfCapital.format(2)}%")
-//            println()
-//
-//            println("Total Buys Made: ${totalBuysMade.format(2)}")
-//            println("Total Sells Made: ${totalSellsMade.format(2)}")
-//            println("Force Closed Trades: ${forceClosedTrades.format(2)}")
-//            println("Winrate: ${tradeWinrate.format(2)}%")
-//            println("Sharpe Ratio: ${sharpieRatio.format(2)}")
-//            println()
-//        }
-    }
+    )
 
     //===========================================================//
 
