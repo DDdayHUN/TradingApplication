@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets
  */
 //===========================================================//
 
-class FinnhubClient (
+internal class FinnhubClient (
     private val m_Config: FinnhubConfig,
     private val m_HttpClient: HttpClient = HttpClient.newHttpClient(),
 )

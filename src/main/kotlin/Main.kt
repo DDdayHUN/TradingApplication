@@ -2,7 +2,7 @@ import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
 import data.repository.historical_data.HistoricalMarketDataProvider
-import data.repository.trader.FakeTraderRepository
+import data.repository.trader.TraderRepositoryProvider
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
@@ -128,7 +128,7 @@ suspend fun main() {
 
             if (c_CLEAR_TRADER_TEST_FOLDER) clearTestFolder()
 
-            val traderList = FakeTraderRepository.getAll()
+            val traderList = TraderRepositoryProvider.get(TraderRepositoryProvider.Type.Fake).getAll()
 
             val tradersToTest =
                 if (traderList.any { it.securityIdentifier.isin == identifier.isin }) {

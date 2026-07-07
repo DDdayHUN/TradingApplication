@@ -17,7 +17,7 @@ import java.time.Duration
  */
 //===========================================================//
 
-fun httpGetRequestBuilder(url: String, headerName: String, timeout: Duration, apiKey: String): HttpRequest {
+internal fun httpGetRequestBuilder(url: String, headerName: String, timeout: Duration, apiKey: String): HttpRequest {
     return HttpRequest.newBuilder()
         .uri(URI.create(url))
         .timeout(timeout)

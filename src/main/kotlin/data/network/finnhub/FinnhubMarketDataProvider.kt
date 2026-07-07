@@ -9,7 +9,7 @@ import domain.interfaces.IMarketDataProvider
  * Provider implementation that gets quote data from Finnhub.
  */
 //===========================================================//
-class FinnhubMarketDataProvider(
+internal class FinnhubMarketDataProvider(
     private val client: FinnhubClient
 ) : IMarketDataProvider {
     override suspend fun getQuote(identifier: SecurityIdentifier): Quote {
