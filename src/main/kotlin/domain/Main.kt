@@ -9,6 +9,8 @@ import domain.algorithm.TradingAlgorithm
 import domain.assets.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.trader.Trader
+import gui.window.MainWindow
+import javafx.application.Application
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -25,7 +27,7 @@ suspend fun main() {
     // Settings
 
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
-    val c_RUN_BACKTEST_ON_ALL_SECURITY = true   // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
+    val c_RUN_BACKTEST_ON_ALL_SECURITY = false   // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
     val c_RUN_EVAL_ON_ONE_ALGORITHM = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false     // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
     val c_RUN_TRADER_TEST = false
@@ -153,5 +155,10 @@ suspend fun main() {
                 TraderTester(trader).runTest()
             }
         }
+    }
+
+
+    run{
+        Application.launch(MainWindow::class.java)
     }
 }
