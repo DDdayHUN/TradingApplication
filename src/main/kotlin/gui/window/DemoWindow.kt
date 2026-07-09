@@ -1,6 +1,6 @@
 package gui.window
 
-import gui.utils.applyTheme
+import applyTheme
 import javafx.animation.PauseTransition
 import javafx.application.Application
 import javafx.geometry.Pos

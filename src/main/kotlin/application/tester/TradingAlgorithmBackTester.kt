@@ -233,7 +233,7 @@ class TradingAlgorithmBackTester {
         val tradeWinrate: Double,
         val sharpieRatio: Double
     ) {
-        fun display() {
+        fun displayToLogger(): String {
             val tax = if(taxation != null) "With" else "Without"
 
             val zone = java.time.ZoneId.systemDefault()
@@ -248,26 +248,31 @@ class TradingAlgorithmBackTester {
             val years = java.time.Duration.between(fromDate, toDate).toDays().toDouble() / 365.2425
             val yearlyPercentChange = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0) * 100.0
 
-            println("#===============================================================#")
-            println("# Algorithm Backtesting | Algorithm: $tradingAlgorithmType")
-            println("#===============================================================#")
-            println("Stock: ${securityIdentifier.tickerSymbol} [${fromDate.atZone(zone).format(formatter)}-${toDate.atZone(zone).format(formatter)}]")
-            println("Taxation: $tax")
-            println("Starting Capital: ${startingCapital.format(2)}")
-            println()
+            return buildString {
+                appendLine("#===============================================================#")
+                appendLine("# Algorithm Backtesting | Algorithm: $tradingAlgorithmType")
+                appendLine("#===============================================================#")
+                appendLine("Stock: ${securityIdentifier.tickerSymbol} [${fromDate.atZone(zone).format(formatter)}-${toDate.atZone(zone).format(formatter)}]")
+                appendLine("Taxation: $tax")
+                appendLine("Starting Capital: ${startingCapital.format(2)}")
+                appendLine()
 
-            println("Total Capital: ${totalCapital.format(2)}")
-            println("Delta Capital: ${deltaCapital.format(2)}")
-            println("Percent Change: ${deltaCapitalInPercent.format(2)}%")
-            println("Yearly Percent Change: ${yearlyPercentChange.format(2)}%")
-            println()
+                appendLine("Total Capital: ${totalCapital.format(2)}")
+                appendLine("Delta Capital: ${deltaCapital.format(2)}")
+                appendLine("Percent Change: ${deltaCapitalInPercent.format(2)}%")
+                appendLine("Yearly Percent Change: ${yearlyPercentChange.format(2)}%")
+                appendLine()
 
-            println("Total Buys Made: $totalBuysMade")
-            println("Total Sells Made: $totalSellsMade")
-            println("Force Closed Trades: $forceClosedTrades")
-            println("Winrate: ${tradeWinrate.format(2)}%")
-            println("Sharpe Ratio: ${sharpieRatio.format(2)}")
-            println()
+                appendLine("Total Buys Made: $totalBuysMade")
+                appendLine("Total Sells Made: $totalSellsMade")
+                appendLine("Force Closed Trades: $forceClosedTrades")
+                appendLine("Winrate: ${(tradeWinrate * 100.0).format(2)}%")
+                appendLine("Sharpe Ratio: ${sharpieRatio.format(2)}")
+            }
+        }
+
+        fun display(){
+            println(displayToLogger())
         }
     }
 }

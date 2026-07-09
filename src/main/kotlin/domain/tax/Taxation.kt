@@ -10,5 +10,11 @@ object Taxation {
 
     sealed interface Type {
         data object Hungary : Type
+
+        companion object{
+            val entries: List<Type> = listOf(
+                Hungary
+            )
+        }
     }
 }
