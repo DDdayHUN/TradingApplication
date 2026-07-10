@@ -18,7 +18,7 @@ interface IHistoricalMarketDataProvider {
      * @param to the end date from which we don't want to include historical data (inclusive).
      * @return the list of historical data entries sorted by date.
      */
-    suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<SecurityHistory>
+    suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Result<List<SecurityHistory>>
 
     //===========================================================//
     /**
@@ -29,5 +29,5 @@ interface IHistoricalMarketDataProvider {
      *
      * @return a list of security identifiers derived from all stored market data entries.
      */
-    suspend fun getAllSecurityIdentifiers(): List<SecurityIdentifier>
+    suspend fun getAllSecurityIdentifiers(): Result<List<SecurityIdentifier>>
 }

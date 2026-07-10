@@ -10,5 +10,5 @@ interface IMarketDataProvider {
     //===========================================================//
     //===========================================================//
 
-    suspend fun getQuote(identifier: SecurityIdentifier): Quote
+    suspend fun getQuote(identifier: SecurityIdentifier): Result<Quote>
 }
