@@ -1,3 +1,4 @@
+import application.ManualTrading
 import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
@@ -22,17 +23,18 @@ suspend fun main() {
 
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
     val c_RUN_BACKTEST_ON_ALL_SECURITY = false   // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
-    val c_RUN_EVAL_ON_ONE_ALGORITHM = true
+    val c_RUN_EVAL_ON_ONE_ALGORITHM = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false     // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
     val c_RUN_TRADER_TEST = false
     val c_CLEAR_TRADER_TEST_FOLDER = false
     val c_SHOW_GUI = false
+    val c_RUN_MANUAL_TRADING = true
 
     //===========================================================//
     //===========================================================//
     // Config
 
-    val algorithm = TradingAlgorithm.Type.TACPP46
+    val algorithm = TradingAlgorithm.Type.ALGDES3
     val taxation = Taxation.Type.Hungary
 
     val identifier = SecurityIdentifier(
@@ -40,6 +42,7 @@ suspend fun main() {
         "NVDA",
         "USD"
     )
+    val currentPrice = 200.0
 
     val startCapital = 1000.0
     val startDate = Instant.parse("2015-01-01T00:00:00Z")
@@ -156,6 +159,16 @@ suspend fun main() {
             tradersToTest.forEach { trader ->
                 TraderTester(trader).runTest()
             }
+        }
+    }
+
+    if(c_RUN_MANUAL_TRADING) {
+        run {
+            ManualTrading(
+                algorithm,
+                identifier,
+                startCapital
+            ).run(currentPrice)
         }
     }
 

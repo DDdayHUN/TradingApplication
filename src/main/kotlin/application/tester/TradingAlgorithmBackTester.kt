@@ -218,7 +218,6 @@ class TradingAlgorithmBackTester {
     //===========================================================//
     // Helper Class(es)
 
-    @Suppress("DuplicatedCode")
     data class Output(
         val tradingAlgorithmType: TradingAlgorithm.Type,
         val securityIdentifier: SecurityIdentifier,
