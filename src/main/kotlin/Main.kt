@@ -74,6 +74,8 @@ suspend fun main() {
         }
     }
 
+    //===========================================================//
+
     if(c_RUN_BACKTEST_ON_ALL_SECURITY) {
         run{
             coroutineScope {
@@ -97,6 +99,8 @@ suspend fun main() {
         }
     }
 
+    //===========================================================//
+
     if(c_RUN_EVAL_ON_ONE_ALGORITHM) {
         run{
             TradingAlgorithmEvaluator(
@@ -109,6 +113,8 @@ suspend fun main() {
             ).runEvaluation().display()
         }
     }
+
+    //===========================================================//
 
     if(c_RUN_EVAL_ON_ALL_ALGORITHM) {
         run {
@@ -132,6 +138,8 @@ suspend fun main() {
             }
         }
     }
+
+    //===========================================================//
 
     if(c_RUN_TRADER_TEST) {
         run {
@@ -162,6 +170,8 @@ suspend fun main() {
         }
     }
 
+    //===========================================================//
+
     if(c_RUN_MANUAL_TRADING) {
         run {
             ManualTrading(
@@ -171,6 +181,8 @@ suspend fun main() {
             ).run(currentPrice)
         }
     }
+
+    //===========================================================//
 
     if(c_SHOW_GUI) {
         run{

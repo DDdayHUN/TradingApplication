@@ -35,7 +35,7 @@ data class TradingOrder(
 
         return ("" +
                 action
-                + " | Price: "
+                + " | At Price: "
                 + String.format("%.2f", atPrice)
                 + amount
                 + " | At: "
