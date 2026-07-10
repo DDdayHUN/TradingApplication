@@ -38,7 +38,7 @@ class TraderTester {
         val capitalBeforeOrder = m_Trader.capital
         val holdingsBeforeOrder = m_Trader.holdings
 
-        val quote = m_MarketDataProvider.getQuote(m_Trader.securityIdentifier)
+        val quote = m_MarketDataProvider.getQuote(m_Trader.securityIdentifier).getOrThrow()
 
         val order = m_Trader.createOrder(quote)
         m_Trader.finalizeOrder(order)
@@ -66,7 +66,7 @@ class TraderTester {
         println("#================================================#")
         println("# Save Trader: ${m_Trader.uuid}")
         println("")
-        m_TraderRepository.save(m_Trader)
+        m_TraderRepository.save(m_Trader).getOrThrow()
     }
 
     //===========================================================//
