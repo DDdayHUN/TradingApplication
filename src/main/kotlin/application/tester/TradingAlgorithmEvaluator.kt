@@ -38,7 +38,7 @@ class TradingAlgorithmEvaluator {
     // Public Method(es)
 
     suspend fun runEvaluation(): Output = coroutineScope {
-        val listOfSecurityIdentifiers = HistoricalMarketDataProvider.getAllSecurityIdentifiers()
+        val listOfSecurityIdentifiers = HistoricalMarketDataProvider.getAllSecurityIdentifiers().getOrThrow()
 
         val timePeriods = listOf(
             TimePeriod.Year10,
