@@ -15,19 +15,19 @@ kotlin {
     jvmToolchain(21)
 }
 
-dependecies {
+dependencies  {
     // GSON
     implementation("com.google.code.gson:gson:2.13.2")
 
     // KOTLIN
-    implementation("org.jetbrains.kotlin:kotlinx-coroutines-core:1.11.0")
-    implementation("org.jetbrains.kotlin:kotlinx-coroutines-jdk8:1.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.11.0")
 
     // JMETRO
     implementation("org.jfxtras:jmetro:11.6.16"){
         exclude(group = "org.openjfx", module = "javafx-base")
         exclude(group = "org.openjfx", module = "javafx-graphics")
-        excluede(group = "org.openjfx", module = "javafx-controls")
+        exclude(group = "org.openjfx", module = "javafx-controls")
     }
 
     // TEST
