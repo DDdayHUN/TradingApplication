@@ -101,8 +101,17 @@ class TradingAlgorithmEvaluator {
         val avgForceClosedTrades = list.map { it.forceClosedTrades }.average()
         val avgTotalWins = list.map { it.tradeWinrate }.average()
         val avgMaxDrawdown = list.map { it.maxDrawdown }.average()
+
+        val avgTop1PercentMaxDrawdown = list
+            .map { it.maxDrawdown }
+            .sortedDescending()
+            .let { sorted ->
+                val count = maxOf(1, (sorted.size * 0.01).toInt())
+                sorted.take(count).average()
+            }
+
         val avgSharpeRatio = list.map { it.sharpeRatio }.average()
-        val avgYearlyPercentChangeOfCapital = list.map { it.yearlyPercentChangeOfCapital }.average()
+        val avgYearlyPercentChangeOfCapital = list.map { it.cagr }.average()
 
         return AverageOutput(
             m_TradingAlgorithmType,
@@ -114,6 +123,7 @@ class TradingAlgorithmEvaluator {
             avgForceClosedTrades,
             avgTotalWins,
             avgMaxDrawdown,
+            avgTop1PercentMaxDrawdown,
             avgSharpeRatio,
             avgYearlyPercentChangeOfCapital
         )
@@ -165,6 +175,56 @@ class TradingAlgorithmEvaluator {
     // Helper Class(es)
 
     data class Output(val list: List<Pair<AverageOutput, TimePeriod>>) {
+        /**
+         * Displays the algorithm evaluation results.
+         *
+         * Column definitions:
+         *
+         * Period:
+         *   The evaluation window length used for the backtest (1, 2, 5, or 10 years).
+         *
+         * Final Capital:
+         *   The average ending portfolio value after all backtests in this period.
+         *
+         * Profit:
+         *   The average absolute profit:
+         *   Final Capital - Starting Capital.
+         *
+         * Profit %:
+         *   The average total return percentage:
+         *   (Final Capital - Starting Capital) / Starting Capital.
+         *
+         * CAGR %:
+         *   The average annualized return (CAGR):
+         *   The yearly compounded growth rate over the evaluation period.
+         *
+         * Buys:
+         *   The average number of buy orders executed during a backtest.
+         *
+         * Sells:
+         *   The average number of sell orders executed during a backtest.
+         *
+         * Forced C. (Forced Closures):
+         *   The average number of trades closed forcibly by the backtester
+         *   (for example, closing remaining positions at the end of the test).
+         *
+         * Winrate:
+         *   The average percentage of profitable trades:
+         *   Winning Trades / Total Closed Trades.
+         *
+         * Max DD (Max Drawdown):
+         *   The average maximum peak-to-trough capital loss observed during
+         *   each backtest.
+         *
+         * Top1% M.DD (Top1% Max Drawdown):
+         *   The average maximum drawdown of the worst 1% performing backtests.
+         *   This represents tail risk and shows how badly the algorithm performs
+         *   during its worst market conditions.
+         *
+         * Sharpe:
+         *   The average Sharpe ratio, representing risk-adjusted return.
+         *   Higher values indicate better return relative to volatility.
+         */
         fun display() {
 
             require(list.isNotEmpty()) { "No evaluation results available." }
@@ -184,16 +244,19 @@ class TradingAlgorithmEvaluator {
                 "| ${"Final Capital".padStart(13)} " +
                 "| ${"Profit".padStart(10)} " +
                 "| ${"Profit %".padStart(8)} " +
-                "| ${"Yearly %".padStart(8)} " +
+                "| ${"CAGR %".padStart(8)} " +
                 "| ${"Buys".padStart(6)} " +
                 "| ${"Sells".padStart(6)} " +
-                "| ${"Forced Closures".padStart(15)} " +
+                "| ${"Forced C.".padStart(9)} " +
                 "| ${"Winrate".padStart(7)} " +
-                "| ${"Max Drawdown".padStart(12)} " +
-                "| ${"Sharpe".padStart(6)} |"
+                "| ${"Max DD".padStart(6)} " +
+                "| ${"Worst1% M.DD".padStart(12)} " +
+                "| ${"Sharpe".padStart(6)} " +
+                "| ${"Calmar".padStart(6)} " +
+                "| ${"Worst1% Calmar".padStart(14)} |"
             )
 
-            println("-".repeat(132))
+            println("-".repeat(161))
 
             list.forEach {
                 val average = it.first
@@ -202,18 +265,24 @@ class TradingAlgorithmEvaluator {
                 val profit = average.totalCapital - average.startingCapital
                 val profitPercent = (profit / average.startingCapital) * 100.0
 
+                val calmar = average.cagr / average.maxDrawdown
+                val calmarTop1Percent = average.cagr / average.top1PercentDrawdown
+
                 println(
                     "| ${period.toString().padEnd(7)} " +
                     "| ${average.totalCapital.format(2).padStart(13)} " +
                     "| ${profit.format(2).padStart(10)} " +
                     "| ${"${profitPercent.format(2)}%".padStart(8)} " +
-                    "| ${"${average.yearlyPercentChangeOfCapital.format(2)}%".padStart(8)} " +
+                    "| ${"${average.cagr.times(100.0).format(2)}%".padStart(8)} " +
                     "| ${average.totalBuysMade.format(2).padStart(6)} " +
                     "| ${average.totalSellsMade.format(2).padStart(6)} " +
-                    "| ${average.forceClosedTrades.format(2).padStart(15)} " +
+                    "| ${average.forceClosedTrades.format(2).padStart(9)} " +
                     "| ${"${average.tradeWinrate.times(100.0).format(2)}%".padStart(7)} " +
-                    "| ${"${average.maxDrawdown.times(100.0).format(2)}%".padStart(12)} " +
-                    "| ${average.sharpeRatio.format(2).padStart(6)} |"
+                    "| ${"${average.maxDrawdown.times(100.0).format(2)}%".padStart(6)} " +
+                    "| ${"${average.top1PercentDrawdown.times(100.0).format(2)}%".padStart(12)} " +
+                    "| ${average.sharpeRatio.format(2).padStart(6)} " +
+                    "| ${calmar.format(2).padStart(6)} " +
+                    "| ${calmarTop1Percent.format(2).padStart(14)} |"
                 )
             }
 
@@ -233,8 +302,9 @@ class TradingAlgorithmEvaluator {
         val forceClosedTrades: Double,
         val tradeWinrate: Double,
         val maxDrawdown: Double,
+        val top1PercentDrawdown: Double,
         val sharpeRatio: Double,
-        val yearlyPercentChangeOfCapital: Double
+        val cagr: Double
     )
 
     //===========================================================//
@@ -266,7 +336,7 @@ class TradingAlgorithmEvaluator {
 
     private fun TradingAlgorithmBackTester.Output.toAverageOutput(): AverageOutput {
         val years = java.time.Duration.between(from.toJavaInstant(), to.toJavaInstant()).toDays().toDouble() / 365.2425
-        val yearlyPercentChange = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0) * 100.0
+        val cagr = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0)
 
         return AverageOutput(
             tradingAlgorithmType,
@@ -278,8 +348,9 @@ class TradingAlgorithmEvaluator {
             forceClosedTrades.toDouble(),
             tradeWinrate,
             maxDrawdown,
+            maxDrawdown, // We set this later
             sharpeRatio,
-            yearlyPercentChange
+            cagr
         )
     }
 }
