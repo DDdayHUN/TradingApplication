@@ -100,7 +100,8 @@ class TradingAlgorithmEvaluator {
         val avgSellsMade = list.map { it.totalSellsMade }.average()
         val avgForceClosedTrades = list.map { it.forceClosedTrades }.average()
         val avgTotalWins = list.map { it.tradeWinrate }.average()
-        val avgSharpieRatio = list.map { it.sharpieRatio }.average()
+        val avgMaxDrawdown = list.map { it.maxDrawdown }.average()
+        val avgSharpeRatio = list.map { it.sharpeRatio }.average()
         val avgYearlyPercentChangeOfCapital = list.map { it.yearlyPercentChangeOfCapital }.average()
 
         return AverageOutput(
@@ -112,7 +113,8 @@ class TradingAlgorithmEvaluator {
             avgSellsMade,
             avgForceClosedTrades,
             avgTotalWins,
-            avgSharpieRatio,
+            avgMaxDrawdown,
+            avgSharpeRatio,
             avgYearlyPercentChangeOfCapital
         )
     }
@@ -131,7 +133,7 @@ class TradingAlgorithmEvaluator {
                     to = endDate
                 ).runBackTest()
 
-                return@async if (out.tradeWinrate.isNaN() || out.sharpieRatio.isNaN()) null else out
+                return@async if (out.tradeWinrate.isNaN() || out.sharpeRatio.isNaN()) null else out
             }
         }.awaitAll()
 
@@ -165,10 +167,7 @@ class TradingAlgorithmEvaluator {
     data class Output(val list: List<Pair<AverageOutput, TimePeriod>>) {
         fun display() {
 
-            if(list.isEmpty()){
-                println("No evaluation results available.")
-                return
-            }
+            require(list.isNotEmpty()) { "No evaluation results available." }
 
             val firstElement = list.first().first
             val tax = if(firstElement.taxation == null) "Without" else "With"
@@ -186,14 +185,15 @@ class TradingAlgorithmEvaluator {
                 "| ${"Profit".padStart(10)} " +
                 "| ${"Profit %".padStart(8)} " +
                 "| ${"Yearly %".padStart(8)} " +
-                "| ${"Buys".padStart(4)} " +
-                "| ${"Sells".padStart(5)} " +
+                "| ${"Buys".padStart(6)} " +
+                "| ${"Sells".padStart(6)} " +
                 "| ${"Forced Closures".padStart(15)} " +
                 "| ${"Winrate".padStart(7)} " +
+                "| ${"Max Drawdown".padStart(12)} " +
                 "| ${"Sharpe".padStart(6)} |"
             )
 
-            println("-".repeat(114))
+            println("-".repeat(132))
 
             list.forEach {
                 val average = it.first
@@ -208,11 +208,12 @@ class TradingAlgorithmEvaluator {
                     "| ${profit.format(2).padStart(10)} " +
                     "| ${"${profitPercent.format(2)}%".padStart(8)} " +
                     "| ${"${average.yearlyPercentChangeOfCapital.format(2)}%".padStart(8)} " +
-                    "| ${average.totalBuysMade.format(2).padStart(4)} " +
-                    "| ${average.totalSellsMade.format(2).padStart(5)} " +
+                    "| ${average.totalBuysMade.format(2).padStart(6)} " +
+                    "| ${average.totalSellsMade.format(2).padStart(6)} " +
                     "| ${average.forceClosedTrades.format(2).padStart(15)} " +
-                    "| ${average.tradeWinrate.format(2).padStart(7)} " +
-                    "| ${average.sharpieRatio.format(2).padStart(6)} |"
+                    "| ${"${average.tradeWinrate.times(100.0).format(2)}%".padStart(7)} " +
+                    "| ${"${average.maxDrawdown.times(100.0).format(2)}%".padStart(12)} " +
+                    "| ${average.sharpeRatio.format(2).padStart(6)} |"
                 )
             }
 
@@ -231,7 +232,8 @@ class TradingAlgorithmEvaluator {
         val totalSellsMade: Double,
         val forceClosedTrades: Double,
         val tradeWinrate: Double,
-        val sharpieRatio: Double,
+        val maxDrawdown: Double,
+        val sharpeRatio: Double,
         val yearlyPercentChangeOfCapital: Double
     )
 
@@ -275,7 +277,8 @@ class TradingAlgorithmEvaluator {
             totalSellsMade.toDouble(),
             forceClosedTrades.toDouble(),
             tradeWinrate,
-            sharpieRatio,
+            maxDrawdown,
+            sharpeRatio,
             yearlyPercentChange
         )
     }

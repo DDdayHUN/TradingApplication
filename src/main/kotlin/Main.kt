@@ -24,11 +24,11 @@ suspend fun main() {
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
     val c_RUN_BACKTEST_ON_ALL_SECURITY = false   // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
     val c_RUN_EVAL_ON_ONE_ALGORITHM = false
-    val c_RUN_EVAL_ON_ALL_ALGORITHM = false     // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
+    val c_RUN_EVAL_ON_ALL_ALGORITHM = true     // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
     val c_RUN_TRADER_TEST = false
     val c_CLEAR_TRADER_TEST_FOLDER = false
     val c_SHOW_GUI = false
-    val c_RUN_MANUAL_TRADING = true
+    val c_RUN_MANUAL_TRADING = false
 
     //===========================================================//
     //===========================================================//
@@ -44,7 +44,7 @@ suspend fun main() {
     )
     val currentPrice = 200.0
 
-    val startCapital = 1000.0
+    val startCapital = 2000.0
     val startDate = Instant.parse("2015-01-01T00:00:00Z")
     val endDate = Instant.parse("2025-01-01T00:00:00Z")
     val evaluationWindowStepYears = 1 // default: 1 - for accurate results.

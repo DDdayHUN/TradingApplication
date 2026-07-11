@@ -8,6 +8,7 @@ import domain.market.security.SecurityIdentifier
 import domain.tax.ITaxation
 import domain.tax.Taxation
 import format
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
@@ -96,7 +97,18 @@ class TradingAlgorithmBackTester {
 
         forceSell()
 
-        val winRate = if (m_TotalSellsMade <= 0) Double.NaN else (m_WinningTrades.toDouble() / m_TotalSellsMade.toDouble())
+        val winRate =
+            if (m_TotalSellsMade <= 0) Double.NaN
+            else (m_WinningTrades.toDouble() / m_TotalSellsMade.toDouble())
+
+        var peak = m_CapitalHistory.first()
+        var maxDrawdown = 0.0
+
+        m_CapitalHistory.forEach {
+            peak = max(peak, it)
+            val drawdown = (peak - it) / peak
+            maxDrawdown = max(maxDrawdown, drawdown)
+        }
 
         return Output(
             m_TradingAlgorithmType,
@@ -110,6 +122,7 @@ class TradingAlgorithmBackTester {
             m_TotalSellsMade,
             m_ForceClosedTrades,
             winRate,
+            maxDrawdown,
             domain.utils.Math.sharpeRatio(m_CapitalHistory)
         )
     }
@@ -230,7 +243,8 @@ class TradingAlgorithmBackTester {
         val totalSellsMade: Int,
         val forceClosedTrades: Int,
         val tradeWinrate: Double,
-        val sharpieRatio: Double
+        val maxDrawdown: Double,
+        val sharpeRatio: Double
     ) {
         fun display() {
             val tax = if(taxation != null) "With" else "Without"
@@ -255,18 +269,20 @@ class TradingAlgorithmBackTester {
             println("Taxation: $tax")
             println()
 
-            println("| ${"Metric".padEnd(24)} | ${"Value".padStart(20)} |")
+            val padding = 24
+            println("| ${"Metric".padEnd(24)} | ${"Value".padStart(padding)} |")
             println("-".repeat(50))
 
-            println("| ${"Total Capital".padEnd(24)} | ${totalCapital.format(2).padStart(20)} |")
-            println("| ${"Delta Capital".padEnd(24)} | ${deltaCapital.format(2).padStart(20)} |")
-            println("| ${"Percent Change".padEnd(24)} | ${(deltaCapitalInPercent.format(2) + "%").padStart(20)} |")
-            println("| ${"Yearly Change".padEnd(24)} | ${(yearlyPercentChange.format(2) + "%").padStart(20)} |")
-            println("| ${"Total Buys".padEnd(24)} | ${totalBuysMade.toString().padStart(20)} |")
-            println("| ${"Total Sells".padEnd(24)} | ${totalSellsMade.toString().padStart(20)} |")
-            println("| ${"Forced Closures".padEnd(24)} | ${forceClosedTrades.toString().padStart(20)} |")
-            println("| ${"Winrate".padEnd(24)} | ${(tradeWinrate.format(2) + "%").padStart(20)} |")
-            println("| ${"Sharpe Ratio".padEnd(24)} | ${sharpieRatio.format(2).padStart(20)} |")
+            println("| ${"Total Capital".padEnd(padding)} | ${totalCapital.format(2).padStart(padding)} |")
+            println("| ${"Delta Capital".padEnd(padding)} | ${deltaCapital.format(2).padStart(padding)} |")
+            println("| ${"Percent Change".padEnd(padding)} | ${(deltaCapitalInPercent.format(2) + "%").padStart(padding)} |")
+            println("| ${"Yearly Change".padEnd(padding)} | ${(yearlyPercentChange.format(2) + "%").padStart(padding)} |")
+            println("| ${"Total Buys".padEnd(padding)} | ${totalBuysMade.toString().padStart(padding)} |")
+            println("| ${"Total Sells".padEnd(padding)} | ${totalSellsMade.toString().padStart(padding)} |")
+            println("| ${"Forced Closures".padEnd(padding)} | ${forceClosedTrades.toString().padStart(padding)} |")
+            println("| ${"Winrate".padEnd(padding)} | ${(tradeWinrate.times(100.0).format(2) + "%").padStart(padding)} |")
+            println("| ${"Max Drawdown".padEnd(padding)} | ${(maxDrawdown.times(100.0).format(2) + "%").padStart(padding)} |")
+            println("| ${"Sharpe Ratio".padEnd(padding)} | ${sharpeRatio.format(2).padStart(padding)} |")
             println()
         }
     }
