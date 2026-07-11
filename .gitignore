@@ -3,3 +3,8 @@ out/
 .idea/
 *.iml
 target/
+
+# Gradle
+.gradle/
+build/
+.kotlin/
