@@ -213,7 +213,7 @@ class TradingAlgorithmEvaluator {
             println("Taxes: $tax")
             println()
             println("M = Mean, TM = Trimmed Mean (middle 80%), Md = Median")
-            println("Top20 = Average of best 20%, Bot20 = Average of worst 20%")
+            println("Best20 = Average of best 20%, Worst20 = Average of worst 20%")
             println()
 
             // Total Capital
@@ -221,8 +221,8 @@ class TradingAlgorithmEvaluator {
             row("M",     { it.totalCapitalMean },        { it.format(2) })
             row("TM",    { it.totalCapitalTrimmedMean }, { it.format(2) })
             row("Md",    { it.totalCapitalMedian },      { it.format(2) })
-            row("Top20", { it.totalCapitalT20 },         { it.format(2) })
-            row("Bot20", { it.totalCapitalB20 },         { it.format(2) })
+            row("Best20", { it.totalCapitalT20 },         { it.format(2) })
+            row("Worst20", { it.totalCapitalB20 },         { it.format(2) })
             println("-".repeat(66))
             println()
 
@@ -231,8 +231,8 @@ class TradingAlgorithmEvaluator {
             row("M",     { it.cagrMean },        { "${(it * 100).format(2)}%" })
             row("TM",    { it.cagrTrimmedMean }, { "${(it * 100).format(2)}%" })
             row("Md",    { it.cagrMedian },      { "${(it * 100).format(2)}%" })
-            row("Top20", { it.cagrT20 },         { "${(it * 100).format(2)}%" })
-            row("Bot20", { it.cagrB20 },         { "${(it * 100).format(2)}%" })
+            row("Best20", { it.cagrT20 },         { "${(it * 100).format(2)}%" })
+            row("Worst20", { it.cagrB20 },         { "${(it * 100).format(2)}%" })
             println("-".repeat(66))
             println()
 
@@ -241,8 +241,8 @@ class TradingAlgorithmEvaluator {
             row("M",     { it.maxDrawdownMean },        { "${(it * 100).format(2)}%" })
             row("TM",    { it.maxDrawdownTrimmedMean }, { "${(it * 100).format(2)}%" })
             row("Md",    { it.maxDrawdownMedian },      { "${(it * 100).format(2)}%" })
-            row("Top20", { it.maxDrawdownT20 },         { "${(it * 100).format(2)}%" })
-            row("Bot20", { it.maxDrawdownB20 },         { "${(it * 100).format(2)}%" })
+            row("Best20", { it.maxDrawdownT20 },         { "${(it * 100).format(2)}%" })
+            row("Worst20", { it.maxDrawdownB20 },         { "${(it * 100).format(2)}%" })
             println("-".repeat(66))
             println()
 
@@ -251,8 +251,8 @@ class TradingAlgorithmEvaluator {
             row("M",     { it.sharpeMean },        { it.format(2) })
             row("TM",    { it.sharpeTrimmedMean }, { it.format(2) })
             row("Md",    { it.sharpeMedian },      { it.format(2) })
-            row("Top20", { it.sharpeT20 },         { it.format(2) })
-            row("Bot20", { it.sharpeB20 },         { it.format(2) })
+            row("Best20", { it.sharpeT20 },         { it.format(2) })
+            row("Worst20", { it.sharpeB20 },         { it.format(2) })
             println("-".repeat(66))
             println()
 
@@ -261,8 +261,8 @@ class TradingAlgorithmEvaluator {
             row("M",     { it.calmarMean },        { it.format(2) })
             row("TM",    { it.calmarTrimmedMean }, { it.format(2) })
             row("Md",    { it.calmarMedian },      { it.format(2) })
-            row("Top20", { it.calmarT20 },         { it.format(2) })
-            row("Bot20", { it.calmarB20 },         { it.format(2) })
+            row("Best20", { it.calmarT20 },         { it.format(2) })
+            row("Worst20", { it.calmarB20 },         { it.format(2) })
             println("-".repeat(66))
             println()
         }

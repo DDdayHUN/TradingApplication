@@ -259,7 +259,9 @@ class TradingAlgorithmBackTester {
             val deltaCapitalInPercent = (deltaCapital / startingCapital) * 100.0
 
             val years = java.time.Duration.between(fromDate, toDate).toDays().toDouble() / 365.2425
-            val yearlyPercentChange = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0) * 100.0
+            val cagr = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0) * 100.0
+
+            val calmar = cagr / maxDrawdown
 
             println("#===============================================================#")
             println("# Algorithm Backtesting | Algorithm: $tradingAlgorithmType")
@@ -276,13 +278,14 @@ class TradingAlgorithmBackTester {
             println("| ${"Total Capital".padEnd(padding)} | ${totalCapital.format(2).padStart(padding)} |")
             println("| ${"Delta Capital".padEnd(padding)} | ${deltaCapital.format(2).padStart(padding)} |")
             println("| ${"Percent Change".padEnd(padding)} | ${(deltaCapitalInPercent.format(2) + "%").padStart(padding)} |")
-            println("| ${"Yearly Change".padEnd(padding)} | ${(yearlyPercentChange.format(2) + "%").padStart(padding)} |")
+            println("| ${"CAGR".padEnd(padding)} | ${(cagr.format(2) + "%").padStart(padding)} |")
             println("| ${"Total Buys".padEnd(padding)} | ${totalBuysMade.toString().padStart(padding)} |")
             println("| ${"Total Sells".padEnd(padding)} | ${totalSellsMade.toString().padStart(padding)} |")
             println("| ${"Forced Closures".padEnd(padding)} | ${forceClosedTrades.toString().padStart(padding)} |")
             println("| ${"Winrate".padEnd(padding)} | ${(tradeWinrate.times(100.0).format(2) + "%").padStart(padding)} |")
             println("| ${"Max Drawdown".padEnd(padding)} | ${(maxDrawdown.times(100.0).format(2) + "%").padStart(padding)} |")
             println("| ${"Sharpe Ratio".padEnd(padding)} | ${sharpeRatio.format(2).padStart(padding)} |")
+            println("| ${"Calmar Ratio".padEnd(padding)} | ${calmar.format(2).padStart(padding)} |")
             println()
         }
     }
