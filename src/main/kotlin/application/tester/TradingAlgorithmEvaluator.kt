@@ -142,8 +142,8 @@ class TradingAlgorithmEvaluator {
             maxDrawdownMean = drawdowns.average(),
             maxDrawdownTrimmedMean = drawdowns.trim(trim).average(),
             maxDrawdownMedian = drawdowns.median(),
-            maxDrawdownT20 = drawdowns.top(trim).average(),
-            maxDrawdownB20 = drawdowns.bottom(trim).average(),
+            maxDrawdownT20 = drawdowns.bottom(trim).average(),
+            maxDrawdownB20 = drawdowns.top(trim).average(),
 
             calmarMean = calmar.average(),
             calmarTrimmedMean = calmar.trim(trim).average(),
