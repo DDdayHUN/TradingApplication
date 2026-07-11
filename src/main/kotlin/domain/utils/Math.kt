@@ -157,12 +157,36 @@ object Math {
 
     /*===========================================================*/
 
-    fun List<Double>.percentile(percentile: Double): Double {
-        if (isEmpty()) return Double.NaN
+    fun List<Double>.trim(percent: Double): List<Double> {
+        if (isEmpty()) return listOf()
 
         val sorted = sorted()
-        val index = ((sorted.size - 1) * percentile).toInt()
+        val removeCount = (size * percent).toInt()
 
-        return sorted[index]
+        return sorted
+            .drop(removeCount)
+            .dropLast(removeCount)
+    }
+
+    /*===========================================================*/
+
+    fun List<Double>.bottom(percent: Double): List<Double> {
+        if (isEmpty()) return listOf()
+
+        val sorted = sorted()
+        val removeCount = (size * percent).toInt()
+
+        return sorted.take(removeCount)
+    }
+
+    /*===========================================================*/
+
+    fun List<Double>.top(percent: Double): List<Double> {
+        if (isEmpty()) return listOf()
+
+        val sorted = sorted()
+        val removeCount = (size * percent).toInt()
+
+        return sorted.takeLast(removeCount)
     }
 }

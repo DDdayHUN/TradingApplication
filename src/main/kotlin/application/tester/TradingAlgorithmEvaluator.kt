@@ -4,11 +4,15 @@ import data.repository.historical_data.HistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
+import domain.utils.Math.bottom
+import domain.utils.Math.median
+import domain.utils.Math.top
+import domain.utils.Math.trim
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import format
-import java.time.ZoneId
+import java.time.ZoneOffset
 import kotlin.math.pow
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
@@ -47,91 +51,111 @@ class TradingAlgorithmEvaluator {
             TimePeriod.Year1
         )
 
-        val results = timePeriods.map { timePeriod ->
-            async{
-                years(timePeriod, listOfSecurityIdentifiers)
+        val results = timePeriods.map {
+            async {
+                years(it, listOfSecurityIdentifiers)
             }
         }.awaitAll().filterNotNull()
 
-        return@coroutineScope Output(results)
+        return@coroutineScope Output(results.map { Pair(calculateStatistics(it.first), it.second) })
     }
 
     //===========================================================//
     //===========================================================//
     // Private Method(es)
 
-    private suspend fun years(cycle: TimePeriod, listOfSecurityIdentifiers: List<SecurityIdentifier>): Pair<AverageOutput, TimePeriod>? = coroutineScope {
+    private suspend fun years(cycle: TimePeriod, listOfSecurityIdentifiers: List<SecurityIdentifier>): Pair<List<TradingAlgorithmBackTesterOutputConverted>, TimePeriod>? = coroutineScope {
+        val zone = ZoneOffset.UTC
         val windowSizeYears = cycle.toInt()
 
-        val startYear = m_EvaluationStartDate.toJavaInstant().atZone(ZoneId.systemDefault()).year
-        val endYear = m_EvaluationEndDate.toJavaInstant().atZone(ZoneId.systemDefault()).year
+        val startYear = m_EvaluationStartDate
+            .toJavaInstant()
+            .atZone(zone)
+            .year
 
-        if((endYear-windowSizeYears) < startYear) return@coroutineScope null
+        val endYear = m_EvaluationEndDate
+            .toJavaInstant()
+            .atZone(zone)
+            .year
 
-        val result = (startYear..endYear - windowSizeYears step m_WindowStepYears)
-            .map {year ->
+
+        if ((endYear - windowSizeYears) < startYear) return@coroutineScope null
+
+
+        val results = (startYear..endYear - windowSizeYears step m_WindowStepYears)
+            .map { year ->
                 async {
                     val startDate = Instant.parse("${year}-01-01T00:00:00Z")
                     val endDate = Instant.parse("${year + windowSizeYears}-01-01T00:00:00Z")
 
-                    averager(
-                        runBackTesters(
-                            listOfSecurityIdentifiers,
-                            startDate,
-                            endDate
-                        )
+                    runBackTesters(
+                        listOfSecurityIdentifiers,
+                        startDate,
+                        endDate
                     )
                 }
             }
+            .awaitAll()
+            .flatten()
 
-        if(result.isEmpty()) return@coroutineScope null
 
-        return@coroutineScope Pair(
-            averager(result.awaitAll()),
-            cycle
+        if (results.isEmpty()) return@coroutineScope null
+
+
+        return@coroutineScope Pair(results, cycle)
+    }
+
+    //===========================================================//
+
+    private fun calculateStatistics(list: List<TradingAlgorithmBackTesterOutputConverted>): EvaluationStatistics {
+        val trim = 0.2
+
+        val capitals = list.map { it.totalCapital }
+        val cagrs = list.map { it.cagr }
+        val sharpes = list.map { it.sharpeRatio }
+        val drawdowns = list.map { it.maxDrawdown }
+        val calmar = list.map { it.cagr / it.maxDrawdown }
+
+        return EvaluationStatistics(
+            tradingAlgorithmType = m_TradingAlgorithmType,
+            taxation = m_TaxationType,
+            startingCapital = m_StartingCapital,
+
+            totalCapitalMean = capitals.average(),
+            totalCapitalTrimmedMean = capitals.trim(trim).average(),
+            totalCapitalMedian = capitals.median(),
+            totalCapitalT20 = capitals.top(trim).average(),
+            totalCapitalB20 = capitals.bottom(trim).average(),
+
+            cagrMean = cagrs.average(),
+            cagrTrimmedMean = cagrs.trim(trim).average(),
+            cagrMedian = cagrs.median(),
+            cagrT20 = cagrs.top(trim).average(),
+            cagrB20 = cagrs.bottom(trim).average(),
+
+            sharpeMean = sharpes.average(),
+            sharpeTrimmedMean = sharpes.trim(trim).average(),
+            sharpeMedian = sharpes.median(),
+            sharpeT20 = sharpes.top(trim).average(),
+            sharpeB20 = sharpes.bottom(trim).average(),
+
+            maxDrawdownMean = drawdowns.average(),
+            maxDrawdownTrimmedMean = drawdowns.trim(trim).average(),
+            maxDrawdownMedian = drawdowns.median(),
+            maxDrawdownT20 = drawdowns.top(trim).average(),
+            maxDrawdownB20 = drawdowns.bottom(trim).average(),
+
+            calmarMean = calmar.average(),
+            calmarTrimmedMean = calmar.trim(trim).average(),
+            calmarMedian = calmar.median(),
+            calmarT20 = calmar.top(trim).average(),
+            calmarB20 = calmar.bottom(trim).average()
         )
     }
 
     //===========================================================//
 
-    private fun averager(list: List<AverageOutput>): AverageOutput {
-        val avgTotalCapital = list.map { it.totalCapital }.average()
-        val avgBuysMade = list.map { it.totalBuysMade }.average()
-        val avgSellsMade = list.map { it.totalSellsMade }.average()
-        val avgForceClosedTrades = list.map { it.forceClosedTrades }.average()
-        val avgTotalWins = list.map { it.tradeWinrate }.average()
-        val avgMaxDrawdown = list.map { it.maxDrawdown }.average()
-
-        val avgTop1PercentMaxDrawdown = list
-            .map { it.maxDrawdown }
-            .sortedDescending()
-            .let { sorted ->
-                val count = maxOf(1, (sorted.size * 0.01).toInt())
-                sorted.take(count).average()
-            }
-
-        val avgSharpeRatio = list.map { it.sharpeRatio }.average()
-        val avgYearlyPercentChangeOfCapital = list.map { it.cagr }.average()
-
-        return AverageOutput(
-            m_TradingAlgorithmType,
-            m_TaxationType,
-            m_StartingCapital,
-            avgTotalCapital,
-            avgBuysMade,
-            avgSellsMade,
-            avgForceClosedTrades,
-            avgTotalWins,
-            avgMaxDrawdown,
-            avgTop1PercentMaxDrawdown,
-            avgSharpeRatio,
-            avgYearlyPercentChangeOfCapital
-        )
-    }
-
-    //===========================================================//
-
-    private suspend fun runBackTesters(listOfSecurityIdentifiers: List<SecurityIdentifier>, startDate: Instant, endDate: Instant): List<AverageOutput> = coroutineScope {
+    private suspend fun runBackTesters(listOfSecurityIdentifiers: List<SecurityIdentifier>, startDate: Instant, endDate: Instant): List<TradingAlgorithmBackTesterOutputConverted> = coroutineScope {
         val outputs = listOfSecurityIdentifiers.map { securityIdentifier ->
             async {
                 val out = TradingAlgorithmBackTester(
@@ -174,125 +198,150 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Helper Class(es)
 
-    data class Output(val list: List<Pair<AverageOutput, TimePeriod>>) {
-        /**
-         * Displays the algorithm evaluation results.
-         *
-         * Column definitions:
-         *
-         * Period:
-         *   The evaluation window length used for the backtest (1, 2, 5, or 10 years).
-         *
-         * Final Capital:
-         *   The average ending portfolio value after all backtests in this period.
-         *
-         * Profit:
-         *   The average absolute profit:
-         *   Final Capital - Starting Capital.
-         *
-         * Profit %:
-         *   The average total return percentage:
-         *   (Final Capital - Starting Capital) / Starting Capital.
-         *
-         * CAGR %:
-         *   The average annualized return (CAGR):
-         *   The yearly compounded growth rate over the evaluation period.
-         *
-         * Buys:
-         *   The average number of buy orders executed during a backtest.
-         *
-         * Sells:
-         *   The average number of sell orders executed during a backtest.
-         *
-         * Forced C. (Forced Closures):
-         *   The average number of trades closed forcibly by the backtester
-         *   (for example, closing remaining positions at the end of the test).
-         *
-         * Winrate:
-         *   The average percentage of profitable trades:
-         *   Winning Trades / Total Closed Trades.
-         *
-         * Max DD (Max Drawdown):
-         *   The average maximum peak-to-trough capital loss observed during
-         *   each backtest.
-         *
-         * Top1% M.DD (Top1% Max Drawdown):
-         *   The average maximum drawdown of the worst 1% performing backtests.
-         *   This represents tail risk and shows how badly the algorithm performs
-         *   during its worst market conditions.
-         *
-         * Sharpe:
-         *   The average Sharpe ratio, representing risk-adjusted return.
-         *   Higher values indicate better return relative to volatility.
-         */
+    data class Output(val list: List<Pair<EvaluationStatistics, TimePeriod>>) {
         fun display() {
 
             require(list.isNotEmpty()) { "No evaluation results available." }
 
-            val firstElement = list.first().first
-            val tax = if(firstElement.taxation == null) "Without" else "With"
+            val first = list.first().first
+            val tax = if (first.taxation == null) "Without" else "With"
+
             println("#===============================================================#")
-            println("# Algorithm Evaluation | Algorithm: ${firstElement.tradingAlgorithmType}")
+            println("# Algorithm Evaluation | Algorithm: ${first.tradingAlgorithmType}")
             println("#===============================================================#")
-            println("Starting Capital: ${firstElement.startingCapital.format(2)}")
+            println("Starting Capital: ${first.startingCapital.format(2)}")
             println("Taxes: $tax")
             println()
-            // NOTE: YEAH...that was not me xd, wtf is this gpt
-            println("All subsequent values after Period are averages.")
-            println(
-                "| ${"Period".padEnd(7)} " +
-                "| ${"Final Capital".padStart(13)} " +
-                "| ${"Profit".padStart(10)} " +
-                "| ${"Profit %".padStart(8)} " +
-                "| ${"CAGR %".padStart(8)} " +
-                "| ${"Buys".padStart(6)} " +
-                "| ${"Sells".padStart(6)} " +
-                "| ${"Forced C.".padStart(9)} " +
-                "| ${"Winrate".padStart(7)} " +
-                "| ${"Max DD".padStart(6)} " +
-                "| ${"Worst1% M.DD".padStart(12)} " +
-                "| ${"Sharpe".padStart(6)} " +
-                "| ${"Calmar".padStart(6)} " +
-                "| ${"Worst1% Calmar".padStart(14)} |"
-            )
+            println("M = Mean, TM = Trimmed Mean (middle 80%), Md = Median")
+            println("Top20 = Average of best 20%, Bot20 = Average of worst 20%")
+            println()
 
-            println("-".repeat(161))
+            // Total Capital
+            header("Total Capital")
+            row("M",     { it.totalCapitalMean },        { it.format(2) })
+            row("TM",    { it.totalCapitalTrimmedMean }, { it.format(2) })
+            row("Md",    { it.totalCapitalMedian },      { it.format(2) })
+            row("Top20", { it.totalCapitalT20 },         { it.format(2) })
+            row("Bot20", { it.totalCapitalB20 },         { it.format(2) })
+            println("-".repeat(66))
+            println()
 
-            list.forEach {
-                val average = it.first
-                val period = it.second
+            // CAGR
+            header("CAGR")
+            row("M",     { it.cagrMean },        { "${(it * 100).format(2)}%" })
+            row("TM",    { it.cagrTrimmedMean }, { "${(it * 100).format(2)}%" })
+            row("Md",    { it.cagrMedian },      { "${(it * 100).format(2)}%" })
+            row("Top20", { it.cagrT20 },         { "${(it * 100).format(2)}%" })
+            row("Bot20", { it.cagrB20 },         { "${(it * 100).format(2)}%" })
+            println("-".repeat(66))
+            println()
 
-                val profit = average.totalCapital - average.startingCapital
-                val profitPercent = (profit / average.startingCapital) * 100.0
+            // Max Drawdown
+            header("Max Drawdown")
+            row("M",     { it.maxDrawdownMean },        { "${(it * 100).format(2)}%" })
+            row("TM",    { it.maxDrawdownTrimmedMean }, { "${(it * 100).format(2)}%" })
+            row("Md",    { it.maxDrawdownMedian },      { "${(it * 100).format(2)}%" })
+            row("Top20", { it.maxDrawdownT20 },         { "${(it * 100).format(2)}%" })
+            row("Bot20", { it.maxDrawdownB20 },         { "${(it * 100).format(2)}%" })
+            println("-".repeat(66))
+            println()
 
-                val calmar = average.cagr / average.maxDrawdown
-                val calmarTop1Percent = average.cagr / average.top1PercentDrawdown
+            // Sharpe
+            header("Sharpe")
+            row("M",     { it.sharpeMean },        { it.format(2) })
+            row("TM",    { it.sharpeTrimmedMean }, { it.format(2) })
+            row("Md",    { it.sharpeMedian },      { it.format(2) })
+            row("Top20", { it.sharpeT20 },         { it.format(2) })
+            row("Bot20", { it.sharpeB20 },         { it.format(2) })
+            println("-".repeat(66))
+            println()
 
-                println(
-                    "| ${period.toString().padEnd(7)} " +
-                    "| ${average.totalCapital.format(2).padStart(13)} " +
-                    "| ${profit.format(2).padStart(10)} " +
-                    "| ${"${profitPercent.format(2)}%".padStart(8)} " +
-                    "| ${"${average.cagr.times(100.0).format(2)}%".padStart(8)} " +
-                    "| ${average.totalBuysMade.format(2).padStart(6)} " +
-                    "| ${average.totalSellsMade.format(2).padStart(6)} " +
-                    "| ${average.forceClosedTrades.format(2).padStart(9)} " +
-                    "| ${"${average.tradeWinrate.times(100.0).format(2)}%".padStart(7)} " +
-                    "| ${"${average.maxDrawdown.times(100.0).format(2)}%".padStart(6)} " +
-                    "| ${"${average.top1PercentDrawdown.times(100.0).format(2)}%".padStart(12)} " +
-                    "| ${average.sharpeRatio.format(2).padStart(6)} " +
-                    "| ${calmar.format(2).padStart(6)} " +
-                    "| ${calmarTop1Percent.format(2).padStart(14)} |"
-                )
+            // Calmar
+            header("Calmar")
+            row("M",     { it.calmarMean },        { it.format(2) })
+            row("TM",    { it.calmarTrimmedMean }, { it.format(2) })
+            row("Md",    { it.calmarMedian },      { it.format(2) })
+            row("Top20", { it.calmarT20 },         { it.format(2) })
+            row("Bot20", { it.calmarB20 },         { it.format(2) })
+            println("-".repeat(66))
+            println()
+        }
+
+        //===========================================================//
+
+        private fun header(title: String) {
+            println(title)
+
+            val periods = TimePeriod.entries.joinToString(" ") {
+                "| ${it.toString().padStart(10)}"
             }
 
-            println()
+            println("| ${"Statistic".padEnd(10)} $periods |")
+            println("-".repeat(13 + TimePeriod.entries.size * 13))
+        }
+
+        //===========================================================//
+
+        private fun row(
+            label: String,
+            value: (EvaluationStatistics) -> Double,
+            formatter: (Double) -> String
+        ) {
+            val byPeriod = list.associate { it.second to it.first }
+
+            val values = TimePeriod.entries.joinToString(" ") { period ->
+                "| ${
+                    byPeriod[period]
+                        ?.let { formatter(value(it)).padStart(10) }
+                        ?: " ".repeat(10)
+                }"
+            }
+
+            println("| ${label.padEnd(10)} $values |")
         }
     }
 
     //===========================================================//
 
-    data class AverageOutput(
+    data class EvaluationStatistics(
+        val tradingAlgorithmType: TradingAlgorithm.Type,
+        val taxation: Taxation.Type?,
+        val startingCapital: Double,
+
+        val totalCapitalMean: Double,
+        val totalCapitalTrimmedMean: Double,
+        val totalCapitalMedian: Double,
+        val totalCapitalT20: Double,
+        val totalCapitalB20: Double,
+
+        val cagrMean: Double,
+        val cagrTrimmedMean: Double,
+        val cagrMedian: Double,
+        val cagrT20: Double,
+        val cagrB20: Double,
+
+        val sharpeMean: Double,
+        val sharpeTrimmedMean: Double,
+        val sharpeMedian: Double,
+        val sharpeT20: Double,
+        val sharpeB20: Double,
+
+        val maxDrawdownMean: Double,
+        val maxDrawdownTrimmedMean: Double,
+        val maxDrawdownMedian: Double,
+        val maxDrawdownT20: Double,
+        val maxDrawdownB20: Double,
+
+        val calmarMean: Double,
+        val calmarTrimmedMean: Double,
+        val calmarMedian: Double,
+        val calmarT20: Double,
+        val calmarB20: Double
+    )
+
+    //===========================================================//
+
+    data class TradingAlgorithmBackTesterOutputConverted(
         val tradingAlgorithmType: TradingAlgorithm.Type,
         val taxation: Taxation.Type?,
         val startingCapital: Double,
@@ -300,9 +349,7 @@ class TradingAlgorithmEvaluator {
         val totalBuysMade: Double,
         val totalSellsMade: Double,
         val forceClosedTrades: Double,
-        val tradeWinrate: Double,
         val maxDrawdown: Double,
-        val top1PercentDrawdown: Double,
         val sharpeRatio: Double,
         val cagr: Double
     )
@@ -327,6 +374,15 @@ class TradingAlgorithmEvaluator {
             override fun toInt(): Int = 1
         }
 
+        companion object {
+            val entries = listOf(
+                Year10,
+                Year5,
+                Year2,
+                Year1
+            )
+        }
+
         fun toInt(): Int
     }
 
@@ -334,11 +390,11 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Extension(s)
 
-    private fun TradingAlgorithmBackTester.Output.toAverageOutput(): AverageOutput {
+    private fun TradingAlgorithmBackTester.Output.toAverageOutput(): TradingAlgorithmBackTesterOutputConverted {
         val years = java.time.Duration.between(from.toJavaInstant(), to.toJavaInstant()).toDays().toDouble() / 365.2425
         val cagr = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0)
 
-        return AverageOutput(
+        return TradingAlgorithmBackTesterOutputConverted(
             tradingAlgorithmType,
             taxation,
             startingCapital,
@@ -346,9 +402,7 @@ class TradingAlgorithmEvaluator {
             totalBuysMade.toDouble(),
             totalSellsMade.toDouble(),
             forceClosedTrades.toDouble(),
-            tradeWinrate,
             maxDrawdown,
-            maxDrawdown, // We set this later
             sharpeRatio,
             cagr
         )
