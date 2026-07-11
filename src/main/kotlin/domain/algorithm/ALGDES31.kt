@@ -23,7 +23,7 @@ internal class ALGDES31 : ITradingAlgorithm {
 
         val history = m_MovingWindow.toList()
 
-        val mean = domain.utils.Math.average(history)
+        val mean = history.average()
         val std = domain.utils.Math.stdDev(history)
         val risk = Math.clamp(std * 100.0, 0.1, 0.3)
 

@@ -13,15 +13,16 @@ import kotlin.io.path.exists
 fun Double.format(value: Int): String {
     return "%.${value}f".format(this)
 }
- @OptIn(ExperimentalPathApi::class)
- fun clearTestFolder() {
-     val testDir = Path.of("src", "main", "resources", "traders", "test")
 
-     if (!testDir.exists()) return
+@OptIn(ExperimentalPathApi::class)
+fun clearTestFolder() {
+    val testDir = Path.of("src", "main", "resources", "traders", "test")
 
-     Files.list(testDir).use { files ->
-         files.forEach { file ->
-             file.deleteRecursively()
-         }
-     }
+    if (!testDir.exists()) return
+
+    Files.list(testDir).use { files ->
+        files.forEach { file ->
+            file.deleteRecursively()
+        }
+    }
  }
