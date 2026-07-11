@@ -20,7 +20,7 @@ import kotlin.time.toJavaInstant
  * It runs a specified [TradingAlgorithm] over a defined time range for a given stock,
  * tracks virtual m_Holdings, capital changes, and performance metrics such as total trades and win rate.
  * 
- * The backtester supports both normal execution and debug execution, where additional
+ * The back tester supports both normal execution and debug execution, where additional
  * internal state (such as current m_Holdings) is printed for inspection.
  * 
  * This class is immutable in configuration (stock, range, initial capital, m_Algorithm, m_TradingAlgorithmType)
@@ -251,21 +251,22 @@ class TradingAlgorithmBackTester {
             println("# Algorithm Backtesting | Algorithm: $tradingAlgorithmType")
             println("#===============================================================#")
             println("Stock: ${securityIdentifier.tickerSymbol} [${fromDate.atZone(zone).format(formatter)}-${toDate.atZone(zone).format(formatter)}]")
-            println("Taxation: $tax")
             println("Starting Capital: ${startingCapital.format(2)}")
+            println("Taxation: $tax")
             println()
 
-            println("Total Capital: ${totalCapital.format(2)}")
-            println("Delta Capital: ${deltaCapital.format(2)}")
-            println("Percent Change: ${deltaCapitalInPercent.format(2)}%")
-            println("Yearly Percent Change: ${yearlyPercentChange.format(2)}%")
-            println()
+            println("| ${"Metric".padEnd(24)} | ${"Value".padStart(20)} |")
+            println("-".repeat(50))
 
-            println("Total Buys Made: $totalBuysMade")
-            println("Total Sells Made: $totalSellsMade")
-            println("Force Closed Trades: $forceClosedTrades")
-            println("Winrate: ${tradeWinrate.format(2)}%")
-            println("Sharpe Ratio: ${sharpieRatio.format(2)}")
+            println("| ${"Total Capital".padEnd(24)} | ${totalCapital.format(2).padStart(20)} |")
+            println("| ${"Delta Capital".padEnd(24)} | ${deltaCapital.format(2).padStart(20)} |")
+            println("| ${"Percent Change".padEnd(24)} | ${(deltaCapitalInPercent.format(2) + "%").padStart(20)} |")
+            println("| ${"Yearly Change".padEnd(24)} | ${(yearlyPercentChange.format(2) + "%").padStart(20)} |")
+            println("| ${"Total Buys".padEnd(24)} | ${totalBuysMade.toString().padStart(20)} |")
+            println("| ${"Total Sells".padEnd(24)} | ${totalSellsMade.toString().padStart(20)} |")
+            println("| ${"Forced Closures".padEnd(24)} | ${forceClosedTrades.toString().padStart(20)} |")
+            println("| ${"Winrate".padEnd(24)} | ${(tradeWinrate.format(2) + "%").padStart(20)} |")
+            println("| ${"Sharpe Ratio".padEnd(24)} | ${sharpieRatio.format(2).padStart(20)} |")
             println()
         }
     }

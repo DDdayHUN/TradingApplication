@@ -60,7 +60,7 @@ object TradingAlgorithm {
      */
     private fun initForBackTest(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
         val retHistory = runBlocking {
-            val a1 = async { HistoricalMarketDataProvider.getBySecurityIdentifier(securityIdentifier, from, to).toMutableList() }
+            val a1 = async { HistoricalMarketDataProvider.getBySecurityIdentifier(securityIdentifier, from, to).getOrThrow().toMutableList() }
             a1.await()
         }
         val retTradingAlgorithm = when (type) {
@@ -99,7 +99,7 @@ object TradingAlgorithm {
     private fun initForTrading(type: Type, securityIdentifier: SecurityIdentifier): ITradingAlgorithm {
         val history = runBlocking {
             val a1 = async { HistoricalMarketDataProvider.getBySecurityIdentifier(securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE) }
-            a1.await()
+            a1.await().getOrThrow()
         }
         return when (type) {
             is Type.TACPP46 -> {

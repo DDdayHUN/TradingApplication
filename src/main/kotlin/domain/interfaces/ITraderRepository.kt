@@ -10,13 +10,13 @@ interface ITraderRepository {
     //===========================================================//
     //===========================================================//
 
-    suspend fun save(trader: Trader)
+    suspend fun save(trader: Trader): Result<Unit>
 
     //===========================================================//
 
-    suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): Trader
+    suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): Result<Trader>
 
     //===========================================================//
 
-    suspend fun getAll(): List<Trader>
+    suspend fun getAll(): Result<List<Trader>>
 }

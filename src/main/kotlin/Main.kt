@@ -74,10 +74,12 @@ suspend fun main() {
         }
     }
 
+    //===========================================================//
+
     if(c_RUN_BACKTEST_ON_ALL_SECURITY) {
         run{
             coroutineScope {
-                val listOfOutput = HistoricalMarketDataProvider.getAllSecurityIdentifiers().map {
+                val listOfOutput = HistoricalMarketDataProvider.getAllSecurityIdentifiers().getOrThrow().map {
                     async {
                         TradingAlgorithmBackTester(
                             type = algorithm,
@@ -97,6 +99,8 @@ suspend fun main() {
         }
     }
 
+    //===========================================================//
+
     if(c_RUN_EVAL_ON_ONE_ALGORITHM) {
         run{
             TradingAlgorithmEvaluator(
@@ -109,6 +113,8 @@ suspend fun main() {
             ).runEvaluation().display()
         }
     }
+
+    //===========================================================//
 
     if(c_RUN_EVAL_ON_ALL_ALGORITHM) {
         run {
@@ -133,17 +139,18 @@ suspend fun main() {
         }
     }
 
+    //===========================================================//
+
     if(c_RUN_TRADER_TEST) {
         run {
 
             if (c_CLEAR_TRADER_TEST_FOLDER) clearTestFolder()
 
-            val traderList = TraderRepositoryProvider.get(TraderRepositoryProvider.Type.Fake).getAll()
+            val traderList = TraderRepositoryProvider.get(TraderRepositoryProvider.Type.Fake).getAll().getOrThrow()
 
             val tradersToTest =
-                if (traderList.any { it.securityIdentifier.isin == identifier.isin }) {
-                    traderList
-                } else {
+                if (traderList.any { it.securityIdentifier.isin == identifier.isin }) traderList
+                else {
                     traderList + Trader(
                         uuid = UUID.randomUUID(),
                         securityIdentifier = identifier,
@@ -162,6 +169,8 @@ suspend fun main() {
         }
     }
 
+    //===========================================================//
+
     if(c_RUN_MANUAL_TRADING) {
         run {
             ManualTrading(
@@ -171,6 +180,8 @@ suspend fun main() {
             ).run(currentPrice)
         }
     }
+
+    //===========================================================//
 
     if(c_SHOW_GUI) {
         run{

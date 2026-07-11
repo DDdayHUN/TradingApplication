@@ -17,23 +17,38 @@ object HistoricalMarketDataProvider: IHistoricalMarketDataProvider {
     //===========================================================//
     // Public Method(es)
 
-    override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<SecurityHistory> {
-        val data = s_HistoricalMarketDataRepository.getBySecurityIdentifier(securityIdentifier)
+    override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Result<List<SecurityHistory>> {
+        try {
+            val data = s_HistoricalMarketDataRepository.getBySecurityIdentifier(securityIdentifier)
 
-        return data.history
-            .filter { it.date in from..to }
-            .sortedBy { it.date }
-            .map { SecurityHistory(it.closingPrice) }
-            .toMutableList()
+            val ret = data.history
+                .filter { it.date in from..to }
+                .sortedBy { it.date }
+                .map { SecurityHistory(it.closingPrice) }
+                .toMutableList()
+
+            return Result.success(ret)
+        }
+        catch (e: Exception) {
+            return Result.failure(e)
+        }
+
     }
 
     //===========================================================//
 
     @Deprecated("We need to redo this, because this is too expensive")
-    override suspend fun getAllSecurityIdentifiers(): List<SecurityIdentifier> {
-        val data = s_HistoricalMarketDataRepository.getAll()
-        return data.map {
-            SecurityIdentifier(it.meta.isin, it.meta.tickerSymbol, it.meta.currency)
+    override suspend fun getAllSecurityIdentifiers(): Result<List<SecurityIdentifier>> {
+        try {
+            val data = s_HistoricalMarketDataRepository.getAll()
+            val ret = data
+                .map {
+                    SecurityIdentifier(it.meta.isin, it.meta.tickerSymbol, it.meta.currency)
+                }
+            return Result.success(ret)
+        }
+        catch (e: Exception) {
+            return Result.failure(e)
         }
     }
 

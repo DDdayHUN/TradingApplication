@@ -18,13 +18,13 @@
     </properties>
 
     <dependencies>
-        <!-- GSON-->
+        <!-- GSON -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.13.2</version>
         </dependency>
-        <!-- Junit test-->
+        <!-- JUnit test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -79,8 +79,7 @@
     </dependencies>
     <build>
         <plugins>
-            <!-- java compiler setting  -->
-            <!-- run config for Main-->
+            <!-- run config for Main -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -89,12 +88,13 @@
                     <mainClass>domain.MainKt</mainClass>
                 </configuration>
             </plugin>
-            <!-- run config for Junit test-->
+            <!-- run config for JUnit test -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
             </plugin>
+            <!-- run config for Build (?) -->
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
