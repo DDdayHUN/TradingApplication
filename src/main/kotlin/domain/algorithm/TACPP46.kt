@@ -36,7 +36,7 @@ internal class TACPP46: ITradingAlgorithm {
         val ema: List<Double> = ArrayList(m_EmaHistory)
         val std: Double = domain.utils.Math.stdDev(ema)
         val rsi: Double = domain.utils.Math.rsi(ema)
-        val ma: Double = domain.utils.Math.average(ema)
+        val ma: Double = ema.average()
 
         val lowerBand = ma - 4.0 * std * ma
 
@@ -44,7 +44,7 @@ internal class TACPP46: ITradingAlgorithm {
         if (rsi <= 30.0 && currentPrice <= lowerBand) {
             if (m_LastInputArr.isEmpty()) {
                 m_LastInputArr.add(currentPrice)
-            } else if (domain.utils.Math.average(ArrayList(m_LastInputArr)) <= currentPrice) {
+            } else if (ArrayList(m_LastInputArr).average() <= currentPrice) {
                 val confidence = Math.clamp(
                     ((1.0 - std * 100.0) + (100.0 - rsi) / 100.0) / 2.0,
                     0.0,
@@ -142,7 +142,7 @@ internal class TACPP46: ITradingAlgorithm {
         val q1 = historyQ1.stream().map { it.closingPrice }.toList()
 
         val alpha = 2.0 / (q1.size + 1.0)
-        var ema = domain.utils.Math.average(q0) // initial Value
+        var ema = q0.average() // initial Value
 
         for (price in q1) {
             ema = alpha * price + (1.0 - alpha) * ema

@@ -40,6 +40,7 @@ sealed interface ITradingAlgorithm {
                 is ALGDES2 -> "ALGDES2"
                 is ALGDES3 -> "ALGDES3"
                 is ALGDES31 -> "ALGDES31"
+                is ALGDES4 -> "ALGDES4"
             }
             jsonElement.addProperty("algorithmType", typeTag)
 
@@ -55,6 +56,7 @@ sealed interface ITradingAlgorithm {
                 "ALGDES2" -> context.deserialize(jsonObject, ALGDES2::class.java)
                 "ALGDES3" -> context.deserialize(jsonObject, ALGDES3::class.java)
                 "ALGDES31" -> context.deserialize(jsonObject, ALGDES31::class.java)
+                "ALGDES4" -> context.deserialize(jsonObject, ALGDES4::class.java)
                 else -> throw JsonParseException("Unknown algorithm type tag: $typeTag")
             }
         }

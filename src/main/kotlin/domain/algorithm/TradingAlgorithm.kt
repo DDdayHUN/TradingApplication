@@ -84,6 +84,11 @@ object TradingAlgorithm {
                 retHistory.subList(0, type.initSize).clear()
                 ALGDES31(init)
             }
+            is Type.ALGDES4 -> {
+                val init = retHistory.subList(0, type.initSize).toList()
+                retHistory.subList(0, type.initSize).clear()
+                ALGDES4(init)
+            }
         }
         return Pair(retHistory, retTradingAlgorithm)
     }
@@ -114,6 +119,9 @@ object TradingAlgorithm {
             is Type.ALGDES31 -> {
                 ALGDES31(history.takeLast(type.initSize))
             }
+            is Type.ALGDES4 -> {
+                ALGDES4(history.takeLast(type.initSize))
+            }
         }
     }
 
@@ -122,10 +130,11 @@ object TradingAlgorithm {
     // Helper Class(es)
 
     sealed interface Type {
-        data object TACPP46 : Type { override val initSize: Int = 42 }
-        data object ALGDES2 : Type { override val initSize: Int = 20 }
-        data object ALGDES3 : Type { override val initSize: Int = 15 }
-        data object ALGDES31 : Type { override val initSize: Int = 20 }
+        data object TACPP46 : Type { override val initSize = 42 }
+        data object ALGDES2 : Type { override val initSize = 20 }
+        data object ALGDES3 : Type { override val initSize = 15 }
+        data object ALGDES31 : Type { override val initSize = 20 }
+        data object ALGDES4 : Type { override val initSize = 7 }
 
         val initSize: Int
 
@@ -134,7 +143,8 @@ object TradingAlgorithm {
                 TACPP46,
                 ALGDES2,
                 ALGDES3,
-                ALGDES31
+                ALGDES31,
+                ALGDES4
             )
         }
     }

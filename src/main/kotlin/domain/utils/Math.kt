@@ -18,24 +18,6 @@ object Math {
     /*===========================================================*/
     // Public Method(es)
     /**
-     * Computes the arithmetic mean of a list of numeric values.
-     * 
-     * The list must contain at least one element. The method does not modify
-     * the input list.
-     * 
-     * @param list A non-empty list of numeric values.
-     * @return The arithmetic average of the list.
-     */
-    fun average(list: List<Double>): Double {
-        require(!list.isEmpty()) { "Size" }
-
-        var sum = 0.0
-        for (item in list) sum += item
-        return sum / list.size
-    }
-
-    /*===========================================================*/
-    /**
      * Computes the standard deviation of returns derived from a price series.
      * 
      * This method converts each consecutive price pair into a simple return.
@@ -74,7 +56,7 @@ object Math {
     fun variance(list: List<Double>): Double {
         require(list.size >= 2) { "Size" }
 
-        val mean = average(list)
+        val mean = list.average()
 
         var variance = 0.0
         for (item in list) variance += (item - mean).pow(2)
@@ -118,8 +100,8 @@ object Math {
         if (gaines.isEmpty()) return 0.0
         if (losses.isEmpty()) return 100.0
 
-        val avgGain = average(gaines)
-        val avgLoss = average(losses)
+        val avgGain = gaines.average()
+        val avgLoss = losses.average()
 
         if (avgLoss == 0.0) return 100.0
         if (avgGain == 0.0) return 0.0
@@ -152,12 +134,59 @@ object Math {
             returns.add(r)
         }
 
-        val meanReturn = average(returns) // average of daily returns
+        val meanReturn = returns.average() // average of daily returns
         val stdDev = stdDev(capitalHistory) // standard deviation of daily returns
 
         if (stdDev == 0.0) return Double.NaN
 
         // Annualized Sharpe Ratio
         return (meanReturn * TRADING_DAYS - riskFreeRate) / (stdDev * sqrt(TRADING_DAYS.toDouble()))
+    }
+
+    /*===========================================================*/
+
+    fun List<Double>.median(): Double {
+        if (isEmpty()) return Double.NaN
+
+        val sorted = sorted()
+        val middle = sorted.size / 2
+
+        return if (sorted.size % 2 == 0) (sorted[middle - 1] + sorted[middle]) / 2.0
+        else sorted[middle]
+    }
+
+    /*===========================================================*/
+
+    fun List<Double>.trim(percent: Double): List<Double> {
+        if (isEmpty()) return listOf()
+
+        val sorted = sorted()
+        val removeCount = (size * percent).toInt()
+
+        return sorted
+            .drop(removeCount)
+            .dropLast(removeCount)
+    }
+
+    /*===========================================================*/
+
+    fun List<Double>.bottom(percent: Double): List<Double> {
+        if (isEmpty()) return listOf()
+
+        val sorted = sorted()
+        val removeCount = (size * percent).toInt()
+
+        return sorted.take(removeCount)
+    }
+
+    /*===========================================================*/
+
+    fun List<Double>.top(percent: Double): List<Double> {
+        if (isEmpty()) return listOf()
+
+        val sorted = sorted()
+        val removeCount = (size * percent).toInt()
+
+        return sorted.takeLast(removeCount)
     }
 }
