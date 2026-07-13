@@ -6,6 +6,7 @@ import domain.interfaces.ITraderRepository
 import domain.trader.Trader
 import domain.interfaces.IMarketDataProvider
 import data.network.MarketDataProvider
+import domain.market.Quote
 
 //===========================================================//
 /**
@@ -38,8 +39,8 @@ class TraderTester {
         val capitalBeforeOrder = m_Trader.capital
         val holdingsBeforeOrder = m_Trader.holdings
 
-        val quote = m_MarketDataProvider.getQuote(m_Trader.securityIdentifier).getOrThrow()
-
+        //val quote = m_MarketDataProvider.getQuote(m_Trader.securityIdentifier).getOrThrow()
+        val quote = Quote(207.29)
         val order = m_Trader.createOrder(quote)
         m_Trader.finalizeOrder(order)
 
