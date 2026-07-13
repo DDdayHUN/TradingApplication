@@ -19,3 +19,16 @@ Run the application:
 ```powershell
 .\gradlew.bat run
 ```
+
+## Frontend setup
+
+- from root
+```powershell
+cd trading-frontend
+npm install
+```
+run localhost server
+```powershell
+npm run dev
+```
+
