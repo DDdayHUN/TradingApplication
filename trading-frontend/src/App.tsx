@@ -9,6 +9,7 @@ function App() {
 
   return (
     <>
+      <div className = "bg-red-500">yippi tailwindcss works</div>
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
