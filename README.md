@@ -22,6 +22,12 @@ Run the application:
 
 ## Frontend setup
 
+Download Node.js with winget (if you don't have winget installed then you should install it)
+```powershell
+winget install --id OpenJS.NodeJS.LTS -e
+```
+restart terminal
+
 - from root
 ```powershell
 cd trading-frontend
