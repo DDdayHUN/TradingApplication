@@ -46,7 +46,7 @@ services:
           - "8081:8080"
 
         volumes:
-          - ./keycloak/realms:opt/keycloak/data/import
+          - ./keycloak/realms:/opt/keycloak/data/import
 
         depends_on:
           keycloak-db:
