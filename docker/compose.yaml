@@ -58,8 +58,8 @@ services:
       restart: unless-stopped
       environment:
         POSTGRES_DB: ${TRADING_DB_NAME}
-        POSTGRES_DB_USER: ${TRADING_DB_USERNAME}
-        POSTGRES_DB_PASSWORD: ${TRADING_DB_PASSWORD}
+        POSTGRES_USER: ${TRADING_DB_USERNAME}
+        POSTGRES_PASSWORD: ${TRADING_DB_PASSWORD}
 
       volumes:
         - trading-db-data:/var/lib/postgresql/data
