@@ -4,12 +4,22 @@ import api.dto.user.CreateUserRequest
 import api.dto.user.UserResponse
 import api.entity.UserEntity
 import api.exception.UserAlreadyExistsException
+import api.mapper.UserMapper
 import api.repository.IUserRepository
 import org.springframework.stereotype.Service
 
 @Service
 class UserService {
+    //===========================================================//
+    //===========================================================//
+    // Private Field(s)
+
     private val userRepository: IUserRepository
+    private val userMapper: UserMapper
+
+    //===========================================================//
+    //===========================================================//
+    // Public Method(es)
 
     fun create(request: CreateUserRequest): UserResponse {
         if(userRepository.findByKeycloakSub(request.keycloakSub) != null) {
@@ -20,20 +30,23 @@ class UserService {
             keycloakSub = request.keycloakSub,
         )
 
-        return userRepository.save(user).toResponse()
+        return userMapper.toResponse(
+            userRepository.save(user)
+        )
     }
+
+    //===========================================================//
+
     fun findAll(): List<UserResponse>{
         return userRepository.findAll()
-            .map { user -> user.toResponse() }
+            .map(userMapper::toResponse)
     }
 
-    private fun UserEntity.toResponse(): UserResponse =
-        UserResponse(
-            id = requireNotNull(id),
-            keycloakSub = keycloakSub,
-        )
-
-    constructor(userRepository: IUserRepository) {
+    //===========================================================//
+    //===========================================================//
+    // Constructor(s)
+    constructor(userRepository: IUserRepository, userMapper: UserMapper) {
         this.userRepository = userRepository
+        this.userMapper = userMapper
     }
 }
