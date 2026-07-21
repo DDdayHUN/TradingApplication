@@ -43,6 +43,17 @@ class UserService {
     }
 
     //===========================================================//
+
+    fun findByKeycloakSub(keycloakSub: String): UserResponse{
+        val user = userRepository.findByKeycloakSub(keycloakSub)
+        if(user != null){
+            return userMapper.toResponse(user)
+        }
+        throw NoSuchElementException("User $keycloakSub not found")
+    }
+
+
+    //===========================================================//
     //===========================================================//
     // Constructor(s)
     constructor(userRepository: IUserRepository, userMapper: UserMapper) {
