@@ -24,8 +24,18 @@ dependencies {
         "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.11.0"
     )
 
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    testImplementation(kotlin("test-junit5"))
+    testImplementation(
+        platform("org.junit:junit-bom:5.11.4")
+    )
+
+    testImplementation(
+        "org.junit.jupiter:junit-jupiter"
+    )
+
+    testRuntimeOnly(
+        "org.junit.platform:junit-platform-launcher"
+    )
 }
 
 application {
