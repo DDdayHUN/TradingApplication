@@ -3,10 +3,13 @@ package api.service
 import api.dto.user.CreateUserRequest
 import api.dto.user.UserResponse
 import api.entity.UserEntity
-import api.exception.UserAlreadyExistsException
+import api.exception.user.UserAlreadyExistsException
+import api.exception.user.UserNotFoundException
 import api.mapper.UserMapper
 import api.repository.IUserRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class UserService {
@@ -45,13 +48,20 @@ class UserService {
     //===========================================================//
 
     fun findByKeycloakSub(keycloakSub: String): UserResponse{
-        val user = userRepository.findByKeycloakSub(keycloakSub)
-        if(user != null){
-            return userMapper.toResponse(user)
-        }
-        throw NoSuchElementException("User $keycloakSub not found")
+        val user = userRepository.findByKeycloakSub(keycloakSub)?:
+        throw UserNotFoundException(keycloakSub)
+
+        return userMapper.toResponse(user)
     }
 
+    //===========================================================//
+
+    fun findById(id: UUID): UserResponse{
+        val user = userRepository.findByIdOrNull(id)?:
+        throw UserNotFoundException(id)
+
+        return userMapper.toResponse(user)
+    }
 
     //===========================================================//
     //===========================================================//

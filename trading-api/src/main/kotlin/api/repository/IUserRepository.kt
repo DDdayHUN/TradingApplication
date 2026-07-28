@@ -1,5 +1,6 @@
 package api.repository
 
+import api.dto.user.UserResponse
 import api.entity.UserEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID

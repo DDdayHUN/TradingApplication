@@ -25,13 +25,14 @@ class SecurityConfig {
                    SessionCreationPolicy.STATELESS
                )
            }
-           .authorizeHttpRequests { authorization ->
-               authorization
-                   .requestMatchers("/api/public/**")
-                   .permitAll()
-                   .anyRequest()
-                   .authenticated()
-           }
+           // AUTHORIZATION, most meg nem kell
+           // .authorizeHttpRequests { authorization ->
+           //    authorization
+           //        .requestMatchers("/api/public/**")
+           //        .permitAll()
+           //        .anyRequest()
+           //        .authenticated()
+           //}
            .oauth2ResourceServer { resourceServer ->
                resourceServer.jwt(Customizer.withDefaults())
            }
