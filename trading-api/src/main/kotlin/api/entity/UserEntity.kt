@@ -12,8 +12,8 @@ import jakarta.persistence.Table
 import java.util.UUID
 
 @Entity
-@Table(name = "app_users")
-class User (
+@Table(name = "app_user")
+class UserEntity (
     @Column(name = "keycloak_sub", nullable = false, unique = true)
     var keycloakSub: String
 ){
@@ -22,5 +22,5 @@ class User (
     var id: UUID? = null
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
-    var traders: MutableList<Trader> = mutableListOf()
+    var trader: MutableList<TraderEntity> = mutableListOf()
 }

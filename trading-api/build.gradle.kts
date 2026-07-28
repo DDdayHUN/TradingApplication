@@ -22,6 +22,8 @@ dependencies {
     implementation(project(":trading-core"))
     implementation(kotlin("reflect"))
 
+    implementation("com.google.code.gson:gson:2.13.2")
+
     implementation(
         "org.springframework.boot:" +
                 "spring-boot-starter-security-oauth2-resource-server"

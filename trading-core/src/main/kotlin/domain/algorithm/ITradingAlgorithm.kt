@@ -35,14 +35,7 @@ sealed interface ITradingAlgorithm {
         override fun serialize(src: ITradingAlgorithm, typeOfT: Type, context: JsonSerializationContext): JsonElement {
             val jsonElement = context.serialize(src, src.javaClass).asJsonObject
 
-            val typeTag = when (src) {
-                is TACPP46 -> "TACPP46"
-                is ALGDES2 -> "ALGDES2"
-                is ALGDES3 -> "ALGDES3"
-                is ALGDES31 -> "ALGDES31"
-                is ALGDES4 -> "ALGDES4"
-            }
-            jsonElement.addProperty("algorithmType", typeTag)
+            jsonElement.addProperty("algorithmType", typeTagOf(src))
 
             return jsonElement
         }
@@ -58,6 +51,20 @@ sealed interface ITradingAlgorithm {
                 "ALGDES31" -> context.deserialize(jsonObject, ALGDES31::class.java)
                 "ALGDES4" -> context.deserialize(jsonObject, ALGDES4::class.java)
                 else -> throw JsonParseException("Unknown algorithm type tag: $typeTag")
+            }
+        }
+    }
+
+    companion object {
+        fun typeTagOf(
+            algorithm: ITradingAlgorithm
+        ): String {
+            return when (algorithm){
+                is TACPP46 -> "TACPP46"
+                is ALGDES2 -> "ALGDES2"
+                is ALGDES3 -> "ALGDES3"
+                is ALGDES31 -> "ALGDES31"
+                is ALGDES4 -> "ALGDES4"
             }
         }
     }
