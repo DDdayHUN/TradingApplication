@@ -1,7 +1,6 @@
 package api.repository
 
-import api.dto.user.UserResponse
-import api.entity.UserEntity
+import api.entity.User
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
@@ -10,11 +9,11 @@ import java.util.UUID
 // * CRUD Methods all default defined.
 // * Method names follow JPA rules.
 // */
-interface IUserRepository : JpaRepository<UserEntity, UUID> {
+interface IUserRepository : JpaRepository<User, UUID> {
     //===========================================================//
     /**
      * Find user by keycloak subject code
      * @param keycloakSub sub code in the JWT Token.
      */
-    fun findByKeycloakSub(keycloakSub: String): UserEntity?
+    fun findByKeycloakSub(keycloakSub: String): User?
 }

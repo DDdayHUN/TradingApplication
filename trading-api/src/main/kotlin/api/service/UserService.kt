@@ -2,7 +2,7 @@ package api.service
 
 import api.dto.user.CreateUserRequest
 import api.dto.user.UserResponse
-import api.entity.UserEntity
+import api.entity.User
 import api.exception.user.UserAlreadyExistsException
 import api.exception.user.UserNotFoundException
 import api.mapper.UserMapper
@@ -29,7 +29,7 @@ class UserService {
             throw UserAlreadyExistsException(request.keycloakSub)
         }
 
-        val user = UserEntity(
+        val user = User(
             keycloakSub = request.keycloakSub,
         )
 
