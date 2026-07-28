@@ -2,6 +2,7 @@ package api.service
 
 import api.dto.trader.CreateTraderRequest
 import api.dto.trader.TraderResponse
+import api.exception.trader.TraderNotFoundException
 import api.exception.user.UserNotFoundException
 import api.mapper.TraderMapper
 import api.repository.ITraderRepository
@@ -11,6 +12,7 @@ import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class TraderService {
@@ -75,6 +77,17 @@ class TraderService {
         return traderRepository.findAllByUser_KeycloakSub(keycloakSub)
             .map(traderMapper::toResponse)
     }
+
+    //===========================================================//
+
+    @Transactional
+    fun findByIdForUser(id: UUID, keycloakSub: String): TraderResponse {
+        val result = traderRepository.findByIdAndUser_KeycloakSub(id, keycloakSub)
+            ?: throw TraderNotFoundException(id, keycloakSub)
+
+        return traderMapper.toResponse(result)
+    }
+
 
     //===========================================================//
     //===========================================================//

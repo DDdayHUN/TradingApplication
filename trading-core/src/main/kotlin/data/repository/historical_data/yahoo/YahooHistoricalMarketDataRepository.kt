@@ -17,7 +17,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     //===========================================================//
     // Private Field(s)
 
-    private val s_RootDir = File("src/main/resources/backtest/yahoo/")
+    private val s_RootDir = File("trading-core/src/main/resources/backtest/yahoo/")
 
     private val s_GSON = GsonBuilder()
         .enableComplexMapKeySerialization()
