@@ -9,10 +9,12 @@ import api.mapper.UserMapper
 import api.repository.IUserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
 class UserService {
+
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -24,6 +26,7 @@ class UserService {
     //===========================================================//
     // Public Method(es)
 
+    @Transactional
     fun create(request: CreateUserRequest): UserResponse {
         if(userRepository.findByKeycloakSub(request.keycloakSub) != null) {
             throw UserAlreadyExistsException(request.keycloakSub)
@@ -40,6 +43,7 @@ class UserService {
 
     //===========================================================//
 
+    @Transactional(readOnly = true)
     fun findAll(): List<UserResponse>{
         return userRepository.findAll()
             .map(userMapper::toResponse)
@@ -47,6 +51,7 @@ class UserService {
 
     //===========================================================//
 
+    @Transactional(readOnly = true)
     fun findByKeycloakSub(keycloakSub: String): UserResponse{
         val user = userRepository.findByKeycloakSub(keycloakSub)?:
         throw UserNotFoundException(keycloakSub)
@@ -56,6 +61,7 @@ class UserService {
 
     //===========================================================//
 
+    @Transactional(readOnly = true)
     fun findById(id: UUID): UserResponse{
         val user = userRepository.findByIdOrNull(id)?:
         throw UserNotFoundException(id)

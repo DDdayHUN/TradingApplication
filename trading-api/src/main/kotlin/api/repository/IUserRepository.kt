@@ -4,11 +4,6 @@ import api.entity.UserEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
-///**
-// * Jpa Repository for user.
-// * CRUD Methods all default defined.
-// * Method names follow JPA rules.
-// */
 interface IUserRepository : JpaRepository<UserEntity, UUID> {
     //===========================================================//
     /**

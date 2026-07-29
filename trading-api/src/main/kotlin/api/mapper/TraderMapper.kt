@@ -1,7 +1,7 @@
 package api.mapper
 
-import api.dto.trader.SecurityHoldingResponse
-import api.dto.trader.SecurityIdentifierResponse
+import api.dto.security.SecurityHoldingResponse
+import api.dto.security.SecurityIdentifierResponse
 import api.dto.trader.TraderResponse
 import api.entity.TraderEntity
 import api.entity.UserEntity
@@ -23,6 +23,7 @@ class TraderMapper (
         object : TypeToken<Map<String, Any?>>() {}.type
 
     //===========================================================//
+
     fun toEntity(trader: Trader, user: UserEntity, algorithmType: String): TraderEntity {
         val entity = TraderEntity(
             id = trader.uuid,

@@ -10,12 +10,13 @@ import api.repository.IUserRepository
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
 class TraderService {
+
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -36,9 +37,7 @@ class TraderService {
             currency = request.securityIdentifier.currency,
         )
 
-        val algorithmType = parseAlgorithmType(
-            request.algorithmType,
-        )
+        val algorithmType = parseAlgorithmType(request.algorithmType)
 
         val algorithm = TradingAlgorithm.create(
             type = algorithmType,
@@ -64,30 +63,33 @@ class TraderService {
         val savedEntity = traderRepository.save(entity)
 
         return traderMapper.toResponse(savedEntity)
-
-
     }
 
     //===========================================================//
 
-    @Transactional
-    fun findAllForUser(
-        keycloakSub: String
-    ): List<TraderResponse>{
-        return traderRepository.findAllByUser_KeycloakSub(keycloakSub)
+    @Transactional(readOnly = true)
+    fun findAllForUserByKeycloakSub(keycloakSub: String): List<TraderResponse> {
+        return traderRepository.findAllByUserKeycloakSub(keycloakSub)
             .map(traderMapper::toResponse)
     }
 
     //===========================================================//
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun findByIdForUser(id: UUID, keycloakSub: String): TraderResponse {
-        val result = traderRepository.findByIdAndUser_KeycloakSub(id, keycloakSub)
+        val trader = traderRepository.findByIdAndUserKeycloakSub(id, keycloakSub)
             ?: throw TraderNotFoundException(id, keycloakSub)
 
-        return traderMapper.toResponse(result)
+        return traderMapper.toResponse(trader)
     }
 
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    fun findAllByUserId(id: UUID): List<TraderResponse>{
+        return traderRepository.findAllByUserId(id)
+            .map(traderMapper::toResponse)
+    }
 
     //===========================================================//
     //===========================================================//
@@ -109,9 +111,7 @@ class TraderService {
 
     //===========================================================//
 
-    private fun algorithmTypeName(
-        type: TradingAlgorithm.Type
-    ): String {
+    private fun algorithmTypeName(type: TradingAlgorithm.Type): String {
         return when (type) {
             TradingAlgorithm.Type.TACPP46 -> "TACPP46"
             TradingAlgorithm.Type.ALGDES2 -> "ALGDES2"

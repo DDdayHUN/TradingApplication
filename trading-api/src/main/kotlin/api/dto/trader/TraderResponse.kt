@@ -1,5 +1,7 @@
 package api.dto.trader
 
+import api.dto.security.SecurityHoldingResponse
+import api.dto.security.SecurityIdentifierResponse
 import java.util.UUID
 
 data class TraderResponse(

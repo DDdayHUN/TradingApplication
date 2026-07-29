@@ -1,4 +1,4 @@
-package api.dto.trader
+package api.dto.security
 
 data class SecurityIdentifierResponse(
     val isin: String,

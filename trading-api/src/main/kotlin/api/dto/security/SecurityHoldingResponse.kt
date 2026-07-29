@@ -1,4 +1,4 @@
-package api.dto.trader
+package api.dto.security
 
 import java.util.UUID
 

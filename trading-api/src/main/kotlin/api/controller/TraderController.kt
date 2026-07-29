@@ -32,7 +32,7 @@ class TraderController {
     @GetMapping
     fun getAllTraders(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<List<TraderResponse>> {
         return ResponseEntity.ok(
-            traderService.findAllForUser(jwt.subject!!)
+            traderService.findAllForUserByKeycloakSub(jwt.subject!!)
         )
     }
 
