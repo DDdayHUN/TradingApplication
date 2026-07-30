@@ -22,7 +22,7 @@ class UserEntity (
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     lateinit var portfolio: PortfolioEntity
 
     fun attachPortfolio(portfolio: PortfolioEntity) {

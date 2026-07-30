@@ -37,12 +37,12 @@ class UserService {
             keycloakSub = request.keycloakSub,
         )
 
-        user.attachPortfolio(
-            PortfolioEntity(
-                user,
-                request.availableCash
-            )
+        val portfolio = PortfolioEntity(
+            user = user,
+            availableCash = request.availableCash
         )
+
+        user.attachPortfolio(portfolio)
 
         return userMapper.toResponse(
             userRepository.save(user)
