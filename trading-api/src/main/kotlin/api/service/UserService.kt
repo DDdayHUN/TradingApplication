@@ -2,6 +2,7 @@ package api.service
 
 import api.dto.user.CreateUserRequest
 import api.dto.user.UserResponse
+import api.entity.PortfolioEntity
 import api.entity.UserEntity
 import api.exception.user.UserAlreadyExistsException
 import api.exception.user.UserNotFoundException
@@ -34,6 +35,13 @@ class UserService {
 
         val user = UserEntity(
             keycloakSub = request.keycloakSub,
+        )
+
+        user.attachPortfolio(
+            PortfolioEntity(
+                user,
+                request.availableCash
+            )
         )
 
         return userMapper.toResponse(

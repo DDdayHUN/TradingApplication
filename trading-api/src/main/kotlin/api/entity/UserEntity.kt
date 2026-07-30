@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import java.util.UUID
 
@@ -16,11 +17,16 @@ import java.util.UUID
 class UserEntity (
     @Column(name = "keycloak_sub", nullable = false, unique = true)
     var keycloakSub: String
-){
+) {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
-    var trader: MutableList<TraderEntity> = mutableListOf()
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    lateinit var portfolio: PortfolioEntity
+
+    fun attachPortfolio(portfolio: PortfolioEntity) {
+        this.portfolio = portfolio
+        portfolio.user = this
+    }
 }

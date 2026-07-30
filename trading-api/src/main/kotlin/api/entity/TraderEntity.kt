@@ -54,8 +54,8 @@ class TraderEntity(
     var securityIdentifier: SecurityIdentifierEntity,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    var user: UserEntity,
+    @JoinColumn(name = "portfolio_id", nullable = false)
+    var portfolio: PortfolioEntity,
 
     @Column(name = "capital", nullable = false)
     var capital: Double,

@@ -31,6 +31,19 @@ class TraderService {
 
     @Transactional
     fun createTrader(keycloakSub: String, request: CreateTraderRequest): TraderResponse {
+        require(request.capital > 0.0) {
+            "Trader capital must be greater than zero"
+        }
+
+        val user = userRepository.findByKeycloakSub(keycloakSub)
+            ?: throw UserNotFoundException(keycloakSub)
+
+        val portfolio = user.portfolio
+
+        require(portfolio.availableCash >= request.capital){
+            "Portfolio has insufficient cash amount"
+        }
+
         val securityIdentifier = SecurityIdentifier(
             isin = request.securityIdentifier.isin,
             tickerSymbol = request.securityIdentifier.tickerSymbol,
@@ -51,25 +64,23 @@ class TraderService {
             algorithm = algorithm,
         )
 
-        val user = userRepository.findByKeycloakSub(keycloakSub)
-            ?: throw UserNotFoundException(keycloakSub)
-
         val entity = traderMapper.toEntity(
             trader = domainTrader,
-            user = user,
+            portfolio = user.portfolio,
             algorithmType = algorithmTypeName(algorithmType)
         )
 
-        val savedEntity = traderRepository.save(entity)
+        portfolio.availableCash -= request.capital
+        portfolio.addTrader(entity)
 
-        return traderMapper.toResponse(savedEntity)
+        return traderMapper.toResponse(entity)
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
     fun findAllForUserByKeycloakSub(keycloakSub: String): List<TraderResponse> {
-        return traderRepository.findAllByUserKeycloakSub(keycloakSub)
+        return traderRepository.findAllByPortfolioUserKeycloakSub(keycloakSub)
             .map(traderMapper::toResponse)
     }
 
@@ -77,7 +88,7 @@ class TraderService {
 
     @Transactional(readOnly = true)
     fun findByIdForUser(id: UUID, keycloakSub: String): TraderResponse {
-        val trader = traderRepository.findByIdAndUserKeycloakSub(id, keycloakSub)
+        val trader = traderRepository.findByIdAndPortfolioUserKeycloakSub(id, keycloakSub)
             ?: throw TraderNotFoundException(id, keycloakSub)
 
         return traderMapper.toResponse(trader)
@@ -87,7 +98,7 @@ class TraderService {
 
     @Transactional(readOnly = true)
     fun findAllByUserId(id: UUID): List<TraderResponse>{
-        return traderRepository.findAllByUserId(id)
+        return traderRepository.findAllByPortfolioUserId(id)
             .map(traderMapper::toResponse)
     }
 

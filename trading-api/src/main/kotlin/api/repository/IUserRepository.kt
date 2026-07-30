@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface IUserRepository : JpaRepository<UserEntity, UUID> {
-    //===========================================================//
     /**
      * Find user by keycloak subject code
      * @param keycloakSub sub code in the JWT Token.

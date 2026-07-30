@@ -51,9 +51,7 @@ class TraderController {
     // POST
 
     @PostMapping
-    fun createTrader(
-        @AuthenticationPrincipal jwt: Jwt,
-        @RequestBody request: CreateTraderRequest
+    fun createTrader(@AuthenticationPrincipal jwt: Jwt, @RequestBody request: CreateTraderRequest
     ): ResponseEntity<TraderResponse>{
         val response = traderService.createTrader(
             keycloakSub = jwt.subject!!,

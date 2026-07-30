@@ -3,6 +3,7 @@ package api.mapper
 import api.dto.security.SecurityHoldingResponse
 import api.dto.security.SecurityIdentifierResponse
 import api.dto.trader.TraderResponse
+import api.entity.PortfolioEntity
 import api.entity.TraderEntity
 import api.entity.UserEntity
 import api.entity.security.SecurityHoldingEntity
@@ -24,7 +25,7 @@ class TraderMapper (
 
     //===========================================================//
 
-    fun toEntity(trader: Trader, user: UserEntity, algorithmType: String): TraderEntity {
+    fun toEntity(trader: Trader, portfolio: PortfolioEntity, algorithmType: String): TraderEntity {
         val entity = TraderEntity(
             id = trader.uuid,
             securityIdentifier = SecurityIdentifierEntity(
@@ -32,7 +33,7 @@ class TraderMapper (
                 tickerSymbol = trader.securityIdentifier.tickerSymbol,
                 currency = trader.securityIdentifier.currency,
             ),
-            user = user,
+            portfolio = portfolio,
             capital = trader.capital,
             algorithmType = algorithmType,
             algorithmState = gson.toJson(
