@@ -29,8 +29,8 @@ class TraderController {
     //===========================================================//
     // GET
 
-    @GetMapping
-    fun getAllTraders(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<List<TraderResponse>> {
+    @GetMapping("/me")
+    fun getAllTradersByKeycloakSub(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<List<TraderResponse>> {
         return ResponseEntity.ok(
             traderService.findAllForUserByKeycloakSub(jwt.subject!!)
         )

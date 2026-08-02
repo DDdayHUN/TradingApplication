@@ -8,12 +8,6 @@ import org.springframework.stereotype.Component
 @Component
 class UserMapper {
 
-    fun toEntity(request: CreateUserRequest): UserEntity{
-        return UserEntity(
-            keycloakSub = request.keycloakSub
-        )
-    }
-
     fun toResponse(entity: UserEntity): UserResponse {
         return UserResponse(
             id = requireNotNull(entity.id),

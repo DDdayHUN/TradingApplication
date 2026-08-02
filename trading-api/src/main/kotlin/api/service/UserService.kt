@@ -28,13 +28,13 @@ class UserService {
     // Public Method(es)
 
     @Transactional
-    fun create(request: CreateUserRequest): UserResponse {
-        if(userRepository.findByKeycloakSub(request.keycloakSub) != null) {
-            throw UserAlreadyExistsException(request.keycloakSub)
+    fun create(keycloakSub: String,request: CreateUserRequest): UserResponse {
+        if(userRepository.findByKeycloakSub(keycloakSub) != null) {
+            throw UserAlreadyExistsException(keycloakSub)
         }
 
         val user = UserEntity(
-            keycloakSub = request.keycloakSub,
+            keycloakSub = keycloakSub,
         )
 
         val portfolio = PortfolioEntity(

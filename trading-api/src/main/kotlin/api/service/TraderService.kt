@@ -97,7 +97,7 @@ class TraderService {
     //===========================================================//
 
     @Transactional(readOnly = true)
-    fun findAllByUserId(id: UUID): List<TraderResponse>{
+    fun findAllByPortfolioId(id: UUID): List<TraderResponse>{
         return traderRepository.findAllByPortfolioUserId(id)
             .map(traderMapper::toResponse)
     }

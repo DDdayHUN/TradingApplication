@@ -42,7 +42,7 @@ suspend fun main() {
     val currentPrice = 200.0
 
     val startCapital = 1000.0
-    val startDate = Instant.parse("2015-01-01T00:00:00Z")
+    val startDate = Instant.parse("2020-01-01T00:00:00Z")
     val endDate = Instant.parse("2025-01-01T00:00:00Z")
     val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
