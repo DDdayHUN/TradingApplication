@@ -1,13 +1,16 @@
 package api.controller
 
+import api.dto.trader.ChangeTraderAlgorithmRequest
 import api.dto.trader.CreateTraderRequest
 import api.dto.trader.TraderResponse
 import api.service.TraderService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -30,18 +33,18 @@ class TraderController {
     // GET
 
     @GetMapping("/me")
-    fun getAllTradersByKeycloakSub(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<List<TraderResponse>> {
+    fun getAllTradersByKeycloakSub(authentication: Authentication): ResponseEntity<List<TraderResponse>> {
         return ResponseEntity.ok(
-            traderService.findAllForUserByKeycloakSub(jwt.subject!!)
+            traderService.findAllForUserByKeycloakSub(authentication.name)
         )
     }
 
     @GetMapping("/{id}")
-    fun getTraderById(@AuthenticationPrincipal jwt: Jwt, @PathVariable id: UUID): ResponseEntity<TraderResponse>{
+    fun getTraderById(authentication: Authentication, @PathVariable id: UUID): ResponseEntity<TraderResponse>{
         return ResponseEntity.ok(
             traderService.findByIdForUser(
                 id = id,
-                keycloakSub = jwt.subject!!
+                keycloakSub = authentication.name
             )
         )
     }
@@ -51,14 +54,30 @@ class TraderController {
     // POST
 
     @PostMapping
-    fun createTrader(@AuthenticationPrincipal jwt: Jwt, @RequestBody request: CreateTraderRequest
+    fun createTrader(authentication: Authentication, @RequestBody request: CreateTraderRequest
     ): ResponseEntity<TraderResponse>{
         val response = traderService.createTrader(
-            keycloakSub = jwt.subject!!,
+            keycloakSub = authentication.name,
             request = request
         )
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // PATCH
+
+    @PatchMapping("/{id}/algorithm")
+    fun changeAlgorithm(authentication: Authentication, @PathVariable id: UUID,
+                        @RequestBody request: ChangeTraderAlgorithmRequest): ResponseEntity<TraderResponse> {
+        return ResponseEntity.ok(
+            traderService.changeAlgorithm(
+                id = id,
+                keycloakSub = authentication.name,
+                request = request
+            )
+        )
     }
 
     //===========================================================//

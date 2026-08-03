@@ -84,4 +84,12 @@ class TraderEntity(
     fun removeHolding(holding: SecurityHoldingEntity){
         holdings.remove(holding)
     }
+
+    fun changeAlgorithm(algorithmType: String, algorithmState: String){
+        require(algorithmType.isNotBlank()) { "The algorithm state cannot be empty" }
+        require(algorithmState.isNotBlank()) { "Algorithm state cannot be blank" }
+
+        this.algorithmType = algorithmType
+        this.algorithmState = algorithmState
+    }
 }

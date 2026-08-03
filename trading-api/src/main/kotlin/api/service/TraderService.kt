@@ -1,5 +1,6 @@
 package api.service
 
+import api.dto.trader.ChangeTraderAlgorithmRequest
 import api.dto.trader.CreateTraderRequest
 import api.dto.trader.TraderResponse
 import api.exception.trader.TraderNotFoundException
@@ -8,6 +9,7 @@ import api.mapper.TraderMapper
 import api.repository.ITraderRepository
 import api.repository.IUserRepository
 import domain.algorithm.TradingAlgorithm
+import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import org.springframework.stereotype.Service
@@ -97,9 +99,39 @@ class TraderService {
     //===========================================================//
 
     @Transactional(readOnly = true)
-    fun findAllByPortfolioId(id: UUID): List<TraderResponse>{
+    fun findAllByPortfolioUserId(id: UUID): List<TraderResponse>{
         return traderRepository.findAllByPortfolioUserId(id)
             .map(traderMapper::toResponse)
+    }
+
+    //===========================================================//
+
+    @Transactional
+    fun changeAlgorithm(id: UUID, keycloakSub: String, request: ChangeTraderAlgorithmRequest): TraderResponse {
+        val trader = traderRepository.findByIdAndPortfolioUserKeycloakSub(id, keycloakSub)
+            ?: throw TraderNotFoundException(id, keycloakSub)
+
+        val algorithmType = parseAlgorithmType(request.algorithmType)
+
+        val securityIdentifier = SecurityIdentifier(
+            isin = trader.securityIdentifier.isin,
+            tickerSymbol = trader.securityIdentifier.tickerSymbol,
+            currency = trader.securityIdentifier.currency
+        )
+
+        val algorithm = TradingAlgorithm.create(
+            type = algorithmType,
+            securityIdentifier = securityIdentifier
+        )
+
+        val serializedAlgorithm = traderMapper.serializeAlgorithm(algorithm)
+
+        trader.changeAlgorithm(
+            algorithmType = algorithmTypeName(algorithmType),
+            algorithmState = serializedAlgorithm
+        )
+
+        return traderMapper.toResponse(trader)
     }
 
     //===========================================================//

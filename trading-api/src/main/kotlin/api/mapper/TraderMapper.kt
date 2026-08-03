@@ -23,6 +23,28 @@ class TraderMapper (
     private val algorithmStateMapType =
         object : TypeToken<Map<String, Any?>>() {}.type
 
+
+    fun serializeAlgorithm(algorithm: ITradingAlgorithm): String{
+        return gson.toJson(
+            algorithm,
+            ITradingAlgorithm::class.java,
+        )
+    }
+
+    fun deserializeAlgorithm(algorithmState: String): ITradingAlgorithm{
+        return gson.fromJson(
+            algorithmState,
+            ITradingAlgorithm::class.java,
+        )
+    }
+
+    fun deserializeAlgorithmState(algorithmState: String): Map<String, Any?>{
+        return gson.fromJson(
+            algorithmState,
+            algorithmStateMapType
+        )
+    }
+
     //===========================================================//
 
     fun toEntity(trader: Trader, portfolio: PortfolioEntity, algorithmType: String): TraderEntity {
