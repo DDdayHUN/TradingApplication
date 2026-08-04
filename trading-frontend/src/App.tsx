@@ -1,15 +1,13 @@
 import './App.css'
-import logo from './assets/logo.png'
+import {Route, Routes} from "react-router";
+import HomePage from "./components/pages/HomePage.tsx";
 
 function App() {
   return (
     <>
-        <div className = "flex w-full justify-center bg-gray-500 h-10 items-center">
-            <p className = "text-l">Trading App</p>
-        </div>
-        <div className = "flex justify-center items-center h-full w-full">
-            <img src = {logo} alt="logo" className = "w-200" />
-        </div>
+        <Routes>
+         <Route path="/" element={<HomePage />} />
+        </Routes>
     </>
   )
 }

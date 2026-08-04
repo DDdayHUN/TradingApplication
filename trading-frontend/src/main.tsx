@@ -3,19 +3,21 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import keycloak from "./auth/keycloak.ts";
+import {BrowserRouter} from "react-router";
 
 
 async function startApplication(): Promise<void>{
     try{
         await keycloak.init({
-            onLoad: "login-required",
             pkceMethod: "S256",
             checkLoginIframe: false
         });
 
         createRoot(document.getElementById('root')!).render(
             <StrictMode>
-                <App />
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
             </StrictMode>,
         )
     } catch(error){
