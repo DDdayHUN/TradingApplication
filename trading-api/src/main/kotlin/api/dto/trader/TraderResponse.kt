@@ -9,6 +9,5 @@ data class TraderResponse(
     val securityIdentifier: SecurityIdentifierResponse,
     val capital: Double,
     val holdings: List<SecurityHoldingResponse>,
-    val algorithmType: String,
-    val algorithmState: Map<String, Any?>
+    val algorithm: Map<String, Any?>
 )

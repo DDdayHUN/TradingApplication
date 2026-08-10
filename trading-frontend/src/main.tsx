@@ -9,6 +9,7 @@ import {BrowserRouter} from "react-router";
 async function startApplication(): Promise<void>{
     try{
         await keycloak.init({
+            onLoad : "login-required",
             pkceMethod: "S256",
             checkLoginIframe: false
         });

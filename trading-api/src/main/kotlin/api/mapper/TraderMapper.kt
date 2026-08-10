@@ -5,7 +5,6 @@ import api.dto.security.SecurityIdentifierResponse
 import api.dto.trader.TraderResponse
 import api.entity.PortfolioEntity
 import api.entity.TraderEntity
-import api.entity.UserEntity
 import api.entity.security.SecurityHoldingEntity
 import api.entity.security.SecurityIdentifierEntity
 import com.google.gson.Gson
@@ -130,8 +129,7 @@ class TraderMapper (
                     amount = holding.amount,
                 )
             },
-            algorithmType = entity.algorithmType,
-            algorithmState = state
+            algorithm = state
         )
     }
 }
