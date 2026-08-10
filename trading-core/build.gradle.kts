@@ -16,16 +16,26 @@ kotlin {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.13.2")
-
     implementation(
-        "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0"
-    )
-    implementation(
-        "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.11.0"
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
     )
 
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    implementation(
+        "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.10.2"
+    )
+
+    testImplementation(kotlin("test-junit5"))
+    testImplementation(
+        platform("org.junit:junit-bom:5.11.4")
+    )
+
+    testImplementation(
+        "org.junit.jupiter:junit-jupiter"
+    )
+
+    testRuntimeOnly(
+        "org.junit.platform:junit-platform-launcher"
+    )
 }
 
 application {

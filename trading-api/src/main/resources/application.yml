@@ -1,0 +1,27 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/trading
+
+
+  flyway:
+    locations: classpath:db/migration
+
+  config:
+    import: "file:./.env[.properties]"
+
+  datasource:
+    url: jdbc:postgresql://${TRADING_DB_URL}/${TRADING_DB_NAME}
+    username: ${TRADING_DB_USERNAME}
+    password: ${TRADING_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+    open-in-view: false
+
+server:
+  port: 8080
