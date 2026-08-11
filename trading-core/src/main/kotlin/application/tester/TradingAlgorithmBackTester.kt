@@ -7,7 +7,11 @@ import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
 import domain.tax.ITaxation
 import domain.tax.Taxation
+import domain.utils.Math
 import format
+import java.time.Duration
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.time.Instant
@@ -123,7 +127,7 @@ class TradingAlgorithmBackTester {
             m_ForceClosedTrades,
             winRate,
             maxDrawdown,
-            domain.utils.Math.sharpeRatio(m_CapitalHistory)
+            Math.sharpeRatio(m_CapitalHistory)
         )
     }
 
@@ -249,8 +253,8 @@ class TradingAlgorithmBackTester {
         fun display() {
             val tax = if(taxation != null) "With" else "Without"
 
-            val zone = java.time.ZoneId.systemDefault()
-            val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd")
+            val zone = ZoneId.systemDefault()
+            val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
 
             val fromDate = from.toJavaInstant()
             val toDate = to.toJavaInstant()
@@ -258,7 +262,7 @@ class TradingAlgorithmBackTester {
             val deltaCapital = totalCapital - startingCapital
             val deltaCapitalInPercent = (deltaCapital / startingCapital) * 100.0
 
-            val years = java.time.Duration.between(fromDate, toDate).toDays().toDouble() / 365.2425
+            val years = Duration.between(fromDate, toDate).toDays().toDouble() / 365.2425
             val cagr = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0) * 100.0
 
             val calmar = cagr / maxDrawdown
