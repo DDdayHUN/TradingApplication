@@ -1,8 +1,8 @@
 package data.persistence.mapper
 
-import api.dto.security.SecurityHoldingResponse
-import api.dto.security.SecurityIdentifierResponse
-import api.dto.trader.TraderResponse
+import api.dto.SecurityHoldingResponse
+import api.dto.SecurityIdentifierResponse
+import api.dto.TraderResponse
 import data.persistence.entity.PortfolioEntity
 import data.persistence.entity.TraderEntity
 import data.persistence.entity.security.SecurityHoldingEntity

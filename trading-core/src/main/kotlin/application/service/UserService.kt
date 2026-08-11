@@ -1,7 +1,7 @@
 package application.service
 
-import api.dto.user.CreateUserRequest
-import api.dto.user.UserResponse
+import api.dto.CreateUserRequest
+import api.dto.UserResponse
 import api.exception.user.UserAlreadyExistsException
 import api.exception.user.UserNotFoundException
 import data.persistence.entity.PortfolioEntity

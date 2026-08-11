@@ -1,7 +1,4 @@
-package api.dto.portfolio
-
-import api.dto.trader.TraderResponse
-import api.dto.user.UserResponse
+package api.dto
 
 data class PortfolioResponse(
     val user: UserResponse,

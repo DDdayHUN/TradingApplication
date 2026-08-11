@@ -1,8 +1,16 @@
-package api.dto.trader
+package api.dto
 
-import api.dto.security.SecurityHoldingResponse
-import api.dto.security.SecurityIdentifierResponse
 import java.util.UUID
+
+data class ChangeTraderAlgorithmRequest(
+    val algorithmType: String
+)
+
+data class CreateTraderRequest(
+    val securityIdentifier: SecurityIdentifierRequest,
+    val capital: Double,
+    val algorithmType: String
+)
 
 data class TraderResponse(
     val id: UUID,

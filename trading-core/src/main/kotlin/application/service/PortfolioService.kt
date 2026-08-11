@@ -1,6 +1,6 @@
 package application.service
 
-import api.dto.portfolio.PortfolioResponse
+import api.dto.PortfolioResponse
 import api.exception.portfolio.PortfolioNotFoundException
 import data.persistence.mapper.PortfolioMapper
 import data.persistence.repository.IPortfolioRepository

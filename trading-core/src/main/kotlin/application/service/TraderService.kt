@@ -1,8 +1,8 @@
 package application.service
 
-import api.dto.trader.ChangeTraderAlgorithmRequest
-import api.dto.trader.CreateTraderRequest
-import api.dto.trader.TraderResponse
+import api.dto.ChangeTraderAlgorithmRequest
+import api.dto.CreateTraderRequest
+import api.dto.TraderResponse
 import api.exception.trader.TraderNotFoundException
 import api.exception.user.UserNotFoundException
 import data.persistence.mapper.TraderMapper

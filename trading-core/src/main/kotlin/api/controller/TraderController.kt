@@ -1,8 +1,8 @@
 package api.controller
 
-import api.dto.trader.ChangeTraderAlgorithmRequest
-import api.dto.trader.CreateTraderRequest
-import api.dto.trader.TraderResponse
+import api.dto.ChangeTraderAlgorithmRequest
+import api.dto.CreateTraderRequest
+import api.dto.TraderResponse
 import application.service.TraderService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

@@ -1,6 +1,6 @@
 package api.controller
 
-import api.dto.portfolio.PortfolioResponse
+import api.dto.PortfolioResponse
 import application.service.PortfolioService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication

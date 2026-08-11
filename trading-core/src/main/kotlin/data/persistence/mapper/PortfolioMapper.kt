@@ -1,6 +1,6 @@
 package data.persistence.mapper
 
-import api.dto.portfolio.PortfolioResponse
+import api.dto.PortfolioResponse
 import data.persistence.entity.PortfolioEntity
 import org.springframework.stereotype.Component
 

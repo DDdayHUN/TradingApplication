@@ -1,7 +1,7 @@
 package api.controller
 
-import api.dto.user.CreateUserRequest
-import api.dto.user.UserResponse
+import api.dto.CreateUserRequest
+import api.dto.UserResponse
 import application.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
