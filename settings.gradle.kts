@@ -1,7 +1,6 @@
 rootProject.name = "trading"
 
 include(
-    "trading-core",
-    "trading-api"
+    "trading-core"
 )
 include("trading-frontend")
