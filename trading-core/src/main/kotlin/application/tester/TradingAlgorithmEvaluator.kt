@@ -12,6 +12,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import format
+import java.time.Duration
 import java.time.ZoneOffset
 import kotlin.math.pow
 import kotlin.time.Instant
@@ -391,7 +392,7 @@ class TradingAlgorithmEvaluator {
     // Extension(s)
 
     private fun TradingAlgorithmBackTester.Output.toAverageOutput(): TradingAlgorithmBackTesterOutputConverted {
-        val years = java.time.Duration.between(from.toJavaInstant(), to.toJavaInstant()).toDays().toDouble() / 365.2425
+        val years = Duration.between(from.toJavaInstant(), to.toJavaInstant()).toDays().toDouble() / 365.2425
         val cagr = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0)
 
         return TradingAlgorithmBackTesterOutputConverted(
