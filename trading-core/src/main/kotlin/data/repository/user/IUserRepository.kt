@@ -1,6 +1,5 @@
-package data.persistence.repository
+package data.repository.user
 
-import data.persistence.entity.UserEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 

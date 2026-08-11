@@ -1,12 +1,11 @@
-package data.persistence.mapper
+package data.repository.trader.sql
 
 import api.dto.SecurityHoldingResponse
 import api.dto.SecurityIdentifierResponse
 import api.dto.TraderResponse
-import data.persistence.entity.PortfolioEntity
-import data.persistence.entity.TraderEntity
-import data.persistence.entity.security.SecurityHoldingEntity
-import data.persistence.entity.security.SecurityIdentifierEntity
+import data.repository.portfolio.PortfolioEntity
+import data.repository.SecurityHoldingEntity
+import data.repository.SecurityIdentifierEntity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import domain.algorithm.ITradingAlgorithm
@@ -48,7 +47,7 @@ class TraderMapper (
 
     fun toEntity(trader: Trader, portfolio: PortfolioEntity, algorithmType: String): TraderEntity {
         val entity = TraderEntity(
-            id = trader.uuid,
+            id = trader.id,
             securityIdentifier = SecurityIdentifierEntity(
                 isin = trader.securityIdentifier.isin,
                 tickerSymbol = trader.securityIdentifier.tickerSymbol,
@@ -66,7 +65,7 @@ class TraderMapper (
         trader.holdings.forEach { holding ->
             entity.addHolding(
                 SecurityHoldingEntity(
-                    id = holding.uuid,
+                    id = holding.id,
                     entryPrice = holding.entryPrice,
                     amount = holding.amount,
                     trader = entity
@@ -88,13 +87,13 @@ class TraderMapper (
         val domainHoldings = entity.holdings
             .map { holding ->
                 SecurityHolding(
-                    uuid = holding.id,
+                    id = holding.id,
                     entryPrice = holding.entryPrice,
                     amount = holding.amount,
                 )
             }.toMutableList()
         return Trader(
-            uuid = entity.id,
+            id = entity.id,
             securityIdentifier = SecurityIdentifier(
                 isin = entity.securityIdentifier.isin,
                 tickerSymbol = entity.securityIdentifier.tickerSymbol,

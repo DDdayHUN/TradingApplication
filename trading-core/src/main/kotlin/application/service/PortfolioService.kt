@@ -2,8 +2,8 @@ package application.service
 
 import api.dto.PortfolioResponse
 import api.exception.portfolio.PortfolioNotFoundException
-import data.persistence.mapper.PortfolioMapper
-import data.persistence.repository.IPortfolioRepository
+import data.repository.portfolio.PortfolioMapper
+import data.repository.portfolio.IPortfolioRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -15,8 +15,8 @@ class PortfolioService {
     //===========================================================//
     // Private Field(s)
 
-    private val portfolioRepository: data.persistence.repository.IPortfolioRepository
-    private val portfolioMapper: data.persistence.mapper.PortfolioMapper
+    private val portfolioRepository: IPortfolioRepository
+    private val portfolioMapper: PortfolioMapper
 
     //===========================================================//
     //===========================================================//

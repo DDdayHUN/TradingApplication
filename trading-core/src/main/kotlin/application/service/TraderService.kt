@@ -5,9 +5,9 @@ import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
 import api.exception.trader.TraderNotFoundException
 import api.exception.user.UserNotFoundException
-import data.persistence.mapper.TraderMapper
-import data.persistence.repository.ITraderRepository
-import data.persistence.repository.IUserRepository
+import data.repository.trader.sql.TraderMapper
+import data.repository.trader.sql.ITraderRepository
+import data.repository.user.IUserRepository
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader

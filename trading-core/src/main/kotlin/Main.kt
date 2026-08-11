@@ -147,7 +147,7 @@ suspend fun main() {
                 if (traderList.any { it.securityIdentifier.isin == identifier.isin }) traderList
                 else {
                     traderList + Trader(
-                        uuid = UUID.randomUUID(),
+                        id = UUID.randomUUID(),
                         securityIdentifier = identifier,
                         holdings = mutableListOf(),
                         allocatedCapital = startCapital,

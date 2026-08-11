@@ -1,7 +1,6 @@
-package data.persistence.mapper
+package data.repository.user
 
 import api.dto.UserResponse
-import data.persistence.entity.UserEntity
 import org.springframework.stereotype.Component
 
 @Component

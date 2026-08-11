@@ -3,9 +3,9 @@ package domain
 import java.util.UUID
 
 class User {
-    val uuid: UUID
+    val id: UUID
 
-    constructor(uuid: UUID = UUID.randomUUID()) {
-        this.uuid = uuid
+    constructor(id: UUID = UUID.randomUUID()) {
+        this.id = id
     }
 }

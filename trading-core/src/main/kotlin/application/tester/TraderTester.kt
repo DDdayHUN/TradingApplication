@@ -45,7 +45,7 @@ class TraderTester {
         m_Trader.finalizeOrder(order)
 
         println("Trader: ${m_Trader.securityIdentifier.tickerSymbol}")
-        println("UUID: ${m_Trader.uuid}")
+        println("UUID: ${m_Trader.id}")
         println("ISIN: ${m_Trader.securityIdentifier.isin}")
         println("Currency: ${m_Trader.securityIdentifier.currency}")
         println("Current price: ${quote.currentPrice}")
@@ -65,7 +65,7 @@ class TraderTester {
         printHoldings(m_Trader.holdings)
 
         println("#================================================#")
-        println("# Save Trader: ${m_Trader.uuid}")
+        println("# Save Trader: ${m_Trader.id}")
         println("")
         m_TraderRepository.save(m_Trader).getOrThrow()
     }

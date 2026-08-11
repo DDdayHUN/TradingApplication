@@ -12,7 +12,7 @@ import java.util.UUID
 //===========================================================//
 
 data class SecurityHolding(
-    val uuid: UUID,
+    val id: UUID,
     val entryPrice: Double,
     val amount: Int
 ) {

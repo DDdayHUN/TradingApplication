@@ -1,5 +1,5 @@
 {
-  "uuid": "577426d5-72be-470a-970e-ef7004fef840",
+  "id": "577426d5-72be-470a-970e-ef7004fef840",
   "securityIdentifier": {
     "isin": "US67066G1040",
     "tickerSymbol": "NVDA",
@@ -8,12 +8,12 @@
   "capital": 1110.35,
   "holdings": [
     {
-      "uuid": "eff6803b-ccdd-4695-8ae7-572c9af07479",
+      "id": "eff6803b-ccdd-4695-8ae7-572c9af07479",
       "entryPrice": 192.48,
       "amount": 1
     },
     {
-      "uuid": "456116c5-6160-4528-a669-a1b581d7543a",
+      "id": "456116c5-6160-4528-a669-a1b581d7543a",
       "entryPrice": 197.17,
       "amount": 1
     }
