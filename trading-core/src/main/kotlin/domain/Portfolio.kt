@@ -13,8 +13,6 @@ class Portfolio {
     // Public Field(s)
 
     val id: UUID
-    val traders: List<Trader> get() = m_Traders.toList()
-    val capital: Double get() = m_Capital
 
     //===========================================================//
     //===========================================================//
