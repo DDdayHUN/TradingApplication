@@ -8,5 +8,4 @@ data class CreateUserRequest(
 
 data class UserResponse (
     val id: UUID,
-    val keycloakSub: String
 )

@@ -19,6 +19,10 @@ import java.util.UUID
 @Table(name = "app_portfolio")
 class PortfolioEntity(
 
+    @Id
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
+    var id: UUID,
+
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     var user: UserEntity,
@@ -26,9 +30,6 @@ class PortfolioEntity(
     @Column(name = "available_cash", nullable = false)
     var availableCash: Double = 0.0
 ) {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID? = null
 
     @OneToMany(mappedBy = "portfolio", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
     var traders: MutableList<TraderEntity> = mutableListOf()

@@ -7,7 +7,7 @@ import exception.api.UserNotFoundException
 import data.repository.portfolio.PortfolioEntity
 import data.repository.user.UserEntity
 import data.repository.user.UserMapper
-import data.repository.user.IUserRepository
+import data.repository.user.IUserJpaRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,7 +20,7 @@ class UserService {
     //===========================================================//
     // Private Field(s)
 
-    private val userRepository: IUserRepository
+    private val userRepository: IUserJpaRepository
     private val userMapper: UserMapper
 
     //===========================================================//
@@ -80,7 +80,7 @@ class UserService {
     //===========================================================//
     //===========================================================//
     // Constructor(s)
-    constructor(userRepository: IUserRepository, userMapper: UserMapper) {
+    constructor(userRepository: IUserJpaRepository, userMapper: UserMapper) {
         this.userRepository = userRepository
         this.userMapper = userMapper
     }

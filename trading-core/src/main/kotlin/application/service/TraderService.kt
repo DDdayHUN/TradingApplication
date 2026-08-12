@@ -6,8 +6,8 @@ import api.dto.TraderResponse
 import exception.api.TraderNotFoundException
 import exception.api.UserNotFoundException
 import data.repository.trader.sql.TraderMapper
-import data.repository.trader.sql.ITraderRepository
-import data.repository.user.IUserRepository
+import data.repository.trader.sql.ITraderJpaRepository
+import data.repository.user.IUserJpaRepository
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
@@ -22,8 +22,8 @@ class TraderService {
     //===========================================================//
     // Private Field(s)
 
-    private val traderRepository: ITraderRepository
-    private val userRepository: IUserRepository
+    private val traderRepository: ITraderJpaRepository
+    private val userRepository: IUserJpaRepository
     private val traderMapper: TraderMapper
 
     //===========================================================//
@@ -167,7 +167,7 @@ class TraderService {
     //===========================================================//
     // Constructor(s)
 
-    constructor(traderRepository: ITraderRepository, userRepository: IUserRepository, traderMapper: TraderMapper) {
+    constructor(traderRepository: ITraderJpaRepository, userRepository: IUserJpaRepository, traderMapper: TraderMapper) {
         this.traderRepository = traderRepository
         this.userRepository = userRepository
         this.traderMapper = traderMapper

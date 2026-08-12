@@ -3,7 +3,9 @@ package application.service
 import api.dto.PortfolioResponse
 import exception.api.PortfolioNotFoundException
 import data.repository.portfolio.PortfolioMapper
-import data.repository.portfolio.IPortfolioRepository
+import data.repository.portfolio.IPortfolioJpaRepository
+import data.repository.portfolio.PortfolioEntity
+import domain.interfaces.IPortfolioRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -41,6 +43,17 @@ class PortfolioService {
 
         return portfolioMapper.toResponse(portfolio)
     }
+
+    //===========================================================//
+    //===========================================================//
+    // Helper Method(es)
+
+    fun toResponse(portfolio: PortfolioEntity): PortfolioResponse {
+        return PortfolioResponse(
+
+        )
+    }
+
 
     //===========================================================//
     //===========================================================//

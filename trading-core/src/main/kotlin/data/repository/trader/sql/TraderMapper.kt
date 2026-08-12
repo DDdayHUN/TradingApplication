@@ -18,34 +18,7 @@ import org.springframework.stereotype.Component
 class TraderMapper (
     private val gson: Gson
 ) {
-    private val algorithmStateMapType =
-        object : TypeToken<Map<String, Any?>>() {}.type
-
-
-    fun serializeAlgorithm(algorithm: ITradingAlgorithm): String{
-        return gson.toJson(
-            algorithm,
-            ITradingAlgorithm::class.java,
-        )
-    }
-
-    fun deserializeAlgorithm(algorithmState: String): ITradingAlgorithm{
-        return gson.fromJson(
-            algorithmState,
-            ITradingAlgorithm::class.java,
-        )
-    }
-
-    fun deserializeAlgorithmState(algorithmState: String): Map<String, Any?>{
-        return gson.fromJson(
-            algorithmState,
-            algorithmStateMapType
-        )
-    }
-
-    //===========================================================//
-
-    fun toEntity(trader: Trader, portfolio: PortfolioEntity, algorithmType: String): TraderEntity {
+    fun toEntity(trader: Trader, portfolio: PortfolioEntity): TraderEntity {
         val entity = TraderEntity(
             id = trader.id,
             securityIdentifier = SecurityIdentifierEntity(
@@ -55,7 +28,7 @@ class TraderMapper (
             ),
             portfolio = portfolio,
             capital = trader.capital,
-            algorithmType = algorithmType,
+            algorithmType = ITradingAlgorithm.typeTagOf(trader.algorithm),
             algorithmState = gson.toJson(
                 trader.algorithm,
                 ITradingAlgorithm::class.java
@@ -102,33 +75,6 @@ class TraderMapper (
             holdings = domainHoldings,
             allocatedCapital = entity.capital,
             algorithm = algorithm,
-        )
-    }
-
-    //===========================================================//
-
-    fun toResponse(entity: TraderEntity): TraderResponse {
-        val state = gson.fromJson<Map<String, Any?>>(
-            entity.algorithmState,
-            algorithmStateMapType
-        )
-
-        return TraderResponse(
-            id = entity.id,
-            securityIdentifier = SecurityIdentifierResponse(
-                isin = entity.securityIdentifier.isin,
-                tickerSymbol = entity.securityIdentifier.tickerSymbol,
-                currency = entity.securityIdentifier.currency
-            ),
-            capital = entity.capital,
-            holdings = entity.holdings.map {holding ->
-                SecurityHoldingResponse(
-                    id = holding.id,
-                    entryPrice = holding.entryPrice,
-                    amount = holding.amount,
-                )
-            },
-            algorithm = state
         )
     }
 }

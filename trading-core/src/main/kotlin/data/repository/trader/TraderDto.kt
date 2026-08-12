@@ -6,6 +6,7 @@ import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import java.util.UUID
 
+@Deprecated("FakeTraderDto")
 internal data class TraderDto(
     val id: UUID,
     val securityIdentifier: SecurityIdentifier,

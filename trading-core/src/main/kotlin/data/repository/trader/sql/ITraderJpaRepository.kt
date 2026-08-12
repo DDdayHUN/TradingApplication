@@ -3,7 +3,7 @@ package data.repository.trader.sql
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
-interface ITraderRepository : JpaRepository<TraderEntity, UUID> {
+interface ITraderJpaRepository : JpaRepository<TraderEntity, UUID> {
     /**
      * Find all Trader by User ID
      * @param userId Portfolios User ID

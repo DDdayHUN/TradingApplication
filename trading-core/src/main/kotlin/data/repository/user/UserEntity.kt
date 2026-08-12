@@ -14,13 +14,9 @@ import java.util.UUID
 @Entity
 @Table(name = "app_user")
 class UserEntity (
-    @Column(name = "keycloak_sub", nullable = false, unique = true)
-    var keycloakSub: String
-) {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID? = null
-
+    var id: UUID
+) {
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     lateinit var portfolio: PortfolioEntity
 

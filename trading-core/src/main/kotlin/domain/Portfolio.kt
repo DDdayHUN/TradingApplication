@@ -4,12 +4,13 @@ import domain.trader.Trader
 import java.util.UUID
 
 class Portfolio {
-    val id: UUID
+    val id: UUID = UUID.randomUUID()
+    val userId: UUID
     val traders: List<Trader>
     val availableCash: Double
 
-    constructor(user: User, traders: List<Trader>, availableCash: Double) {
-        this.id = user.id   // Igy van most az 1 : 1 kapcsolat megcsinalva, es ez jovoben majd tud nagyon egyszeruen valtozni.
+    constructor(userId: UUID, traders: List<Trader>, availableCash: Double) {
+        this.userId = userId // Igy lesz konnyebb a jovoben valtani
         this.traders = traders
         this.availableCash = availableCash
     }
