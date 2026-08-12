@@ -1,5 +1,6 @@
 package api.dto
 
+import domain.Portfolio
 import java.util.UUID
 
 data class PortfolioResponse(
@@ -9,3 +10,11 @@ data class PortfolioResponse(
     val traders: List<TraderResponse>
 )
 
+fun Portfolio.toResponse(): PortfolioResponse = PortfolioResponse(
+    id = id,
+    userId = userId,
+    availableCash = availableCash,
+    traders = traders.map { trader ->
+        trader.toResponse()
+    }
+)
