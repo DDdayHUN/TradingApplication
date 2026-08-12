@@ -1,4 +1,3 @@
-import application.ManualTrading
 import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator

@@ -3,8 +3,8 @@ package application.service
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
-import api.exception.trader.TraderNotFoundException
-import api.exception.user.UserNotFoundException
+import exception.api.TraderNotFoundException
+import exception.api.UserNotFoundException
 import data.repository.trader.sql.TraderMapper
 import data.repository.trader.sql.ITraderRepository
 import data.repository.user.IUserRepository

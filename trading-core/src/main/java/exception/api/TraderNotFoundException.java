@@ -1,4 +1,4 @@
-package api.exception.trader;
+package exception.api;
 
 import java.util.UUID;
 

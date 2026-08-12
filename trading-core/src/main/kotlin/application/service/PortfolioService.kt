@@ -1,7 +1,7 @@
 package application.service
 
 import api.dto.PortfolioResponse
-import api.exception.portfolio.PortfolioNotFoundException
+import exception.api.PortfolioNotFoundException
 import data.repository.portfolio.PortfolioMapper
 import data.repository.portfolio.IPortfolioRepository
 import org.springframework.stereotype.Service

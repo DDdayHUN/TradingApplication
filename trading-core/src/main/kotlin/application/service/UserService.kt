@@ -2,8 +2,8 @@ package application.service
 
 import api.dto.CreateUserRequest
 import api.dto.UserResponse
-import api.exception.user.UserAlreadyExistsException
-import api.exception.user.UserNotFoundException
+import exception.api.UserAlreadyExistsException
+import exception.api.UserNotFoundException
 import data.repository.portfolio.PortfolioEntity
 import data.repository.user.UserEntity
 import data.repository.user.UserMapper
