@@ -11,6 +11,7 @@ class User {
     // Public Field(s)
 
     val id: UUID
+    val portfolios: List<Portfolio> get() = m_Portfolios.toList()
 
     //===========================================================//
     //===========================================================//

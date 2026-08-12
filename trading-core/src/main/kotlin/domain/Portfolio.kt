@@ -1,6 +1,7 @@
 package domain
 
 import domain.trader.Trader
+import domain.trader.TradingOrder
 import java.util.UUID
 
 //===========================================================//
@@ -12,6 +13,8 @@ class Portfolio {
     // Public Field(s)
 
     val id: UUID
+    val traders: List<Trader> get() = m_Traders.toList()
+    val capital: Double get() = m_Capital
 
     //===========================================================//
     //===========================================================//
