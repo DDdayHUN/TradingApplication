@@ -5,10 +5,10 @@ import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
 import exception.api.TraderNotFoundException
 import exception.api.UserNotFoundException
-import data.repository.trader.sql.TraderMapper
 import data.repository.trader.sql.ITraderJpaRepository
 import data.repository.user.IUserJpaRepository
 import domain.algorithm.TradingAlgorithm
+import domain.interfaces.ITraderRepository
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import org.springframework.stereotype.Service
@@ -22,9 +22,8 @@ class TraderService {
     //===========================================================//
     // Private Field(s)
 
-    private val traderRepository: ITraderJpaRepository
+    private val traderRepository: ITraderRepository
     private val userRepository: IUserJpaRepository
-    private val traderMapper: TraderMapper
 
     //===========================================================//
     //===========================================================//
@@ -98,9 +97,9 @@ class TraderService {
     //===========================================================//
 
     @Transactional(readOnly = true)
-    fun findAllByPortfolioUserId(id: UUID): List<TraderResponse>{
-        return traderRepository.findAllByPortfolioUserId(id)
-            .map(traderMapper::toResponse)
+    fun findAllByPortfolioUserId(userId: UUID): List<TraderResponse>{
+        return traderRepository.findAllByPortfolioUserId(userId)
+            .map
     }
 
     //===========================================================//
@@ -167,10 +166,9 @@ class TraderService {
     //===========================================================//
     // Constructor(s)
 
-    constructor(traderRepository: ITraderJpaRepository, userRepository: IUserJpaRepository, traderMapper: TraderMapper) {
+    constructor(traderRepository: ITraderJpaRepository, userRepository: IUserJpaRepository) {
         this.traderRepository = traderRepository
         this.userRepository = userRepository
-        this.traderMapper = traderMapper
     }
 
 }

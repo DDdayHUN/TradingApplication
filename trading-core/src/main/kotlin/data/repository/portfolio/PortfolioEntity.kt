@@ -1,7 +1,10 @@
 package data.repository.portfolio
 
 import data.repository.trader.sql.TraderEntity
+import data.repository.trader.sql.toDomain
+import data.repository.trader.sql.toEntity
 import data.repository.user.UserEntity
+import domain.Portfolio
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -19,17 +22,17 @@ import java.util.UUID
 @Table(name = "app_portfolio")
 class PortfolioEntity(
 
-    @Id
-    @Column(name = "id", nullable = false, updatable = false, unique = true)
-    var id: UUID,
-
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     var user: UserEntity,
 
     @Column(name = "available_cash", nullable = false)
-    var availableCash: Double = 0.0
+    var capital: Double
 ) {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID? = null
 
     @OneToMany(mappedBy = "portfolio", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
     var traders: MutableList<TraderEntity> = mutableListOf()
@@ -42,4 +45,31 @@ class PortfolioEntity(
     fun removeTrader(trader: TraderEntity){
         traders.remove(trader)
     }
+}
+
+fun Portfolio.toEntity(user: UserEntity): PortfolioEntity {
+    val entity = PortfolioEntity(
+        user = user,
+        capital = capital
+    )
+
+    traders.forEach {trader ->
+        entity.addTrader(
+            trader.toEntity(entity)
+        )
+    }
+
+    return entity
+}
+
+fun PortfolioEntity.toDomain(): Portfolio {
+    return Portfolio(
+        userId = user.id,
+        traders = traders
+            .map { trader ->
+                trader.toDomain()
+            }
+            .toMutableList(),
+        capital = capital
+    )
 }

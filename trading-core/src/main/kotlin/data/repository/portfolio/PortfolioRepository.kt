@@ -13,19 +13,13 @@ class PortfolioRepository : IPortfolioRepository {
 
     private val repository: IPortfolioJpaRepository
     private val userRepository : IUserJpaRepository
-    private val mapper : PortfolioMapper
 
     override suspend fun save(portfolio: Portfolio): Result<Unit> {
        return runCatching {
            val userEntity = userRepository.findById(portfolio.userId)
                .orElseThrow { UserNotFoundException(portfolio.userId) }
 
-           val entity = mapper.toEntity(
-               portfolio = portfolio,
-               userEntity = userEntity
-           )
-
-           repository.save(entity)
+           repository.save(portfolio.toEntity(userEntity))
        }
     }
 
@@ -34,21 +28,30 @@ class PortfolioRepository : IPortfolioRepository {
             val entity = repository.findById(id)
                 .orElseThrow { PortfolioNotFoundException(id) }
 
-            mapper.toDomain(entity)
+            entity.toDomain()
+        }
+    }
+
+    override suspend fun getAllByUserId(userId: UUID): Result<List<Portfolio>> {
+        return runCatching {
+            repository.findAllByUserId(userId)
+                .map {portfolio ->
+                    portfolio.toDomain()
+                }
         }
     }
 
     override suspend fun getAll(): Result<List<Portfolio>> {
         return runCatching {
-             repository.findAll().map(mapper::toDomain)
+             repository.findAll().map{ portfolio ->
+                 portfolio.toDomain()
+             }
         }
     }
 
-    constructor(repository : IPortfolioJpaRepository, userRepository: IUserJpaRepository, mapper : PortfolioMapper) {
+    constructor(repository : IPortfolioJpaRepository, userRepository: IUserJpaRepository) {
         this.repository = repository
         this.userRepository = userRepository
-        this.mapper = mapper
-
     }
 
 }

@@ -9,11 +9,10 @@ import java.util.UUID
 @Repository
 class UserRepository : IUserRepository {
     private val repository: IUserJpaRepository
-    private val mapper : UserMapper
 
     override suspend fun save(user: User): Result<Unit> {
         return runCatching {
-            repository.save(mapper.toEntity(user))
+            repository.save(user.toEntity(user))
         }
     }
 
@@ -22,18 +21,19 @@ class UserRepository : IUserRepository {
             val entity = repository.findById(id)
                 .orElseThrow { UserNotFoundException(id) }
 
-            mapper.toDomain(entity)
+            entity.toDomain()
         }
     }
 
     override suspend fun getAll(): Result<List<User>> {
         return runCatching {
-            repository.findAll().map(mapper::toDomain)
+            repository.findAll().map{user ->
+                user.toDomain()
+            }
         }
     }
 
-    constructor(userJpaRepository: IUserJpaRepository, mapper: UserMapper) {
+    constructor(userJpaRepository: IUserJpaRepository) {
         this.repository = userJpaRepository
-        this.mapper = mapper
     }
 }

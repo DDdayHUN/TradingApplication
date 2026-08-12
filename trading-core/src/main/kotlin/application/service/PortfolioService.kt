@@ -1,9 +1,8 @@
 package application.service
 
 import api.dto.PortfolioResponse
+import api.dto.toResponse
 import exception.api.PortfolioNotFoundException
-import data.repository.portfolio.PortfolioMapper
-import data.repository.portfolio.IPortfolioJpaRepository
 import data.repository.portfolio.PortfolioEntity
 import domain.interfaces.IPortfolioRepository
 import org.springframework.stereotype.Service
@@ -18,49 +17,34 @@ class PortfolioService {
     // Private Field(s)
 
     private val portfolioRepository: IPortfolioRepository
-    private val portfolioMapper: PortfolioMapper
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
     @Transactional(readOnly = true)
-    fun findForCurrentUser(keycloakSub: String): PortfolioResponse {
-        val portfolio = portfolioRepository.findByUserKeycloakSub(keycloakSub)
-            ?: throw PortfolioNotFoundException(keycloakSub)
+    suspend fun getAllByUserId(userId: UUID): List<PortfolioResponse> {
+        val portfolioList = portfolioRepository.getAllByUserId(userId).getOrThrow()
 
-        return portfolioMapper.toResponse(portfolio)
+        return portfolioList.map  { portfolio ->
+            portfolio.toResponse()
+        }
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    fun findById(id: UUID): PortfolioResponse {
-        val portfolio = portfolioRepository.findById(id)
-            .orElseThrow {
-                PortfolioNotFoundException(id)
-            }
-
-        return portfolioMapper.toResponse(portfolio)
+    suspend fun findById(id: UUID): PortfolioResponse {
+         return portfolioRepository.getById(id)
+            .getOrThrow()
+            .toResponse()
     }
-
-    //===========================================================//
-    //===========================================================//
-    // Helper Method(es)
-
-    fun toResponse(portfolio: PortfolioEntity): PortfolioResponse {
-        return PortfolioResponse(
-
-        )
-    }
-
 
     //===========================================================//
     //===========================================================//
     // Constructor(s)
 
-    constructor(portfolioRepository: IPortfolioRepository, portfolioMapper: PortfolioMapper) {
+    constructor(portfolioRepository: IPortfolioRepository) {
         this.portfolioRepository = portfolioRepository
-        this.portfolioMapper = portfolioMapper
     }
 }

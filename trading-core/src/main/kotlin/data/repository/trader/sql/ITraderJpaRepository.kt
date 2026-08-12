@@ -11,21 +11,8 @@ interface ITraderJpaRepository : JpaRepository<TraderEntity, UUID> {
     fun findAllByPortfolioUserId(userId: UUID): List<TraderEntity>
 
     /**
-     * Find all Trader by User Keycloak Sub.
-     * @param keycloakSub Keycloak subject code for User
-     */
-    fun findAllByPortfolioUserKeycloakSub(keycloakSub: String): List<TraderEntity>
-
-    /**
      * Find all Trader by Portfolio ID
      * @param portfolioId Unique Portfolio ID
      */
     fun findAllByPortfolioId(portfolioId: UUID): List<TraderEntity>
-
-    /**
-     * Find a Trader by trader ID and User Keycloak Sub
-     * @param id Trader ID
-     * @param keycloakSub Keycloak subject code for user
-     */
-    fun findByIdAndPortfolioUserKeycloakSub(id: UUID, keycloakSub: String): TraderEntity?
 }

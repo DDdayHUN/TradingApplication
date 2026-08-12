@@ -1,8 +1,13 @@
 package data.repository.trader.sql
 
+import com.google.gson.Gson
 import data.repository.SecurityHoldingEntity
 import data.repository.SecurityIdentifierEntity
 import data.repository.portfolio.PortfolioEntity
+import data.repository.toDomain
+import data.repository.toEntity
+import domain.algorithm.ITradingAlgorithm
+import domain.trader.Trader
 import jakarta.persistence.AttributeOverride
 import jakarta.persistence.AttributeOverrides
 import jakarta.persistence.CascadeType
@@ -93,4 +98,45 @@ class TraderEntity(
         this.algorithmType = algorithmType
         this.algorithmState = algorithmState
     }
+}
+
+private val gson = Gson()
+fun Trader.toEntity(portfolio: PortfolioEntity): TraderEntity {
+    val entity = TraderEntity(
+        id = id,
+        securityIdentifier = securityIdentifier.toEntity(),
+        portfolio = portfolio,
+        capital = capital,
+        algorithmType = ITradingAlgorithm.typeTagOf(algorithm),
+        algorithmState =  gson.toJson(
+            algorithm,
+            ITradingAlgorithm::class.java
+        )
+    )
+
+    holdings.forEach {holding ->
+        entity.addHolding(
+            holding.toEntity(entity)
+        )
+    }
+
+    return entity
+}
+
+fun TraderEntity.toDomain(): Trader {
+    val algorithm = gson.fromJson(
+        algorithmState,
+        ITradingAlgorithm::class.java
+    )
+
+    return Trader(
+        id = id,
+        securityIdentifier = securityIdentifier.toDomain(),
+        holdings = holdings
+            .map {holding ->
+                holding.toDomain()
+            }.toMutableList(),
+        allocatedCapital = capital,
+        algorithm = algorithm
+    )
 }

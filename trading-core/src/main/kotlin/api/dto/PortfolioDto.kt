@@ -6,15 +6,17 @@ import java.util.UUID
 data class PortfolioResponse(
     val id: UUID,
     val userId: UUID,
-    val availableCash: Double,
+    val capital: Double,
     val traders: List<TraderResponse>
 )
 
-fun Portfolio.toResponse(): PortfolioResponse = PortfolioResponse(
-    id = id,
-    userId = userId,
-    availableCash = availableCash,
-    traders = traders.map { trader ->
-        trader.toResponse()
-    }
-)
+fun Portfolio.toResponse(): PortfolioResponse {
+    return PortfolioResponse(
+        id = id,
+        userId = userId,
+        capital = capital,
+        traders = traders.map { trader ->
+            trader.toResponse()
+        }
+    )
+}
