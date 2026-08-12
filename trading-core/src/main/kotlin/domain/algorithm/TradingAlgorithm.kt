@@ -89,6 +89,9 @@ object TradingAlgorithm {
                 retHistory.subList(0, type.initSize).clear()
                 ALGDES4(init)
             }
+            is Type.BUYANDHOLD -> {
+                BUYANDHOLD()
+            }
         }
         return Pair(retHistory, retTradingAlgorithm)
     }
@@ -122,6 +125,9 @@ object TradingAlgorithm {
             is Type.ALGDES4 -> {
                 ALGDES4(history.takeLast(type.initSize))
             }
+            is Type.BUYANDHOLD -> {
+                BUYANDHOLD()
+            }
         }
     }
 
@@ -135,6 +141,7 @@ object TradingAlgorithm {
         data object ALGDES3 : Type { override val initSize = 15 }
         data object ALGDES31 : Type { override val initSize = 20 }
         data object ALGDES4 : Type { override val initSize = 7 }
+        data object BUYANDHOLD : Type { override val initSize = 0 }
 
         val initSize: Int
 
@@ -144,7 +151,8 @@ object TradingAlgorithm {
                 ALGDES2,
                 ALGDES3,
                 ALGDES31,
-                ALGDES4
+                ALGDES4,
+                BUYANDHOLD
             )
         }
     }
