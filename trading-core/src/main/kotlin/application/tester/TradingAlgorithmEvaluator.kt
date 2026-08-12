@@ -200,6 +200,8 @@ class TradingAlgorithmEvaluator {
     // Helper Class(es)
 
     data class Output(val list: List<Pair<EvaluationStatistics, TimePeriod>>) {
+        private val availablePeriods: List<TimePeriod> get() = TimePeriod.entries.filter { period -> list.any { it.second == period } }
+
         fun display() {
 
             require(list.isNotEmpty()) { "No evaluation results available." }
@@ -224,7 +226,7 @@ class TradingAlgorithmEvaluator {
             row("Md",    { it.totalCapitalMedian },      { it.format(2) })
             row("Best20", { it.totalCapitalT20 },         { it.format(2) })
             row("Worst20", { it.totalCapitalB20 },         { it.format(2) })
-            println("-".repeat(66))
+            println("-".repeat(14 + availablePeriods.size * 13))
             println()
 
             // CAGR
@@ -234,7 +236,7 @@ class TradingAlgorithmEvaluator {
             row("Md",    { it.cagrMedian },      { "${(it * 100).format(2)}%" })
             row("Best20", { it.cagrT20 },         { "${(it * 100).format(2)}%" })
             row("Worst20", { it.cagrB20 },         { "${(it * 100).format(2)}%" })
-            println("-".repeat(66))
+            println("-".repeat(14 + availablePeriods.size * 13))
             println()
 
             // Max Drawdown
@@ -244,7 +246,7 @@ class TradingAlgorithmEvaluator {
             row("Md",    { it.maxDrawdownMedian },      { "${(it * 100).format(2)}%" })
             row("Best20", { it.maxDrawdownT20 },         { "${(it * 100).format(2)}%" })
             row("Worst20", { it.maxDrawdownB20 },         { "${(it * 100).format(2)}%" })
-            println("-".repeat(66))
+            println("-".repeat(14 + availablePeriods.size * 13))
             println()
 
             // Sharpe
@@ -254,7 +256,7 @@ class TradingAlgorithmEvaluator {
             row("Md",    { it.sharpeMedian },      { it.format(2) })
             row("Best20", { it.sharpeT20 },         { it.format(2) })
             row("Worst20", { it.sharpeB20 },         { it.format(2) })
-            println("-".repeat(66))
+            println("-".repeat(14 + availablePeriods.size * 13))
             println()
 
             // Calmar
@@ -264,7 +266,7 @@ class TradingAlgorithmEvaluator {
             row("Md",    { it.calmarMedian },      { it.format(2) })
             row("Best20", { it.calmarT20 },         { it.format(2) })
             row("Worst20", { it.calmarB20 },         { it.format(2) })
-            println("-".repeat(66))
+            println("-".repeat(14 + availablePeriods.size * 13))
             println()
         }
 
@@ -273,12 +275,12 @@ class TradingAlgorithmEvaluator {
         private fun header(title: String) {
             println(title)
 
-            val periods = TimePeriod.entries.joinToString(" ") {
+            val periods = availablePeriods.joinToString(" ") {
                 "| ${it.toString().padStart(10)}"
             }
 
             println("| ${"Statistic".padEnd(10)} $periods |")
-            println("-".repeat(13 + TimePeriod.entries.size * 13))
+            println("-".repeat(14 + availablePeriods.size * 13))
         }
 
         //===========================================================//
@@ -290,7 +292,7 @@ class TradingAlgorithmEvaluator {
         ) {
             val byPeriod = list.associate { it.second to it.first }
 
-            val values = TimePeriod.entries.joinToString(" ") { period ->
+            val values = availablePeriods.joinToString(" ") { period ->
                 "| ${
                     byPeriod[period]
                         ?.let { formatter(value(it)).padStart(10) }
