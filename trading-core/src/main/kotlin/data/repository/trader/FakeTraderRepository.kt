@@ -32,7 +32,7 @@ internal object FakeTraderRepository : ITraderRepository {
     override suspend fun save(trader: Trader): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val dto = TraderDto(
-                trader.uuid,
+                trader.id,
                 trader.securityIdentifier,
                 trader.capital,
                 trader.holdings,
@@ -41,7 +41,7 @@ internal object FakeTraderRepository : ITraderRepository {
 
             if (!s_DirectoryPath.exists()) s_DirectoryPath.mkdirs()
 
-            val file = File(s_DirectoryPath, "${trader.uuid}.json")
+            val file = File(s_DirectoryPath, "${trader.id}.json")
 
             RepositoryUtils.saveToFile<TraderDto>(s_Gson, file, dto)
             return@withContext Result.success(Unit)

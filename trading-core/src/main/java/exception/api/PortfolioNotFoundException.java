@@ -1,4 +1,4 @@
-package api.exception.portfolio;
+package exception.api;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package api.exception.user;
+package exception.api;
 
 public class UserAlreadyExistsException extends RuntimeException {
    public UserAlreadyExistsException(String keycloakSub) {

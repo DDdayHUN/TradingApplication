@@ -1,6 +1,5 @@
-package data.persistence.repository
+package data.repository.trader.sql
 
-import data.persistence.entity.TraderEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 

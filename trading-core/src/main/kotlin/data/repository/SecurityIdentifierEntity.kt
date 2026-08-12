@@ -1,4 +1,4 @@
-package data.persistence.entity.security
+package data.repository
 
 import jakarta.persistence.Embeddable
 

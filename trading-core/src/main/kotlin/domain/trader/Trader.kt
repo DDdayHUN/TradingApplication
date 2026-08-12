@@ -22,7 +22,7 @@ class Trader {
     //===========================================================//
     // Public Field(s)
 
-    val uuid: UUID
+    val id: UUID
     val securityIdentifier: SecurityIdentifier
 
     val capital: Double get() = m_Capital
@@ -45,7 +45,7 @@ class Trader {
         val output = algorithm.run(holdings, capital, currentPrice)
 
         val order = TradingOrder(
-            traderUuid = uuid,
+            traderId = id,
             securityIdentifier = securityIdentifier,
             buy = output.buy,
             sell = output.sell,
@@ -133,8 +133,8 @@ class Trader {
      * @param allocatedCapital the capital currently allocated to the trader.
      * @param algorithm the algorithm instance with which we create trades.
      */
-    constructor(uuid: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm) {
-        this.uuid = uuid
+    constructor(id: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm) {
+        this.id = id
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings
         m_Capital = allocatedCapital

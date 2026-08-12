@@ -2,12 +2,12 @@ package application.service
 
 import api.dto.CreateUserRequest
 import api.dto.UserResponse
-import api.exception.user.UserAlreadyExistsException
-import api.exception.user.UserNotFoundException
-import data.persistence.entity.PortfolioEntity
-import data.persistence.entity.UserEntity
-import data.persistence.mapper.UserMapper
-import data.persistence.repository.IUserRepository
+import exception.api.UserAlreadyExistsException
+import exception.api.UserNotFoundException
+import data.repository.portfolio.PortfolioEntity
+import data.repository.user.UserEntity
+import data.repository.user.UserMapper
+import data.repository.user.IUserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

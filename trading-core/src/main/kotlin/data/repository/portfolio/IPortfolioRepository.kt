@@ -1,6 +1,5 @@
-package data.persistence.repository
+package data.repository.portfolio
 
-import data.persistence.entity.PortfolioEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 

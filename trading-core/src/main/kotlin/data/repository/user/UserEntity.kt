@@ -1,5 +1,6 @@
-package data.persistence.entity
+package data.repository.user
 
+import data.repository.portfolio.PortfolioEntity
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

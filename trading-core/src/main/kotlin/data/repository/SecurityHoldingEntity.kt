@@ -1,6 +1,6 @@
-package data.persistence.entity.security
+package data.repository
 
-import data.persistence.entity.TraderEntity
+import data.repository.trader.sql.TraderEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType

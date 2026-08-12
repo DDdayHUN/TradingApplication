@@ -7,7 +7,7 @@ import domain.trader.Trader
 import java.util.UUID
 
 internal data class TraderDto(
-    val uuid: UUID,
+    val id: UUID,
     val securityIdentifier: SecurityIdentifier,
     val capital: Double,
     val holdings: List<SecurityHolding>,
@@ -15,7 +15,7 @@ internal data class TraderDto(
 ) {
     fun toDomain(): Trader {
         return Trader(
-            uuid,
+            id,
             securityIdentifier,
             holdings.toMutableList(),
             capital,

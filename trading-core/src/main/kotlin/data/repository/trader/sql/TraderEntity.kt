@@ -1,7 +1,8 @@
-package data.persistence.entity
+package data.repository.trader.sql
 
-import data.persistence.entity.security.SecurityHoldingEntity
-import data.persistence.entity.security.SecurityIdentifierEntity
+import data.repository.SecurityHoldingEntity
+import data.repository.SecurityIdentifierEntity
+import data.repository.portfolio.PortfolioEntity
 import jakarta.persistence.AttributeOverride
 import jakarta.persistence.AttributeOverrides
 import jakarta.persistence.CascadeType
