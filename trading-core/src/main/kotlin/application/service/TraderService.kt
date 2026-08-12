@@ -143,6 +143,7 @@ class TraderService {
             "ALGDES3" -> TradingAlgorithm.Type.ALGDES3
             "ALGDES31" -> TradingAlgorithm.Type.ALGDES31
             "ALGDES4" -> TradingAlgorithm.Type.ALGDES4
+            "BUYANDHOLD" -> TradingAlgorithm.Type.BUYANDHOLD
 
             else -> throw IllegalArgumentException(
                 "Unsupported algorithm type: $value"
@@ -159,6 +160,7 @@ class TraderService {
             TradingAlgorithm.Type.ALGDES3 -> "ALGDES3"
             TradingAlgorithm.Type.ALGDES31 -> "ALGDES31"
             TradingAlgorithm.Type.ALGDES4 -> "ALGDES4"
+            TradingAlgorithm.Type.BUYANDHOLD -> "BUYANDHOLD"
         }
     }
 
