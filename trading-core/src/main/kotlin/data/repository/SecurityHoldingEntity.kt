@@ -1,6 +1,7 @@
 package data.repository
 
-import data.repository.trader.sql.TraderEntity
+import data.repository.trader.TraderEntity
+import domain.market.security.SecurityHolding
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -27,3 +28,20 @@ class SecurityHoldingEntity(
     @JoinColumn(name = "trader_id", nullable = false)
     var trader: TraderEntity
 )
+
+fun SecurityHolding.toEntity(trader: TraderEntity): SecurityHoldingEntity {
+    return SecurityHoldingEntity(
+        id = id,
+        entryPrice = entryPrice,
+        amount = amount,
+        trader = trader
+    )
+}
+
+fun SecurityHoldingEntity.toDomain(): SecurityHolding {
+    return SecurityHolding(
+        id = id,
+        entryPrice = entryPrice,
+        amount = amount
+    )
+}

@@ -1,6 +1,7 @@
 package data.repository.user
 
 import data.repository.portfolio.PortfolioEntity
+import domain.User
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -14,13 +15,9 @@ import java.util.UUID
 @Entity
 @Table(name = "app_user")
 class UserEntity (
-    @Column(name = "keycloak_sub", nullable = false, unique = true)
-    var keycloakSub: String
-) {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID? = null
-
+    var id: UUID
+) {
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     lateinit var portfolio: PortfolioEntity
 
@@ -28,4 +25,16 @@ class UserEntity (
         this.portfolio = portfolio
         portfolio.user = this
     }
+}
+
+fun User.toEntity(user: User): UserEntity {
+    return UserEntity(
+        id = user.id
+    )
+}
+
+fun UserEntity.toDomain(): User {
+    return User(
+        id = id,
+    )
 }

@@ -1,14 +1,9 @@
 package application.service
 
-import api.dto.CreateUserRequest
 import api.dto.UserResponse
-import exception.api.UserAlreadyExistsException
-import exception.api.UserNotFoundException
-import data.repository.portfolio.PortfolioEntity
-import data.repository.user.UserEntity
-import data.repository.user.UserMapper
-import data.repository.user.IUserRepository
-import org.springframework.data.repository.findByIdOrNull
+import api.dto.toResponse
+import domain.User
+import domain.interfaces.IUserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -21,67 +16,46 @@ class UserService {
     // Private Field(s)
 
     private val userRepository: IUserRepository
-    private val userMapper: UserMapper
 
     //===========================================================//
     //===========================================================//
     // Public Method(es)
 
     @Transactional
-    fun create(keycloakSub: String,request: CreateUserRequest): UserResponse {
-        if(userRepository.findByKeycloakSub(keycloakSub) != null) {
-            throw UserAlreadyExistsException(keycloakSub)
-        }
+    suspend fun create(id: UUID): UserResponse {
 
-        val user = UserEntity(
-            keycloakSub = keycloakSub,
-        )
+        val user = User(id = id)
 
-        val portfolio = PortfolioEntity(
-            user = user,
-            availableCash = request.availableCash
-        )
+        userRepository.save(user)
+            .getOrThrow()
 
-        user.attachPortfolio(portfolio)
-
-        return userMapper.toResponse(
-            userRepository.save(user)
-        )
+        return user.toResponse()
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    fun findAll(): List<UserResponse>{
-        return userRepository.findAll()
-            .map(userMapper::toResponse)
+    suspend fun findAll(): List<UserResponse>{
+        return userRepository.getAll()
+            .getOrThrow()
+            .map { user ->
+                user.toResponse()
+            }
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    fun findByKeycloakSub(keycloakSub: String): UserResponse{
-        val user = userRepository.findByKeycloakSub(keycloakSub)?:
-        throw UserNotFoundException(keycloakSub)
-
-        return userMapper.toResponse(user)
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    fun findById(id: UUID): UserResponse{
-        val user = userRepository.findByIdOrNull(id)?:
-        throw UserNotFoundException(id)
-
-        return userMapper.toResponse(user)
+    suspend fun getById(id: UUID): UserResponse{
+        return  userRepository.getById(id)
+            .getOrThrow()
+            .toResponse()
     }
 
     //===========================================================//
     //===========================================================//
     // Constructor(s)
-    constructor(userRepository: IUserRepository, userMapper: UserMapper) {
+    constructor(userRepository: IUserRepository) {
         this.userRepository = userRepository
-        this.userMapper = userMapper
     }
 }

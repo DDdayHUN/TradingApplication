@@ -1,7 +1,6 @@
 package domain
 
 import domain.trader.Trader
-import domain.trader.TradingOrder
 import java.util.UUID
 
 //===========================================================//
@@ -13,6 +12,7 @@ class Portfolio {
     // Public Field(s)
 
     val id: UUID
+    val userId: UUID
     val traders: List<Trader> get() = m_Traders.toList()
     val capital: Double get() = m_Capital
 
@@ -51,8 +51,9 @@ class Portfolio {
     //===========================================================//
     // Constructor(s)
 
-    constructor(id: UUID = UUID.randomUUID(), traders: MutableList<Trader> = ArrayList(), capital: Double = 0.0) {
+    constructor(id: UUID = UUID.randomUUID(), userId: UUID, traders: MutableList<Trader> = ArrayList(), capital: Double = 0.0) {
         this.id = id
+        this.userId = userId
         this.m_Traders = traders
         this.m_Capital = capital
     }

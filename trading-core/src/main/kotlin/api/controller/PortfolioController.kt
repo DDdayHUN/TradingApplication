@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/portfolio")
@@ -23,10 +24,12 @@ class PortfolioController {
     // GET
 
     @GetMapping
-    fun getCurrentPortfolio(authentication: Authentication): ResponseEntity<PortfolioResponse>{
+    suspend fun getAllPortfolioByUserId(authentication: Authentication): ResponseEntity<List<PortfolioResponse>>{
+        val userId = UUID.fromString(authentication.name)
+
         return ResponseEntity.ok(
-            portfolioService.findForCurrentUser(
-                authentication.name
+            portfolioService.getAllByUserId(
+                userId = userId
             )
         )
     }
