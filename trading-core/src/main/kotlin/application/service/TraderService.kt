@@ -3,14 +3,14 @@ package application.service
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
+import api.dto.toResponse
 import exception.api.TraderNotFoundException
-import exception.api.UserNotFoundException
-import data.repository.trader.sql.TraderMapper
-import data.repository.trader.sql.ITraderRepository
-import data.repository.user.IUserRepository
+import domain.Portfolio
 import domain.algorithm.TradingAlgorithm
+import domain.interfaces.IPortfolioRepository
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
+import exception.api.PortfolioNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -22,26 +22,24 @@ class TraderService {
     //===========================================================//
     // Private Field(s)
 
-    private val traderRepository: ITraderRepository
-    private val userRepository: IUserRepository
-    private val traderMapper: TraderMapper
+    private val portfolioRepository: IPortfolioRepository
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
     @Transactional
-    fun createTrader(keycloakSub: String, request: CreateTraderRequest): TraderResponse {
+    suspend fun createTrader(userId: UUID, portfolioId: UUID, request: CreateTraderRequest): TraderResponse {
         require(request.capital > 0.0) {
             "Trader capital must be greater than zero"
         }
 
-        val user = userRepository.findByKeycloakSub(keycloakSub)
-            ?: throw UserNotFoundException(keycloakSub)
+        val portfolio = getPortfolioForUser(
+            portfolioId = portfolioId,
+            userId = userId
+        )
 
-        val portfolio = user.portfolio
-
-        require(portfolio.availableCash >= request.capital){
+        require(portfolio.capital >= request.capital){
             "Portfolio has insufficient cash amount"
         }
 
@@ -58,84 +56,86 @@ class TraderService {
             securityIdentifier = securityIdentifier,
         )
 
-        val domainTrader = Trader(
+        val trader = Trader(
             securityIdentifier = securityIdentifier,
             holdings = mutableListOf(),
             allocatedCapital = request.capital,
             algorithm = algorithm,
         )
 
-        val entity = traderMapper.toEntity(
-            trader = domainTrader,
-            portfolio = user.portfolio,
-            algorithmType = algorithmTypeName(algorithmType)
+        portfolio.changeCapital(-request.capital)
+        portfolio.addTrader(trader)
+
+        portfolioRepository.save(portfolio).getOrThrow()
+        return trader.toResponse()
+    }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    suspend fun getAllByPortfolioId(userId: UUID, portfolioId: UUID): List<TraderResponse> {
+        val portfolio = getPortfolioForUser(
+            userId = userId,
+            portfolioId = portfolioId
         )
-
-        portfolio.availableCash -= request.capital
-        portfolio.addTrader(entity)
-
-        return traderMapper.toResponse(entity)
+        return portfolio.traders.map{ trader ->
+            trader.toResponse()
+        }
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    fun findAllForUserByKeycloakSub(keycloakSub: String): List<TraderResponse> {
-        return traderRepository.findAllByPortfolioUserKeycloakSub(keycloakSub)
-            .map(traderMapper::toResponse)
-    }
+    suspend fun getById(userId: UUID, portfolioId: UUID, traderId: UUID): TraderResponse {
+        val portfolio = getPortfolioForUser(
+            userId = userId,
+            portfolioId = portfolioId
+        )
+        val trader = portfolio.traders.find { trader ->
+            trader.id == traderId
+        }?: throw TraderNotFoundException(traderId,userId)
 
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    fun findByIdForUser(id: UUID, keycloakSub: String): TraderResponse {
-        val trader = traderRepository.findByIdAndPortfolioUserKeycloakSub(id, keycloakSub)
-            ?: throw TraderNotFoundException(id, keycloakSub)
-
-        return traderMapper.toResponse(trader)
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    fun findAllByPortfolioUserId(id: UUID): List<TraderResponse>{
-        return traderRepository.findAllByPortfolioUserId(id)
-            .map(traderMapper::toResponse)
+        return trader.toResponse()
     }
 
     //===========================================================//
 
     @Transactional
-    fun changeAlgorithm(id: UUID, keycloakSub: String, request: ChangeTraderAlgorithmRequest): TraderResponse {
-        val trader = traderRepository.findByIdAndPortfolioUserKeycloakSub(id, keycloakSub)
-            ?: throw TraderNotFoundException(id, keycloakSub)
+    suspend fun changeAlgorithm(traderId: UUID, userId: UUID,portfolioId: UUID, request: ChangeTraderAlgorithmRequest): TraderResponse {
+        val portfolio = getPortfolioForUser(
+            userId = userId,
+            portfolioId = portfolioId
+        )
+
+        val trader = portfolio.traders.find{ trader ->
+            trader.id == traderId
+        }?: throw TraderNotFoundException(traderId,userId)
 
         val algorithmType = parseAlgorithmType(request.algorithmType)
 
-        val securityIdentifier = SecurityIdentifier(
-            isin = trader.securityIdentifier.isin,
-            tickerSymbol = trader.securityIdentifier.tickerSymbol,
-            currency = trader.securityIdentifier.currency
-        )
-
         val algorithm = TradingAlgorithm.create(
             type = algorithmType,
-            securityIdentifier = securityIdentifier
+            securityIdentifier = trader.securityIdentifier
         )
 
-        val serializedAlgorithm = traderMapper.serializeAlgorithm(algorithm)
+        trader.changeAlgorithm(algorithm)
 
-        trader.changeAlgorithm(
-            algorithmType = algorithmTypeName(algorithmType),
-            algorithmState = serializedAlgorithm
-        )
+        portfolioRepository.save(portfolio).getOrThrow()
 
-        return traderMapper.toResponse(trader)
+        return trader.toResponse()
     }
 
     //===========================================================//
     //===========================================================//
     // Helper Method(s)
+
+    private suspend fun getPortfolioForUser(portfolioId: UUID, userId: UUID): Portfolio {
+        val portfolio = portfolioRepository.getById(portfolioId).getOrThrow()
+        if(portfolio.userId != userId ) throw PortfolioNotFoundException(portfolioId)
+        return portfolio
+    }
+
+    //===========================================================//
 
     private fun parseAlgorithmType(value: String): TradingAlgorithm.Type {
         return when (value.trim().uppercase()) {
@@ -153,26 +153,11 @@ class TraderService {
     }
 
     //===========================================================//
-
-    private fun algorithmTypeName(type: TradingAlgorithm.Type): String {
-        return when (type) {
-            TradingAlgorithm.Type.TACPP46 -> "TACPP46"
-            TradingAlgorithm.Type.ALGDES2 -> "ALGDES2"
-            TradingAlgorithm.Type.ALGDES3 -> "ALGDES3"
-            TradingAlgorithm.Type.ALGDES31 -> "ALGDES31"
-            TradingAlgorithm.Type.ALGDES4 -> "ALGDES4"
-            TradingAlgorithm.Type.BUYANDHOLD -> "BUYANDHOLD"
-        }
-    }
-
-    //===========================================================//
     //===========================================================//
     // Constructor(s)
 
-    constructor(traderRepository: ITraderRepository, userRepository: IUserRepository, traderMapper: TraderMapper) {
-        this.traderRepository = traderRepository
-        this.userRepository = userRepository
-        this.traderMapper = traderMapper
+    constructor(portfolioRepository: IPortfolioRepository) {
+        this.portfolioRepository = portfolioRepository
     }
 
 }

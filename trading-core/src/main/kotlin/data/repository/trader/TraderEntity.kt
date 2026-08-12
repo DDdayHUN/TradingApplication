@@ -1,8 +1,13 @@
-package data.repository.trader.sql
+package data.repository.trader
 
+import com.google.gson.Gson
 import data.repository.SecurityHoldingEntity
 import data.repository.SecurityIdentifierEntity
 import data.repository.portfolio.PortfolioEntity
+import data.repository.toDomain
+import data.repository.toEntity
+import domain.algorithm.ITradingAlgorithm
+import domain.trader.Trader
 import jakarta.persistence.AttributeOverride
 import jakarta.persistence.AttributeOverrides
 import jakarta.persistence.CascadeType
@@ -85,12 +90,44 @@ class TraderEntity(
     fun removeHolding(holding: SecurityHoldingEntity){
         holdings.remove(holding)
     }
+}
 
-    fun changeAlgorithm(algorithmType: String, algorithmState: String){
-        require(algorithmType.isNotBlank()) { "The algorithm state cannot be empty" }
-        require(algorithmState.isNotBlank()) { "Algorithm state cannot be blank" }
+fun Trader.toEntity(portfolio: PortfolioEntity, gson: Gson = Gson()): TraderEntity {
+    val entity = TraderEntity(
+        id = id,
+        securityIdentifier = securityIdentifier.toEntity(),
+        portfolio = portfolio,
+        capital = capital,
+        algorithmType = ITradingAlgorithm.typeTagOf(algorithm),
+        algorithmState =  gson.toJson(
+            algorithm,
+            ITradingAlgorithm::class.java
+        )
+    )
 
-        this.algorithmType = algorithmType
-        this.algorithmState = algorithmState
+    holdings.forEach {holding ->
+        entity.addHolding(
+            holding.toEntity(entity)
+        )
     }
+
+    return entity
+}
+
+fun TraderEntity.toDomain(gson: Gson = Gson()): Trader {
+    val algorithm = gson.fromJson(
+        algorithmState,
+        ITradingAlgorithm::class.java
+    )
+
+    return Trader(
+        id = id,
+        securityIdentifier = securityIdentifier.toDomain(),
+        holdings = holdings
+            .map {holding ->
+                holding.toDomain()
+            }.toMutableList(),
+        allocatedCapital = capital,
+        algorithm = algorithm
+    )
 }

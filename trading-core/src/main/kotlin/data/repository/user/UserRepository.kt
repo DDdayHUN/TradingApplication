@@ -1,0 +1,39 @@
+package data.repository.user
+
+import domain.User
+import domain.interfaces.IUserRepository
+import exception.api.UserNotFoundException
+import org.springframework.stereotype.Repository
+import java.util.UUID
+
+@Repository
+class UserRepository : IUserRepository {
+    private val repository: IUserJpaRepository
+
+    override suspend fun save(user: User): Result<Unit> {
+        return runCatching {
+            repository.save(user.toEntity(user))
+        }
+    }
+
+    override suspend fun getById(id: UUID): Result<User> {
+        return runCatching {
+            val entity = repository.findById(id)
+                .orElseThrow { UserNotFoundException(id) }
+
+            entity.toDomain()
+        }
+    }
+
+    override suspend fun getAll(): Result<List<User>> {
+        return runCatching {
+            repository.findAll().map{user ->
+                user.toDomain()
+            }
+        }
+    }
+
+    constructor(userJpaRepository: IUserJpaRepository) {
+        this.repository = userJpaRepository
+    }
+}

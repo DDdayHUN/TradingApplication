@@ -1,9 +1,11 @@
 package application.service
 
+import api.dto.CreatePortfolioRequest
 import api.dto.PortfolioResponse
-import exception.api.PortfolioNotFoundException
-import data.repository.portfolio.PortfolioMapper
-import data.repository.portfolio.IPortfolioRepository
+import api.dto.toResponse
+import domain.Portfolio
+import domain.interfaces.IPortfolioRepository
+import domain.interfaces.IUserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -16,38 +18,53 @@ class PortfolioService {
     // Private Field(s)
 
     private val portfolioRepository: IPortfolioRepository
-    private val portfolioMapper: PortfolioMapper
+    private val userRepository: IUserRepository
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
-    @Transactional(readOnly = true)
-    fun findForCurrentUser(keycloakSub: String): PortfolioResponse {
-        val portfolio = portfolioRepository.findByUserKeycloakSub(keycloakSub)
-            ?: throw PortfolioNotFoundException(keycloakSub)
+    @Transactional
+    suspend fun createPortfolio(userId: UUID, request: CreatePortfolioRequest): PortfolioResponse {
+        require(request.capital >= 0.0) {
+            "Portfolio capital must be greater or equal to zero"
+        }
 
-        return portfolioMapper.toResponse(portfolio)
+        val user = userRepository.getById(userId).getOrThrow()
+        val portfolio = Portfolio(
+            userId = user.id,
+            capital = request.capital
+        )
+
+        portfolioRepository.save(portfolio).getOrThrow()
+
+        return portfolio.toResponse()
+    }
+
+    @Transactional(readOnly = true)
+    suspend fun getAllByUserId(userId: UUID): List<PortfolioResponse> {
+        val portfolioList = portfolioRepository.getAllByUserId(userId).getOrThrow()
+
+        return portfolioList.map  { portfolio ->
+            portfolio.toResponse()
+        }
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    fun findById(id: UUID): PortfolioResponse {
-        val portfolio = portfolioRepository.findById(id)
-            .orElseThrow {
-                PortfolioNotFoundException(id)
-            }
-
-        return portfolioMapper.toResponse(portfolio)
+    suspend fun findById(id: UUID): PortfolioResponse {
+         return portfolioRepository.getById(id)
+            .getOrThrow()
+            .toResponse()
     }
 
     //===========================================================//
     //===========================================================//
     // Constructor(s)
 
-    constructor(portfolioRepository: IPortfolioRepository, portfolioMapper: PortfolioMapper) {
+    constructor(portfolioRepository: IPortfolioRepository, userRepository: IUserRepository) {
         this.portfolioRepository = portfolioRepository
-        this.portfolioMapper = portfolioMapper
+        this.userRepository = userRepository
     }
 }

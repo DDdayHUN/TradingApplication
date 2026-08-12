@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/traders")
+@RequestMapping("/api/portfolios/{portfolioId}/traders}")
 class TraderController {
 
     //===========================================================//
@@ -30,19 +30,27 @@ class TraderController {
     //===========================================================//
     // GET
 
-    @GetMapping("/me")
-    fun getAllTradersByKeycloakSub(authentication: Authentication): ResponseEntity<List<TraderResponse>> {
+    @GetMapping
+    suspend fun getAll(authentication: Authentication, @PathVariable portfolioId: UUID): ResponseEntity<List<TraderResponse>>{
+        val userId = UUID.fromString(authentication.name)
+
         return ResponseEntity.ok(
-            traderService.findAllForUserByKeycloakSub(authentication.name)
+            traderService.getAllByPortfolioId(
+                userId = userId,
+                portfolioId = portfolioId
+            )
         )
     }
 
-    @GetMapping("/{id}")
-    fun getTraderById(authentication: Authentication, @PathVariable id: UUID): ResponseEntity<TraderResponse>{
+    @GetMapping("/{traderId}")
+    suspend fun getTraderById(authentication: Authentication, @PathVariable traderId: UUID, @PathVariable portfolioId: UUID): ResponseEntity<TraderResponse>{
+        val userId = UUID.fromString(authentication.name)
+
         return ResponseEntity.ok(
-            traderService.findByIdForUser(
-                id = id,
-                keycloakSub = authentication.name
+            traderService.getById(
+                userId = userId,
+                portfolioId = portfolioId,
+                traderId = traderId
             )
         )
     }
@@ -52,10 +60,13 @@ class TraderController {
     // POST
 
     @PostMapping
-    fun createTrader(authentication: Authentication, @RequestBody request: CreateTraderRequest
+    suspend fun createTrader(authentication: Authentication,@PathVariable portfolioId: UUID, @RequestBody request: CreateTraderRequest
     ): ResponseEntity<TraderResponse>{
+        val userId = UUID.fromString(authentication.name)
+
         val response = traderService.createTrader(
-            keycloakSub = authentication.name,
+            userId = userId,
+            portfolioId = portfolioId,
             request = request
         )
 
@@ -66,13 +77,16 @@ class TraderController {
     //===========================================================//
     // PATCH
 
-    @PatchMapping("/{id}/algorithm")
-    fun changeAlgorithm(authentication: Authentication, @PathVariable id: UUID,
+    @PatchMapping("/{traderId}/algorithm")
+    suspend fun changeAlgorithm(authentication: Authentication, @PathVariable traderId: UUID, @PathVariable portfolioId: UUID,
                         @RequestBody request: ChangeTraderAlgorithmRequest): ResponseEntity<TraderResponse> {
+        val userId = UUID.fromString(authentication.name)
+
         return ResponseEntity.ok(
             traderService.changeAlgorithm(
-                id = id,
-                keycloakSub = authentication.name,
+                traderId = traderId,
+                userId = userId,
+                portfolioId = portfolioId,
                 request = request
             )
         )
