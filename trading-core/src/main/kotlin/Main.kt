@@ -29,7 +29,7 @@ suspend fun main() {
     //===========================================================//
     // Config
 
-    val algorithm = TradingAlgorithm.Type.ALGDES3
+    val algorithm = TradingAlgorithm.Type.TACPP46
     val taxation = Taxation.Type.Hungary
 
     val identifier = SecurityIdentifier(
