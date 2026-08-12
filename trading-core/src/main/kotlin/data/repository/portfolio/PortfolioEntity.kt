@@ -1,8 +1,8 @@
 package data.repository.portfolio
 
-import data.repository.trader.sql.TraderEntity
-import data.repository.trader.sql.toDomain
-import data.repository.trader.sql.toEntity
+import data.repository.trader.TraderEntity
+import data.repository.trader.toDomain
+import data.repository.trader.toEntity
 import data.repository.user.UserEntity
 import domain.Portfolio
 import jakarta.persistence.CascadeType

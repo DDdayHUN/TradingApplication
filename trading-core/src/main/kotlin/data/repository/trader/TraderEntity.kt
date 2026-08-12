@@ -1,4 +1,4 @@
-package data.repository.trader.sql
+package data.repository.trader
 
 import com.google.gson.Gson
 import data.repository.SecurityHoldingEntity
@@ -90,18 +90,9 @@ class TraderEntity(
     fun removeHolding(holding: SecurityHoldingEntity){
         holdings.remove(holding)
     }
-
-    fun changeAlgorithm(algorithmType: String, algorithmState: String){
-        require(algorithmType.isNotBlank()) { "The algorithm state cannot be empty" }
-        require(algorithmState.isNotBlank()) { "Algorithm state cannot be blank" }
-
-        this.algorithmType = algorithmType
-        this.algorithmState = algorithmState
-    }
 }
 
-private val gson = Gson()
-fun Trader.toEntity(portfolio: PortfolioEntity): TraderEntity {
+fun Trader.toEntity(portfolio: PortfolioEntity, gson: Gson = Gson()): TraderEntity {
     val entity = TraderEntity(
         id = id,
         securityIdentifier = securityIdentifier.toEntity(),
@@ -123,7 +114,7 @@ fun Trader.toEntity(portfolio: PortfolioEntity): TraderEntity {
     return entity
 }
 
-fun TraderEntity.toDomain(): Trader {
+fun TraderEntity.toDomain(gson: Gson = Gson()): Trader {
     val algorithm = gson.fromJson(
         algorithmState,
         ITradingAlgorithm::class.java

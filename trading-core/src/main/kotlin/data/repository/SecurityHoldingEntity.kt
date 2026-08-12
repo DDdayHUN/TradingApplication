@@ -1,6 +1,6 @@
 package data.repository
 
-import data.repository.trader.sql.TraderEntity
+import data.repository.trader.TraderEntity
 import domain.market.security.SecurityHolding
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

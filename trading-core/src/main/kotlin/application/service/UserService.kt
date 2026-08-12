@@ -1,9 +1,7 @@
 package application.service
 
-import api.dto.CreateUserRequest
 import api.dto.UserResponse
 import api.dto.toResponse
-import domain.Portfolio
 import domain.User
 import domain.interfaces.IUserRepository
 import org.springframework.stereotype.Service
@@ -24,9 +22,14 @@ class UserService {
     // Public Method(es)
 
     @Transactional
-    suspend fun create(request: CreateUserRequest) {
-        return userRepository.save(User())
+    suspend fun create(id: UUID): UserResponse {
+
+        val user = User(id = id)
+
+        userRepository.save(user)
             .getOrThrow()
+
+        return user.toResponse()
     }
 
     //===========================================================//

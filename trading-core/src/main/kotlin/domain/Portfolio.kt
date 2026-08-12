@@ -1,7 +1,6 @@
 package domain
 
 import domain.trader.Trader
-import domain.trader.TradingOrder
 import java.util.UUID
 
 //===========================================================//
