@@ -144,7 +144,14 @@ object Math {
     }
 
     /*===========================================================*/
-
+    /**
+     * Returns the median value of the list.
+     *
+     * The median is the middle value after sorting the list.
+     * For an even-sized list, it is the average of the two middle values.
+     *
+     * @return The median value, or NaN if the list is empty.
+     */
     fun List<Double>.median(): Double {
         if (isEmpty()) return Double.NaN
 
@@ -156,7 +163,18 @@ object Math {
     }
 
     /*===========================================================*/
-
+    /**
+     * Removes a percentage of values from both ends of the list.
+     *
+     * The list is sorted first. The lowest `percent` and highest `percent`
+     * of values are removed.
+     *
+     * Example:
+     *   [1, 2, 3, 4, 5], trim(0.2) -> [2, 3, 4]
+     *
+     * @param percent Fraction of values to remove from each end. 0.2 means 20% from the bottom and 20% from the top.
+     * @return A sorted list with the specified extremes removed.
+     */
     fun List<Double>.trim(percent: Double): List<Double> {
         if (isEmpty()) return listOf()
 
@@ -169,7 +187,15 @@ object Math {
     }
 
     /*===========================================================*/
-
+    /**
+     * Returns the bottom percentage of values in the list.
+     *
+     * Example:
+     *   [1, 2, 3, 4, 5], bottom(0.4) -> [1, 2]
+     *
+     * @param percent Fraction of values to return. 0.4 means the lowest 40% of values.
+     * @return The lowest `percent` of values, sorted in ascending order.
+     */
     fun List<Double>.bottom(percent: Double): List<Double> {
         if (isEmpty()) return listOf()
 
@@ -180,7 +206,15 @@ object Math {
     }
 
     /*===========================================================*/
-
+    /**
+     * Returns the top percentage of values in the list.
+     *
+     * Example:
+     *   [1, 2, 3, 4, 5], top(0.4) -> [4, 5]
+     *
+     * @param percent Fraction of values to return. 0.4 means the highest 40% of values.
+     * @return The highest `percent` of values, sorted in ascending order.
+     */
     fun List<Double>.top(percent: Double): List<Double> {
         if (isEmpty()) return listOf()
 

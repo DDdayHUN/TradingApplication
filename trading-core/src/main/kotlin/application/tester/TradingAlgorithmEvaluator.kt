@@ -48,6 +48,7 @@ class TradingAlgorithmEvaluator {
         val timePeriods = listOf(
             TimePeriod.Year10,
             TimePeriod.Year5,
+            TimePeriod.Year3,
             TimePeriod.Year2,
             TimePeriod.Year1
         )
@@ -172,7 +173,7 @@ class TradingAlgorithmEvaluator {
             }
         }.awaitAll()
 
-        return@coroutineScope outputs.filterNotNull().map { it.toAverageOutput() }
+        return@coroutineScope outputs.filterNotNull().map { it.toConvertedOutput() }
     }
 
     //===========================================================//
@@ -215,7 +216,7 @@ class TradingAlgorithmEvaluator {
             println("Starting Capital: ${first.startingCapital.format(2)}")
             println("Taxes: $tax")
             println()
-            println("M = Mean, TM = Trimmed Mean (middle 80%), Md = Median")
+            println("M = Mean, TM = Trimmed Mean (middle 60% - excluded Best20 and Worst20), Md = Median")
             println("Best20 = Average of best 20%, Worst20 = Average of worst 20%")
             println()
 
@@ -346,6 +347,7 @@ class TradingAlgorithmEvaluator {
 
     data class TradingAlgorithmBackTesterOutputConverted(
         val tradingAlgorithmType: TradingAlgorithm.Type,
+        val securityIdentifier: SecurityIdentifier,
         val taxation: Taxation.Type?,
         val startingCapital: Double,
         val totalCapital: Double,
@@ -368,6 +370,10 @@ class TradingAlgorithmEvaluator {
             override fun toString(): String = "5 Year"
             override fun toInt(): Int = 5
         }
+        data object Year3 : TimePeriod {
+            override fun toString(): String = "3 Year"
+            override fun toInt(): Int = 3
+        }
         data object Year2 : TimePeriod {
             override fun toString(): String = "2 Year"
             override fun toInt(): Int = 2
@@ -381,6 +387,7 @@ class TradingAlgorithmEvaluator {
             val entries = listOf(
                 Year10,
                 Year5,
+                Year3,
                 Year2,
                 Year1
             )
@@ -393,12 +400,13 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Extension(s)
 
-    private fun TradingAlgorithmBackTester.Output.toAverageOutput(): TradingAlgorithmBackTesterOutputConverted {
+    private fun TradingAlgorithmBackTester.Output.toConvertedOutput(): TradingAlgorithmBackTesterOutputConverted {
         val years = Duration.between(from.toJavaInstant(), to.toJavaInstant()).toDays().toDouble() / 365.2425
         val cagr = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0)
 
         return TradingAlgorithmBackTesterOutputConverted(
             tradingAlgorithmType,
+            securityIdentifier,
             taxation,
             startingCapital,
             totalCapital,
