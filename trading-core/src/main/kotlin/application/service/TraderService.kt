@@ -4,12 +4,14 @@ import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
 import api.dto.toResponse
+import data.network.MarketDataProvider
 import exception.api.TraderNotFoundException
 import domain.Portfolio
 import domain.algorithm.TradingAlgorithm
 import domain.interfaces.IPortfolioRepository
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
+import domain.trader.TradingOrder
 import exception.api.PortfolioNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -123,6 +125,31 @@ class TraderService {
         portfolioRepository.save(portfolio).getOrThrow()
 
         return trader.toResponse()
+    }
+
+    //===========================================================//
+
+    @Transactional
+    suspend fun executeTrader(userId: UUID, portfolioId: UUID, traderId: UUID): TradingOrder {
+        val portfolio = getPortfolioForUser(
+            portfolioId = portfolioId,
+            userId = userId
+        )
+
+        val trader = portfolio.traders.find {trader ->
+            trader.id == traderId
+        } ?: throw TraderNotFoundException(traderId,userId)
+
+        val quote = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
+            .getQuote(trader.securityIdentifier).getOrThrow()
+
+        val order = trader.createOrder(quote)
+
+        trader.finalizeOrder(order)
+
+        portfolioRepository.save(portfolio).getOrThrow()
+
+        return order
     }
 
     //===========================================================//

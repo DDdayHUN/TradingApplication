@@ -25,8 +25,8 @@ class PortfolioRepository : IPortfolioRepository {
 
     override suspend fun getById(id: UUID): Result<Portfolio> {
         return runCatching {
-            val entity = repository.findById(id)
-                .orElseThrow { PortfolioNotFoundException(id) }
+            val entity = repository.findPortfolioWithTradersById(id)
+                ?: throw PortfolioNotFoundException(id)
 
             entity.toDomain()
         }

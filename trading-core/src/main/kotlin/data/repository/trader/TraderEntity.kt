@@ -1,11 +1,11 @@
 package data.repository.trader
 
 import com.google.gson.Gson
-import data.repository.SecurityHoldingEntity
-import data.repository.SecurityIdentifierEntity
+import data.repository.security.SecurityHoldingEntity
+import data.repository.security.SecurityIdentifierEntity
 import data.repository.portfolio.PortfolioEntity
-import data.repository.toDomain
-import data.repository.toEntity
+import data.repository.security.toDomain
+import data.repository.security.toEntity
 import domain.algorithm.ITradingAlgorithm
 import domain.trader.Trader
 import jakarta.persistence.AttributeOverride
@@ -76,7 +76,7 @@ class TraderEntity(
 ) {
 
     @OneToMany(mappedBy = "trader", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
-    var holdings: MutableList<SecurityHoldingEntity> = mutableListOf()
+    var holdings: MutableSet<SecurityHoldingEntity> = mutableSetOf()
 
     //===========================================================//
     //===========================================================//

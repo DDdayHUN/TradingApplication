@@ -4,6 +4,7 @@ import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
 import application.service.TraderService
+import domain.trader.TradingOrder
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/portfolios/{portfolioId}/traders}")
+@RequestMapping("/api/portfolios/{portfolioId}/traders")
 class TraderController {
 
     //===========================================================//
@@ -71,6 +72,19 @@ class TraderController {
         )
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    @PostMapping("/{traderId}/execute")
+    suspend fun executeTrader(authentication: Authentication, @PathVariable portfolioId: UUID, @PathVariable traderId: UUID): ResponseEntity<TradingOrder>{
+        val userId = UUID.fromString(authentication.name)
+
+        return ResponseEntity.ok(
+            traderService.executeTrader(
+                userId = userId,
+                portfolioId = portfolioId,
+                traderId = traderId
+            )
+        )
     }
 
     //===========================================================//

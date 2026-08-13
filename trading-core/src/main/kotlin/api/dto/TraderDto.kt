@@ -1,5 +1,6 @@
 package api.dto
 
+import domain.algorithm.ITradingAlgorithm
 import domain.trader.Trader
 import java.util.UUID
 
@@ -17,7 +18,8 @@ data class TraderResponse(
     val id: UUID,
     val securityIdentifier: SecurityIdentifierResponse,
     val capital: Double,
-    val holdings: List<SecurityHoldingResponse>
+    val holdings: List<SecurityHoldingResponse>,
+    val algorithmType: String
 )
 
 fun Trader.toResponse(): TraderResponse {
@@ -35,6 +37,7 @@ fun Trader.toResponse(): TraderResponse {
                 entryPrice = holding.entryPrice,
                 amount = holding.amount
             )
-        }
+        },
+        algorithmType = ITradingAlgorithm.typeTagOf(algorithm)
     )
 }

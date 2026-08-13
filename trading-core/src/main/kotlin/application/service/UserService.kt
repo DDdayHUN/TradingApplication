@@ -4,6 +4,7 @@ import api.dto.UserResponse
 import api.dto.toResponse
 import domain.User
 import domain.interfaces.IUserRepository
+import exception.api.UserAlreadyExistsException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -23,6 +24,9 @@ class UserService {
 
     @Transactional
     suspend fun create(id: UUID): UserResponse {
+       if(userRepository.getById(id).getOrNull() != null){
+           throw UserAlreadyExistsException(id)
+       }
 
         val user = User(id = id)
 

@@ -1,4 +1,4 @@
-package data.repository
+package data.repository.security
 
 import domain.market.security.SecurityIdentifier
 import jakarta.persistence.Embeddable

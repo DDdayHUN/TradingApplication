@@ -1,4 +1,4 @@
-package data.repository
+package data.repository.security
 
 import data.repository.trader.TraderEntity
 import domain.market.security.SecurityHolding
