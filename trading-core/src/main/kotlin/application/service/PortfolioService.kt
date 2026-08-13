@@ -24,6 +24,11 @@ class PortfolioService {
     //===========================================================//
     // Public Method(s)
 
+    /**
+     * Creates a new portfolio for the specified user
+     * @param userId Unique ID for user
+     * @param request
+     */
     @Transactional
     suspend fun createPortfolio(userId: UUID, request: CreatePortfolioRequest): PortfolioResponse {
         require(request.capital >= 0.0) {

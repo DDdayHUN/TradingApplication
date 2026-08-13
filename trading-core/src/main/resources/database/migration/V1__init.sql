@@ -1,20 +1,19 @@
 CREATE TABLE app_user(
-    id UUID PRIMARY KEY,
-    keycloak_sub VARCHAR(255) NOT NULL UNIQUE
+    id UUID PRIMARY KEY
 );
 
 CREATE TABLE app_portfolio(
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL UNIQUE,
-    available_cash DOUBLE PRECISION NOT NULL,
+    capital DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT fk_app_portfolio_user
             FOREIGN KEY (user_id)
             REFERENCES app_user (id)
             ON DELETE CASCADE,
 
-    CONSTRAINT chk_app_portfolio_available_cash
-        CHECK (available_cash >= 0)
+    CONSTRAINT chk_app_portfolio_capital
+        CHECK (capital >= 0)
 );
 
 CREATE TABLE app_trader(
@@ -59,13 +58,12 @@ CREATE TABLE app_security_holding(
 CREATE INDEX idx_holdings_trader_id ON app_security_holding (trader_id);
 
 -- DEVELOPMENT TEST --
-INSERT INTO app_user (id, keycloak_sub)
+INSERT INTO app_user (id)
 VALUES (
-    'a7d78e51-6369-4d78-bf96-024742a52954',
-    'aa7f8d07-ad09-409c-806d-64c765689c24'
+    'a7d78e51-6369-4d78-bf96-024742a52954'
 );
 
-INSERT INTO app_portfolio (id, user_id, available_cash)
+INSERT INTO app_portfolio (id, user_id, capital)
 VALUES (
     '22222222-2222-2222-2222-222222222222',
     'a7d78e51-6369-4d78-bf96-024742a52954',

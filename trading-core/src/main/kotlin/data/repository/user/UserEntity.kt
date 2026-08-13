@@ -20,11 +20,6 @@ class UserEntity (
 ) {
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     lateinit var portfolio: PortfolioEntity
-
-    fun attachPortfolio(portfolio: PortfolioEntity) {
-        this.portfolio = portfolio
-        portfolio.user = this
-    }
 }
 
 fun User.toEntity(user: User): UserEntity {

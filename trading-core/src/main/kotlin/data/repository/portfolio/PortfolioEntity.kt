@@ -22,20 +22,19 @@ import java.util.UUID
 @Table(name = "app_portfolio")
 class PortfolioEntity(
 
+    @Id
+    var id: UUID,
+
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     var user: UserEntity,
 
-    @Column(name = "available_cash", nullable = false)
+    @Column(name = "capital", nullable = false)
     var capital: Double
 ) {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID? = null
-
     @OneToMany(mappedBy = "portfolio", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
-    var traders: MutableList<TraderEntity> = mutableListOf()
+    var traders: MutableSet<TraderEntity> = mutableSetOf()
 
     fun addTrader(trader: TraderEntity){
         trader.portfolio = this
@@ -49,6 +48,7 @@ class PortfolioEntity(
 
 fun Portfolio.toEntity(user: UserEntity): PortfolioEntity {
     val entity = PortfolioEntity(
+        id = id,
         user = user,
         capital = capital
     )
@@ -64,6 +64,7 @@ fun Portfolio.toEntity(user: UserEntity): PortfolioEntity {
 
 fun PortfolioEntity.toDomain(): Portfolio {
     return Portfolio(
+        id = id,
         userId = user.id,
         traders = traders
             .map { trader ->
