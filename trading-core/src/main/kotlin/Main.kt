@@ -18,7 +18,7 @@ suspend fun main() {
     //===========================================================//
     // Settings
 
-    val c_RUN_BACKTEST_ON_ONE_SECURITY = false
+    val c_RUN_BACKTEST_ON_ONE_SECURITY = true
     val c_RUN_BACKTEST_ON_ALL_SECURITY = false // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
     val c_RUN_EVAL_ON_ONE_ALGORITHM = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
@@ -30,18 +30,18 @@ suspend fun main() {
     //===========================================================//
     // Config
 
-    val algorithm = TradingAlgorithm.Type.ALGDES3
+    val algorithm = TradingAlgorithm.Type.TACPP46
     val taxation = Taxation.Type.Hungary
 
     val identifier = SecurityIdentifier(
-        "US67066G1040",
-        "NVDA",
+        "US68389X1054",
+        "ORCL",
         "USD"
     )
 
     val startCapital = 1000.0
     val startDate = Instant.parse("2020-01-01T00:00:00Z")
-    val endDate = Instant.parse("2026-01-01T00:00:00Z")
+    val endDate = Instant.parse("2026-08-01T00:00:00Z")
     val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
     //===========================================================//
