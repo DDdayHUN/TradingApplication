@@ -153,6 +153,29 @@ class TraderService {
     }
 
     //===========================================================//
+
+    suspend fun executeAll(userId: UUID, portfolioId: UUID): List<TradingOrder> {
+        val portfolio = getPortfolioForUser(
+            portfolioId = portfolioId,
+            userId = userId
+        )
+        val orders = mutableListOf<TradingOrder>()
+        val provider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
+
+        portfolio.traders.forEach { trader ->
+            val quote = provider.getQuote(trader.securityIdentifier).getOrThrow()
+
+            val order = trader.createOrder(quote)
+            trader.finalizeOrder(order)
+            orders.add(order)
+        }
+
+        portfolioRepository.save(portfolio).getOrThrow()
+
+        return orders
+    }
+
+    //===========================================================//
     //===========================================================//
     // Helper Method(s)
 

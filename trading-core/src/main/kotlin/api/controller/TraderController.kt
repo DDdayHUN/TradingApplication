@@ -87,6 +87,18 @@ class TraderController {
         )
     }
 
+    @PostMapping("/execute")
+    suspend fun executeAll(authentication: Authentication, @PathVariable portfolioId: UUID): ResponseEntity<List<TradingOrder>> {
+        val userId = UUID.fromString(authentication.name)
+
+        return ResponseEntity.ok(
+            traderService.executeAll(
+                userId = userId,
+                portfolioId = portfolioId
+            )
+        )
+    }
+
     //===========================================================//
     //===========================================================//
     // PATCH
