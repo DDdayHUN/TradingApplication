@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
+@Deprecated("Will be superseded by NewTraderService")
 class TraderService {
 
     //===========================================================//

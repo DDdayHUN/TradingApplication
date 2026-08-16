@@ -1,13 +1,19 @@
 package exception.api;
 
-import java.util.UUID;
-
 public class UserNotFoundException extends RuntimeException {
-   public UserNotFoundException(String keycloakSub){
-      super("User not found:" + keycloakSub);
+   public UserNotFoundException() {
+      super();
    }
 
-   public UserNotFoundException(UUID id){
-      super("User not found:" + id);
+   public UserNotFoundException(String message) {
+      super(message);
+   }
+
+   public UserNotFoundException(String message, Throwable cause){
+      super(message, cause);
+   }
+
+   public UserNotFoundException(Throwable cause) {
+      super(cause);
    }
 }

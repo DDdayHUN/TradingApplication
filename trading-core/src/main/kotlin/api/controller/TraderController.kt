@@ -17,22 +17,23 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
+//===========================================================//
+//===========================================================//
+
 @RestController
 @RequestMapping("/api/portfolios/{portfolioId}/traders")
-class TraderController {
-
-    //===========================================================//
-    //===========================================================//
-    // Private Field(s)
-
+class TraderController(
     private val traderService: TraderService
-
+) {
     //===========================================================//
     //===========================================================//
     // GET
 
     @GetMapping
-    suspend fun getAll(authentication: Authentication, @PathVariable portfolioId: UUID): ResponseEntity<List<TraderResponse>>{
+    suspend fun getAll(
+        authentication: Authentication,
+        @PathVariable portfolioId: UUID
+    ): ResponseEntity<List<TraderResponse>>{
         val userId = UUID.fromString(authentication.name)
 
         return ResponseEntity.ok(
@@ -43,8 +44,14 @@ class TraderController {
         )
     }
 
+    //===========================================================//
+
     @GetMapping("/{traderId}")
-    suspend fun getTraderById(authentication: Authentication, @PathVariable traderId: UUID, @PathVariable portfolioId: UUID): ResponseEntity<TraderResponse>{
+    suspend fun getTraderById(
+        authentication: Authentication,
+        @PathVariable traderId: UUID,
+        @PathVariable portfolioId: UUID
+    ): ResponseEntity<TraderResponse>{
         val userId = UUID.fromString(authentication.name)
 
         return ResponseEntity.ok(
@@ -61,7 +68,10 @@ class TraderController {
     // POST
 
     @PostMapping
-    suspend fun createTrader(authentication: Authentication,@PathVariable portfolioId: UUID, @RequestBody request: CreateTraderRequest
+    suspend fun createTrader(
+        authentication: Authentication,
+        @PathVariable portfolioId: UUID,
+        @RequestBody request: CreateTraderRequest
     ): ResponseEntity<TraderResponse>{
         val userId = UUID.fromString(authentication.name)
 
@@ -74,8 +84,14 @@ class TraderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
+    //===========================================================//
+
     @PostMapping("/{traderId}/execute")
-    suspend fun executeTrader(authentication: Authentication, @PathVariable portfolioId: UUID, @PathVariable traderId: UUID): ResponseEntity<TradingOrder>{
+    suspend fun executeTrader(
+        authentication: Authentication,
+        @PathVariable portfolioId: UUID,
+        @PathVariable traderId: UUID
+    ): ResponseEntity<TradingOrder>{
         val userId = UUID.fromString(authentication.name)
 
         return ResponseEntity.ok(
@@ -92,8 +108,12 @@ class TraderController {
     // PATCH
 
     @PatchMapping("/{traderId}/algorithm")
-    suspend fun changeAlgorithm(authentication: Authentication, @PathVariable traderId: UUID, @PathVariable portfolioId: UUID,
-                        @RequestBody request: ChangeTraderAlgorithmRequest): ResponseEntity<TraderResponse> {
+    suspend fun changeAlgorithm(
+        authentication: Authentication,
+        @PathVariable traderId: UUID,
+        @PathVariable portfolioId: UUID,
+        @RequestBody request: ChangeTraderAlgorithmRequest
+    ): ResponseEntity<TraderResponse> {
         val userId = UUID.fromString(authentication.name)
 
         return ResponseEntity.ok(
@@ -104,13 +124,5 @@ class TraderController {
                 request = request
             )
         )
-    }
-
-    //===========================================================//
-    //===========================================================//
-    // Constructor(s)
-
-    constructor(traderService: TraderService) {
-        this.traderService = traderService
     }
 }

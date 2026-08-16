@@ -8,7 +8,6 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.config.Customizer
 
-
 @Configuration
 @EnableWebSecurity
 class SecurityConfig {

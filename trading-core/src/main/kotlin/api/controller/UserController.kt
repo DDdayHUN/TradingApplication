@@ -11,24 +11,26 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
+//===========================================================//
+//===========================================================//
+
 @RestController
 @RequestMapping("/api/users")
-class UserController {
-
-    //===========================================================//
-    //===========================================================//
-    // Private Field(s)
-
+class UserController(
     private val userService: UserService
-
+) {
     //===========================================================//
     //===========================================================//
     // GET
 
     @GetMapping
-    suspend fun getCurrentUser(authentication: Authentication): ResponseEntity<UserResponse> {
+    suspend fun getCurrentUser(
+        authentication: Authentication
+    ): ResponseEntity<UserResponse> {
+        val userId = UUID.fromString(authentication.name)
+
         return ResponseEntity.ok(
-            userService.getById(UUID.fromString(authentication.name))
+            userService.getById(userId)
         )
     }
 
@@ -37,18 +39,13 @@ class UserController {
     // POST
 
     @PostMapping
-    suspend fun create(authentication: Authentication): ResponseEntity<UserResponse> {
+    suspend fun create(
+        authentication: Authentication
+    ): ResponseEntity<UserResponse> {
         val userId = UUID.fromString(authentication.name)
+
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(userService.create(userId))
-    }
-
-    //===========================================================//
-    //===========================================================//
-    // Constructor(s)
-
-    constructor(userService: UserService) {
-        this.userService = userService
     }
 }
