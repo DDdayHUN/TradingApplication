@@ -65,7 +65,6 @@ fun Portfolio.toEntity(user: UserEntity): PortfolioEntity {
 fun PortfolioEntity.toDomain(): Portfolio {
     return Portfolio(
         id = id,
-        userId = user.id,
         traders = traders
             .map { trader ->
                 trader.toDomain()

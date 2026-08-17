@@ -6,7 +6,6 @@ import domain.interfaces.ITraderRepository
 import domain.trader.Trader
 import domain.interfaces.IMarketDataProvider
 import data.network.MarketDataProvider
-import domain.market.Quote
 
 //===========================================================//
 /**

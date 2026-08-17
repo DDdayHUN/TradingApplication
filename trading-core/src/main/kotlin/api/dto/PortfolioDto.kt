@@ -14,7 +14,6 @@ data class CreatePortfolioRequest(
 
 data class PortfolioResponse(
     val id: UUID,
-    val userId: UUID,
     val capital: Double,
     val traders: List<TraderResponse>
 )
@@ -24,7 +23,6 @@ data class PortfolioResponse(
 fun Portfolio.toResponse(): PortfolioResponse {
     return PortfolioResponse(
         id = id,
-        userId = userId,
         capital = capital,
         traders = traders.map { trader ->
             trader.toResponse()

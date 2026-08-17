@@ -1,36 +1,33 @@
 package api.controller
 
 import api.dto.UserResponse
-import application.service.UserService
+import api.dto.toResponse
+import application.service.IAuthenticationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 
 //===========================================================//
 //===========================================================//
 
 @RestController
 @RequestMapping("/api/users")
-class UserController(
-    private val userService: UserService
+class NewUserController(
+    private val auth: IAuthenticationService
 ) {
     //===========================================================//
     //===========================================================//
     // GET
 
     @GetMapping
-    suspend fun getCurrentUser(
-        authentication: Authentication
-    ): ResponseEntity<UserResponse> {
-        val userId = UUID.fromString(authentication.name)
+    suspend fun getCurrentUser(): ResponseEntity<UserResponse> {
+        val response = auth.currentUser().toResponse()
 
         return ResponseEntity.ok(
-            userService.getById(userId)
+            response
         )
     }
 
@@ -39,13 +36,11 @@ class UserController(
     // POST
 
     @PostMapping
-    suspend fun create(
-        authentication: Authentication
-    ): ResponseEntity<UserResponse> {
-        val userId = UUID.fromString(authentication.name)
+    suspend fun create(): ResponseEntity<UserResponse> {
+        val response = auth.createUser().toResponse()
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.create(userId))
+            .body(response)
     }
 }
