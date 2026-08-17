@@ -24,7 +24,7 @@ class PortfolioController(
 
     @GetMapping
     suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
-        val response = portfolioService.getAllPortfolio().map { it.toResponse() }
+        val response = portfolioService.getAllPortfolio().map { portfolio -> portfolio.toResponse() }
 
         return ResponseEntity.ok(
             response

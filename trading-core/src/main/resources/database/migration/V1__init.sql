@@ -39,7 +39,7 @@ CREATE INDEX idx_app_traders_portfolio_id ON app_trader (portfolio_id);
 
 CREATE TABLE app_security_holding(
     id UUID PRIMARY KEY,
-    time_stamp NOT NULL,
+    time_stamp TIMESTAMP WITH TIME ZONE NOT NULL,
     trader_id UUID NOT NULL,
     entry_price DOUBLE PRECISION NOT NULL,
     amount INTEGER NOT NULL,
