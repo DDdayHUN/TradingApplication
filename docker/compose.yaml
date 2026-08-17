@@ -77,6 +77,30 @@ services:
         timeout: 5s
         retries: 3
 
+#    trading-core:
+#      container_name: trading-core
+#      build:
+#        context: ..
+#        dockerfile: trading-core/Dockerfile
+#      restart: unless-stopped
+#      environment:
+#        TRADING_DB_URL: trading-db:5432
+#        TRADING_DB_NAME: ${TRADING_DB_NAME}
+#        TRADING_DB_USERNAME: ${TRADING_DB_USERNAME}
+#        TRADING_DB_PASSWORD: ${TRADING_DB_PASSWORD}
+#        TRADING_AUTH_ISSUER_URI: http://keycloak:8081/realms/trading
+#        JAVA_OPTS: "-XX:MaxRAMPercentage=75.0"
+#
+#      ports:
+#        - "8080:8080"
+#
+#      depends_on:
+#        trading-db:
+#          condition: service_healthy
+#        keycloak:
+#          condition: service_started
+#
+#
 #    frontend:
 #      container_name: trading-frontend
 #      build:
@@ -89,6 +113,8 @@ services:
 #        - "5173:5173"
 #
 #      restart: unless-stopped
+#      depends_on:
+#        - trading-core
 
 volumes:
   keycloak-db-data:

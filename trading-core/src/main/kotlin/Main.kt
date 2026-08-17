@@ -23,7 +23,7 @@ suspend fun main() {
     val c_RUN_EVAL_ON_ONE_ALGORITHM = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
 
-    val c_RUN_TRADER_TEST = false
+    val c_RUN_TRADER_TEST = true
     val c_CLEAR_TRADER_TEST_FOLDER = false
 
     //===========================================================//
@@ -34,8 +34,8 @@ suspend fun main() {
     val taxation = Taxation.Type.Hungary
 
     val identifier = SecurityIdentifier(
-        "US68389X1054",
-        "ORCL",
+        "US67066G1040",
+        "NVDA",
         "USD"
     )
 
