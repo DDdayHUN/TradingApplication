@@ -11,10 +11,16 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
+//===========================================================//
+//===========================================================//
+
 @Service
 class AuthenticationService(
     private val userRepository: IUserRepository,
 ) : IAuthenticationService {
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
 
     @Transactional(readOnly = true)
     override suspend fun currentUser(): User {
@@ -29,6 +35,8 @@ class AuthenticationService(
 
         return userRepository.getById(uuid).getOrThrow()
     }
+
+    //===========================================================//
 
     @Transactional
     override suspend fun createUser(): User {

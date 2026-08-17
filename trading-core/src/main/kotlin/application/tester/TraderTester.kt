@@ -73,7 +73,7 @@ class TraderTester {
     //===========================================================//
     // Private Method(es)
 
-    private fun printHoldings(holdings: List<SecurityHolding>) {
+    private fun printHoldings(holdings: Set<SecurityHolding>) {
         if (holdings.isEmpty()) {
             print("None")
             println()

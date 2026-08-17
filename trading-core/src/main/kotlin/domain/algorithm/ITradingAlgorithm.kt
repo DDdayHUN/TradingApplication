@@ -20,12 +20,12 @@ sealed interface ITradingAlgorithm {
     /**
      * Executes the algorithm based on current holdings and market conditions.
      *
-     * @param holdings the list of currently owned market.
+     * @param holdings the set of currently owned market assets.
      * @param allocatedCapital the amount of capital allocated for trading.
      * @param currentPrice the current market price of the asset.
      * @return contains the decision/results.
      */
-    fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output
+    fun run(holdings: Set<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output
 
     //===========================================================//
     //===========================================================//

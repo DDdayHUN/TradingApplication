@@ -1,14 +1,12 @@
 package api.controller
 
-import api.dto.CreatePortfolioRequest
-import api.dto.PortfolioResponse
+import api.dto.UserResponse
 import api.dto.toResponse
-import application.service.IPortfolioService
+import application.service.IAuthenticationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -16,17 +14,17 @@ import org.springframework.web.bind.annotation.RestController
 //===========================================================//
 
 @RestController
-@RequestMapping("/api/portfolio")
-class NewPortfolioController(
-    private val portfolioService: IPortfolioService
+@RequestMapping("/api/users")
+class UserController(
+    private val auth: IAuthenticationService
 ) {
     //===========================================================//
     //===========================================================//
     // GET
 
     @GetMapping
-    suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
-        val response = portfolioService.getAllPortfolio().map { it.toResponse() }
+    suspend fun getCurrentUser(): ResponseEntity<UserResponse> {
+        val response = auth.currentUser().toResponse()
 
         return ResponseEntity.ok(
             response
@@ -38,13 +36,8 @@ class NewPortfolioController(
     // POST
 
     @PostMapping
-    suspend fun createPortfolio(
-        @RequestBody request: CreatePortfolioRequest
-    ): ResponseEntity<PortfolioResponse> {
-        val response =
-            portfolioService.createPortfolio(
-                capital = request.capital
-            ).toResponse()
+    suspend fun create(): ResponseEntity<UserResponse> {
+        val response = auth.createUser().toResponse()
 
         return ResponseEntity
             .status(HttpStatus.CREATED)

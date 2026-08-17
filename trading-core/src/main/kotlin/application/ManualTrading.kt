@@ -27,7 +27,7 @@ class ManualTrading {
     private val m_SecurityIdentifier: SecurityIdentifier
 
     private val m_AllocatedCapital: Double
-    private val m_Holdings: List<SecurityHolding>
+    private val m_Holdings: Set<SecurityHolding>
 
     //===========================================================//
     //===========================================================//
@@ -59,7 +59,7 @@ class ManualTrading {
         m_AlgorithmType = algorithm
         m_SecurityIdentifier = securityIdentifier
         m_AllocatedCapital = allocatedCapital
-        m_Holdings = ArrayList()
+        m_Holdings = HashSet()
     }
 
     //===========================================================//

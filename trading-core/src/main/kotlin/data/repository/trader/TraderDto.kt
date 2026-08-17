@@ -11,14 +11,14 @@ internal data class TraderDto(
     val id: UUID,
     val securityIdentifier: SecurityIdentifier,
     val capital: Double,
-    val holdings: List<SecurityHolding>,
+    val holdings: Set<SecurityHolding>,
     val algorithm: ITradingAlgorithm
 ) {
     fun toDomain(): Trader {
         return Trader(
             id,
             securityIdentifier,
-            holdings.toMutableList(),
+            holdings.toMutableSet(),
             capital,
             algorithm
         )

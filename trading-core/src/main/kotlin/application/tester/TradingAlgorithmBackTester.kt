@@ -51,7 +51,7 @@ class TradingAlgorithmBackTester {
     private var m_TradingAlgorithm: ITradingAlgorithm
     private var m_HistoryWeRunAgainst: List<SecurityHistory>
 
-    private val m_Holdings: MutableList<SecurityHolding>
+    private val m_Holdings: MutableSet<SecurityHolding>
     private val m_CapitalHistory: MutableList<Double>
 
     private var m_CurrentCapital: Double
@@ -140,7 +140,10 @@ class TradingAlgorithmBackTester {
             m_CurrentCapital -= ret.buy.amount * currentPrice
             check(m_CurrentCapital > 0.0)
 
-            m_Holdings.add(SecurityHolding(currentPrice, ret.buy.amount))
+            m_Holdings.add(SecurityHolding(
+                entryPrice = currentPrice,
+                amount = ret.buy.amount
+            ))
             m_TotalBuysMade++
         }
 
@@ -162,8 +165,8 @@ class TradingAlgorithmBackTester {
 
                 if (amount != bought.amount) m_Holdings.add(
                     SecurityHolding(
-                        bought.entryPrice,
-                        bought.amount - amount
+                        entryPrice = bought.entryPrice,
+                        amount = bought.amount - amount
                     )
                 )
 
@@ -221,7 +224,7 @@ class TradingAlgorithmBackTester {
         m_TradingAlgorithm = pair.second
         m_HistoryWeRunAgainst = pair.first
 
-        m_Holdings = ArrayList()
+        m_Holdings = HashSet()
         m_CapitalHistory = ArrayList()
 
         m_CurrentCapital = m_StartingCapital

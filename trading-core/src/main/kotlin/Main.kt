@@ -10,7 +10,6 @@ import domain.trader.Trader
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import java.util.UUID
 import kotlin.time.Instant
 
 suspend fun main() {
@@ -147,9 +146,8 @@ suspend fun main() {
                 if (traderList.any { it.securityIdentifier.isin == identifier.isin }) traderList
                 else {
                     traderList + Trader(
-                        id = UUID.randomUUID(),
                         securityIdentifier = identifier,
-                        holdings = mutableListOf(),
+                        holdings = mutableSetOf(),
                         allocatedCapital = startCapital,
                         algorithm = TradingAlgorithm.create(
                             algorithm,

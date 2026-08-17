@@ -1,8 +1,8 @@
 package api.controller
 
-import api.dto.UserResponse
+import api.dto.PortfolioResponse
 import api.dto.toResponse
-import application.service.IAuthenticationService
+import application.service.IPortfolioService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.RestController
 //===========================================================//
 
 @RestController
-@RequestMapping("/api/users")
-class NewUserController(
-    private val auth: IAuthenticationService
+@RequestMapping("/api/portfolio")
+class PortfolioController(
+    private val portfolioService: IPortfolioService
 ) {
     //===========================================================//
     //===========================================================//
     // GET
 
     @GetMapping
-    suspend fun getCurrentUser(): ResponseEntity<UserResponse> {
-        val response = auth.currentUser().toResponse()
+    suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
+        val response = portfolioService.getAllPortfolio().map { it.toResponse() }
 
         return ResponseEntity.ok(
             response
@@ -36,8 +36,8 @@ class NewUserController(
     // POST
 
     @PostMapping
-    suspend fun create(): ResponseEntity<UserResponse> {
-        val response = auth.createUser().toResponse()
+    suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
+        val response = portfolioService.createPortfolio().toResponse()
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
