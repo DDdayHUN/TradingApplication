@@ -80,7 +80,7 @@ object Math {
      * @return The RSI value in the range [0, 100].
      */
     fun List<Double>.rsi(): Double {
-        require(this.size >= 2) { "RSI: size < 2" }
+        require(this.size >= 2) { "Size" }
 
         val gaines: MutableList<Double> = ArrayList()
         val losses: MutableList<Double> = ArrayList()
@@ -132,7 +132,7 @@ object Math {
         }
 
         val meanReturn = returns.average() // average of daily returns
-        val stdDev = capitalHistory.stdDev() // standard deviation of daily returns
+        val stdDev = capitalHistory.stdDev() // standard deviation of daily returns TODO: Ehelyett nem retruns.stdDev() kéne???
 
         if (stdDev == 0.0) return Double.NaN
 

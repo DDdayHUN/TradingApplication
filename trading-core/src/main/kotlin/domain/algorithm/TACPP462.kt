@@ -43,7 +43,7 @@ internal class TACPP462: ITradingAlgorithm {
         val lowerBand = ma - 4.0 * std * ma
 
         val maxAllocation = 1.0 // Never use more than x% of available capital.
-        val targetStd = 0.03 // x% volatility.
+        val targetStd = 0.2 // x% volatility.
 
         val rsiScore = ((50.0 - rsi) / 50.0).coerceIn(0.0, 1.0)
         // RSI 50 -> 0
@@ -78,8 +78,8 @@ internal class TACPP462: ITradingAlgorithm {
         for (item in holdings) {
             var isMarked = m_MarkedForSelling.contains(item)
 
-            // Activate trailing if gained > risk
-            if (!isMarked && currentPrice > item.entryPrice * (1.0 + volatilityScore)) {
+            // Activate trailing
+            if (!isMarked && currentPrice > item.entryPrice * 1.2) {
                 m_MarkedForSelling.add(item)
                 m_TrailingHigh[item] = currentPrice
                 isMarked = true
@@ -94,8 +94,8 @@ internal class TACPP462: ITradingAlgorithm {
                     m_TrailingHigh[item] = high
                 }
 
-                // Sell if price falls more than risk from peak
-                if (currentPrice < high * (1.0 + volatilityScore)) {
+                // Sell if price falls more than
+                if (currentPrice > item.entryPrice * 1.3 || currentPrice < item.entryPrice * 1.1) {
                     toBeSold.add(Pair(item, item.amount))
 
                     // cleanup
