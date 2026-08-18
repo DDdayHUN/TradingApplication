@@ -1,5 +1,7 @@
 package domain.market.security
 
+import com.google.gson.annotations.JsonAdapter
+import domain.adapter.InstantAdapter
 import java.time.Instant
 import java.util.UUID
 
@@ -16,6 +18,7 @@ import java.util.UUID
 
 data class SecurityHolding(
     val id: UUID = UUID.randomUUID(),
+    @JsonAdapter(InstantAdapter::class)
     val timestamp: Instant = Instant.now(),
     val entryPrice: Double,
     val amount: Int
