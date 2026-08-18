@@ -9,6 +9,7 @@ import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import domain.trader.TradingOrder
+import exception.api.TraderNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -18,8 +19,7 @@ import java.util.UUID
 
 @Service
 class TraderService(
-    private val portfolioService: IPortfolioService,
-    private val session: AuthenticationService
+    private val portfolioService: IPortfolioService
 ) : ITraderService {
     //===========================================================//
     //===========================================================//
@@ -64,8 +64,14 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    suspend fun getById(userId: UUID, portfolioId: UUID, traderId: UUID): TraderResponse {
-        TODO("Implement later")
+    override suspend fun getById(portfolioId: UUID, traderId: UUID): Trader? {
+        val portfolio =  portfolioService.getPortfolio(portfolioId)
+
+        val trader = portfolio.traders.find { trader ->
+            trader.id == traderId
+        }
+
+        return trader
     }
 
     //===========================================================//

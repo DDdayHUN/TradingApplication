@@ -4,6 +4,7 @@ import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
 import api.dto.toResponse
 import application.service.ITraderService
+import exception.api.TraderNotFoundException
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -30,6 +31,16 @@ class TraderController(
             trader.toResponse()
         }
         return ResponseEntity.ok(response)
+    }
+
+    //===========================================================//
+
+    @GetMapping("/{traderId}")
+    suspend fun getTraderById(@PathVariable traderId: UUID, @PathVariable portfolioId: UUID): ResponseEntity<TraderResponse> {
+        val response = traderService.getById(portfolioId, traderId)
+            ?: throw TraderNotFoundException(traderId)
+
+        return ResponseEntity.ok(response.toResponse())
     }
 
     //===========================================================//
