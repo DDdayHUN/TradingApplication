@@ -136,6 +136,7 @@ class Trader {
     // Constructor(s)
 
     /**
+     * @param id the UUID of the Trader.
      * @param securityIdentifier the identifier of the traded security.
      * @param holdings the currently held securities with the given identifier.
      * @param allocatedCapital the capital currently allocated to the trader.

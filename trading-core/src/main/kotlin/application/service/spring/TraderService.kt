@@ -21,14 +21,14 @@ import java.util.UUID
 //===========================================================//
 
 class TraderService(
-    private val portfolio: IPortfolioService
+    private val portfolioService: IPortfolioService
 ) : ITraderService {
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
     @Transactional
-    suspend fun createTrader(portfolioId: UUID, capital: Double): Trader {
+    suspend fun createTrader(portfolioId: UUID, securityIdentifier: SecurityIdentifier, ): Trader {
         TODO("Implement later")
     }
 
@@ -58,6 +58,23 @@ class TraderService(
     @Transactional
     suspend fun executeTrader(userId: UUID, portfolioId: UUID, traderId: UUID): TradingOrder {
         TODO("Implement later")
+    }
+
+    //===========================================================//
+
+    private fun parseAlgorithmType(value: String): TradingAlgorithm.Type {
+        return when (value.trim().uppercase()) {
+            "TACPP46" -> TradingAlgorithm.Type.TACPP46
+            "ALGDES2" -> TradingAlgorithm.Type.ALGDES2
+            "ALGDES3" -> TradingAlgorithm.Type.ALGDES3
+            "ALGDES31" -> TradingAlgorithm.Type.ALGDES31
+            "ALGDES4" -> TradingAlgorithm.Type.ALGDES4
+            "BUYANDHOLD" -> TradingAlgorithm.Type.BUYANDHOLD
+
+            else -> throw IllegalArgumentException(
+                "Unsupported algorithm type: $value"
+            )
+        }
     }
 }
 
