@@ -5,7 +5,6 @@ import domain.User
 import domain.interfaces.IUserRepository
 import exception.api.AuthenticationException
 import exception.api.UserAlreadyExistsException
-import exception.api.UserNotFoundException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

@@ -51,6 +51,7 @@ sealed interface ITradingAlgorithm {
                 "ALGDES31" -> context.deserialize(jsonObject, ALGDES31::class.java)
                 "ALGDES4" -> context.deserialize(jsonObject, ALGDES4::class.java)
                 "BUYANDHOLD" -> context.deserialize(jsonObject, BUYANDHOLD::class.java)
+                "TACPP462" -> context.deserialize(jsonObject, TACPP462::class.java)
                 else -> throw JsonParseException("Unknown algorithm type tag: $typeTag")
             }
         }
@@ -67,6 +68,7 @@ sealed interface ITradingAlgorithm {
                 is ALGDES31 -> "ALGDES31"
                 is ALGDES4 -> "ALGDES4"
                 is BUYANDHOLD -> "BUYANDHOLD"
+                is TACPP462 -> "TACPP462"
             }
         }
     }

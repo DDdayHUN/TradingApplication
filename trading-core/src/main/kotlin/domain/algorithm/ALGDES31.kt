@@ -2,6 +2,7 @@ package domain.algorithm
 
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
+import domain.utils.Math.stdDev
 import java.util.ArrayDeque
 import java.util.Deque
 
@@ -24,7 +25,7 @@ internal class ALGDES31 : ITradingAlgorithm {
         val history = m_MovingWindow.toList()
 
         val mean = history.average()
-        val std = domain.utils.Math.stdDev(history)
+        val std = history.stdDev()
         val risk = Math.clamp(std * 100.0, 0.1, 0.3)
 
         val lowerBand = mean - std

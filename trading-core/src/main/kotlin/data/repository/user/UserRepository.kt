@@ -14,7 +14,7 @@ class UserRepository(
 
     override suspend fun getAll(): Result<List<User>> {
         return runCatching {
-            repository.findAll().map{user ->
+            repository.findAll().map{ user ->
                 user.toDomain()
             }
         }

@@ -13,7 +13,7 @@ import java.util.Deque
  */
 //===========================================================//
 
-internal class TACPP46: ITradingAlgorithm {
+internal class TACPP462: ITradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -42,18 +42,26 @@ internal class TACPP46: ITradingAlgorithm {
 
         val lowerBand = ma - 4.0 * std * ma
 
+        val maxAllocation = 1.0 // Never use more than x% of available capital.
+        val targetStd = 0.03 // x% volatility.
+
+        val rsiScore = ((50.0 - rsi) / 50.0).coerceIn(0.0, 1.0)
+        // RSI 50 -> 0
+        // RSI 30 -> 0.4
+        // RSI 10 -> 0.8
+
+        val volatilityScore = (1.0 - std / targetStd).coerceIn(0.0, 1.0)
+        // Low std -> close to 1
+        // High std -> close to 0
+
+        val confidence = maxAllocation * rsiScore * volatilityScore
+
         // Buy
         if (rsi <= 30.0 && currentPrice <= lowerBand) {
             if (m_LastInputArr.isEmpty()) {
                 m_LastInputArr.add(currentPrice)
-            } else if (ArrayList(m_LastInputArr).average() <= currentPrice) {
-                val confidence = Math.clamp(
-                    ((1.0 - std * 100.0) + (100.0 - rsi) / 100.0) / 2.0,
-                    0.0,
-                    0.3
-                ) // changing confidence has a massive effect on returns
+            } else if (m_LastInputArr.average() <= currentPrice) {
                 val amount = (allocatedCapital * confidence / currentPrice).toInt()
-
                 if (amount != 0) buy = TradingAlgorithm.Output.Buy(amount)
             } else {
                 m_LastInputArr.add(currentPrice)
@@ -63,8 +71,6 @@ internal class TACPP46: ITradingAlgorithm {
             m_LastInputArr.clear()
         }
 
-        val risk: Double = Math.clamp(std * 100.0, 0.05, 0.2) // to put it into percentages
-
         // Sell
         val toBeSold: MutableList<Pair<SecurityHolding, Int>> = ArrayList()
 
@@ -73,7 +79,7 @@ internal class TACPP46: ITradingAlgorithm {
             var isMarked = m_MarkedForSelling.contains(item)
 
             // Activate trailing if gained > risk
-            if (!isMarked && currentPrice > item.entryPrice * (1.0 + risk)) {
+            if (!isMarked && currentPrice > item.entryPrice * (1.0 + volatilityScore)) {
                 m_MarkedForSelling.add(item)
                 m_TrailingHigh[item] = currentPrice
                 isMarked = true
@@ -89,7 +95,7 @@ internal class TACPP46: ITradingAlgorithm {
                 }
 
                 // Sell if price falls more than risk from peak
-                if (currentPrice < high * (1.0 - risk)) {
+                if (currentPrice < high * (1.0 + volatilityScore)) {
                     toBeSold.add(Pair(item, item.amount))
 
                     // cleanup
@@ -101,7 +107,7 @@ internal class TACPP46: ITradingAlgorithm {
 
         // Stop-loss
         for (item in holdings) {
-            if (currentPrice < item.entryPrice * (1.0 - risk * 2.0)) {
+            if (currentPrice < item.entryPrice * 1.2) {
                 toBeSold.add(Pair(item, item.amount))
 
                 // cleanup
