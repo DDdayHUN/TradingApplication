@@ -3,10 +3,7 @@ package data.repository.user
 import data.repository.portfolio.PortfolioEntity
 import domain.User
 import jakarta.persistence.CascadeType
-import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
@@ -22,14 +19,14 @@ class UserEntity (
     lateinit var portfolio: PortfolioEntity
 }
 
-fun User.toEntity(user: User): UserEntity {
+fun User.toEntity(): UserEntity {
     return UserEntity(
-        id = user.id
+        id = this.id
     )
 }
 
 fun UserEntity.toDomain(): User {
     return User(
-        id = id,
+        id = this.id,
     )
 }

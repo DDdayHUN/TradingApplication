@@ -2,6 +2,7 @@ package domain.algorithm
 
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
+import domain.utils.Math.stdDev
 import java.util.ArrayDeque
 import java.util.Deque
 
@@ -21,14 +22,14 @@ internal class ALGDES2 : ITradingAlgorithm {
     //===========================================================//
     // Public Method(es)
 
-    override fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): TradingAlgorithm.Output {
+    override fun run(holdings: Set<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): TradingAlgorithm.Output {
         var buy: TradingAlgorithm.Output.Buy? = null
         var sell: TradingAlgorithm.Output.Sell? = null
 
         val history = m_MovingWindow.toList()
 
         val mean = history.average()
-        val std = domain.utils.Math.stdDev(history)
+        val std = history.stdDev()
         val risk = Math.clamp(std * 100.0, 0.05, 0.2)
 
         val lowerBand = mean - std * 2

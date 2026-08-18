@@ -116,7 +116,9 @@ class TradingAlgorithmEvaluator {
         val cagrs = list.map { it.cagr }
         val sharpes = list.map { it.sharpeRatio }
         val drawdowns = list.map { it.maxDrawdown }
-        val calmar = list.map { it.cagr / it.maxDrawdown }
+        val calmar = list
+            .filter { it.maxDrawdown != 0.0 }
+            .map { it.cagr / it.maxDrawdown }
 
         return EvaluationStatistics(
             tradingAlgorithmType = m_TradingAlgorithmType,

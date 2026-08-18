@@ -26,7 +26,7 @@ class Trader {
     val securityIdentifier: SecurityIdentifier
 
     val capital: Double get() = m_Capital
-    val holdings: List<SecurityHolding> get() = m_Holdings.toList()
+    val holdings: Set<SecurityHolding> get() = m_Holdings.toSet()
     var algorithm: ITradingAlgorithm
 
     //===========================================================//
@@ -34,7 +34,7 @@ class Trader {
     // Private Field(s)
 
     private var m_Capital: Double
-    private val m_Holdings: MutableList<SecurityHolding>
+    private val m_Holdings: MutableSet<SecurityHolding>
 
     //===========================================================//
     //===========================================================//
@@ -105,8 +105,8 @@ class Trader {
 
         m_Holdings.add(
             SecurityHolding(
-                price,
-                amount,
+                entryPrice = price,
+                amount = amount,
             )
         )
     }
@@ -122,6 +122,8 @@ class Trader {
         if (amount != holding.amount) {
             m_Holdings.add(
                 SecurityHolding(
+                    holding.id,
+                    holding.timestamp,
                     holding.entryPrice,
                     holding.amount - amount
                 )
@@ -134,12 +136,13 @@ class Trader {
     // Constructor(s)
 
     /**
+     * @param id the UUID of the Trader.
      * @param securityIdentifier the identifier of the traded security.
      * @param holdings the currently held securities with the given identifier.
      * @param allocatedCapital the capital currently allocated to the trader.
      * @param algorithm the algorithm instance with which we create trades.
      */
-    constructor(id: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableList<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm) {
+    constructor(id: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableSet<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm) {
         this.id = id
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings

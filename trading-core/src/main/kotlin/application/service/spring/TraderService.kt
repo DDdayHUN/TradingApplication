@@ -1,22 +1,84 @@
-package application.service
+package application.service.spring
 
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
 import api.dto.toResponse
+import application.service.IPortfolioService
+import application.service.ITraderService
 import data.network.MarketDataProvider
-import exception.api.TraderNotFoundException
 import domain.Portfolio
 import domain.algorithm.TradingAlgorithm
-import domain.interfaces.IPortfolioRepository
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import domain.trader.TradingOrder
 import exception.api.PortfolioNotFoundException
-import org.springframework.stereotype.Service
+import exception.api.TraderNotFoundException
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
+//===========================================================//
+//===========================================================//
+
+class TraderService(
+    private val portfolioService: IPortfolioService
+) : ITraderService {
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
+
+    @Transactional
+    suspend fun createTrader(portfolioId: UUID, securityIdentifier: SecurityIdentifier, ): Trader {
+        TODO("Implement later")
+    }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    suspend fun getAllByPortfolioId(portfolioId: UUID): List<TraderResponse> {
+        TODO("Implement later")
+    }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    suspend fun getById(userId: UUID, portfolioId: UUID, traderId: UUID): TraderResponse {
+        TODO("Implement later")
+    }
+
+    //===========================================================//
+
+    @Transactional
+    suspend fun changeAlgorithm(traderId: UUID, userId: UUID,portfolioId: UUID, request: ChangeTraderAlgorithmRequest): TraderResponse {
+        TODO("Implement later")
+    }
+
+    //===========================================================//
+
+    @Transactional
+    suspend fun executeTrader(userId: UUID, portfolioId: UUID, traderId: UUID): TradingOrder {
+        TODO("Implement later")
+    }
+
+    //===========================================================//
+
+    private fun parseAlgorithmType(value: String): TradingAlgorithm.Type {
+        return when (value.trim().uppercase()) {
+            "TACPP46" -> TradingAlgorithm.Type.TACPP46
+            "ALGDES2" -> TradingAlgorithm.Type.ALGDES2
+            "ALGDES3" -> TradingAlgorithm.Type.ALGDES3
+            "ALGDES31" -> TradingAlgorithm.Type.ALGDES31
+            "ALGDES4" -> TradingAlgorithm.Type.ALGDES4
+            "BUYANDHOLD" -> TradingAlgorithm.Type.BUYANDHOLD
+
+            else -> throw IllegalArgumentException(
+                "Unsupported algorithm type: $value"
+            )
+        }
+    }
+}
+
+/*
 @Service
 class TraderService {
 
@@ -188,3 +250,4 @@ class TraderService {
     }
 
 }
+ */

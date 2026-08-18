@@ -9,8 +9,6 @@ import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
@@ -40,10 +38,6 @@ class PortfolioEntity(
         trader.portfolio = this
         if(!traders.contains(trader)) traders.add(trader)
     }
-
-    fun removeTrader(trader: TraderEntity){
-        traders.remove(trader)
-    }
 }
 
 fun Portfolio.toEntity(user: UserEntity): PortfolioEntity {
@@ -53,7 +47,7 @@ fun Portfolio.toEntity(user: UserEntity): PortfolioEntity {
         capital = capital
     )
 
-    traders.forEach {trader ->
+    traders.forEach { trader ->
         entity.addTrader(
             trader.toEntity(entity)
         )
@@ -65,12 +59,10 @@ fun Portfolio.toEntity(user: UserEntity): PortfolioEntity {
 fun PortfolioEntity.toDomain(): Portfolio {
     return Portfolio(
         id = id,
-        userId = user.id,
         traders = traders
             .map { trader ->
                 trader.toDomain()
-            }
-            .toMutableList(),
+            }.toMutableSet(),
         capital = capital
     )
 }

@@ -105,7 +105,7 @@ fun Trader.toEntity(portfolio: PortfolioEntity, gson: Gson = Gson()): TraderEnti
         )
     )
 
-    holdings.forEach {holding ->
+    holdings.forEach { holding ->
         entity.addHolding(
             holding.toEntity(entity)
         )
@@ -124,9 +124,9 @@ fun TraderEntity.toDomain(gson: Gson = Gson()): Trader {
         id = id,
         securityIdentifier = securityIdentifier.toDomain(),
         holdings = holdings
-            .map {holding ->
+            .map { holding ->
                 holding.toDomain()
-            }.toMutableList(),
+            }.toMutableSet(),
         allocatedCapital = capital,
         algorithm = algorithm
     )

@@ -11,13 +11,13 @@ class User {
     // Public Field(s)
 
     val id: UUID
-    val portfolios: List<Portfolio> get() = m_Portfolios.toList()
+    val portfolios: Set<Portfolio> get() = m_Portfolios.toSet()
 
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private val m_Portfolios: MutableList<Portfolio>
+    private val m_Portfolios: MutableSet<Portfolio>
 
     //===========================================================//
     //===========================================================//
@@ -29,18 +29,15 @@ class User {
 
     //===========================================================//
 
-    /**
-     * @return `true` if the portfolio has been successfully removed; `false` if it was not contained in the collection.
-     */
-    fun removePortfolio(portfolio: Portfolio): Boolean {
-        return m_Portfolios.remove(portfolio)
+    fun removePortfolio(portfolio: Portfolio) {
+        m_Portfolios.remove(portfolio)
     }
 
     //===========================================================//
     //===========================================================//
     // Constructor(s)
 
-    constructor(id: UUID = UUID.randomUUID(), portfolios: MutableList<Portfolio> = ArrayList()) {
+    constructor(id: UUID = UUID.randomUUID(), portfolios: MutableSet<Portfolio> = HashSet()) {
         this.id = id
         this.m_Portfolios = portfolios
     }

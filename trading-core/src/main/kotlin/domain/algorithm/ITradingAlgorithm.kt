@@ -20,12 +20,12 @@ sealed interface ITradingAlgorithm {
     /**
      * Executes the algorithm based on current holdings and market conditions.
      *
-     * @param holdings the list of currently owned market.
+     * @param holdings the set of currently owned market assets.
      * @param allocatedCapital the amount of capital allocated for trading.
      * @param currentPrice the current market price of the asset.
      * @return contains the decision/results.
      */
-    fun run(holdings: List<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output
+    fun run(holdings: Set<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output
 
     //===========================================================//
     //===========================================================//
@@ -51,6 +51,7 @@ sealed interface ITradingAlgorithm {
                 "ALGDES31" -> context.deserialize(jsonObject, ALGDES31::class.java)
                 "ALGDES4" -> context.deserialize(jsonObject, ALGDES4::class.java)
                 "BUYANDHOLD" -> context.deserialize(jsonObject, BUYANDHOLD::class.java)
+                "TACPP462" -> context.deserialize(jsonObject, TACPP462::class.java)
                 else -> throw JsonParseException("Unknown algorithm type tag: $typeTag")
             }
         }
@@ -67,6 +68,7 @@ sealed interface ITradingAlgorithm {
                 is ALGDES31 -> "ALGDES31"
                 is ALGDES4 -> "ALGDES4"
                 is BUYANDHOLD -> "BUYANDHOLD"
+                is TACPP462 -> "TACPP462"
             }
         }
     }

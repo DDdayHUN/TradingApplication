@@ -92,6 +92,11 @@ object TradingAlgorithm {
             is Type.BUYANDHOLD -> {
                 BUYANDHOLD()
             }
+            is Type.TACPP462 -> {
+                val init = retHistory.subList(0, type.initSize).toList()
+                retHistory.subList(0, type.initSize).clear()
+                TACPP462(init)
+            }
         }
         return Pair(retHistory, retTradingAlgorithm)
     }
@@ -128,6 +133,9 @@ object TradingAlgorithm {
             is Type.BUYANDHOLD -> {
                 BUYANDHOLD()
             }
+            is Type.TACPP462 -> {
+                TACPP462(history.takeLast(type.initSize))
+            }
         }
     }
 
@@ -142,6 +150,7 @@ object TradingAlgorithm {
         data object ALGDES31 : Type { override val initSize = 20 }
         data object ALGDES4 : Type { override val initSize = 7 }
         data object BUYANDHOLD : Type { override val initSize = 0 }
+        data object TACPP462 : Type { override val initSize = 42 }
 
         val initSize: Int
 
@@ -152,7 +161,8 @@ object TradingAlgorithm {
                 ALGDES3,
                 ALGDES31,
                 ALGDES4,
-                BUYANDHOLD
+                BUYANDHOLD,
+                TACPP462
             )
         }
     }

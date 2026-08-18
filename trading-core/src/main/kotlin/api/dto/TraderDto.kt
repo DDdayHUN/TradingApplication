@@ -4,15 +4,22 @@ import domain.algorithm.ITradingAlgorithm
 import domain.trader.Trader
 import java.util.UUID
 
+//===========================================================//
+//===========================================================//
+
 data class ChangeTraderAlgorithmRequest(
     val algorithmType: String
 )
+
+//===========================================================//
 
 data class CreateTraderRequest(
     val securityIdentifier: SecurityIdentifierRequest,
     val capital: Double,
     val algorithmType: String
 )
+
+//===========================================================//
 
 data class TraderResponse(
     val id: UUID,
@@ -21,6 +28,8 @@ data class TraderResponse(
     val holdings: List<SecurityHoldingResponse>,
     val algorithmType: String
 )
+
+//===========================================================//
 
 fun Trader.toResponse(): TraderResponse {
     return TraderResponse(

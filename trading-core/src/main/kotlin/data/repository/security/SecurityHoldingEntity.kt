@@ -9,6 +9,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.Table
 import jakarta.persistence.ManyToOne
+import java.time.Instant
 import java.util.UUID
 
 @Entity
@@ -17,6 +18,9 @@ class SecurityHoldingEntity(
     @Id
     @Column(name = "id", nullable = false, updatable = false)
     var id: UUID,
+
+    @Column(name = "time_stamp", nullable = false, updatable = false)
+    var timestamp: Instant,
 
     @Column(name = "entry_price", nullable = false)
     var entryPrice: Double,
@@ -32,6 +36,7 @@ class SecurityHoldingEntity(
 fun SecurityHolding.toEntity(trader: TraderEntity): SecurityHoldingEntity {
     return SecurityHoldingEntity(
         id = id,
+        timestamp = timestamp,
         entryPrice = entryPrice,
         amount = amount,
         trader = trader
@@ -41,6 +46,7 @@ fun SecurityHolding.toEntity(trader: TraderEntity): SecurityHoldingEntity {
 fun SecurityHoldingEntity.toDomain(): SecurityHolding {
     return SecurityHolding(
         id = id,
+        timestamp = timestamp,
         entryPrice = entryPrice,
         amount = amount
     )

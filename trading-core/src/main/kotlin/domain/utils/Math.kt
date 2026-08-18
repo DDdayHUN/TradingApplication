@@ -19,49 +19,47 @@ object Math {
     // Public Method(es)
     /**
      * Computes the standard deviation of returns derived from a price series.
+     * The list must contain prices in chronological order.
      * 
      * This method converts each consecutive price pair into a simple return.
      * It then computes the sample standard deviation of those returns.
-     * 
-     * @param list A list of prices in chronological order.
+     *
      * @return The standard deviation of returns.
      * @throws IllegalArgumentException If fewer than two prices are provided.
      */
-    fun stdDev(list: List<Double>): Double {
-        require(list.size >= 2) { "Size" }
+    fun List<Double>.stdDev(): Double {
+        require(this.size >= 2) { "Size" }
 
         // Compute returns
         val returnsList: MutableList<Double> = ArrayList()
-        for (i in 1..< list.size) {
-            val prev: Double = list[i - 1]
-            val curr: Double = list[i]
+        for (i in 1..< this.size) {
+            val prev: Double = this[i - 1]
+            val curr: Double = this[i]
             val r = (curr - prev) / prev
             returnsList.add(r)
         }
 
-        return sqrt(variance(returnsList))
+        return sqrt(returnsList.variance())
     }
 
     /*===========================================================*/
     /**
      * Computes the sample variance of a list of numeric values.
      * 
-     * 
      * This method uses the unbiased estimator, dividing by (n - 1). The list
      * must contain at least two elements.
-     * 
-     * @param list A list of numeric values.
+     *
      * @return The sample variance of the list.
      */
-    fun variance(list: List<Double>): Double {
-        require(list.size >= 2) { "Size" }
+    fun List<Double>.variance(): Double {
+        require(this.size >= 2) { "Size" }
 
-        val mean = list.average()
+        val mean = this.average()
 
         var variance = 0.0
-        for (item in list) variance += (item - mean).pow(2)
+        for (item in this) variance += (item - mean).pow(2)
 
-        return variance / (list.size - 1)
+        return variance / (this.size - 1)
     }
 
     /*===========================================================*/ /*
@@ -73,25 +71,24 @@ object Math {
      */
     /**
      * Computes the Relative Strength Index (RSI) for a sequence of prices.
-     * 
+     * The list must contain prices in chronological order.
      * 
      * It uses simple averages of gains and losses `(not Wilder's smoothing)`.
      * Consecutive increases contribute to the gain list, while decreases or equal
      * values contribute to the loss list.
-     * 
-     * @param list A list of prices in chronological order.
+     *
      * @return The RSI value in the range [0, 100].
      */
-    fun rsi(list: List<Double>): Double {
-        require(list.size >= 2) { "RSI: size < 2" }
+    fun List<Double>.rsi(): Double {
+        require(this.size >= 2) { "Size" }
 
         val gaines: MutableList<Double> = ArrayList()
         val losses: MutableList<Double> = ArrayList()
 
         // Collect gains and losses
-        for (i in 1..<list.size) {
-            val prev = list[i - 1]
-            val curr = list[i]
+        for (i in 1..<this.size) {
+            val prev = this[i - 1]
+            val curr = this[i]
 
             if (curr > prev) gaines.add(curr - prev)
             else losses.add(prev - curr)
@@ -135,7 +132,7 @@ object Math {
         }
 
         val meanReturn = returns.average() // average of daily returns
-        val stdDev = stdDev(capitalHistory) // standard deviation of daily returns
+        val stdDev = capitalHistory.stdDev() // standard deviation of daily returns TODO: Ehelyett nem retruns.stdDev() kéne???
 
         if (stdDev == 0.0) return Double.NaN
 
