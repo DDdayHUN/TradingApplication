@@ -9,5 +9,5 @@ interface IPortfolioJpaRepository : JpaRepository<PortfolioEntity, UUID>{
     fun findAllByUserId(userId : UUID) : List<PortfolioEntity>
 
     @EntityGraph(attributePaths = ["traders", "traders.holdings"])
-    fun findPortfolioWithTradersById(id: UUID): PortfolioEntity?
+    fun findByUserIdAndId(userId: UUID, id: UUID): PortfolioEntity?
 }

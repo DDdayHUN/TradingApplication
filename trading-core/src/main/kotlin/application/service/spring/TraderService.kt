@@ -3,40 +3,62 @@ package application.service.spring
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
-import api.dto.toResponse
 import application.service.IPortfolioService
 import application.service.ITraderService
-import data.network.MarketDataProvider
-import domain.Portfolio
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import domain.trader.TradingOrder
-import exception.api.PortfolioNotFoundException
-import exception.api.TraderNotFoundException
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 //===========================================================//
 //===========================================================//
 
+@Service
 class TraderService(
-    private val portfolioService: IPortfolioService
+    private val portfolioService: IPortfolioService,
+    private val session: AuthenticationService
 ) : ITraderService {
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
     @Transactional
-    suspend fun createTrader(portfolioId: UUID, securityIdentifier: SecurityIdentifier, ): Trader {
-        TODO("Implement later")
+    override suspend fun createTrader(portfolioId: UUID, request: CreateTraderRequest): Trader {
+        val portfolio = portfolioService.getPortfolio(portfolioId)
+        val securityIdentifier = SecurityIdentifier(
+            isin = request.securityIdentifier.isin,
+            tickerSymbol = request.securityIdentifier.tickerSymbol,
+            currency = request.securityIdentifier.currency
+        )
+        val algorithmType = parseAlgorithmType(request.algorithmType)
+        val algorithm = TradingAlgorithm.create(
+            type = algorithmType,
+            securityIdentifier = securityIdentifier
+        )
+
+        val trader = Trader(
+            securityIdentifier = securityIdentifier,
+            holdings = mutableSetOf(),
+            allocatedCapital = request.capital,
+            algorithm = algorithm
+        )
+
+        portfolio.changeCapital(-request.capital)
+        portfolio.addTrader(trader)
+
+        portfolioService.save(portfolio)
+
+        return trader
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    suspend fun getAllByPortfolioId(portfolioId: UUID): List<TraderResponse> {
-        TODO("Implement later")
+    override suspend fun getAllByPortfolioId(portfolioId: UUID): Set<Trader> {
+       return portfolioService.getPortfolio(portfolioId).traders
     }
 
     //===========================================================//
@@ -65,6 +87,7 @@ class TraderService(
     private fun parseAlgorithmType(value: String): TradingAlgorithm.Type {
         return when (value.trim().uppercase()) {
             "TACPP46" -> TradingAlgorithm.Type.TACPP46
+            "TACPP462" -> TradingAlgorithm.Type.TACPP462
             "ALGDES2" -> TradingAlgorithm.Type.ALGDES2
             "ALGDES3" -> TradingAlgorithm.Type.ALGDES3
             "ALGDES31" -> TradingAlgorithm.Type.ALGDES31
