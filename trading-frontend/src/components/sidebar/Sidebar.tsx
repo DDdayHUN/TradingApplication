@@ -17,7 +17,7 @@ export default function Sidebar(): ReactElement {
     }, [])
     return (
         <>
-            <div className = "w-20 md:w-25 lg:w-40 min-h-full bg-gray-800 flex items-start border-r-2 border-gray-200 flex-col pl-1">
+            <div className = "w-20 md:w-25 lg:w-40 min-h-full bg-gray-800 flex items-start border-r-2 border-gray-600 flex-col pl-1">
                 <NavLink className = "flex flex-row pt-2" to="/">
                     <img
                         src = {logo}
