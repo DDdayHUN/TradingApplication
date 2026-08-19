@@ -1,6 +1,6 @@
 import {type ReactElement, useEffect, useState} from "react";
 import NavigationElement from "../elements/basic/NavigationElement.tsx";
-import logo from "../../assets/logo.png"
+import logo from "../../../public/logo.png"
 import homeIcon from "../../assets/icons/home.svg"
 import portfolioIcon from "../../assets/icons/portfolio.svg"
 import terminalIcon from "../../assets/icons/terminal.svg"
