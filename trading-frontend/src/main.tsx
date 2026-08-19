@@ -22,7 +22,7 @@ async function startApplication(): Promise<void>{
             </StrictMode>,
         )
     } catch(error){
-        console.error("keycloak init failes",error)
+        console.error("keycloak init failed",error)
     }
 }
 
