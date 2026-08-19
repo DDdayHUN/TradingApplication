@@ -4,6 +4,7 @@ import application.service.IAuthenticationService
 import application.service.IPortfolioService
 import domain.Portfolio
 import domain.interfaces.IPortfolioRepository
+import exception.api.PortfolioNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -19,6 +20,12 @@ class PortfolioService(
     //===========================================================//
     //===========================================================//
     // Public Method(s)
+
+    @Transactional
+    override suspend fun save(portfolio: Portfolio): Portfolio {
+        val user = session.currentUser()
+        return portfolioRepository.save(user, portfolio).getOrThrow()
+    }
 
     @Transactional
     override suspend fun createPortfolio(): Portfolio {
@@ -39,7 +46,8 @@ class PortfolioService(
 
     @Transactional(readOnly = true)
     override suspend fun getPortfolio(id: UUID): Portfolio {
-        TODO("Not yet implemented")
+        val user = session.currentUser()
+        return  portfolioRepository.getByIdForUser(user, id).getOrThrow()
     }
 
     //===========================================================//

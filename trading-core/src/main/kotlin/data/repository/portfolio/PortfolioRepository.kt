@@ -22,9 +22,9 @@ class PortfolioRepository(
        }
     }
 
-    override suspend fun getById(id: UUID): Result<Portfolio> {
+    override suspend fun getByIdForUser(user: User, id: UUID): Result<Portfolio> {
         return runCatching {
-            val entity = portfolioRepository.findPortfolioWithTradersById(id)
+            val entity = portfolioRepository.findByUserIdAndId(user.id, id)
                 ?: throw PortfolioNotFoundException(id)
 
             entity.toDomain()

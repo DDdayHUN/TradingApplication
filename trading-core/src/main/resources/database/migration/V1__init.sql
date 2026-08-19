@@ -4,7 +4,7 @@ CREATE TABLE app_user(
 
 CREATE TABLE app_portfolio(
     id UUID PRIMARY KEY,
-    user_id UUID NOT NULL UNIQUE,
+    user_id UUID NOT NULL,
     capital DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT fk_app_portfolio_user

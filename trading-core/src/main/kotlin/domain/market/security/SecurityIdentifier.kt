@@ -1,5 +1,7 @@
 package domain.market.security
 
+import api.dto.CreateTraderRequest
+
 //===========================================================//
 /**
  * Represents a financial instrument identifier consisting of an ISIN,
