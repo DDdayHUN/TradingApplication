@@ -20,15 +20,15 @@ export default function TraderPage(): ReactElement {
 
     }, [portfolioId]);
 
-    if(!portfolio){
-        return (
-            <div>Loading...</div>
-        );
-    }
-
     return(
         <div className = "bg-gray-800 min-w-full min-h-full pt-10 pl-10">
-            <TraderList portfolio={portfolio} />
+            {!portfolio ? (
+                <>
+
+                </>
+            ): (
+                <TraderList portfolio={portfolio} />
+            )}
         </div>
     )
 }

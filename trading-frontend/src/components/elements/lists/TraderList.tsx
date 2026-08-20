@@ -13,6 +13,7 @@ export default function TraderList({portfolio}: TraderListProps): ReactElement {
         <ListLayout
           elements={portfolio.traders}
           RowComponent={TraderElement}
+          flexDirection={"flex-col"}
         />
     )
 }

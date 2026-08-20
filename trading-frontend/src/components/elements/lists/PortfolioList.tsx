@@ -20,6 +20,7 @@ export default function PortfolioList(): ReactElement {
         <ListLayout
             elements={portfolios}
             RowComponent={PortfolioElement}
+            flexDirection={"flex-row"}
         />
     )
 }
