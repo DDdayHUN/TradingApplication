@@ -1,5 +1,6 @@
 CREATE TABLE app_user(
-    id UUID PRIMARY KEY
+    id UUID PRIMARY KEY,
+    user_name VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE app_portfolio(
@@ -59,9 +60,10 @@ CREATE TABLE app_security_holding(
 CREATE INDEX idx_holdings_trader_id ON app_security_holding (trader_id);
 
 -- DEVELOPMENT TEST --
-INSERT INTO app_user (id)
+INSERT INTO app_user (id, user_name)
 VALUES (
-    'a7d78e51-6369-4d78-bf96-024742a52954'
+    'a7d78e51-6369-4d78-bf96-024742a52954',
+    'mark'
 );
 
 INSERT INTO app_portfolio (id, user_id, capital)

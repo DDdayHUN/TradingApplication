@@ -6,6 +6,7 @@ import portfolioIcon from "../../assets/icons/portfolio.svg"
 import terminalIcon from "../../assets/icons/terminal.svg"
 import {NavLink} from "react-router";
 import {getCurrentUser, type UserResponse} from "../../api/userApi.ts";
+import keycloak from "../../auth/keycloak.ts";
 
 export default function Sidebar(): ReactElement {
     const [user, setUser] = useState<UserResponse | null>(null);
@@ -35,8 +36,18 @@ export default function Sidebar(): ReactElement {
                     <NavigationElement text = "Backtest" icon = {terminalIcon} iconClassName= "h-5 object-contain" to="/backtest" />
                 </div>
 
-                <div>
-                    user: {user?.id}
+                <div className ="flex flex-wrap justify-around w-full pb-5 items-center">
+                    <span className="flex text-white">{user?.userName}</span>
+                    <span className="flex">
+                        <button
+                            type={"button"}
+                            onClick={()=> keycloak.logout()}
+                            className="hover:cursor-pointer bg-red-700 text-sm rounded-3xl p-2
+                            text-white"
+                        >
+                            Logout
+                        </button>
+                    </span>
                 </div>
             </div>
         </>

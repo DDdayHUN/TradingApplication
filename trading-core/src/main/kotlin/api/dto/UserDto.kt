@@ -7,13 +7,15 @@ import java.util.UUID
 //===========================================================//
 
 data class UserResponse (
-    val id: UUID
+    val id: UUID,
+    val userName: String
 )
 
 //===========================================================//
 
 fun User.toResponse(): UserResponse {
     return UserResponse(
-        id = id
+        id = id,
+        userName = userName
     )
 }

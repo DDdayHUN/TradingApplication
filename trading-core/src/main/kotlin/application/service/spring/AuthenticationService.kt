@@ -6,6 +6,7 @@ import domain.interfaces.IUserRepository
 import exception.api.AuthenticationException
 import exception.api.UserAlreadyExistsException
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -48,6 +49,13 @@ class AuthenticationService(
                 throw AuthenticationException("Invalid UUID", e)
             }
 
+
+        val jwtAuth = auth as? JwtAuthenticationToken
+            ?: throw AuthenticationException("Invalid JWT token")
+
+        val username = jwtAuth.token.getClaimAsString("preferred_username")
+            ?: throw AuthenticationException("Username missing from token")
+
         val query = userRepository.getById(uuid)
 
         if(query.isSuccess) {
@@ -56,6 +64,7 @@ class AuthenticationService(
         else {
             val user = User(
                 id = uuid,
+                userName = username
             )
             return userRepository.save(user).getOrThrow()
         }
