@@ -7,6 +7,7 @@ import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.trader.Trader
+import infrastructure.broker.IbkrClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -22,8 +23,9 @@ suspend fun main() {
     val c_RUN_EVAL_ON_ONE_ALGORITHM = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
 
-    val c_RUN_TRADER_TEST = true
+    val c_RUN_TRADER_TEST = false
     val c_CLEAR_TRADER_TEST_FOLDER = false
+    val c_RUN_IBKR_TEST = true
 
     //===========================================================//
     //===========================================================//
@@ -160,5 +162,17 @@ suspend fun main() {
                 TraderTester(trader).runTest()
             }
         }
+    }
+
+    //===========================================================//
+
+    if(c_RUN_IBKR_TEST) {
+        val ibkrClient = IbkrClient()
+
+        ibkrClient.connect()
+
+        Thread.sleep(10_000)
+
+        ibkrClient.disconnect()
     }
 }

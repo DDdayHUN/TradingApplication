@@ -5,6 +5,10 @@ spring:
         jwt:
           issuer-uri: http://localhost:8081/realms/trading
 
+  logging:
+    level:
+      root: INFO
+
 
   flyway:
     locations: classpath:database/migration
