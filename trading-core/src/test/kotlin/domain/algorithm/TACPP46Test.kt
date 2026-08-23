@@ -140,7 +140,7 @@ internal class TACPP46Test {
             val algorithm = createFlatAlgorithm()
 
             val output = algorithm.run(
-                holdings = emptyList(),
+                holdings = emptySet(),
                 allocatedCapital = DEFAULT_CAPITAL,
                 currentPrice = DEFAULT_PRICE
             )
@@ -153,7 +153,7 @@ internal class TACPP46Test {
             val algorithm = createFlatAlgorithm()
 
             val output = algorithm.run(
-                holdings = emptyList(),
+                holdings = emptySet(),
                 allocatedCapital = DEFAULT_CAPITAL,
                 currentPrice = DEFAULT_PRICE
             )
@@ -167,7 +167,7 @@ internal class TACPP46Test {
             val holding = defaultHolding()
 
             val output = algorithm.run(
-                holdings = listOf(holding),
+                holdings = setOf(holding),
                 allocatedCapital = DEFAULT_CAPITAL,
                 currentPrice = holding.entryPrice
             )
@@ -189,9 +189,9 @@ internal class TACPP46Test {
                 amount = 3
             )
 
-            val holdings = mutableListOf(firstHolding, secondHolding)
+            val holdings = mutableSetOf(firstHolding, secondHolding)
 
-            val holdingsBeforeRun = holdings.toList()
+            val holdingsBeforeRun = holdings.toSet()
 
             algorithm.run(
                 holdings = holdings,
@@ -212,7 +212,7 @@ internal class TACPP46Test {
 
             repeat(10) {
                 val output = algorithm.run(
-                    holdings = listOf(holding),
+                    holdings = setOf(holding),
                     allocatedCapital = DEFAULT_CAPITAL,
                     currentPrice = DEFAULT_PRICE
                 )
@@ -229,19 +229,19 @@ internal class TACPP46Test {
             val holding = defaultHolding()
 
             firstAlgorithm.run(
-                holdings = listOf(holding),
+                holdings = setOf(holding),
                 allocatedCapital = DEFAULT_CAPITAL,
                 currentPrice = 150.0
             )
 
             val firstOutput = firstAlgorithm.run(
-                holdings = listOf(holding),
+                holdings = setOf(holding),
                 allocatedCapital = DEFAULT_CAPITAL,
                 currentPrice = 100.0
             )
 
             val secondOutput = secondAlgorithm.run(
-                holdings = listOf(holding),
+                holdings = setOf(holding),
                 allocatedCapital = DEFAULT_CAPITAL,
                 currentPrice = 100.0
             )
