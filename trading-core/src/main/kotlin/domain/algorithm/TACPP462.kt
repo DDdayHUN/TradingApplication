@@ -36,9 +36,9 @@ internal class TACPP462: ITradingAlgorithm {
         var sell: TradingAlgorithm.Output.Sell? = null
 
         val ema: List<Double> = ArrayList(m_EmaHistory)
-        val std: Double = ema.stdDev()
-        val rsi: Double = ema.rsi()
-        val ma: Double = ema.average()
+        val std = ema.stdDev()
+        val rsi = ema.rsi()
+        val ma = ema.average()
 
         val lowerBand = ma - 4.0 * std * ma
 
@@ -57,7 +57,7 @@ internal class TACPP462: ITradingAlgorithm {
         val confidence = maxAllocation * rsiScore * volatilityScore
 
         // Buy
-        if (rsi <= 30.0 && currentPrice <= lowerBand) {
+        if (confidence >= 0.0 && currentPrice <= lowerBand) {
             if (m_LastInputArr.isEmpty()) {
                 m_LastInputArr.add(currentPrice)
             } else if (m_LastInputArr.average() <= currentPrice) {
@@ -74,7 +74,6 @@ internal class TACPP462: ITradingAlgorithm {
         // Sell
         val toBeSold: MutableList<Pair<SecurityHolding, Int>> = ArrayList()
 
-        // Trailing-profit logic
         for (item in holdings) {
             var isMarked = m_MarkedForSelling.contains(item)
 
@@ -85,17 +84,19 @@ internal class TACPP462: ITradingAlgorithm {
                 isMarked = true
             }
 
+            // Update trailing high if still rising
             if (isMarked) {
-                var high: Double = m_TrailingHigh.getOrDefault(item, currentPrice)
+                var high = m_TrailingHigh.getOrDefault(item, currentPrice)
 
-                // Update trailing high if still rising
                 if (currentPrice > high) {
                     high = currentPrice
                     m_TrailingHigh[item] = high
                 }
+            }
 
-                // Sell if price falls more than
-                if (currentPrice > item.entryPrice * 1.3 || currentPrice < item.entryPrice * 1.1) {
+            // Sell logic
+            if(isMarked) {
+                if (currentPrice < item.entryPrice * 1.2) {
                     toBeSold.add(Pair(item, item.amount))
 
                     // cleanup
@@ -103,16 +104,8 @@ internal class TACPP462: ITradingAlgorithm {
                     m_TrailingHigh.remove(item)
                 }
             }
-        }
-
-        // Stop-loss
-        for (item in holdings) {
-            if (currentPrice < item.entryPrice * 1.2) {
+            else if(currentPrice < item.entryPrice * 1.2) {
                 toBeSold.add(Pair(item, item.amount))
-
-                // cleanup
-                m_MarkedForSelling.remove(item)
-                m_TrailingHigh.remove(item)
             }
         }
 

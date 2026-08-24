@@ -7,11 +7,13 @@ import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
 import domain.tax.ITaxation
 import domain.tax.Taxation
+import domain.trader.TradingOrder
 import domain.utils.Math
 import format
 import java.time.Duration
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.time.Instant
@@ -53,6 +55,7 @@ class TradingAlgorithmBackTester {
 
     private val m_Holdings: MutableSet<SecurityHolding>
     private val m_CapitalHistory: MutableList<Double>
+    private val m_TradingOrders: MutableList<TradingOrder>
 
     private var m_CurrentCapital: Double
     private var m_TotalBuysMade: Int
@@ -83,6 +86,7 @@ class TradingAlgorithmBackTester {
 
         m_Holdings.clear()
         m_CapitalHistory.clear()
+        m_TradingOrders.clear()
 
         m_CurrentCapital = m_StartingCapital
         m_TotalBuysMade = 0
@@ -124,10 +128,12 @@ class TradingAlgorithmBackTester {
             m_To,
             m_TotalBuysMade,
             m_TotalSellsMade,
-            m_ForceClosedTrades,
-            winRate,
-            maxDrawdown,
-            Math.sharpeRatio(m_CapitalHistory)
+            forceClosedTrades = m_ForceClosedTrades,
+            tradeWinrate = winRate,
+            maxDrawdown = maxDrawdown,
+            sharpeRatio = Math.sharpeRatio(m_CapitalHistory),
+            stockHistory = m_HistoryWeRunAgainst.toList(),
+            tradingOrders = m_TradingOrders.toList(),
         )
     }
 
@@ -136,9 +142,20 @@ class TradingAlgorithmBackTester {
     private fun runOneIteration(currentPrice: Double) {
         val ret = m_TradingAlgorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
 
+        m_TradingOrders.add(
+            TradingOrder(
+                traderId = UUID.randomUUID(),
+                securityIdentifier = m_SecurityIdentifier,
+                buy = ret.buy,
+                sell = ret.sell,
+                atPrice = currentPrice,
+                createdAt = java.time.Instant.now(),
+            )
+        )
+
         if (ret.buy != null) {
             m_CurrentCapital -= ret.buy.amount * currentPrice
-            check(m_CurrentCapital > 0.0)
+            check(m_CurrentCapital > 0.0) { "Capital" }
 
             m_Holdings.add(SecurityHolding(
                 entryPrice = currentPrice,
@@ -152,7 +169,7 @@ class TradingAlgorithmBackTester {
                 val bought = item.first
                 val amount = item.second
 
-                require(amount <= bought.amount) { "Sell Amount" }
+                check(amount <= bought.amount) { "Sell Amount" }
 
                 m_Holdings.remove(bought)
 
@@ -226,6 +243,7 @@ class TradingAlgorithmBackTester {
 
         m_Holdings = HashSet()
         m_CapitalHistory = ArrayList()
+        m_TradingOrders = ArrayList()
 
         m_CurrentCapital = m_StartingCapital
         m_TotalBuysMade = 0
@@ -251,7 +269,10 @@ class TradingAlgorithmBackTester {
         val forceClosedTrades: Int,
         val tradeWinrate: Double,
         val maxDrawdown: Double,
-        val sharpeRatio: Double
+        val sharpeRatio: Double,
+
+        val stockHistory: List<SecurityHistory>,
+        val tradingOrders: List<TradingOrder>,
     ) {
         fun display() {
             val tax = if(taxation != null) "With" else "Without"

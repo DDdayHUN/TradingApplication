@@ -29,7 +29,7 @@ suspend fun main() {
     // Settings
 
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
-    val c_RUN_BACKTEST_ON_ALL_SECURITY = false // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
+    val c_RUN_BACKTEST_ON_ALL_SECURITY = true // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
     val c_RUN_EVAL_ON_ONE_ALGORITHM = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
 
@@ -41,7 +41,7 @@ suspend fun main() {
     //===========================================================//
     // Config
 
-    val algorithm = TradingAlgorithm.Type.TACPP462
+    val algorithm = TradingAlgorithm.Type.TACPP46
     val taxation = Taxation.Type.Hungary
 
     val identifier = SecurityIdentifier(
@@ -51,7 +51,7 @@ suspend fun main() {
     )
 
     val startCapital = 1000.0
-    val startDate = Instant.parse("2020-01-01T00:00:00Z")
+    val startDate = Instant.parse("2025-06-01T00:00:00Z")
     val endDate = Instant.parse("2026-01-01T00:00:00Z")
     val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
@@ -83,7 +83,7 @@ suspend fun main() {
     //===========================================================//
 
     if(c_RUN_BACKTEST_ON_ALL_SECURITY) {
-        run{
+        run {
             coroutineScope {
                 val listOfOutput = HistoricalMarketDataProvider.getAllSecurityIdentifiers().getOrThrow().map {
                     async {
