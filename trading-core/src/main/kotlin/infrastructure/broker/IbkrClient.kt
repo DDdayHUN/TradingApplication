@@ -4,7 +4,12 @@ import com.ib.client.*
 import com.ib.client.protobuf.*
 import java.lang.Exception
 import application.logging.logger
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.withTimeout
+import org.springframework.stereotype.Component
+import java.util.concurrent.atomic.AtomicInteger
 
+@Component
 class IbkrClient : EWrapper {
 
     //===========================================================//
@@ -18,16 +23,18 @@ class IbkrClient : EWrapper {
     )
     private var reader: EReader? = null
     private var readerThread: Thread? = null
+    private val nextOrderId = AtomicInteger(-1)
+    private var readySignal = CompletableDeferred<Unit>()
     private val logger = logger<IbkrClient>()
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
-    fun connect(
-        host: String = "127.0.0.1",
-        port: Int = 4002,
-        clientId: Int = 1
+    suspend fun connect(
+        host: String,
+        port: Int,
+        clientId: Int
     ) {
         if(client.isConnected) {
             logger.warn("IBKR client is already connected")
@@ -48,6 +55,12 @@ class IbkrClient : EWrapper {
         }
 
         startMessageReader()
+
+        withTimeout(10_000) {
+            readySignal.await()
+        }
+
+        logger.info("IBKR client is ready")
     }
 
     fun disconnect(){
@@ -63,10 +76,40 @@ class IbkrClient : EWrapper {
         readerThread?.interrupt()
         readerThread = null
         reader = null
+
+        nextOrderId.set(-1)
     }
 
     fun isConnected(): Boolean{
         return client.isConnected
+    }
+
+    fun placeOrder(contract: Contract, order: Order): Int {
+        check(client.isConnected){
+            "IBKR client is not connected"
+        }
+
+        val orderId = nextOrderId.getAndIncrement()
+
+        check(orderId >= 0) {
+            "IBKR has not provided a valid order id"
+        }
+
+        logger.info(
+            "Submitting IBKR order orderId={} symbol={} action={} quantity={}",
+            orderId,
+            contract.symbol(),
+            order.action(),
+            order.totalQuantity()
+        )
+
+        client.placeOrder(
+            orderId,
+            contract,
+            order
+        )
+
+        return orderId
     }
 
     //===========================================================//
@@ -163,20 +206,33 @@ class IbkrClient : EWrapper {
         p9: String?,
         p10: Double
     ) {
-        TODO("Not yet implemented")
+        logger.info(
+            "IBKR order status orderId={} status={} filled={} remaining={} avgFillPrice={}",
+            p0,
+            p1,
+            p2,
+            p3,
+            p4
+        )
     }
 
     override fun openOrder(
-        p0: Int,
-        p1: Contract?,
-        p2: Order?,
-        p3: OrderState?
+        orderId: Int,
+        contract: Contract?,
+        order: Order?,
+        orderState: OrderState?
     ) {
-        TODO("Not yet implemented")
+        logger.debug(
+            "IBKR open order orderId={} symbol={} action={} status={}",
+            orderId,
+            contract?.symbol(),
+            order?.action(),
+            orderState?.status()
+        )
     }
 
     override fun openOrderEnd() {
-        TODO("Not yet implemented")
+        logger.debug("IBKR open-order snapshot completed")
     }
 
     override fun updateAccountValue(p0: String?, p1: String?, p2: String?, p3: String?) {
@@ -204,8 +260,17 @@ class IbkrClient : EWrapper {
         TODO("Not yet implemented")
     }
 
-    override fun nextValidId(p0: Int) {
-        logger.info("Next valid orderId={}", p0)
+    override fun nextValidId(orderId: Int) {
+        nextOrderId.set(orderId)
+
+        logger.info(
+            "IBKR next valid orderId={}",
+            orderId
+        )
+
+        if (!readySignal.isCompleted) {
+            readySignal.complete(Unit)
+        }
     }
 
     override fun contractDetails(p0: Int, p1: ContractDetails?) {
@@ -220,12 +285,25 @@ class IbkrClient : EWrapper {
         TODO("Not yet implemented")
     }
 
-    override fun execDetails(p0: Int, p1: Contract?, p2: Execution?) {
-        TODO("Not yet implemented")
+    override fun execDetails(
+        reqId: Int,
+        contract: Contract?,
+        execution: Execution?
+    ) {
+        logger.info(
+            "IBKR execution reqId={} symbol={} shares={} price={}",
+            reqId,
+            contract?.symbol(),
+            execution?.shares(),
+            execution?.price()
+        )
     }
 
-    override fun execDetailsEnd(p0: Int) {
-        TODO("Not yet implemented")
+    override fun execDetailsEnd(reqId: Int) {
+        logger.debug(
+            "IBKR execution details completed reqId={}",
+            reqId
+        )
     }
 
     override fun updateMktDepth(
@@ -257,7 +335,7 @@ class IbkrClient : EWrapper {
     }
 
     override fun managedAccounts(p0: String?) {
-        TODO("Not yet implemented")
+        logger.info("IBKR managed accounts account={}",p0)
     }
 
     override fun receiveFA(p0: Int, p1: String?) {
@@ -643,20 +721,58 @@ class IbkrClient : EWrapper {
         TODO("Not yet implemented")
     }
 
-    override fun orderStatusProtoBuf(p0: OrderStatusProto.OrderStatus?) {
-        TODO("Not yet implemented")
+    override fun orderStatusProtoBuf(
+        message: OrderStatusProto.OrderStatus?
+    ) {
+        if (message == null) {
+            logger.warn("Received null IBKR orderStatus protobuf message")
+            return
+        }
+
+        logger.info(
+            "IBKR order status orderId={} status={} filled={} remaining={} avgFillPrice={}",
+            message.orderId,
+            message.status,
+            message.filled,
+            message.remaining,
+            message.avgFillPrice
+        )
     }
 
-    override fun openOrderProtoBuf(p0: OpenOrderProto.OpenOrder?) {
-        TODO("Not yet implemented")
+    override fun openOrderProtoBuf(
+        message: OpenOrderProto.OpenOrder?
+    ) {
+        if (message == null) {
+            logger.warn("Received null IBKR openOrder protobuf message")
+            return
+        }
+
+        logger.debug(
+            "IBKR open order orderId={} symbol={} action={} status={}",
+            message.orderId,
+            message.contract.symbol,
+            message.order.action,
+            message.orderState.status
+        )
     }
 
-    override fun openOrdersEndProtoBuf(p0: OpenOrdersEndProto.OpenOrdersEnd?) {
-        TODO("Not yet implemented")
+    override fun openOrdersEndProtoBuf(
+        message: OpenOrdersEndProto.OpenOrdersEnd?
+    ) {
+        logger.debug("IBKR open-order snapshot completed")
     }
 
-    override fun errorProtoBuf(p0: ErrorMessageProto.ErrorMessage?) {
-        TODO("Not yet implemented")
+    override fun errorProtoBuf(message: ErrorMessageProto.ErrorMessage?) {
+        if(message == null){
+            logger.warn("Received null IBKR protobuf error message")
+            return
+        }
+
+        logger.error("IBKR protobuf error: requestId={} errorCode={} message={}",
+            message.id,
+            message.errorCode,
+            message.errorMsg
+        )
     }
 
     override fun execDetailsProtoBuf(p0: ExecutionDetailsProto.ExecutionDetails?) {
@@ -748,7 +864,7 @@ class IbkrClient : EWrapper {
     }
 
     override fun managedAccountsProtoBuf(p0: ManagedAccountsProto.ManagedAccounts?) {
-        TODO("Not yet implemented")
+        logger.info("IBKR managed accounts received: {}", p0)
     }
 
     override fun positionProtoBuf(p0: PositionProto.Position?) {
@@ -931,8 +1047,13 @@ class IbkrClient : EWrapper {
         TODO("Not yet implemented")
     }
 
-    override fun nextValidIdProtoBuf(p0: NextValidIdProto.NextValidId?) {
-        TODO("Not yet implemented")
+    override fun nextValidIdProtoBuf(message: NextValidIdProto.NextValidId?) {
+        if(message == null) {
+            logger.warn("Recieved null nextValidId protobuf message")
+            return
+        }
+
+        logger.info("IBKR next valid order id={}", message.orderId)
     }
 
     override fun currentTimeProtoBuf(p0: CurrentTimeProto.CurrentTime?) {

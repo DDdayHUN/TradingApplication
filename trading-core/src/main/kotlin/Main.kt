@@ -1,3 +1,7 @@
+import application.service.borker.InteractiveBrokersService
+import application.service.broker.BrokerOrderRequest
+import application.service.broker.BrokerOrderSide
+import application.service.broker.IBrokerService
 import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
@@ -8,9 +12,12 @@ import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.trader.Trader
 import infrastructure.broker.IbkrClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.time.Instant
 
 suspend fun main() {
@@ -166,13 +173,30 @@ suspend fun main() {
 
     //===========================================================//
 
-    if(c_RUN_IBKR_TEST) {
-        val ibkrClient = IbkrClient()
+    if (c_RUN_IBKR_TEST) {
+        withContext(Dispatchers.Default) {
+            val brokerService: IBrokerService =
+                InteractiveBrokersService(IbkrClient())
 
-        ibkrClient.connect()
+            try {
+                brokerService.connect()
 
-        Thread.sleep(10_000)
+                val orderId = brokerService.placeOrder(
+                    BrokerOrderRequest(
+                        ticker = "AAPL",
+                        currency = "USD",
+                        quantity = 1.0,
+                        side = BrokerOrderSide.BUY
+                    )
+                )
 
-        ibkrClient.disconnect()
+                println("Submitted order $orderId")
+
+                delay(30_000)
+            }
+            finally {
+                brokerService.disconnect()
+            }
+        }
     }
 }
