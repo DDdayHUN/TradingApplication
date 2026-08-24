@@ -17,7 +17,12 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     //===========================================================//
     // Private Field(s)
 
-    private val s_RootDir = File("src/main/resources/backtest/yahoo/")
+    private val s_RootDir = run {
+        val resource = javaClass.getResource("/backtest/yahoo/")
+            ?: error("Resource directory '/backtest/yahoo/' not found")
+
+        File(resource.toURI())
+    }
 
     private val s_GSON = GsonBuilder()
         .enableComplexMapKeySerialization()
