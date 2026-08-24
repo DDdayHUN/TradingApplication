@@ -5,9 +5,12 @@ import application.service.broker.IBrokerService
 import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
+import data.network.MarketDataProvider
+import data.network.ibkr.IbkrMarketDataProvider
 import data.repository.historical_data.HistoricalMarketDataProvider
 import data.repository.trader.TraderRepositoryProvider
 import domain.algorithm.TradingAlgorithm
+import domain.interfaces.IMarketDataProvider
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.trader.Trader
@@ -175,24 +178,30 @@ suspend fun main() {
 
     if (c_RUN_IBKR_TEST) {
         withContext(Dispatchers.Default) {
+            val client = IbkrClient()
             val brokerService: IBrokerService =
-                InteractiveBrokersService(IbkrClient())
+                InteractiveBrokersService(client)
+
+            val provider: IMarketDataProvider = IbkrMarketDataProvider(client)
 
             try {
                 brokerService.connect()
+                val price = provider.getQuote(identifier).getOrThrow().currentPrice
+                println("price: {$price}")
 
-                val orderId = brokerService.placeOrder(
-                    BrokerOrderRequest(
-                        ticker = "AAPL",
-                        currency = "USD",
+                /*brokerService.placeOrder(
+                    request = BrokerOrderRequest(
+                        ticker = identifier.tickerSymbol,
+                        currency = identifier.currency,
                         quantity = 1.0,
                         side = BrokerOrderSide.BUY
                     )
-                )
+                )*/
 
-                println("Submitted order $orderId")
+                brokerService.requestOrderStatus()
 
-                delay(30_000)
+                delay(60_000)
+
             }
             finally {
                 brokerService.disconnect()

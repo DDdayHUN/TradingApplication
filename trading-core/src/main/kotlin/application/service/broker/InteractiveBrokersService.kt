@@ -77,6 +77,10 @@ class InteractiveBrokersService(
         )
     }
 
+    override fun requestOrderStatus() {
+        ibkrClient.requestOpenOrders()
+    }
+
     //===========================================================//
     //===========================================================//
     // Private Method(s)

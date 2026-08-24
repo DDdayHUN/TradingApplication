@@ -3,7 +3,9 @@ package data.network
 import data.network.finnhub.FinnhubClient
 import data.network.finnhub.FinnhubConfig
 import data.network.finnhub.FinnhubMarketDataProvider
+import data.network.ibkr.IbkrMarketDataProvider
 import domain.interfaces.IMarketDataProvider
+import infrastructure.broker.IbkrClient
 
 //===========================================================//
 /**
@@ -16,6 +18,9 @@ object MarketDataProvider {
             Type.Finnhub -> {
                 FinnhubMarketDataProvider(FinnhubClient(FinnhubConfig()))
             }
+            Type.Ibkr -> {
+                IbkrMarketDataProvider(IbkrClient())
+            }
         }
     }
 
@@ -25,5 +30,6 @@ object MarketDataProvider {
 
     sealed interface Type {
         data object Finnhub : Type
+        data object Ibkr: Type
     }
 }

@@ -5,4 +5,5 @@ interface IBrokerService {
     fun disconnect()
     fun isConnected(): Boolean
     fun placeOrder(request: BrokerOrderRequest): Int
+    fun requestOrderStatus()
 }
