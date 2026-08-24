@@ -6,4 +6,5 @@ interface IBrokerService {
     fun isConnected(): Boolean
     fun placeOrder(request: BrokerOrderRequest): Int
     fun requestOrderStatus()
+    suspend fun getAvailableCapital(): Double
 }

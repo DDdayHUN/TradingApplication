@@ -18,10 +18,7 @@ class IbkrClient : EWrapper {
     // Private Field(s)
 
     private val signal = EJavaSignal()
-    private val client = EClientSocket(
-        this,
-        signal
-    )
+    private val client = EClientSocket(this, signal)
     private var reader: EReader? = null
     private var readerThread: Thread? = null
     private val nextOrderId = AtomicInteger(-1)
@@ -29,16 +26,14 @@ class IbkrClient : EWrapper {
     private val logger = logger<IbkrClient>()
     private val marketDataRequestId = AtomicInteger(1_000)
     private val pendingPrices = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
+    private val accountSummaryRequestId = AtomicInteger(2_000)
+    private val pendingAccountSummaryRequests = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
-    suspend fun connect(
-        host: String,
-        port: Int,
-        clientId: Int
-    ) {
+    suspend fun connect(host: String, port: Int, clientId: Int) {
         if(client.isConnected) {
             logger.warn("IBKR client is already connected")
             return
@@ -49,11 +44,7 @@ class IbkrClient : EWrapper {
 
         logger.info("Connecting to IBKR Gateway host={} port={} clientId={}", host, port, clientId)
 
-        client.eConnect(
-            host,
-            port,
-            clientId
-        )
+        client.eConnect(host, port, clientId)
 
         if(!client.isConnected) {
             throw IllegalStateException("Could not connect to IBKR Gateway host=$host port=$port")
@@ -81,10 +72,12 @@ class IbkrClient : EWrapper {
         readerThread?.interrupt()
         readerThread = null
         reader = null
-
         nextOrderId.set(-1)
-        pendingPrices.values.forEach { it.cancel() }
+        pendingPrices.values.forEach { pending -> pending.cancel() }
         pendingPrices.clear()
+        pendingAccountSummaryRequests.values.forEach { pending -> pending.cancel() }
+        pendingAccountSummaryRequests.clear()
+
     }
 
     fun isConnected(): Boolean{
@@ -156,6 +149,26 @@ class IbkrClient : EWrapper {
         }
     }
 
+    suspend fun getAvailableCapital(): Double{
+        check(client.isConnected){ "IBKR client is not connected" }
+
+        val requestId = accountSummaryRequestId.getAndIncrement()
+        val result = CompletableDeferred<Double>()
+
+        pendingAccountSummaryRequests[requestId] = result
+
+        client.reqAccountSummary(requestId, "All", "AvailableFunds")
+        return try{
+            withTimeout(10_000){
+                result.await()
+            }
+        }finally {
+            pendingAccountSummaryRequests.remove(requestId)
+            client.cancelAccountSummary(requestId)
+        }
+
+    }
+
     fun requestOpenOrders() {
         check(client.isConnected) {"IBKR client is not connected"}
         logger.debug("Requesting current IBKR open orders")
@@ -169,10 +182,7 @@ class IbkrClient : EWrapper {
     private fun startMessageReader() {
         logger.debug("Starting IBKR message reader")
 
-        reader = EReader(
-            client,
-            signal
-        )
+        reader = EReader(client, signal)
 
         reader?.start()
 
@@ -344,9 +354,7 @@ class IbkrClient : EWrapper {
         logger.debug("IBKR open-order snapshot completed")
     }
 
-    override fun errorProtoBuf(
-        message: ErrorMessageProto.ErrorMessage?
-    ) {
+    override fun errorProtoBuf(message: ErrorMessageProto.ErrorMessage?) {
         if(message == null) {
             logger.warn("Received null IBKR protobuf error message")
             return
@@ -383,9 +391,7 @@ class IbkrClient : EWrapper {
         }
     }
 
-    override fun execDetailsProtoBuf(
-        message: ExecutionDetailsProto.ExecutionDetails?
-    ) {
+    override fun execDetailsProtoBuf(message: ExecutionDetailsProto.ExecutionDetails?) {
         if(message == null) {
             logger.warn("Received null IBKR executionDetails protobuf message")
             return
@@ -400,9 +406,7 @@ class IbkrClient : EWrapper {
         )
     }
 
-    override fun execDetailsEndProtoBuf(
-        message: ExecutionDetailsEndProto.ExecutionDetailsEnd?
-    ) {
+    override fun execDetailsEndProtoBuf(message: ExecutionDetailsEndProto.ExecutionDetailsEnd?) {
         if(message == null) {
             logger.warn("Received null IBKR executionDetailsEnd protobuf message")
             return
@@ -426,9 +430,7 @@ class IbkrClient : EWrapper {
 
     override fun contractDataEndProtoBuf(p0: ContractDataEndProto.ContractDataEnd?) {}
 
-    override fun tickPriceProtoBuf(
-        message: TickPriceProto.TickPrice?
-    ) {
+    override fun tickPriceProtoBuf(message: TickPriceProto.TickPrice?) {
         if(message == null || message.price <= 0) return
 
         if(message.tickType != 4 && message.tickType != 68) return
@@ -464,9 +466,7 @@ class IbkrClient : EWrapper {
 
     override fun accountDataEndProtoBuf(p0: AccountDataEndProto.AccountDataEnd?) {}
 
-    override fun managedAccountsProtoBuf(
-        message: ManagedAccountsProto.ManagedAccounts?
-    ) {
+    override fun managedAccountsProtoBuf(message: ManagedAccountsProto.ManagedAccounts?) {
         if(message == null) {
             logger.warn("Received null IBKR managedAccounts protobuf message")
             return
@@ -482,9 +482,18 @@ class IbkrClient : EWrapper {
 
     override fun positionEndProtoBuf(p0: PositionEndProto.PositionEnd?) {}
 
-    override fun accountSummaryProtoBuf(p0: AccountSummaryProto.AccountSummary?) {}
+    override fun accountSummaryProtoBuf(message: AccountSummaryProto.AccountSummary?) {
+        if(message == null) return
+        if(message.tag != "AvailableFunds") return
+        val value = message.value.toDoubleOrNull()?: return
+        pendingAccountSummaryRequests[message.reqId]
+            ?.takeIf{pending-> !pending.isCompleted}
+            ?.complete(value)
+    }
 
-    override fun accountSummaryEndProtoBuf(p0: AccountSummaryEndProto.AccountSummaryEnd?) {}
+    override fun accountSummaryEndProtoBuf(p0: AccountSummaryEndProto.AccountSummaryEnd?) {
+        logger.debug("IBKR account summary snapshot completed")
+    }
 
     override fun positionMultiProtoBuf(p0: PositionMultiProto.PositionMulti?) {}
 
@@ -568,9 +577,7 @@ class IbkrClient : EWrapper {
 
     override fun userInfoProtoBuf(p0: UserInfoProto.UserInfo?) {}
 
-    override fun nextValidIdProtoBuf(
-        message: NextValidIdProto.NextValidId?
-    ) {
+    override fun nextValidIdProtoBuf(message: NextValidIdProto.NextValidId?) {
         if(message == null) {
             logger.warn("Received null IBKR nextValidId protobuf message")
             return
@@ -578,10 +585,7 @@ class IbkrClient : EWrapper {
 
         nextOrderId.set(message.orderId)
 
-        logger.info(
-            "IBKR next valid orderId={}",
-            message.orderId
-        )
+        logger.info("IBKR next valid orderId={}", message.orderId)
 
         if(!readySignal.isCompleted) {
             readySignal.complete(Unit)

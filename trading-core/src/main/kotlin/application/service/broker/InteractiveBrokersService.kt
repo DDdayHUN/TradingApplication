@@ -81,6 +81,10 @@ class InteractiveBrokersService(
         ibkrClient.requestOpenOrders()
     }
 
+    override suspend fun getAvailableCapital(): Double {
+        return ibkrClient.getAvailableCapital()
+    }
+
     //===========================================================//
     //===========================================================//
     // Private Method(s)

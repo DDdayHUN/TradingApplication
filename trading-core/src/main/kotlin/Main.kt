@@ -188,6 +188,8 @@ suspend fun main() {
                 brokerService.connect()
                 val price = provider.getQuote(identifier).getOrThrow().currentPrice
                 println("price: {$price}")
+                val accountSummary = brokerService.getAvailableCapital()
+                println("summary: {$accountSummary}")
 
                 /*brokerService.placeOrder(
                     request = BrokerOrderRequest(
