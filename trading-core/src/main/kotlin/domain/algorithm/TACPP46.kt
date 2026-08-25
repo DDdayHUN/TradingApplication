@@ -66,7 +66,7 @@ internal class TACPP46: ITradingAlgorithm {
         val risk: Double = Math.clamp(std * 100.0, 0.05, 0.2) // to put it into percentages
 
         // Sell
-        val toBeSold: MutableList<Pair<SecurityHolding, Int>> = ArrayList()
+        val toBeSold: MutableSet<Pair<SecurityHolding, Int>> = HashSet()
 
         // Trailing-profit logic
         for (item in holdings) {

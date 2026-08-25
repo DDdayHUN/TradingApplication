@@ -49,7 +49,7 @@ internal class ALGDES31 : ITradingAlgorithm {
         //-------------------------------------------------------
         // Sell
 
-        val toSell = mutableListOf<Pair<SecurityHolding, Int>>()
+        val toSell = mutableSetOf<Pair<SecurityHolding, Int>>()
 
         for (holding in holdings) {
             val gain = (currentPrice - holding.entryPrice) / holding.entryPrice
