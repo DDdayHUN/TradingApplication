@@ -40,27 +40,14 @@ internal class TACPP462: ITradingAlgorithm {
         val rsi = ema.rsi()
         val ma = ema.average()
 
-        val lowerBand = ma - 4.0 * std * ma
-
-        val maxAllocation = 1.0 // Never use more than x% of available capital.
-        val targetStd = 0.2 // x% volatility.
-
-        val rsiScore = ((50.0 - rsi) / 50.0).coerceIn(0.0, 1.0)
-        // RSI 50 -> 0
-        // RSI 30 -> 0.4
-        // RSI 10 -> 0.8
-
-        val volatilityScore = (1.0 - std / targetStd).coerceIn(0.0, 1.0)
-        // Low std -> close to 1
-        // High std -> close to 0
-
-        val confidence = maxAllocation * rsiScore * volatilityScore
+        val lowerBand = ma - 4.0 * std
+        val confidence = (((1.0 - std * 100.0) + (100.0 - rsi) / 100.0) / 2.0).coerceIn(0.0, 0.5)
 
         // Buy
-        if (confidence >= 0.0 && currentPrice <= lowerBand) {
+        if (rsi <= 50.0 && currentPrice <= lowerBand) {
             if (m_LastInputArr.isEmpty()) {
                 m_LastInputArr.add(currentPrice)
-            } else if (m_LastInputArr.average() <= currentPrice) {
+            } else if (ArrayList(m_LastInputArr).average() <= currentPrice) {
                 val amount = (allocatedCapital * confidence / currentPrice).toInt()
                 if (amount != 0) buy = TradingAlgorithm.Output.Buy(amount)
             } else {
@@ -72,40 +59,49 @@ internal class TACPP462: ITradingAlgorithm {
         }
 
         // Sell
-        val toBeSold: MutableList<Pair<SecurityHolding, Int>> = ArrayList()
+        val toBeSold: MutableSet<Pair<SecurityHolding, Int>> = HashSet()
 
+        // Trailing-profit logic
         for (item in holdings) {
             var isMarked = m_MarkedForSelling.contains(item)
 
-            // Activate trailing
-            if (!isMarked && currentPrice > item.entryPrice * 1.2) {
+            // Activate trailing if gained > risk
+            if (!isMarked && currentPrice > item.entryPrice * (1 + std)) {
                 m_MarkedForSelling.add(item)
                 m_TrailingHigh[item] = currentPrice
                 isMarked = true
             }
 
-            // Update trailing high if still rising
             if (isMarked) {
-                var high = m_TrailingHigh.getOrDefault(item, currentPrice)
+                var high: Double = m_TrailingHigh.getOrDefault(item, currentPrice)
 
+                // Update trailing high if still rising
                 if (currentPrice > high) {
                     high = currentPrice
                     m_TrailingHigh[item] = high
                 }
-            }
 
-            // Sell logic
-            if(isMarked) {
-                if (currentPrice < item.entryPrice * 1.2) {
-                    toBeSold.add(Pair(item, item.amount))
+                // Sell if price falls more than risk from peak
+                if (currentPrice < high * (1.0 - std)) {
+                    val pair = Pair(item, item.amount)
+                    if(!toBeSold.contains(pair)) toBeSold.add(pair)
 
                     // cleanup
                     m_MarkedForSelling.remove(item)
                     m_TrailingHigh.remove(item)
                 }
             }
-            else if(currentPrice < item.entryPrice * 1.2) {
-                toBeSold.add(Pair(item, item.amount))
+        }
+
+        // Stop-loss
+        for (item in holdings) {
+            if (currentPrice < item.entryPrice * (1.0 - std * 2)) {
+                val pair = Pair(item, item.amount)
+                if(!toBeSold.contains(pair)) toBeSold.add(pair)
+
+                // cleanup
+                m_MarkedForSelling.remove(item)
+                m_TrailingHigh.remove(item)
             }
         }
 

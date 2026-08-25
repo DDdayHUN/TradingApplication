@@ -174,6 +174,6 @@ object TradingAlgorithm {
         val sell: Sell?
     ) {
         data class Buy(val amount: Int)
-        data class Sell(val batches: List<Pair<SecurityHolding, Int>>)
+        data class Sell(val batches: Set<Pair<SecurityHolding, Int>>)
     }
 }
