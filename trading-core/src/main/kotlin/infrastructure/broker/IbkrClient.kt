@@ -4,12 +4,16 @@ import com.ib.client.*
 import com.ib.client.protobuf.*
 import java.lang.Exception
 import application.logging.logger
+import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.springframework.stereotype.Component
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.time.Instant
 
 @Component
 class IbkrClient : EWrapper {
@@ -29,6 +33,8 @@ class IbkrClient : EWrapper {
     private val pendingPrices = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
     private val accountSummaryRequestId = AtomicInteger(2_000)
     private val pendingAccountSummaryRequests = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
+    private val historicalDataRequestId = AtomicInteger(3_000)
+    private val pendingHistoricalData = ConcurrentHashMap<Int, HistoricalDataRequest>()
 
     //===========================================================//
     //===========================================================//
@@ -109,6 +115,8 @@ class IbkrClient : EWrapper {
         pendingPrices.clear()
         pendingAccountSummaryRequests.values.forEach { pending -> pending.cancel() }
         pendingAccountSummaryRequests.clear()
+        pendingHistoricalData.values.forEach {pending ->pending.result.cancel()}
+        pendingHistoricalData.clear()
 
     }
 
@@ -201,6 +209,46 @@ class IbkrClient : EWrapper {
 
     }
 
+    suspend fun getHistoricalData(identifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar> {
+        check(client.isConnected){"IBKR client is not connected"}
+
+        val requestId = historicalDataRequestId.getAndIncrement()
+        val result = CompletableDeferred<List<IbkrHistoricalBar>>()
+
+        pendingHistoricalData[requestId] = HistoricalDataRequest(result = result)
+
+        val contract = Contract().apply{
+            symbol(identifier.tickerSymbol)
+            secType("STK")
+            exchange("SMART")
+            currency(identifier.currency)
+        }
+
+        val endDateTime = formatHistoricalEndDate(to)
+        val duration = calculateHistoricalDuration(from, to)
+
+        client.reqHistoricalData(
+            requestId,
+            contract,
+            endDateTime,
+            duration,
+            "1 day",
+            "TRADES",
+            1,
+            1,
+            false,
+            null
+        )
+
+        return try {
+            withTimeout(10_000){
+                result.await()
+            }
+        } finally {
+            pendingHistoricalData.remove(requestId)
+        }
+    }
+
     fun requestOpenOrders() {
         check(client.isConnected) {"IBKR client is not connected"}
         logger.debug("Requesting current IBKR open orders")
@@ -235,6 +283,37 @@ class IbkrClient : EWrapper {
             name = "ibkr-reader"
             isDaemon = true
             start()
+        }
+    }
+
+    private data class HistoricalDataRequest(
+        val bars: MutableList<IbkrHistoricalBar> = mutableListOf(),
+        val result: CompletableDeferred<List<IbkrHistoricalBar>>
+    )
+
+    private val historicalEndDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss 'UTC'").withZone(ZoneOffset.UTC)
+
+    private fun formatHistoricalEndDate(to: Instant): String {
+        val javaInstant = java.time.Instant.ofEpochMilli(
+            to.toEpochMilliseconds()
+        )
+
+        return historicalEndDateFormatter.format(javaInstant)
+    }
+
+    private fun calculateHistoricalDuration(
+        from: Instant,
+        to: Instant
+    ): String {
+        val seconds = (to - from).inWholeSeconds.coerceAtLeast(1)
+        val days = ((seconds + 86_399) / 86_400).coerceAtLeast(1)
+
+        return if(days <= 365) {
+            "$days D"
+        }
+        else {
+            val years = (days + 364) / 365
+            "$years Y"
         }
     }
 
@@ -535,11 +614,36 @@ class IbkrClient : EWrapper {
 
     override fun accountUpdateMultiEndProtoBuf(p0: AccountUpdateMultiEndProto.AccountUpdateMultiEnd?) {}
 
-    override fun historicalDataProtoBuf(p0: HistoricalDataProto.HistoricalData?) {}
+    override fun historicalDataProtoBuf(message: HistoricalDataProto.HistoricalData?) {
+        if(message == null) return
+        val request = pendingHistoricalData[message.reqId]?:return
+
+        message.historicalDataBarsList.forEach {bar ->
+            request.bars.add(
+                IbkrHistoricalBar(
+                    date = bar.date,
+                    closingPrice = bar.close
+                )
+            )
+        }
+    }
 
     override fun historicalDataUpdateProtoBuf(p0: HistoricalDataUpdateProto.HistoricalDataUpdate?) {}
 
-    override fun historicalDataEndProtoBuf(p0: HistoricalDataEndProto.HistoricalDataEnd?) {}
+    override fun historicalDataEndProtoBuf(message: HistoricalDataEndProto.HistoricalDataEnd?) {
+        if(message == null) {
+            return
+        }
+
+        val request = pendingHistoricalData[message.reqId]
+            ?: return
+
+        if(!request.result.isCompleted) {
+            request.result.complete(
+                request.bars.toList()
+            )
+        }
+    }
 
     override fun realTimeBarTickProtoBuf(p0: RealTimeBarTickProto.RealTimeBarTick?) {}
 

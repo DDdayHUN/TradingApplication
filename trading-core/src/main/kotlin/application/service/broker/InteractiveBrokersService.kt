@@ -6,9 +6,12 @@ import application.service.broker.IBrokerService
 import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
+import domain.market.security.SecurityIdentifier
 import infrastructure.broker.IbkrClient
+import infrastructure.broker.IbkrHistoricalBar
 import infrastructure.broker.IbkrSession
 import org.springframework.stereotype.Service
+import kotlin.time.Instant
 
 
 @Service
@@ -56,6 +59,19 @@ class InteractiveBrokersService(
     override suspend fun getAvailableCapital(): Double {
         val client = session.getClient()
         return client.getAvailableCapital()
+    }
+
+    override suspend fun getHistoricalData(
+        securityIdentifier: SecurityIdentifier,
+        from: Instant,
+        to: Instant
+    ): List<IbkrHistoricalBar> {
+        val client = session.getClient()
+        return client.getHistoricalData(
+            identifier = securityIdentifier,
+            from = from,
+            to = to
+        )
     }
 
     //===========================================================//

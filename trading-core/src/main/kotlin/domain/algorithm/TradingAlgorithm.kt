@@ -41,8 +41,8 @@ object TradingAlgorithm {
      * @param securityIdentifier the identifier identifies a security.
      * @return the configured algorithm instance.
      */
-    fun create(type: Type, securityIdentifier: SecurityIdentifier): ITradingAlgorithm {
-        return initForTrading(type, securityIdentifier)
+    fun create(type: Type, securityIdentifier: SecurityIdentifier, history: List<SecurityHistory>? = null): ITradingAlgorithm {
+        return initForTrading(type, securityIdentifier, history)
     }
 
     //===========================================================//
@@ -109,32 +109,34 @@ object TradingAlgorithm {
      * @param securityIdentifier the identifier identifies a security.
      * @return an initialized algorithm for trading.
      */
-    private fun initForTrading(type: Type, securityIdentifier: SecurityIdentifier): ITradingAlgorithm {
-        val history = runBlocking {
-            val a1 = async { HistoricalMarketDataProvider.getBySecurityIdentifier(securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE) }
-            a1.await().getOrThrow()
-        }
+    private fun initForTrading(type: Type, securityIdentifier: SecurityIdentifier, history: List<SecurityHistory>?= null): ITradingAlgorithm {
+
+       val resolvedHistory = history ?: runBlocking {
+           val a1 = async { HistoricalMarketDataProvider.getBySecurityIdentifier(securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE) }
+           a1.await().getOrThrow()
+       }
+
         return when (type) {
             is Type.TACPP46 -> {
-                TACPP46(history.takeLast(type.initSize))
+                TACPP46(resolvedHistory.takeLast(type.initSize))
             }
             is Type.ALGDES2 -> {
-                ALGDES2(history.takeLast(type.initSize))
+                ALGDES2(resolvedHistory.takeLast(type.initSize))
             }
             is Type.ALGDES3 -> {
-                ALGDES3(history.takeLast(type.initSize))
+                ALGDES3(resolvedHistory.takeLast(type.initSize))
             }
             is Type.ALGDES31 -> {
-                ALGDES31(history.takeLast(type.initSize))
+                ALGDES31(resolvedHistory.takeLast(type.initSize))
             }
             is Type.ALGDES4 -> {
-                ALGDES4(history.takeLast(type.initSize))
+                ALGDES4(resolvedHistory.takeLast(type.initSize))
             }
             is Type.BUYANDHOLD -> {
                 BUYANDHOLD()
             }
             is Type.TACPP462 -> {
-                TACPP462(history.takeLast(type.initSize))
+                TACPP462(resolvedHistory.takeLast(type.initSize))
             }
         }
     }
