@@ -11,7 +11,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     scanBasePackages = [
         "api",
         "application",
-        "data"
+        "data",
+        "infrastructure"
     ]
 )
 class SpringMain

@@ -39,7 +39,6 @@ class Trader {
     //===========================================================//
     //===========================================================//
     // Public Method(es)
-
     fun createOrder(quote: Quote): TradingOrder {
         val currentPrice = quote.currentPrice
         val output = algorithm.run(holdings, capital, currentPrice)
@@ -142,7 +141,7 @@ class Trader {
      * @param allocatedCapital the capital currently allocated to the trader.
      * @param algorithm the algorithm instance with which we create trades.
      */
-    constructor(id: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableSet<SecurityHolding>, allocatedCapital: Double, algorithm: ITradingAlgorithm) {
+    constructor(id: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableSet<SecurityHolding> = mutableSetOf(), allocatedCapital: Double, algorithm: ITradingAlgorithm) {
         this.id = id
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings

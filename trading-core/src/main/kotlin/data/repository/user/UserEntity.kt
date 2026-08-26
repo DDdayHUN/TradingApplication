@@ -3,6 +3,7 @@ package data.repository.user
 import data.repository.portfolio.PortfolioEntity
 import domain.User
 import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
@@ -14,7 +15,10 @@ import java.util.UUID
 @Table(name = "app_user")
 class UserEntity (
     @Id
-    var id: UUID
+    var id: UUID,
+
+    @Column(name = "user_name", nullable = false)
+    var userName: String
 ) {
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     var portfolios: MutableSet<PortfolioEntity> = mutableSetOf()
@@ -22,12 +26,14 @@ class UserEntity (
 
 fun User.toEntity(): UserEntity {
     return UserEntity(
-        id = this.id
+        id = this.id,
+        userName = this.userName
     )
 }
 
 fun UserEntity.toDomain(): User {
     return User(
         id = this.id,
+        userName = this.userName,
     )
 }

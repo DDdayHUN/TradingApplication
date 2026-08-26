@@ -3,7 +3,8 @@ out/
 .idea/
 *.iml
 target/
-
+logs/
+*.log
 # Gradle
 .gradle/
 build/

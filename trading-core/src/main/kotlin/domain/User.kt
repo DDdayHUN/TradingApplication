@@ -12,6 +12,7 @@ class User {
 
     val id: UUID
     val portfolios: Set<Portfolio> get() = m_Portfolios.toSet()
+    val userName: String
 
     //===========================================================//
     //===========================================================//
@@ -37,8 +38,9 @@ class User {
     //===========================================================//
     // Constructor(s)
 
-    constructor(id: UUID = UUID.randomUUID(), portfolios: MutableSet<Portfolio> = HashSet()) {
+    constructor(id: UUID = UUID.randomUUID(), portfolios: MutableSet<Portfolio> = HashSet(), userName: String) {
         this.id = id
         this.m_Portfolios = portfolios
+        this.userName = userName
     }
 }
