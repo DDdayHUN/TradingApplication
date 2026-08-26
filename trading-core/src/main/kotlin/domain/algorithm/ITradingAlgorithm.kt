@@ -22,9 +22,7 @@ sealed interface ITradingAlgorithm {
     fun run(holdings: Set<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): Output
 
     companion object {
-        fun typeTagOf(
-            algorithm: ITradingAlgorithm
-        ): String {
+        fun typeTagOf(algorithm: ITradingAlgorithm): String {
             return when (algorithm){
                 is TACPP46 -> "TACPP46"
                 is ALGDES2 -> "ALGDES2"

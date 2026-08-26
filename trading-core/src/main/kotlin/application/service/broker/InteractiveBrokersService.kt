@@ -41,28 +41,13 @@ class InteractiveBrokersService(
         return ibkrClient.isConnected()
     }
 
-    override fun placeOrder(
-        request: BrokerOrderRequest
-    ): Int {
-        require(request.ticker.isNotBlank()) {
-            "Ticker must not be blank"
-        }
+    override fun placeOrder(request: BrokerOrderRequest): Int {
+        require(request.ticker.isNotBlank()) { "Ticker must not be blank" }
+        require(request.currency.isNotBlank()) { "Currency must not be blank" }
+        require(request.quantity > 0) { "Quantity must be greater than zero" }
 
-        require(request.currency.isNotBlank()) {
-            "Currency must not be blank"
-        }
-
-        require(request.quantity > 0) {
-            "Quantity must be greater than zero"
-        }
-
-        val contract = createStockContract(
-            request
-        )
-
-        val order = createMarketOrder(
-            request
-        )
+        val contract = createStockContract(request)
+        val order = createMarketOrder(request)
 
         logger.info(
             "Submitting broker order ticker={} side={} quantity={}",
@@ -100,18 +85,11 @@ class InteractiveBrokersService(
         }
     }
 
-    private fun createMarketOrder(
-        request: BrokerOrderRequest
-    ): Order {
+    private fun createMarketOrder(request: BrokerOrderRequest): Order {
         return Order().apply {
             action(request.side.name)
-
             orderType("MKT")
-
-            totalQuantity(
-                Decimal.get(request.quantity)
-            )
-
+            totalQuantity(Decimal.get(request.quantity))
             tif("DAY")
         }
     }

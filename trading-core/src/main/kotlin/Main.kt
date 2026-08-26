@@ -1,11 +1,9 @@
 import application.service.borker.InteractiveBrokersService
-import application.service.broker.BrokerOrderRequest
-import application.service.broker.BrokerOrderSide
 import application.service.broker.IBrokerService
+import application.service.broker.toBrokerOrder
 import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
-import data.network.MarketDataProvider
 import data.network.ibkr.IbkrMarketDataProvider
 import data.repository.historical_data.HistoricalMarketDataProvider
 import data.repository.trader.TraderRepositoryProvider
@@ -35,7 +33,7 @@ suspend fun main() {
 
     val c_RUN_TRADER_TEST = false
     val c_CLEAR_TRADER_TEST_FOLDER = false
-    val c_RUN_IBKR_TEST = false
+    val c_RUN_IBKR_TEST = true
 
     //===========================================================//
     //===========================================================//
@@ -179,33 +177,33 @@ suspend fun main() {
     if (c_RUN_IBKR_TEST) {
         withContext(Dispatchers.Default) {
             val client = IbkrClient()
-            val brokerService: IBrokerService =
-                InteractiveBrokersService(client)
-
+            val brokerService: IBrokerService = InteractiveBrokersService(client)
             val provider: IMarketDataProvider = IbkrMarketDataProvider(client)
 
             try {
                 brokerService.connect()
-                val price = provider.getQuote(identifier).getOrThrow().currentPrice
-                println("price: {$price}")
-                val accountSummary = brokerService.getAvailableCapital()
-                println("summary: {$accountSummary}")
-
-                /*brokerService.placeOrder(
-                    request = BrokerOrderRequest(
-                        ticker = identifier.tickerSymbol,
-                        currency = identifier.currency,
-                        quantity = 1.0,
-                        side = BrokerOrderSide.BUY
+                val trader = Trader(
+                    securityIdentifier = identifier,
+                    allocatedCapital = 10_000.0,
+                    algorithm = TradingAlgorithm.create(
+                        type = TradingAlgorithm.Type.TACPP46,
+                        securityIdentifier = identifier,
                     )
-                )*/
-
-                brokerService.requestOrderStatus()
-
-                delay(60_000)
-
+                )
+                val quote = provider.getQuote(trader.securityIdentifier).getOrThrow()
+                println("Quote: ${quote.currentPrice}")
+                val tradingOrder = trader.createOrder(quote)
+                println("Trading order: ${tradingOrder.toReadableText()}")
+                val brokerOrder = tradingOrder.toBrokerOrder()
+                if(brokerOrder != null ){
+                    val ibkrOrderId = brokerService.placeOrder(brokerOrder)
+                    println("Submitted IBKR orderId=$ibkrOrderId")
+                } else {
+                    println("HOLD - no broker order created")
+                }
             }
             finally {
+                delay(60_000)
                 brokerService.disconnect()
             }
         }
