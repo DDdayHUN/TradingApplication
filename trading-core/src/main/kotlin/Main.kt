@@ -36,7 +36,7 @@ suspend fun main() {
 
     val c_RUN_TRADER_TEST = false
     val c_CLEAR_TRADER_TEST_FOLDER = false
-    val c_RUN_IBKR_TEST = true
+    val c_RUN_IBKR_TEST = false
 
     //===========================================================//
     //===========================================================//

@@ -41,9 +41,4 @@ class IbkrSession(
     fun disconnect(){
         client.disconnect()
     }
-
-    fun isConnected(): Boolean {
-        return client.isConnected()
-    }
-
 }
