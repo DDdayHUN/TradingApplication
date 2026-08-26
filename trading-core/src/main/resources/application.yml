@@ -9,6 +9,11 @@ spring:
     level:
       root: INFO
 
+  ibkr:
+    host: ${IBKR_HOST}
+    port: ${IBKR_PORT}
+    client-id: ${IBKR_CLIENT_ID}
+
 
   flyway:
     locations: classpath:database/migration

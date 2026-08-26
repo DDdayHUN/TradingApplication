@@ -4,6 +4,7 @@ import application.service.broker.toBrokerOrder
 import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
+import data.network.MarketDataProvider
 import data.network.ibkr.IbkrMarketDataProvider
 import data.repository.historical_data.HistoricalMarketDataProvider
 import data.repository.trader.TraderRepositoryProvider
@@ -13,6 +14,8 @@ import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.trader.Trader
 import infrastructure.broker.IbkrClient
+import infrastructure.broker.IbkrConfig
+import infrastructure.broker.IbkrSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -29,7 +32,7 @@ suspend fun main() {
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
     val c_RUN_BACKTEST_ON_ALL_SECURITY = false // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
     val c_RUN_EVAL_ON_ONE_ALGORITHM = false
-    val c_RUN_EVAL_ON_ALL_ALGORITHM = true // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
+    val c_RUN_EVAL_ON_ALL_ALGORITHM = false // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
 
     val c_RUN_TRADER_TEST = false
     val c_CLEAR_TRADER_TEST_FOLDER = false
@@ -177,11 +180,13 @@ suspend fun main() {
     if (c_RUN_IBKR_TEST) {
         withContext(Dispatchers.Default) {
             val client = IbkrClient()
-            val brokerService: IBrokerService = InteractiveBrokersService(client)
-            val provider: IMarketDataProvider = IbkrMarketDataProvider(client)
+            val config = IbkrConfig.fromEnv()
+            val session = IbkrSession(client, config)
+
+            val brokerService: IBrokerService = InteractiveBrokersService(session)
+            val provider = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(session))
 
             try {
-                brokerService.connect()
                 val trader = Trader(
                     securityIdentifier = identifier,
                     allocatedCapital = 10_000.0,
@@ -204,7 +209,7 @@ suspend fun main() {
             }
             finally {
                 delay(60_000)
-                brokerService.disconnect()
+                session.disconnect()
             }
         }
     }

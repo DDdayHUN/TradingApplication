@@ -5,6 +5,7 @@ import com.ib.client.protobuf.*
 import java.lang.Exception
 import application.logging.logger
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.springframework.stereotype.Component
 import java.util.concurrent.ConcurrentHashMap
@@ -33,30 +34,61 @@ class IbkrClient : EWrapper {
     //===========================================================//
     // Public Method(s)
 
-    suspend fun connect(host: String, port: Int, clientId: Int) {
-        if(client.isConnected) {
-            logger.warn("IBKR client is already connected")
+    suspend fun connect(host: String, port: Int, clientId: Int, maxAttempts: Int = 3) {
+        if(client.isConnected && nextOrderId.get() >= 0) {
+            logger.warn("IBKR client is already connected and ready")
             return
         }
 
-        nextOrderId.set(-1)
-        readySignal = CompletableDeferred()
+        repeat(maxAttempts) { attempt ->
+            try{
+                logger.info("Connecting to IBKR attemp={}/{} host={}, port={} clientId={}",
+                    attempt + 1, maxAttempts, host, port, clientId)
 
-        logger.info("Connecting to IBKR Gateway host={} port={} clientId={}", host, port, clientId)
+                nextOrderId.set(-1)
+                readySignal = CompletableDeferred()
 
-        client.eConnect(host, port, clientId)
+                if(client.isConnected) {
+                    client.eDisconnect()
+                }
 
-        if(!client.isConnected) {
-            throw IllegalStateException("Could not connect to IBKR Gateway host=$host port=$port")
+                client.eConnect(host, port, clientId)
+
+                if(!client.isConnected) {
+                    throw IllegalStateException(
+                        "Could not connect to IBKR Gateway"
+                    )
+                }
+
+                startMessageReader()
+
+                withTimeout(10_000) {
+                    readySignal.await()
+                }
+
+                logger.info("IBKR client is ready")
+                return
+            } catch(e: Exception) {
+                logger.warn("IBKR conntection attempt {}/{} failed",
+                    attempt + 1, maxAttempts, e)
+
+                if(client.isConnected) {
+                    client.eDisconnect()
+                }
+
+                readerThread?.interrupt()
+                readerThread = null
+                reader = null
+
+                nextOrderId.set(-1)
+
+                if(attempt == maxAttempts - 1) {
+                    throw e
+                }
+
+                delay(2_000)
+            }
         }
-
-        startMessageReader()
-
-        withTimeout(10_000) {
-            readySignal.await()
-        }
-
-        logger.info("IBKR client is ready")
     }
 
     fun disconnect(){

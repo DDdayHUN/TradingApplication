@@ -7,12 +7,13 @@ import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
 import infrastructure.broker.IbkrClient
+import infrastructure.broker.IbkrSession
 import org.springframework.stereotype.Service
 
 
 @Service
 class InteractiveBrokersService(
-    private val ibkrClient: IbkrClient,
+    private val session: IbkrSession,
 ) : IBrokerService {
 
     //===========================================================//
@@ -25,27 +26,12 @@ class InteractiveBrokersService(
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun connect() {
-        ibkrClient.connect(
-            host = "127.0.0.1",
-            port = 4002,
-            clientId = 1
-        )
-    }
-
-    override fun disconnect() {
-        ibkrClient.disconnect()
-    }
-
-    override fun isConnected(): Boolean {
-        return ibkrClient.isConnected()
-    }
-
-    override fun placeOrder(request: BrokerOrderRequest): Int {
+    override suspend fun placeOrder(request: BrokerOrderRequest): Int {
         require(request.ticker.isNotBlank()) { "Ticker must not be blank" }
         require(request.currency.isNotBlank()) { "Currency must not be blank" }
         require(request.quantity > 0) { "Quantity must be greater than zero" }
 
+        val client = session.getClient()
         val contract = createStockContract(request)
         val order = createMarketOrder(request)
 
@@ -56,18 +42,20 @@ class InteractiveBrokersService(
             request.quantity
         )
 
-        return ibkrClient.placeOrder(
+        return client.placeOrder(
             contract = contract,
             order = order
         )
     }
 
-    override fun requestOrderStatus() {
-        ibkrClient.requestOpenOrders()
+    override suspend fun requestOrderStatus() {
+        val client = session.getClient()
+        client.requestOpenOrders()
     }
 
     override suspend fun getAvailableCapital(): Double {
-        return ibkrClient.getAvailableCapital()
+        val client = session.getClient()
+        return client.getAvailableCapital()
     }
 
     //===========================================================//

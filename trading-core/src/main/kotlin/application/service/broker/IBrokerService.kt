@@ -1,10 +1,7 @@
 package application.service.broker
 
 interface IBrokerService {
-    suspend fun connect()
-    fun disconnect()
-    fun isConnected(): Boolean
-    fun placeOrder(request: BrokerOrderRequest): Int
-    fun requestOrderStatus()
+    suspend fun placeOrder(request: BrokerOrderRequest): Int
+    suspend fun requestOrderStatus()
     suspend fun getAvailableCapital(): Double
 }
