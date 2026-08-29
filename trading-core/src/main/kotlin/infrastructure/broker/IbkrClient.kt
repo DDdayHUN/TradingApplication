@@ -8,6 +8,7 @@ import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -16,7 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Instant
 
 @Component
-class IbkrClient : EWrapper {
+class IbkrClient(
+    private val event: ApplicationEventPublisher
+) : EWrapper {
 
     //===========================================================//
     //===========================================================//
@@ -123,8 +126,11 @@ class IbkrClient : EWrapper {
     fun isConnected(): Boolean{
         return client.isConnected
     }
+    fun getNextOrderId(): Int{
+        return nextOrderId.getAndIncrement()
+    }
 
-    fun placeOrder(contract: Contract, order: Order): Int {
+    fun placeOrder(orderId: Int, contract: Contract, order: Order): Int {
         check(client.isConnected){
             "IBKR client is not connected"
         }
@@ -132,8 +138,6 @@ class IbkrClient : EWrapper {
         check(nextOrderId.get() >= 0) {
             "IBKR has not provided a valid order id"
         }
-
-        val orderId = nextOrderId.getAndIncrement()
 
         logger.info(
             "Submitting IBKR order orderId={} symbol={} action={} quantity={}",
@@ -432,14 +436,35 @@ class IbkrClient : EWrapper {
             return
         }
 
-        logger.info(
-            "IBKR order status orderId={} status={} filled={} remaining={} avgFillPrice={}",
-            message.orderId,
-            message.status,
-            message.filled,
-            message.remaining,
-            message.avgFillPrice
-        )
+        when(message.status){
+            "Submitted" -> {
+                logger.info(
+                    "IBKR order submitted successfully. orderId={}, filled={}, remaining={}",
+                    message.orderId,
+                    message.filled,
+                    message.remaining
+                )
+                event.publishEvent(OrderSubmittedEvent(message.orderId))
+            }
+            "Filled" -> {
+                logger.info(
+                    "IBKR order filled. orderId={}, filledQuantity={}, averageFillPrice={}",
+                    message.orderId,
+                    message.filled,
+                    message.avgFillPrice
+                )
+                event.publishEvent(OrderFilledEvent(message.orderId, message.filled, message.avgFillPrice))
+            }
+            "Cancelled" -> {
+                logger.warn(
+                    "IBKR order cancelled. orderId={}, filledQuantity={}, remaining={}",
+                    message.orderId,
+                    message.filled,
+                    message.remaining
+                )
+                event.publishEvent(OrderCancelledEvent(message.orderId))
+            }
+        }
     }
 
     override fun openOrderProtoBuf(

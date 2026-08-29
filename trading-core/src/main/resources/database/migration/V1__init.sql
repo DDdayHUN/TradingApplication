@@ -38,6 +38,26 @@ CREATE TABLE app_trader(
 
 CREATE INDEX idx_app_traders_portfolio_id ON app_trader (portfolio_id);
 
+CREATE TABLE app_order(
+    id UUID PRIMARY KEY,
+    ibkr_order_id INTEGER NOT NULL,
+    trader_id UUID NOT NULL,
+    action VARCHAR(10) NOT NULL,
+    quantity DOUBLE PRECISION NOT NULL,
+    status VARCHAR(30) NOT NULL,
+    filled_quantity DOUBLE PRECISION NOT NULL DEFAULT 0,
+    average_fill_price DOUBLE PRECISION,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+    CONSTRAINT  fk_app_order_trader
+            FOREIGN KEY (trader_id)
+            REFERENCES app_trader (id)
+            ON DELETE CASCADE
+);
+
+CREATE INDEX idx_oder_ibkr_order_id ON app_order (ibkr_order_id);
+CREATE INDEX idx_app_order_trader_id ON app_order (trader_id);
+
 CREATE TABLE app_security_holding(
     id UUID PRIMARY KEY,
     time_stamp TIMESTAMP WITH TIME ZONE NOT NULL,

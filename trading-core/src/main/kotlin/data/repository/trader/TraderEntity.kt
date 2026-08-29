@@ -1,6 +1,7 @@
 package data.repository.trader
 
 import com.google.gson.Gson
+import data.repository.order.OrderEntity
 import data.repository.security.SecurityHoldingEntity
 import data.repository.security.SecurityIdentifierEntity
 import data.repository.portfolio.PortfolioEntity
@@ -77,6 +78,9 @@ class TraderEntity(
 
     @OneToMany(mappedBy = "trader", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
     var holdings: MutableSet<SecurityHoldingEntity> = mutableSetOf()
+
+    @OneToMany(mappedBy = "trader", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
+    var orders: MutableList<OrderEntity> = mutableListOf()
 
     //===========================================================//
     //===========================================================//

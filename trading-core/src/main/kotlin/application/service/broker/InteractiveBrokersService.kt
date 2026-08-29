@@ -11,6 +11,7 @@ import infrastructure.broker.IbkrClient
 import infrastructure.broker.IbkrHistoricalBar
 import infrastructure.broker.IbkrSession
 import org.springframework.stereotype.Service
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Instant
 
 
@@ -29,7 +30,7 @@ class InteractiveBrokersService(
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun placeOrder(request: BrokerOrderRequest): Int {
+    override suspend fun placeOrder(orderId: Int, request: BrokerOrderRequest): Int {
         require(request.ticker.isNotBlank()) { "Ticker must not be blank" }
         require(request.currency.isNotBlank()) { "Currency must not be blank" }
         require(request.quantity > 0) { "Quantity must be greater than zero" }
@@ -46,6 +47,7 @@ class InteractiveBrokersService(
         )
 
         return client.placeOrder(
+            orderId = orderId,
             contract = contract,
             order = order
         )
@@ -59,6 +61,11 @@ class InteractiveBrokersService(
     override suspend fun getAvailableCapital(): Double {
         val client = session.getClient()
         return client.getAvailableCapital()
+    }
+
+    override suspend fun getNextOrderId(): Int {
+        val client = session.getClient()
+        return client.getNextOrderId()
     }
 
     override suspend fun getHistoricalData(
