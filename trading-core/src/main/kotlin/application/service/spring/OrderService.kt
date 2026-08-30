@@ -10,6 +10,8 @@ import data.repository.portfolio.toEntity
 import data.repository.trader.toEntity
 import data.repository.user.toEntity
 import domain.interfaces.IOrderRepository
+import domain.order.OrderStatus
+import domain.order.toOrder
 import domain.trader.TradingOrder
 import exception.api.TraderNotFoundException
 import infrastructure.broker.OrderCancelledEvent
@@ -21,47 +23,52 @@ import org.springframework.stereotype.Service
 @Service
 class OrderService(
     private val ibkrService: IBrokerService,
-    private val traderService: TraderService,
     private val orderRepository: IOrderRepository,
-    private val session: IAuthenticationService,
-    private val portfolioService: IPortfolioService,
 ) : IOrderService {
+
     override suspend fun submit(order: TradingOrder) {
         val ibkrOrderId = ibkrService.getNextOrderId()
-        val user = session.currentUser()
-        val portfolio = portfolioService.getPortfolio(order.portfolioId)
 
-        val trader = traderService.getById(
-            portfolioId = portfolio.id,
-            traderId = order.traderId
-        ) ?: throw TraderNotFoundException(order.traderId)
-
-        val orderEntity = order.toEntity(
-            trader = trader.toEntity(portfolio.toEntity(user.toEntity())),
-            ibkrOrderId = ibkrOrderId
+        val persistedOrder = order.toOrder(
+            ibkrOrderId = ibkrOrderId,
         )
+        orderRepository.create(persistedOrder).getOrThrow()
 
-        ibkrService.placeOrder(ibkrOrderId, order.toBrokerOrder()
-            ?: throw IllegalArgumentException("Invalid trading order"))
-
-        orderRepository.save(orderEntity)
+        try {
+            ibkrService.placeOrder(ibkrOrderId, order.toBrokerOrder()!!)
+        } catch(e: Exception){
+            orderRepository.save(persistedOrder.copy(
+                status = OrderStatus.CANCELLED
+            )).getOrThrow()
+            throw e
+        }
     }
 
     @Transactional
     override suspend fun handleOrderSubmitted(event: OrderSubmittedEvent) {
-        val order = orderRepository.getByIbkrOrderIdAndTraderId(
-            ibkrOrderId = event.orderId,
-            traderId =
-        )
-
+        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
+        orderRepository.save(order.submitted()).getOrThrow()
     }
 
-    override fun handleOrderCancelled(event: OrderCancelledEvent) {
-        TODO("Not yet implemented")
+    @Transactional
+    override suspend fun handleOrderCancelled(event: OrderCancelledEvent) {
+        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
+        if(order.status == OrderStatus.FILLED) return
+
+        orderRepository.save(order.cancelled()).getOrThrow()
     }
 
-    override fun handleOrderFilled(event: OrderFilledEvent) {
-        TODO("Not yet implemented")
+    @Transactional
+    override suspend fun handleOrderFilled(event: OrderFilledEvent) {
+        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
+        if(order.status == OrderStatus.FILLED) return
+
+        orderRepository.save(order.filled(
+            filledQuantity = event.filled,
+            averageFillPrice = event.averageFillPrice
+        )).getOrThrow()
+
+        //TODO holding handling
     }
 
 }

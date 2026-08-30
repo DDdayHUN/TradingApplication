@@ -1,9 +1,9 @@
 package domain.interfaces
 
-import data.repository.order.OrderEntity
-import java.util.UUID
+import domain.order.Order
 
 interface IOrderRepository {
-    suspend fun save(order: OrderEntity): Result<OrderEntity>
-    suspend fun getByIbkrOrderIdAndTraderId(ibkrOrderId: Int, traderId: UUID): Result<OrderEntity>
+    suspend fun create(order: Order): Result<Order>
+    suspend fun save(order: Order): Result<Order>
+    suspend fun getByIbkrOrderId(ibkrOrderId: Int): Result<Order>
 }

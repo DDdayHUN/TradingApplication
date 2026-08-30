@@ -10,4 +10,7 @@ interface IPortfolioJpaRepository : JpaRepository<PortfolioEntity, UUID>{
 
     @EntityGraph(attributePaths = ["traders", "traders.holdings"])
     fun findByUserIdAndId(userId: UUID, id: UUID): PortfolioEntity?
+
+    @EntityGraph(attributePaths = ["traders"])
+    fun findByTradersId(traderId: UUID): PortfolioEntity?
 }

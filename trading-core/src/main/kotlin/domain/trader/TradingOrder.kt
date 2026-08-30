@@ -14,7 +14,6 @@ import java.util.UUID
 data class TradingOrder(
     val orderId: UUID = UUID.randomUUID(),
     val traderId: UUID,
-    val portfolioId: UUID,
     val securityIdentifier: SecurityIdentifier,
     val buy: TradingAlgorithm.Output.Buy?,
     val sell: TradingAlgorithm.Output.Sell?,

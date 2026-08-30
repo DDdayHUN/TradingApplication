@@ -45,7 +45,8 @@ CREATE TABLE app_order(
     action VARCHAR(10) NOT NULL,
     quantity DOUBLE PRECISION NOT NULL,
     status VARCHAR(30) NOT NULL,
-    filled_quantity DOUBLE PRECISION NOT NULL DEFAULT 0,
+    filled_quantity VARCHAR(30) NOT NULL,
+    signal_price DOUBLE PRECISION NOT NULL,
     average_fill_price DOUBLE PRECISION,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
@@ -92,3 +93,4 @@ VALUES (
     'a7d78e51-6369-4d78-bf96-024742a52954',
     10000.0
 );
+

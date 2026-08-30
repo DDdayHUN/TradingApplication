@@ -1,28 +1,40 @@
 package data.repository.order
 
+import data.repository.portfolio.IPortfolioJpaRepository
 import domain.interfaces.IOrderRepository
+import domain.order.Order
+import exception.api.TraderNotFoundException
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Repository
-import java.util.UUID
 
 @Repository
 class OrderRepository(
-    private val orderRepository: IOrderJpaRepository
+    private val orderRepository: IOrderJpaRepository,
+    private val portfolioRepository: IPortfolioJpaRepository
 ) : IOrderRepository {
-    override suspend fun save(order: OrderEntity): Result<OrderEntity> {
+
+    @Transactional
+    override suspend fun create(order: Order): Result<Order> {
         return runCatching {
-            orderRepository.save(order)
+            val portfolio = portfolioRepository.findByTradersId(order.traderId)
+                ?: throw IllegalArgumentException("Portfolio for trader ${order.traderId} not found")
+
+            val trader = portfolio.traders
+                .firstOrNull {trader ->
+                    trader.id == order.traderId
+                } ?: throw TraderNotFoundException(order.traderId)
+
+            orderRepository
+                .save(order.toEntity(trader))
+                .toDomain()
         }
     }
 
-    override suspend fun getByIbkrOrderIdAndTraderId(
-        ibkrOrderId: Int,
-        traderId: UUID
-    ): Result<OrderEntity> {
-        return runCatching {
-            orderRepository.findByIbkrOrderIdAndTraderId(
-                ibkrOrderId = ibkrOrderId,
-                traderId = traderId
-            ) ?: throw IllegalArgumentException("Order not found")
-        }
+    override suspend fun save(order: Order): Result<Order> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getByIbkrOrderId(ibkrOrderId: Int): Result<Order> {
+        TODO("Not yet implemented")
     }
 }

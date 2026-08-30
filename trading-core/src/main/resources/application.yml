@@ -1,25 +1,21 @@
 spring:
+
+  config:
+    import: "file:./.env[.properties]"
+
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8081/realms/trading
 
-  logging:
-    level:
-      root: INFO
-
   ibkr:
     host: ${IBKR_HOST}
     port: ${IBKR_PORT}
     client-id: ${IBKR_CLIENT_ID}
 
-
   flyway:
     locations: classpath:database/migration
-
-  config:
-    import: "file:./.env[.properties]"
 
   datasource:
     url: jdbc:postgresql://${TRADING_DB_URL}/${TRADING_DB_NAME}
@@ -29,8 +25,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-
     open-in-view: false
+
+
+logging:
+  level:
+    root: INFO
+
 
 server:
   port: 8080

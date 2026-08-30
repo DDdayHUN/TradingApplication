@@ -1,6 +1,6 @@
 package application.service.broker
 
-import data.repository.order.OrderAction
+import domain.order.OrderAction
 
 data class BrokerOrderRequest(
     val ticker: String,

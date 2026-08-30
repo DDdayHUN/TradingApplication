@@ -1,8 +1,6 @@
 package infrastructure.broker
 
 import application.logging.logger
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import org.springframework.stereotype.Component
 
 @Component
@@ -15,30 +13,35 @@ class IbkrSession(
     // Private Field(s)
 
     private val logger = logger<IbkrSession>()
-    private val connectionMutex = Mutex()
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
+    suspend fun connect(){
+        if (client.isConnected()) return
+
+        logger.info(
+            "Connecting to IBKR host={} port={} clientId={}",
+            config.host,
+            config.port,
+            config.clientId
+        )
+
+        client.connect(
+            config.host,
+            config.port,
+            config.clientId
+        )
+    }
+
     suspend fun getClient(): IbkrClient {
-        if(client.isConnected()) return client
-        connectionMutex.withLock {
-            if(client.isConnected()) return client
-
-            logger.info("Creating IBKR session host={} port={} clientId={}",
-                config.host, config.port, config.clientId)
-
-            client.connect(
-                host = config.host,
-                port = config.port,
-                clientId = config.clientId
-            )
-        }
+        connect()
         return client
     }
 
-    fun disconnect(){
+     fun disconnect(){
+        if(!client.isConnected()) return
         client.disconnect()
     }
 }

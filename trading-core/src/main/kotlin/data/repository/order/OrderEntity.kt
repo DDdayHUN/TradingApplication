@@ -1,8 +1,12 @@
 package data.repository.order
 
 import application.service.broker.BrokerOrderRequest
+import data.repository.portfolio.PortfolioEntity
 import data.repository.security.toDomain
 import data.repository.trader.TraderEntity
+import domain.order.Order
+import domain.order.OrderAction
+import domain.order.OrderStatus
 import domain.trader.TradingOrder
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -39,12 +43,15 @@ class OrderEntity(
     @Column(name = "quantity", nullable = false)
     var quantity: Double,
 
+    @Column(name = "signal_price", nullable = false)
+    var signalPrice: Double,
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: OrderStatus,
 
     @Column(name = "filled_quantity", nullable = false)
-    var filledQuantity: Double = 0.0,
+    var filledQuantity: String = "",
 
     @Column(name = "average_fill_price")
     var averageFillPrice: Double? = null,
@@ -52,20 +59,6 @@ class OrderEntity(
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: Instant = Instant.now(),
 )
-
-enum class OrderAction {
-    BUY,
-    SELL
-}
-
-enum class OrderStatus {
-    PENDING,
-    SUBMITTED,
-    PARTIALLY_FILLED,
-    FILLED,
-    CANCELLED,
-    REJECTED
-}
 
 fun TradingOrder.toBrokerOrder(): BrokerOrderRequest? {
     if(this.buy == null && this.sell == null) return null
@@ -87,40 +80,33 @@ fun TradingOrder.toBrokerOrder(): BrokerOrderRequest? {
     )
 }
 
-fun TradingOrder.toEntity(trader: TraderEntity, ibkrOrderId: Int): OrderEntity {
-    val action: OrderAction
-    val quantity: Double
-
-    when {
-        buy != null && sell == null -> {
-            action = OrderAction.BUY
-            quantity = buy.amount.toDouble()
-        }
-
-        sell != null && buy == null -> {
-            action = OrderAction.SELL
-            quantity = sell.batches
-                .sumOf { (_, amount) -> amount }
-                .toDouble()
-        }
-
-        else -> {
-            throw IllegalArgumentException(
-                "TradingOrder must contain exactly one action: BUY or SELL"
-            )
-        }
-    }
-
+fun Order.toEntity(trader: TraderEntity): OrderEntity {
     return OrderEntity(
-        id = orderId,
+        id = id,
         ibkrOrderId = ibkrOrderId,
         trader = trader,
         action = action,
         quantity = quantity,
-        status = OrderStatus.PENDING,
-        filledQuantity = 0.0,
-        averageFillPrice = null,
-        createdAt = createdAt,
+        signalPrice = signalPrice,
+        status = status,
+        filledQuantity = filledQuantity,
+        averageFillPrice = averageFillPrice,
+        createdAt = createdAt
+    )
+}
+
+fun OrderEntity.toDomain(): Order {
+    return Order(
+        id = id,
+        ibkrOrderId = ibkrOrderId,
+        traderId = trader.id,
+        action = action,
+        quantity = quantity,
+        signalPrice = signalPrice,
+        status = status,
+        filledQuantity = filledQuantity,
+        averageFillPrice = averageFillPrice,
+        createdAt = createdAt
     )
 }
 

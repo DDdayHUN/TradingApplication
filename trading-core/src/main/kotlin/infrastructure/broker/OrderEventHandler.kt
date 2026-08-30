@@ -8,18 +8,19 @@ import org.springframework.stereotype.Component
 class OrderEventHandler(
     private val orderService: OrderService
 ) {
+
     @EventListener
-    fun handle(event: OrderSubmittedEvent) {
+    suspend fun handle(event: OrderSubmittedEvent) {
         orderService.handleOrderSubmitted(event)
     }
 
     @EventListener
-    fun handle(event: OrderFilledEvent){
+    suspend fun handle(event: OrderFilledEvent){
         orderService.handleOrderFilled(event)
     }
 
     @EventListener
-    fun handle(event: OrderCancelledEvent){
+    suspend fun handle(event: OrderCancelledEvent){
         orderService.handleOrderCancelled(event)
     }
 }
