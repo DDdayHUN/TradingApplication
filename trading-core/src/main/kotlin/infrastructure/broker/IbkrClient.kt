@@ -566,14 +566,29 @@ class IbkrClient(
 
     override fun contractDataEndProtoBuf(p0: ContractDataEndProto.ContractDataEnd?) {}
 
-    override fun tickPriceProtoBuf(message: TickPriceProto.TickPrice?) {
-        if(message == null || message.price <= 0) return
+    override fun tickPriceProtoBuf(
+        message: TickPriceProto.TickPrice?
+    ) {
+        if (message == null || message.price <= 0) return
 
-        if(message.tickType != 4 && message.tickType != 68) return
+        logger.info(
+            "IBKR PRICE TICK reqId={} tickType={} price={}",
+            message.reqId,
+            message.tickType,
+            message.price
+        )
 
-        pendingPrices[message.reqId]
-            ?.takeIf { !it.isCompleted }
-            ?.complete(message.price)
+        when (message.tickType) {
+            4,   // LAST
+            68,  // DELAYED_LAST
+            9,   // CLOSE
+            75   // DELAYED_CLOSE
+                -> {
+                pendingPrices[message.reqId]
+                    ?.takeIf { !it.isCompleted }
+                    ?.complete(message.price)
+            }
+        }
     }
 
     override fun tickSizeProtoBuf(p0: TickSizeProto.TickSize?) {}

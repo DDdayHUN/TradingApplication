@@ -27,7 +27,7 @@ class Test(
     )
 
     @Scheduled(
-        cron = "* 23 23 * * *",
+        cron = "*/15 * * * * *",
         zone = "Europe/Budapest"
     )
     fun placeNvdaTestOrder() {
@@ -38,6 +38,7 @@ class Test(
 
                 val order = traderService.executeTrader(portfolioId, traderId)
                 logger.info("TRADING ORDER: ${order.toReadableText()}")
+                logger.info("QUOTE: ${order.atPrice}")
 
                 orderService.submit(order)
 

@@ -40,6 +40,14 @@ class PortfolioRepository(
        }
     }
 
+    override suspend fun getByTraderId(traderId: UUID): Result<Portfolio> {
+        return runCatching{
+            val portfolio = portfolioRepository.findByTradersId(traderId)
+                ?: throw IllegalArgumentException("Portfolio not found for trader with id $traderId")
+            portfolio.toDomain()
+        }
+    }
+
     override suspend fun getById(id: UUID): Result<Portfolio> {
         return runCatching {
            val portfolio = portfolioRepository.findWithRelationsById(id)

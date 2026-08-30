@@ -10,4 +10,5 @@ interface IPortfolioRepository {
     suspend fun getById(id: UUID): Result<Portfolio>
     suspend fun getByIdForUser(userId: UUID, id: UUID): Result<Portfolio>
     suspend fun getAllByUserId(userId: UUID): Result<List<Portfolio>>
+    suspend fun getByTraderId(traderId: UUID): Result<Portfolio>
 }

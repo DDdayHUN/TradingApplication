@@ -79,9 +79,6 @@ class TraderEntity(
     @OneToMany(mappedBy = "trader", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
     var holdings: MutableSet<SecurityHoldingEntity> = mutableSetOf()
 
-    @OneToMany(mappedBy = "trader", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
-    var orders: MutableList<OrderEntity> = mutableListOf()
-
     //===========================================================//
     //===========================================================//
     // Public Method(s)

@@ -1,20 +1,13 @@
 package application.service.spring
 
-import application.service.IAuthenticationService
 import application.service.IOrderService
-import application.service.IPortfolioService
 import application.service.ITraderService
 import application.service.broker.IBrokerService
 import data.repository.order.toBrokerOrder
-import data.repository.order.toEntity
-import data.repository.portfolio.toEntity
-import data.repository.trader.toEntity
-import data.repository.user.toEntity
 import domain.interfaces.IOrderRepository
 import domain.order.OrderStatus
 import domain.order.toOrder
 import domain.trader.TradingOrder
-import exception.api.TraderNotFoundException
 import infrastructure.broker.OrderCancelledEvent
 import infrastructure.broker.OrderFilledEvent
 import infrastructure.broker.OrderSubmittedEvent
@@ -63,21 +56,20 @@ class OrderService(
     }
 
     @Transactional
-    override suspend fun handleOrderFilled(event: OrderFilledEvent) {
+    @Deprecated("Ez most nem jo mert csak buyt tud csinalni sellnel meg meg kell csinalni")
+    override suspend fun handleBuyOrderFilled(event: OrderFilledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
         if(order.status == OrderStatus.FILLED) return
+
+        traderService.applyBuyFill(
+            traderId = order.traderId,
+            filledQuantity = event.filled.toInt(),
+            averageFillPrice = event.averageFillPrice
+        )
 
         orderRepository.save(order.filled(
             filledQuantity = event.filled,
             averageFillPrice = event.averageFillPrice
         )).getOrThrow()
-
-        traderService.applyFill(
-            traderId = order.traderId,
-            action = order.action,
-            filledQuantity = event.filled,
-            averageFillPrice = event.averageFillPrice
-        )
     }
-
 }

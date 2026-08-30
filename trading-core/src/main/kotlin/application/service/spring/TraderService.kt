@@ -7,6 +7,7 @@ import application.service.IPortfolioService
 import application.service.ITraderService
 import data.network.MarketDataProvider
 import domain.algorithm.TradingAlgorithm
+import domain.market.Quote
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
 import domain.order.OrderAction
@@ -96,41 +97,29 @@ class TraderService(
             trader.id == traderId
         }?: throw TraderNotFoundException(traderId)
 
-        val quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(trader.securityIdentifier).getOrThrow()
-
+        //val quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(trader.securityIdentifier).getOrThrow()
+        val quote = Quote(160.0)
         val order = trader.createOrder(quote)
 
-        trader.finalizeOrder(order)
         portfolioService.save(portfolio)
 
         return order
     }
 
-    override suspend fun applyFill(portfolioId:UUID, traderId: UUID, action: OrderAction, filledQuantity: String, averagePrice: Double,sellBatches: List<Pair<SecurityHolding, Int>>) {
-        val portfolio = portfolioService.getPortfolio(portfolioId)
-        val trader = portfolio.traders.find {trader ->
-            trader.id == traderId
-        }?: throw TraderNotFoundException(traderId)
+    @Transactional
+    override suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double) {
+        val portfolio = portfolioService.getPortfolioByTraderId(traderId)
 
-        when (action) {
-            OrderAction.BUY -> {
-                trader.applyBuyFill(
-                    price = averagePrice,
-                    amount = filledQuantity.toInt()
-                )
-            }
+        val trader = portfolio.traders.find {
+            it.id == traderId
+        } ?: throw TraderNotFoundException(traderId)
 
-            OrderAction.SELL -> {
-                val batches = requireNotNull(sellBatches) {
-                    "Sell batches are required for SELL fill"
-                }
+        trader.applyBuyFill(
+            price = averageFillPrice,
+            amount = filledQuantity
+        )
 
-                trader.applySellFill(
-                    price = averagePrice,
-                    batches = batches
-                )
-            }
-        }
+        portfolioService.save(portfolio)
     }
 
     //===========================================================//

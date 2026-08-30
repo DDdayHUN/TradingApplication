@@ -9,6 +9,7 @@ interface IPortfolioService {
     suspend fun getAllPortfolio(userId: UUID): List<Portfolio>
     suspend fun getPortfolio(userId: UUID, id: UUID): Portfolio
     suspend fun getPortfolio(portfolioId: UUID): Portfolio
+    suspend fun getPortfolioByTraderId(traderId: UUID): Portfolio
     suspend fun deleteAllPortfolio(userId: UUID): Boolean
     suspend fun deletePortfolio(userId: UUID, id: UUID): Boolean
 }

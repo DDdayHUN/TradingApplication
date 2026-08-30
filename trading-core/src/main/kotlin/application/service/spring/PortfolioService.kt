@@ -50,6 +50,11 @@ class PortfolioService(
         return portfolioRepository.getById(portfolioId).getOrThrow()
     }
 
+    @Transactional(readOnly = true)
+    override suspend fun getPortfolioByTraderId(traderId: UUID): Portfolio {
+        return portfolioRepository.getByTraderId(traderId).getOrThrow()
+    }
+
     //===========================================================//
 
     @Transactional
