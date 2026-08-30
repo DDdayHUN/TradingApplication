@@ -5,11 +5,15 @@ import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
 import application.service.IPortfolioService
 import application.service.ITraderService
+import data.network.MarketDataProvider
 import domain.algorithm.TradingAlgorithm
+import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
+import domain.order.OrderAction
 import domain.trader.Trader
 import domain.trader.TradingOrder
 import exception.api.TraderNotFoundException
+import infrastructure.broker.IbkrSession
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -19,15 +23,16 @@ import java.util.UUID
 
 @Service
 class TraderService(
-    private val portfolioService: IPortfolioService
+    private val portfolioService: IPortfolioService,
+    private val ibkrSession: IbkrSession,
 ) : ITraderService {
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
     @Transactional
-    override suspend fun createTrader(portfolioId: UUID, request: CreateTraderRequest): Trader {
-        val portfolio = portfolioService.getPortfolio(portfolioId)
+    override suspend fun createTrader(userId: UUID, portfolioId: UUID, request: CreateTraderRequest): Trader {
+        val portfolio = portfolioService.getPortfolio(userId, portfolioId)
         val securityIdentifier = SecurityIdentifier(
             isin = request.securityIdentifier.isin,
             tickerSymbol = request.securityIdentifier.tickerSymbol,
@@ -57,15 +62,15 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAllByPortfolioId(portfolioId: UUID): Set<Trader> {
-       return portfolioService.getPortfolio(portfolioId).traders
+    override suspend fun getAllByPortfolioId(userId: UUID, portfolioId: UUID): Set<Trader> {
+       return portfolioService.getPortfolio(userId,portfolioId).traders
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getById(portfolioId: UUID, traderId: UUID): Trader? {
-        val portfolio =  portfolioService.getPortfolio(portfolioId)
+    override suspend fun getById(userId: UUID, portfolioId: UUID, traderId: UUID): Trader? {
+        val portfolio =  portfolioService.getPortfolio(userId, portfolioId)
 
         val trader = portfolio.traders.find { trader ->
             trader.id == traderId
@@ -84,8 +89,48 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    suspend fun executeTrader(userId: UUID, portfolioId: UUID, traderId: UUID): TradingOrder {
-        TODO("Implement later")
+    override suspend fun executeTrader(portfolioId: UUID, traderId: UUID): TradingOrder {
+        val portfolio = portfolioService.getPortfolio(portfolioId)
+
+        val trader = portfolio.traders.find {trader ->
+            trader.id == traderId
+        }?: throw TraderNotFoundException(traderId)
+
+        val quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(trader.securityIdentifier).getOrThrow()
+
+        val order = trader.createOrder(quote)
+
+        trader.finalizeOrder(order)
+        portfolioService.save(portfolio)
+
+        return order
+    }
+
+    override suspend fun applyFill(portfolioId:UUID, traderId: UUID, action: OrderAction, filledQuantity: String, averagePrice: Double,sellBatches: List<Pair<SecurityHolding, Int>>) {
+        val portfolio = portfolioService.getPortfolio(portfolioId)
+        val trader = portfolio.traders.find {trader ->
+            trader.id == traderId
+        }?: throw TraderNotFoundException(traderId)
+
+        when (action) {
+            OrderAction.BUY -> {
+                trader.applyBuyFill(
+                    price = averagePrice,
+                    amount = filledQuantity.toInt()
+                )
+            }
+
+            OrderAction.SELL -> {
+                val batches = requireNotNull(sellBatches) {
+                    "Sell batches are required for SELL fill"
+                }
+
+                trader.applySellFill(
+                    price = averagePrice,
+                    batches = batches
+                )
+            }
+        }
     }
 
     //===========================================================//

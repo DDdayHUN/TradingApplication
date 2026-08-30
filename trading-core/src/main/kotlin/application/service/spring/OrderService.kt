@@ -3,6 +3,7 @@ package application.service.spring
 import application.service.IAuthenticationService
 import application.service.IOrderService
 import application.service.IPortfolioService
+import application.service.ITraderService
 import application.service.broker.IBrokerService
 import data.repository.order.toBrokerOrder
 import data.repository.order.toEntity
@@ -24,9 +25,12 @@ import org.springframework.stereotype.Service
 class OrderService(
     private val ibkrService: IBrokerService,
     private val orderRepository: IOrderRepository,
+    private val traderService: ITraderService,
 ) : IOrderService {
 
     override suspend fun submit(order: TradingOrder) {
+        if(order.buy == null && order.sell == null) return
+
         val ibkrOrderId = ibkrService.getNextOrderId()
 
         val persistedOrder = order.toOrder(
@@ -68,7 +72,12 @@ class OrderService(
             averageFillPrice = event.averageFillPrice
         )).getOrThrow()
 
-        //TODO holding handling
+        traderService.applyFill(
+            traderId = order.traderId,
+            action = order.action,
+            filledQuantity = event.filled,
+            averageFillPrice = event.averageFillPrice
+        )
     }
 
 }

@@ -14,7 +14,6 @@ import java.util.UUID
 
 @Service
 class PortfolioService(
-    private val session: IAuthenticationService,
     private val portfolioRepository: IPortfolioRepository
 ) : IPortfolioService {
     //===========================================================//
@@ -23,44 +22,45 @@ class PortfolioService(
 
     @Transactional
     override suspend fun save(portfolio: Portfolio): Portfolio {
-        val user = session.currentUser()
-        return portfolioRepository.save(user, portfolio).getOrThrow()
+        return portfolioRepository.save(portfolio).getOrThrow()
     }
 
     @Transactional
-    override suspend fun createPortfolio(): Portfolio {
-        val user = session.currentUser()
+    override suspend fun createPortfolio(userId: UUID): Portfolio {
         val portfolio = Portfolio()
-        return portfolioRepository.save(user, portfolio).getOrThrow()
+        return portfolioRepository.create(userId, portfolio).getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAllPortfolio(): List<Portfolio> {
-        val user = session.currentUser()
-        return portfolioRepository.getAllByUser(user).getOrThrow()
+    override suspend fun getAllPortfolio(userId: UUID): List<Portfolio> {
+        return portfolioRepository.getAllByUserId(userId).getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getPortfolio(id: UUID): Portfolio {
-        val user = session.currentUser()
-        return  portfolioRepository.getByIdForUser(user, id).getOrThrow()
+    override suspend fun getPortfolio(userId: UUID, id: UUID): Portfolio {
+        return  portfolioRepository.getByIdForUser(userId, id).getOrThrow()
+    }
+
+    @Transactional(readOnly = true)
+    override suspend fun getPortfolio(portfolioId: UUID): Portfolio {
+        return portfolioRepository.getById(portfolioId).getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun deleteAllPortfolio(): Boolean {
+    override suspend fun deleteAllPortfolio(userId: UUID): Boolean {
         TODO("Not yet implemented")
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun deletePortfolio(id: UUID): Boolean {
+    override suspend fun deletePortfolio(userId: UUID, id: UUID): Boolean {
         TODO("Not yet implemented")
     }
 }

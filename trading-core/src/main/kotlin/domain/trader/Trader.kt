@@ -63,6 +63,7 @@ class Trader {
      *
      * @param order the order that has been accepted and should be finalized.
      */
+    @Deprecated("Will be removed in the future")
     fun finalizeOrder(order: TradingOrder) {
         if(order.buy != null) buy(order.atPrice, order.buy.amount)
         if(order.sell != null) {
@@ -71,6 +72,39 @@ class Trader {
                 val amountToSell = batch.second
                 sell(holding, order.atPrice, amountToSell)
             }
+        }
+    }
+
+    //===========================================================//
+
+    fun applyBuyFill(price: Double, amount: Int) {
+        buy(
+            price = price,
+            amount = amount
+        )
+    }
+
+    //===========================================================//
+
+    fun applySellFill(
+        price: Double,
+        batches: List<Pair<SecurityHolding, Int>>
+    ) {
+        batches.forEach { batch ->
+            val requestedHolding = batch.first
+            val amountToSell = batch.second
+
+            val actualHolding = m_Holdings.find {
+                it.id == requestedHolding.id
+            } ?: throw IllegalStateException(
+                "Holding ${requestedHolding.id} not found"
+            )
+
+            sell(
+                holding = actualHolding,
+                price = price,
+                amount = amountToSell
+            )
         }
     }
 
