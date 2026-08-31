@@ -3,7 +3,9 @@ package infrastructure.broker
 import application.logging.logger
 import application.service.IOrderService
 import application.service.ITraderService
+import data.network.MarketDataProvider
 import domain.algorithm.TradingAlgorithm
+import domain.market.security.SecurityIdentifier
 import domain.trader.TradingOrder
 import exception.api.TraderNotFoundException
 import kotlinx.coroutines.CoroutineScope
@@ -13,7 +15,7 @@ import kotlinx.coroutines.launch
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.UUID
-
+@Deprecated("ONLY TESTING")
 @Component
 class Test(
     private val orderService: IOrderService,
@@ -21,13 +23,12 @@ class Test(
 ) {
 
     private val logger = logger<Test>()
-
     private val scope = CoroutineScope(
         SupervisorJob() + Dispatchers.IO
     )
 
     @Scheduled(
-        cron = "0 20 16 * * *",
+        cron = "0 22 22 * * *",
         zone = "Europe/Budapest"
     )
     fun placeNvdaTestOrder() {
@@ -51,47 +52,30 @@ class Test(
         }
     }
 
-    fun testForcedBuyProcess() {
-        scope.launch {
-            try {
-                val userId =
-                    UUID.fromString("f0792158-24a0-427f-999d-6cf8fa3a0cf3")
 
-                val portfolioId =
-                    UUID.fromString("567f34ad-8b05-44ac-a944-05adfb9fe897")
 
-                val traderId =
-                    UUID.fromString("47c11a67-92ea-481d-b858-00b12aff009b")
-
-                val trader = traderService.getById(
-                    userId = userId,
-                    portfolioId = portfolioId,
-                    traderId = traderId
-                ) ?: throw TraderNotFoundException(traderId)
-
-                val order = TradingOrder(
-                    traderId = trader.id,
-                    securityIdentifier = trader.securityIdentifier,
-                    buy = TradingAlgorithm.Output.Buy(
-                        amount = 10
-                    ),
-                    sell = null,
-                    atPrice = 0.0
+    //@Scheduled(
+    //   cron = "*/10 * * * * *",
+    //    zone = "Europe/Budapest"
+    //)
+    /*
+    private suspend fun getFinnhubQuote() {
+        scope.launch{
+            try{
+                val provider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
+                val identifier = SecurityIdentifier(
+                    isin = "US67066G1040",
+                    tickerSymbol = "NVDA",
+                    currency = "USD",
                 )
+                val quote = provider.getQuote(identifier).getOrThrow()
 
-                logger.info(
-                    "FORCED BUY TEST: {}",
-                    order.toReadableText()
-                )
-
-                orderService.submit(order)
-
+                logger.info("Current Price for ${identifier.tickerSymbol} : ${quote.currentPrice}")
             } catch (e: Exception) {
-                logger.error(
-                    "FORCED BUY TEST failed",
-                    e
-                )
+                logger.error("Failed to get Finnhub Quote}", e)
             }
         }
     }
+    */
+
 }

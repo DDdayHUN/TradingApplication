@@ -48,18 +48,29 @@ internal class FinnhubClient (
      */
 
     suspend fun getQuoteAsync(identifier: SecurityIdentifier): Result<FinnhubQuoteResponseDto> {
-        val symbol = getSymbolAsync(identifier.isin).getOrElse {
-            error -> return Result.failure(error)
+        val ticker = identifier.tickerSymbol
+        val encodedTicker = URLEncoder.encode(ticker, StandardCharsets.UTF_8)
+
+        val tickerResult =
+            getJsonAsync<FinnhubQuoteResponseDto>("/quote?symbol=$encodedTicker")
+
+        if (tickerResult.isSuccess) {
+            return tickerResult
         }
 
-        val encodedSymbol = URLEncoder.encode(symbol, StandardCharsets.UTF_8)
+        val symbol = getSymbolAsync(identifier.isin).getOrElse {
+            return Result.failure(it)
+        }
+
+        val encodedSymbol =
+            URLEncoder.encode(symbol, StandardCharsets.UTF_8)
 
         return getJsonAsync("/quote?symbol=$encodedSymbol")
     }
 
     /*===================================================*/
     /*===================================================*/
-    // Private Method(es)
+    // Private Method(es)id
 
     /**
      * Gets Ticker Symbol for a given isin number.

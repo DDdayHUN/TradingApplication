@@ -21,8 +21,15 @@ class OrderService(
     private val orderRepository: IOrderRepository,
     private val traderService: ITraderService,
 ) : IOrderService {
+    //===========================================================//
+    //===========================================================//
+    // Private Field(s)
 
     private val logger = logger<OrderService>()
+
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
 
     override suspend fun submit(order: TradingOrder) {
         if(order.buy == null && order.sell == null) return
@@ -44,11 +51,15 @@ class OrderService(
         }
     }
 
+    //===========================================================//
+
     @Transactional
     override suspend fun handleOrderSubmitted(event: OrderSubmittedEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
         orderRepository.save(order.submitted()).getOrThrow()
     }
+
+    //===========================================================//
 
     @Transactional
     override suspend fun handleOrderCancelled(event: OrderCancelledEvent) {
@@ -57,6 +68,8 @@ class OrderService(
 
         orderRepository.save(order.cancelled()).getOrThrow()
     }
+
+    //===========================================================//
 
     @Transactional
     @Deprecated("Ez most nem jo mert csak buyt tud csinalni sellnel meg meg kell csinalni")

@@ -1,26 +1,15 @@
-import application.service.borker.InteractiveBrokersService
 import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
-import data.network.MarketDataProvider
 import data.repository.historical_data.HistoricalMarketDataProvider
-import data.repository.historical_data.ibkr.IbkrHistoricalMarketDataProvider
 import data.repository.trader.TraderRepositoryProvider
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.trader.Trader
-import infrastructure.broker.IbkrClient
-import infrastructure.broker.IbkrConfig
-import infrastructure.broker.IbkrSession
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import kotlin.time.Clock
-import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 suspend fun main() {
@@ -35,7 +24,6 @@ suspend fun main() {
 
     val c_RUN_TRADER_TEST = true
     val c_CLEAR_TRADER_TEST_FOLDER = false
-    val c_RUN_IBKR_TEST = false
 
     //===========================================================//
     //===========================================================//
@@ -171,13 +159,6 @@ suspend fun main() {
             tradersToTest.forEach { trader ->
                 TraderTester(trader).runTest()
             }
-        }
-    }
-
-    //===========================================================//
-
-    if (c_RUN_IBKR_TEST) {
-        withContext(Dispatchers.Default) {
         }
     }
 }
