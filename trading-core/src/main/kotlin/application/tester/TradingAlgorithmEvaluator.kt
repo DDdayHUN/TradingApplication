@@ -8,10 +8,10 @@ import domain.utils.Math.bottom
 import domain.utils.Math.median
 import domain.utils.Math.top
 import domain.utils.Math.trim
+import format
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import format
 import java.time.Duration
 import java.time.ZoneOffset
 import kotlin.math.pow

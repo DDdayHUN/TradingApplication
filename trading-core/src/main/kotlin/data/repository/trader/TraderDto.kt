@@ -4,7 +4,7 @@ import domain.algorithm.ITradingAlgorithm
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
-import java.util.UUID
+import java.util.*
 
 @Deprecated("FakeTraderDto")
 internal data class TraderDto(

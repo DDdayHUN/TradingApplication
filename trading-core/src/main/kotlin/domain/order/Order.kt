@@ -2,7 +2,7 @@ package domain.order
 
 import domain.trader.TradingOrder
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 data class Order(
     val id: UUID,

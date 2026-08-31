@@ -5,11 +5,7 @@ import domain.market.security.SecurityHolding
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 @DisplayName("TACPP46 trading algorithm")
 internal class TACPP46Test {

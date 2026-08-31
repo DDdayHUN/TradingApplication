@@ -1,9 +1,8 @@
 package infrastructure.broker
 
+import application.logging.logger
 import com.ib.client.*
 import com.ib.client.protobuf.*
-import java.lang.Exception
-import application.logging.logger
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay

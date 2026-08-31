@@ -2,14 +2,10 @@ package data.repository.trader
 
 import com.google.gson.GsonBuilder
 import data.repository.utils.RepositoryUtils
-import domain.market.security.SecurityIdentifier
 import domain.interfaces.ITraderRepository
+import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.File
 
 @Deprecated("Fake repo")

@@ -1,7 +1,7 @@
 package api.dto
 
 import domain.Portfolio
-import java.util.UUID
+import java.util.*
 
 //===========================================================//
 //===========================================================//

@@ -3,9 +3,9 @@ package data.network.finnhub
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
-import kotlinx.coroutines.future.await
-import domain.market.security.SecurityIdentifier
 import data.network.httpGetRequestBuilder
+import domain.market.security.SecurityIdentifier
+import kotlinx.coroutines.future.await
 import java.io.IOException
 import java.net.URLEncoder
 import java.net.http.HttpClient

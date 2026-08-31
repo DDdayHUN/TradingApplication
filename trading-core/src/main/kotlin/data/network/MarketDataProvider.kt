@@ -5,7 +5,6 @@ import data.network.finnhub.FinnhubConfig
 import data.network.finnhub.FinnhubMarketDataProvider
 import data.network.ibkr.IbkrMarketDataProvider
 import domain.interfaces.IMarketDataProvider
-import infrastructure.broker.IbkrClient
 import infrastructure.broker.IbkrSession
 
 //===========================================================//

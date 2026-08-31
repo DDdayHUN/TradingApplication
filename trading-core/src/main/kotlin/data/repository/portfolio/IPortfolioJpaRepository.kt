@@ -2,7 +2,7 @@ package data.repository.portfolio
 
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import java.util.*
 
 interface IPortfolioJpaRepository : JpaRepository<PortfolioEntity, UUID>{
     @EntityGraph(attributePaths = ["traders", "traders.holdings"])

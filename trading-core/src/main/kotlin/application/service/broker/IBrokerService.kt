@@ -2,7 +2,6 @@ package application.service.broker
 
 import domain.market.security.SecurityIdentifier
 import infrastructure.broker.IbkrHistoricalBar
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Instant
 
 interface IBrokerService {

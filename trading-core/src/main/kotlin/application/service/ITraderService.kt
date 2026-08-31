@@ -3,7 +3,7 @@ package application.service
 import api.dto.CreateTraderRequest
 import domain.trader.Trader
 import domain.trader.TradingOrder
-import java.util.UUID
+import java.util.*
 
 interface ITraderService {
     suspend fun createTrader(userId: UUID, portfolioId: UUID, request: CreateTraderRequest): Trader

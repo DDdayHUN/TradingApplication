@@ -1,13 +1,11 @@
 package application.service.spring
 
-import application.service.IAuthenticationService
 import application.service.IPortfolioService
 import domain.Portfolio
 import domain.interfaces.IPortfolioRepository
-import exception.api.PortfolioNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 
 //===========================================================//
 //===========================================================//

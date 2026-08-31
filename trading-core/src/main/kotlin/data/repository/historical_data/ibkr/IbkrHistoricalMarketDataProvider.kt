@@ -1,6 +1,6 @@
 package data.repository.historical_data.ibkr
 
-import application.service.borker.InteractiveBrokersService
+import application.service.broker.InteractiveBrokersService
 import domain.interfaces.IHistoricalMarketDataProvider
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityIdentifier

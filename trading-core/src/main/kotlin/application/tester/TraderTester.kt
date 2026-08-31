@@ -1,11 +1,11 @@
 package application.tester
 
-import domain.market.security.SecurityHolding
-import data.repository.trader.FakeTraderRepository
-import domain.interfaces.ITraderRepository
-import domain.trader.Trader
-import domain.interfaces.IMarketDataProvider
 import data.network.MarketDataProvider
+import data.repository.trader.FakeTraderRepository
+import domain.interfaces.IMarketDataProvider
+import domain.interfaces.ITraderRepository
+import domain.market.security.SecurityHolding
+import domain.trader.Trader
 
 //===========================================================//
 /**

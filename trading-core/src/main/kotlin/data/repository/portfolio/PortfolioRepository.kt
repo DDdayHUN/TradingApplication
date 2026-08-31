@@ -2,12 +2,11 @@ package data.repository.portfolio
 
 import data.repository.user.toEntity
 import domain.Portfolio
-import domain.User
 import domain.interfaces.IPortfolioRepository
 import domain.interfaces.IUserRepository
 import exception.api.PortfolioNotFoundException
 import org.springframework.stereotype.Repository
-import java.util.UUID
+import java.util.*
 
 @Repository
 class PortfolioRepository(
