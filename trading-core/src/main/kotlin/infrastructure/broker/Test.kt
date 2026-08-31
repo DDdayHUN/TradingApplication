@@ -27,7 +27,7 @@ class Test(
     )
 
     @Scheduled(
-        cron = "*/15 * * * * *",
+        cron = "0 20 16 * * *",
         zone = "Europe/Budapest"
     )
     fun placeNvdaTestOrder() {
@@ -51,10 +51,6 @@ class Test(
         }
     }
 
-    @Scheduled(
-        cron = "0 0 16 * * *",
-        zone = "Europe/Budapest"
-    )
     fun testForcedBuyProcess() {
         scope.launch {
             try {

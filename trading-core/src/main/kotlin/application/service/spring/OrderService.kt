@@ -1,5 +1,6 @@
 package application.service.spring
 
+import application.logging.logger
 import application.service.IOrderService
 import application.service.ITraderService
 import application.service.broker.IBrokerService
@@ -20,6 +21,8 @@ class OrderService(
     private val orderRepository: IOrderRepository,
     private val traderService: ITraderService,
 ) : IOrderService {
+
+    private val logger = logger<OrderService>()
 
     override suspend fun submit(order: TradingOrder) {
         if(order.buy == null && order.sell == null) return
@@ -65,6 +68,13 @@ class OrderService(
             traderId = order.traderId,
             filledQuantity = event.filled.toInt(),
             averageFillPrice = event.averageFillPrice
+        )
+
+        logger.info(
+            "Applying filled order orderId={} quantity={} avgPrice={}",
+            event.orderId,
+            event.filled,
+            event.averageFillPrice
         )
 
         orderRepository.save(order.filled(

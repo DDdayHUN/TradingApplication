@@ -438,30 +438,12 @@ class IbkrClient(
 
         when(message.status){
             "Submitted" -> {
-                logger.info(
-                    "IBKR order submitted successfully. orderId={}, filled={}, remaining={}",
-                    message.orderId,
-                    message.filled,
-                    message.remaining
-                )
                 event.publishEvent(OrderSubmittedEvent(message.orderId))
             }
             "Filled" -> {
-                logger.info(
-                    "IBKR order filled. orderId={}, filledQuantity={}, averageFillPrice={}",
-                    message.orderId,
-                    message.filled,
-                    message.avgFillPrice
-                )
                 event.publishEvent(OrderFilledEvent(message.orderId, message.filled, message.avgFillPrice))
             }
             "Cancelled" -> {
-                logger.warn(
-                    "IBKR order cancelled. orderId={}, filledQuantity={}, remaining={}",
-                    message.orderId,
-                    message.filled,
-                    message.remaining
-                )
                 event.publishEvent(OrderCancelledEvent(message.orderId))
             }
         }

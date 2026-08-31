@@ -97,8 +97,8 @@ class TraderService(
             trader.id == traderId
         }?: throw TraderNotFoundException(traderId)
 
-        //val quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(trader.securityIdentifier).getOrThrow()
-        val quote = Quote(160.0)
+        val quote = MarketDataProvider.create(MarketDataProvider.Type.Finnhub).getQuote(trader.securityIdentifier).getOrThrow()
+
         val order = trader.createOrder(quote)
 
         portfolioService.save(portfolio)

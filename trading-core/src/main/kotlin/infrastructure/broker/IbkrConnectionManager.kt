@@ -28,8 +28,8 @@ class IbkrConnectionManager(
                 session.connect()
             }catch(e: Exception){
                 logger.error("Could not connect to IB Gateway")
+                throw e
             }
-
         }
     }
 
