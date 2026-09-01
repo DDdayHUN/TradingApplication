@@ -6,6 +6,8 @@ import com.ib.client.protobuf.*
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
@@ -36,6 +38,7 @@ class IbkrClient(
     private val pendingPrices = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
     private val accountSummaryRequestId = AtomicInteger(2_000)
     private val pendingAccountSummaryRequests = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
+    private val accountSummaryMutex = Mutex()
     private val historicalDataRequestId = AtomicInteger(3_000)
     private val pendingHistoricalData = ConcurrentHashMap<Int, HistoricalDataRequest>()
 
@@ -194,23 +197,24 @@ class IbkrClient(
     }
 
     suspend fun getAvailableCapital(): Double{
-        check(client.isConnected){ "IBKR client is not connected" }
+        return accountSummaryMutex.withLock {
+            check(client.isConnected){ "IBKR client is not connected" }
 
-        val requestId = accountSummaryRequestId.getAndIncrement()
-        val result = CompletableDeferred<Double>()
+            val requestId = accountSummaryRequestId.getAndIncrement()
+            val result = CompletableDeferred<Double>()
 
-        pendingAccountSummaryRequests[requestId] = result
+            pendingAccountSummaryRequests[requestId] = result
 
-        client.reqAccountSummary(requestId, "All", "AvailableFunds")
-        return try{
-            withTimeout(10_000.milliseconds){
-                result.await()
+            client.reqAccountSummary(requestId, "All", "AvailableFunds")
+            try{
+                withTimeout(10_000.milliseconds){
+                    result.await()
+                }
+            }finally {
+                pendingAccountSummaryRequests.remove(requestId)
+                client.cancelAccountSummary(requestId)
             }
-        }finally {
-            pendingAccountSummaryRequests.remove(requestId)
-            client.cancelAccountSummary(requestId)
         }
-
     }
 
     suspend fun getHistoricalData(identifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar> {

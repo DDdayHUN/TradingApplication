@@ -17,10 +17,7 @@ class PortfolioEntity(
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    var user: UserEntity,
-
-    @Column(name = "capital", nullable = false)
-    var capital: Double
+    var user: UserEntity
 ) {
 
     @OneToMany(mappedBy = "portfolio", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
@@ -35,8 +32,7 @@ class PortfolioEntity(
 fun Portfolio.toEntity(user: UserEntity): PortfolioEntity {
     val entity = PortfolioEntity(
         id = id,
-        user = user,
-        capital = capital
+        user = user
     )
 
     traders.forEach { trader ->
@@ -54,7 +50,6 @@ fun PortfolioEntity.toDomain(): Portfolio {
         traders = traders
             .map { trader ->
                 trader.toDomain()
-            }.toMutableSet(),
-        capital = capital
+            }.toMutableSet()
     )
 }

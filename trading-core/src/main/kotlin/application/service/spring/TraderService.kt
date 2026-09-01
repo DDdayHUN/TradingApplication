@@ -39,6 +39,12 @@ class TraderService(
     @Transactional
     override suspend fun createTrader(userId: UUID, portfolioId: UUID, request: CreateTraderRequest): Trader {
         val portfolio = portfolioService.getPortfolio(userId, portfolioId)
+        val availableCapital = portfolioService.getAvailableCapital(portfolioId)
+
+        require(request.capital <= availableCapital){
+            "Insufficient available capital to create new trader"
+        }
+
         val securityIdentifier = SecurityIdentifier(
             isin = request.securityIdentifier.isin,
             tickerSymbol = request.securityIdentifier.tickerSymbol,
@@ -57,7 +63,6 @@ class TraderService(
             algorithm = algorithm
         )
 
-        portfolio.changeCapital(-request.capital)
         portfolio.addTrader(trader)
 
         portfolioService.save(portfolio)

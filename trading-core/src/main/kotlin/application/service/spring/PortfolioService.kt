@@ -1,6 +1,7 @@
 package application.service.spring
 
 import application.service.IPortfolioService
+import application.service.broker.IBrokerService
 import domain.Portfolio
 import domain.interfaces.IPortfolioRepository
 import infrastructure.broker.IbkrSession
@@ -13,7 +14,8 @@ import java.util.*
 
 @Service
 class PortfolioService(
-    private val portfolioRepository: IPortfolioRepository
+    private val portfolioRepository: IPortfolioRepository,
+    private val ibkrService: IBrokerService
 ) : IPortfolioService {
     //===========================================================//
     //===========================================================//
@@ -72,5 +74,20 @@ class PortfolioService(
     @Transactional
     override suspend fun deletePortfolio(userId: UUID, id: UUID): Boolean {
         TODO("Not yet implemented")
+    }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    override suspend fun getAvailableCapital(portfolioId: UUID): Double {
+        val portfolio = getPortfolio(portfolioId)
+
+        val brokerAvailableCash = ibkrService.getAvailableCapital()
+
+        val traderCapital = portfolio.traders.sumOf{trader->
+            trader.capital
+        }
+
+        return (brokerAvailableCash - traderCapital).coerceAtLeast(0.0)
     }
 }

@@ -12,4 +12,5 @@ interface IPortfolioService {
     suspend fun getPortfolioByTraderId(traderId: UUID): Portfolio
     suspend fun deleteAllPortfolio(userId: UUID): Boolean
     suspend fun deletePortfolio(userId: UUID, id: UUID): Boolean
+    suspend fun getAvailableCapital(portfolioId: UUID): Double
 }

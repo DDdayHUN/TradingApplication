@@ -6,15 +6,11 @@ CREATE TABLE app_user(
 CREATE TABLE app_portfolio(
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
-    capital DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT fk_app_portfolio_user
             FOREIGN KEY (user_id)
             REFERENCES app_user (id)
-            ON DELETE CASCADE,
-
-    CONSTRAINT chk_app_portfolio_capital
-        CHECK (capital >= 0)
+            ON DELETE CASCADE
 );
 
 CREATE TABLE app_trader(
@@ -80,17 +76,21 @@ CREATE TABLE app_security_holding(
 
 CREATE INDEX idx_holdings_trader_id ON app_security_holding (trader_id);
 
--- DEVELOPMENT TEST --
-INSERT INTO app_user (id, user_name)
-VALUES (
-    'a7d78e51-6369-4d78-bf96-024742a52954',
-    'mark'
+CREATE TABLE app_order_sell_allocation (
+       id UUID PRIMARY KEY,
+       order_id UUID NOT NULL,
+       holding_id UUID NOT NULL,
+       amount INTEGER NOT NULL,
+
+       CONSTRAINT fk_order_sell_allocation_order
+           FOREIGN KEY (order_id)
+               REFERENCES app_order (id)
+               ON DELETE CASCADE
 );
 
-INSERT INTO app_portfolio (id, user_id, capital)
-VALUES (
-    '22222222-2222-2222-2222-222222222222',
-    'a7d78e51-6369-4d78-bf96-024742a52954',
-    10000.0
-);
+CREATE INDEX idx_order_sell_allocation_order_id
+    ON app_order_sell_allocation (order_id);
+
+CREATE INDEX idx_order_sell_allocation_holding_id
+    ON app_order_sell_allocation (holding_id);
 

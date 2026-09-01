@@ -5,25 +5,20 @@ import java.util.*
 
 //===========================================================//
 //===========================================================//
-
-data class CreatePortfolioRequest(
-    val capital: Double
-)
-
 //===========================================================//
 
 data class PortfolioResponse(
     val id: UUID,
-    val capital: Double,
+    val availableCapital: Double,
     val traders: List<TraderResponse>
 )
 
 //===========================================================//
 
-fun Portfolio.toResponse(): PortfolioResponse {
+fun Portfolio.toResponse(availableCapital: Double): PortfolioResponse {
     return PortfolioResponse(
         id = id,
-        capital = capital,
+        availableCapital = availableCapital,
         traders = traders.map { trader ->
             trader.toResponse()
         }
