@@ -24,7 +24,7 @@ class Test(
     )
 
     @Scheduled(
-        cron = "0 22 22 * * *",
+        cron = "0 51 13 * * *",
         zone = "Europe/Budapest"
     )
     fun placeNvdaTestOrder() {

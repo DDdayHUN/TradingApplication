@@ -7,11 +7,13 @@ import application.service.IPortfolioService
 import application.service.ITraderService
 import data.network.MarketDataProvider
 import domain.algorithm.TradingAlgorithm
+import domain.market.Quote
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import domain.trader.TradingOrder
 import exception.api.TraderNotFoundException
 import infrastructure.broker.IbkrSession
+import infrastructure.broker.SellAllocation
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -94,8 +96,8 @@ class TraderService(
             trader.id == traderId
         }?: throw TraderNotFoundException(traderId)
 
-        val quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(trader.securityIdentifier).getOrThrow()
-
+        //val quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(trader.securityIdentifier).getOrThrow()
+        val quote = Quote(215.0)
         val order = trader.createOrder(quote)
 
         portfolioService.save(portfolio)
@@ -114,6 +116,26 @@ class TraderService(
         trader.applyBuyFill(
             price = averageFillPrice,
             amount = filledQuantity
+        )
+
+        portfolioService.save(portfolio)
+    }
+
+    @Transactional
+    override suspend fun applySellFill(
+        traderId: UUID,
+        sellAllocations: List<SellAllocation>,
+        averageFillPrice: Double
+    ) {
+        val portfolio = portfolioService.getPortfolioByTraderId(traderId)
+
+        val trader = portfolio.traders.find {trader ->
+            trader.id == traderId
+        }?: throw TraderNotFoundException(traderId)
+
+        trader.applySellFill(
+            price = averageFillPrice,
+            allocations = sellAllocations
         )
 
         portfolioService.save(portfolio)

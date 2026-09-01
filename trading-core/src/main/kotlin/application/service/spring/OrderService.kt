@@ -6,6 +6,7 @@ import application.service.ITraderService
 import application.service.broker.IBrokerService
 import data.repository.order.toBrokerOrder
 import domain.interfaces.IOrderRepository
+import domain.order.OrderAction
 import domain.order.OrderStatus
 import domain.order.toOrder
 import domain.trader.TradingOrder
@@ -72,16 +73,28 @@ class OrderService(
     //===========================================================//
 
     @Transactional
-    @Deprecated("Ez most nem jo mert csak buyt tud csinalni sellnel meg meg kell csinalni")
-    override suspend fun handleBuyOrderFilled(event: OrderFilledEvent) {
+    override suspend fun handleOrderFilled(event: OrderFilledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
         if(order.status == OrderStatus.FILLED) return
 
-        traderService.applyBuyFill(
-            traderId = order.traderId,
-            filledQuantity = event.filled.toInt(),
-            averageFillPrice = event.averageFillPrice
-        )
+        when (order.action) {
+
+            OrderAction.BUY -> {
+                traderService.applyBuyFill(
+                    traderId = order.traderId,
+                    filledQuantity = event.filled.toInt(),
+                    averageFillPrice = event.averageFillPrice
+                )
+            }
+
+            OrderAction.SELL -> {
+                traderService.applySellFill(
+                    traderId = order.traderId,
+                    sellAllocations = order.sellAllocations,
+                    averageFillPrice = event.averageFillPrice
+                )
+            }
+        }
 
         logger.info(
             "Applying filled order orderId={} quantity={} avgPrice={}",

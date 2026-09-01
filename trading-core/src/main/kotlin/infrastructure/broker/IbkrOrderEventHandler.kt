@@ -16,7 +16,7 @@ class IbkrOrderEventHandler(
 
     @EventListener
     suspend fun handle(event: OrderFilledEvent){
-        orderService.handleBuyOrderFilled(event)
+        orderService.handleOrderFilled(event)
     }
 
     @EventListener

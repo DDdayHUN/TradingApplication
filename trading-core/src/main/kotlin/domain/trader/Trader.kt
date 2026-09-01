@@ -4,6 +4,7 @@ import domain.algorithm.ITradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
+import infrastructure.broker.SellAllocation
 import java.util.*
 
 //===========================================================//
@@ -88,22 +89,19 @@ class Trader {
 
     fun applySellFill(
         price: Double,
-        batches: List<Pair<SecurityHolding, Int>>
+        allocations: List<SellAllocation>
     ) {
-        batches.forEach { batch ->
-            val requestedHolding = batch.first
-            val amountToSell = batch.second
-
-            val actualHolding = m_Holdings.find {
-                it.id == requestedHolding.id
+        allocations.forEach { allocation ->
+            val holding = m_Holdings.find {
+                it.id == allocation.holdingId
             } ?: throw IllegalStateException(
-                "Holding ${requestedHolding.id} not found"
+                "Holding ${allocation.holdingId} not found"
             )
 
             sell(
-                holding = actualHolding,
+                holding = holding,
                 price = price,
-                amount = amountToSell
+                amount = allocation.amount
             )
         }
     }

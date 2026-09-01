@@ -6,6 +6,7 @@ import domain.order.Order
 import domain.order.OrderAction
 import domain.order.OrderStatus
 import domain.trader.TradingOrder
+import infrastructure.broker.SellAllocation
 import jakarta.persistence.*
 import java.time.Instant
 import java.util.*
@@ -45,6 +46,9 @@ class OrderEntity(
     @Column(name = "average_fill_price")
     var averageFillPrice: Double? = null,
 
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    var sellAllocations: MutableList<SellAllocationEntity> = mutableListOf(),
+
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: Instant = Instant.now(),
 )
@@ -70,7 +74,7 @@ fun TradingOrder.toBrokerOrder(): BrokerOrderRequest? {
 }
 
 fun Order.toEntity(trader: TraderEntity): OrderEntity {
-    return OrderEntity(
+    val entity = OrderEntity(
         id = id,
         ibkrOrderId = ibkrOrderId,
         trader = trader,
@@ -82,6 +86,16 @@ fun Order.toEntity(trader: TraderEntity): OrderEntity {
         averageFillPrice = averageFillPrice,
         createdAt = createdAt
     )
+
+    entity.sellAllocations = sellAllocations.map { allocation ->
+        SellAllocationEntity(
+            order = entity,
+            holdingId = allocation.holdingId,
+            amount = allocation.amount
+        )
+    }.toMutableList()
+
+    return entity
 }
 
 fun OrderEntity.toDomain(): Order {
@@ -95,6 +109,13 @@ fun OrderEntity.toDomain(): Order {
         status = status,
         filledQuantity = filledQuantity,
         averageFillPrice = averageFillPrice,
+
+        sellAllocations = sellAllocations.map { holding ->
+            SellAllocation(
+                holdingId = holding.id!!,
+                amount = holding.amount,
+            )
+        },
         createdAt = createdAt
     )
 }

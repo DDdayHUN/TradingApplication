@@ -21,8 +21,8 @@ internal class TACPP462: ITradingAlgorithm {
 
     private val m_EmaHistory: Deque<Double>
 
-    private val m_TrailingHigh: MutableMap<SecurityHolding, Double>
-    private val m_MarkedForSelling: MutableList<SecurityHolding>
+    private val m_TrailingHigh: MutableMap<UUID, Double>
+    private val m_MarkedForSelling: MutableList<UUID>
 
     private val m_LastInputArr: Deque<Double>
 
@@ -62,22 +62,22 @@ internal class TACPP462: ITradingAlgorithm {
 
         // Trailing-profit logic
         for (item in holdings) {
-            var isMarked = m_MarkedForSelling.contains(item)
+            var isMarked = m_MarkedForSelling.contains(item.id)
 
             // Activate trailing if gained > risk
             if (!isMarked && currentPrice > item.entryPrice * (1 + std)) {
-                m_MarkedForSelling.add(item)
-                m_TrailingHigh[item] = currentPrice
+                m_MarkedForSelling.add(item.id)
+                m_TrailingHigh[item.id] = currentPrice
                 isMarked = true
             }
 
             if (isMarked) {
-                var high: Double = m_TrailingHigh.getOrDefault(item, currentPrice)
+                var high: Double = m_TrailingHigh.getOrDefault(item.id, currentPrice)
 
                 // Update trailing high if still rising
                 if (currentPrice > high) {
                     high = currentPrice
-                    m_TrailingHigh[item] = high
+                    m_TrailingHigh[item.id] = high
                 }
 
                 // Sell if price falls more than risk from peak
@@ -86,8 +86,8 @@ internal class TACPP462: ITradingAlgorithm {
                     if(!toBeSold.contains(pair)) toBeSold.add(pair)
 
                     // cleanup
-                    m_MarkedForSelling.remove(item)
-                    m_TrailingHigh.remove(item)
+                    m_MarkedForSelling.remove(item.id)
+                    m_TrailingHigh.remove(item.id)
                 }
             }
         }
@@ -99,8 +99,8 @@ internal class TACPP462: ITradingAlgorithm {
                 if(!toBeSold.contains(pair)) toBeSold.add(pair)
 
                 // cleanup
-                m_MarkedForSelling.remove(item)
-                m_TrailingHigh.remove(item)
+                m_MarkedForSelling.remove(item.id)
+                m_TrailingHigh.remove(item.id)
             }
         }
 

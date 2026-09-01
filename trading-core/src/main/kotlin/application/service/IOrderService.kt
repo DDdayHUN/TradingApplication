@@ -9,5 +9,5 @@ interface IOrderService {
     suspend fun submit(order: TradingOrder)
     suspend fun handleOrderSubmitted(event: OrderSubmittedEvent)
     suspend fun handleOrderCancelled(event: OrderCancelledEvent)
-    suspend fun handleBuyOrderFilled(event: OrderFilledEvent)
+    suspend fun handleOrderFilled(event: OrderFilledEvent)
 }

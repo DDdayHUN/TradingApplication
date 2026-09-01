@@ -1,6 +1,7 @@
 package domain.order
 
 import domain.trader.TradingOrder
+import infrastructure.broker.SellAllocation
 import java.time.Instant
 import java.util.*
 
@@ -14,6 +15,7 @@ data class Order(
     val status: OrderStatus,
     val filledQuantity: String = "",
     val averageFillPrice: Double? = null,
+    val sellAllocations: List<SellAllocation> = emptyList(),
     val createdAt: Instant
 ){
     fun submitted(): Order {
@@ -60,11 +62,13 @@ enum class OrderStatus {
 fun TradingOrder.toOrder(ibkrOrderId: Int): Order {
     val action: OrderAction
     val quantity: Double
+    val sellAllocations: List<SellAllocation>
 
     when {
         buy != null && sell == null -> {
             action = OrderAction.BUY
             quantity = buy.amount.toDouble()
+            sellAllocations = emptyList()
         }
 
         sell != null && buy == null -> {
@@ -72,6 +76,14 @@ fun TradingOrder.toOrder(ibkrOrderId: Int): Order {
             quantity = sell.batches
                 .sumOf { (_, amount) -> amount }
                 .toDouble()
+
+            sellAllocations = sell.batches
+                .map { (holding, amount) ->
+                    SellAllocation(
+                        holdingId = holding.id,
+                        amount = amount
+                    )
+                }
         }
 
         else -> throw IllegalArgumentException(
@@ -87,6 +99,7 @@ fun TradingOrder.toOrder(ibkrOrderId: Int): Order {
         quantity = quantity,
         signalPrice = atPrice,
         status = OrderStatus.PENDING,
+        sellAllocations = sellAllocations,
         createdAt = createdAt
     )
 }
