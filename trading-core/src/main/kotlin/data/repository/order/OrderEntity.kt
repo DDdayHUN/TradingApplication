@@ -112,7 +112,7 @@ fun OrderEntity.toDomain(): Order {
 
         sellAllocations = sellAllocations.map { holding ->
             SellAllocation(
-                holdingId = holding.id!!,
+                holdingId = holding.holdingId,
                 amount = holding.amount,
             )
         },

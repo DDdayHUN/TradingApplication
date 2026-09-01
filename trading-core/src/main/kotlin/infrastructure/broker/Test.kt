@@ -24,14 +24,14 @@ class Test(
     )
 
     @Scheduled(
-        cron = "0 51 13 * * *",
+        cron = "0 06 16 * * *",
         zone = "Europe/Budapest"
     )
     fun placeNvdaTestOrder() {
         scope.launch {
             try {
-                val portfolioId = UUID.fromString("567f34ad-8b05-44ac-a944-05adfb9fe897")
-                val traderId = UUID.fromString("47c11a67-92ea-481d-b858-00b12aff009b")
+                val portfolioId = UUID.fromString("8f69dedf-d2c1-4ac5-846e-639ef99603cf")
+                val traderId = UUID.fromString("43bf3b43-6b10-46af-8a63-60266d2d4322")
 
                 val order = traderService.executeTrader(portfolioId, traderId)
                 logger.info("TRADING ORDER: ${order.toReadableText()}")
