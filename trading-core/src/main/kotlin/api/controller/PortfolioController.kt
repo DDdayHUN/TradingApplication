@@ -26,7 +26,10 @@ class PortfolioController(
     suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
         val userId = session.currentUser().id
         val response = portfolioService.getAllPortfolio(userId).map { portfolio ->
-            portfolio.toResponse(portfolioService.getAvailableCapital(portfolio.id))
+            portfolio.toResponse(
+                availableCapital = portfolioService.getAvailableCapital(portfolio.id),
+                liquidation = portfolioService.getLiquidation()
+            )
         }
 
         return ResponseEntity.ok(
@@ -38,7 +41,11 @@ class PortfolioController(
 
     @GetMapping("/{portfolioId}")
     suspend fun getPortfolioById(@PathVariable portfolioId: UUID): ResponseEntity<PortfolioResponse> {
-        val response = portfolioService.getPortfolio(portfolioId).toResponse(portfolioService.getAvailableCapital(portfolioId))
+        val response = portfolioService.getPortfolio(portfolioId).toResponse(
+            availableCapital = portfolioService.getAvailableCapital(portfolioId),
+            liquidation = portfolioService.getLiquidation()
+        )
+
         return ResponseEntity.ok(response)
     }
 
@@ -50,7 +57,10 @@ class PortfolioController(
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
         val userId = session.currentUser().id
         val portfolio = portfolioService.createPortfolio(userId)
-        val response = portfolio.toResponse(portfolioService.getAvailableCapital(portfolio.id))
+        val response = portfolio.toResponse(
+            availableCapital = portfolioService.getAvailableCapital(portfolio.id),
+            liquidation = portfolioService.getLiquidation()
+        )
 
 
         return ResponseEntity

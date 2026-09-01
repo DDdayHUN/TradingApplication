@@ -37,6 +37,14 @@ class Portfolio {
         m_Traders.remove(trader)
     }
 
+    //===========================================================//
+
+    fun allocatedCapital(): Double {
+        return m_Traders.sumOf {trader ->
+            trader.allocatedValue()
+        }
+    }
+
 
     //===========================================================//
     //===========================================================//

@@ -63,6 +63,11 @@ class InteractiveBrokersService(
         return client.getAvailableCapital()
     }
 
+    override suspend fun getNetLiquidation(): Double {
+        val client = session.getClient()
+        return client.getNetLiquidation()
+    }
+
     //===========================================================//
 
     override suspend fun getNextOrderId(): Int {

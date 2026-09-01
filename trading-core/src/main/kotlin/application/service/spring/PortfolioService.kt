@@ -90,4 +90,11 @@ class PortfolioService(
 
         return (brokerAvailableCash - traderCapital).coerceAtLeast(0.0)
     }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    override suspend fun getLiquidation(): Double {
+        return ibkrService.getNetLiquidation()
+    }
 }

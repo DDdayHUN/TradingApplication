@@ -121,6 +121,14 @@ class Trader {
 
     //===========================================================//
 
+    fun allocatedValue(): Double {
+        return m_Capital + m_Holdings.sumOf { holding ->
+            holding.entryPrice + holding.amount
+        }
+    }
+
+    //===========================================================//
+
     fun changeAlgorithm(algorithm: ITradingAlgorithm) {
         this.algorithm = algorithm
     }

@@ -196,25 +196,12 @@ class IbkrClient(
         }
     }
 
-    suspend fun getAvailableCapital(): Double{
-        return accountSummaryMutex.withLock {
-            check(client.isConnected){ "IBKR client is not connected" }
+    suspend fun getAvailableCapital(): Double {
+        return getAccountSummaryValue("AvailableFunds")
+    }
 
-            val requestId = accountSummaryRequestId.getAndIncrement()
-            val result = CompletableDeferred<Double>()
-
-            pendingAccountSummaryRequests[requestId] = result
-
-            client.reqAccountSummary(requestId, "All", "AvailableFunds")
-            try{
-                withTimeout(10_000.milliseconds){
-                    result.await()
-                }
-            }finally {
-                pendingAccountSummaryRequests.remove(requestId)
-                client.cancelAccountSummary(requestId)
-            }
-        }
+    suspend fun getNetLiquidation(): Double {
+        return getAccountSummaryValue("NetLiquidation")
     }
 
     suspend fun getHistoricalData(identifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar> {
@@ -291,6 +278,40 @@ class IbkrClient(
             name = "ibkr-reader"
             isDaemon = true
             start()
+        }
+    }
+
+    private suspend fun getAccountSummaryValue(
+        tag: String
+    ): Double {
+        return accountSummaryMutex.withLock {
+
+            check(client.isConnected) {
+                "IBKR client is not connected"
+            }
+
+            val requestId =
+                accountSummaryRequestId.getAndIncrement()
+
+            val result =
+                CompletableDeferred<Double>()
+
+            pendingAccountSummaryRequests[requestId] = result
+
+            client.reqAccountSummary(
+                requestId,
+                "All",
+                tag
+            )
+
+            try {
+                withTimeout(10_000.milliseconds) {
+                    result.await()
+                }
+            } finally {
+                pendingAccountSummaryRequests.remove(requestId)
+                client.cancelAccountSummary(requestId)
+            }
         }
     }
 
@@ -620,11 +641,16 @@ class IbkrClient(
     override fun positionEndProtoBuf(p0: PositionEndProto.PositionEnd?) {}
 
     override fun accountSummaryProtoBuf(message: AccountSummaryProto.AccountSummary?) {
-        if(message == null) return
-        if(message.tag != "AvailableFunds") return
-        val value = message.value.toDoubleOrNull()?: return
+        if (message == null) return
+
+        val value =
+            message.value.toDoubleOrNull()
+                ?: return
+
         pendingAccountSummaryRequests[message.reqId]
-            ?.takeIf{pending-> !pending.isCompleted}
+            ?.takeIf { pending ->
+                !pending.isCompleted
+            }
             ?.complete(value)
     }
 
