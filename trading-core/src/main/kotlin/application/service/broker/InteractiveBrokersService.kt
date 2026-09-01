@@ -49,20 +49,28 @@ class InteractiveBrokersService(
         )
     }
 
+    //===========================================================//
+
     override suspend fun requestOrderStatus() {
         val client = session.getClient()
         client.requestOpenOrders()
     }
+
+    //===========================================================//
 
     override suspend fun getAvailableCapital(): Double {
         val client = session.getClient()
         return client.getAvailableCapital()
     }
 
+    //===========================================================//
+
     override suspend fun getNextOrderId(): Int {
         val client = session.getClient()
         return client.getNextOrderId()
     }
+
+    //===========================================================//
 
     override suspend fun getHistoricalData(
         securityIdentifier: SecurityIdentifier,
@@ -91,6 +99,8 @@ class InteractiveBrokersService(
             currency(request.currency)
         }
     }
+
+    //===========================================================//
 
     private fun createMarketOrder(request: BrokerOrderRequest): Order {
         return Order().apply {

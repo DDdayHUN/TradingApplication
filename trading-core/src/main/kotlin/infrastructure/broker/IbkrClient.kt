@@ -13,6 +13,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 @Component
@@ -42,7 +43,7 @@ class IbkrClient(
     //===========================================================//
     // Public Method(s)
 
-    suspend fun connect(host: String, port: Int, clientId: Int, maxAttempts: Int = 3) {
+    suspend fun connect(host: String, port: Int, clientId: Int, maxAttempts: Int = 5) {
         if(client.isConnected && nextOrderId.get() >= 0) {
             logger.warn("IBKR client is already connected and ready")
             return
@@ -70,7 +71,7 @@ class IbkrClient(
 
                 startMessageReader()
 
-                withTimeout(10_000) {
+                withTimeout(10_000.milliseconds) {
                     readySignal.await()
                 }
 
@@ -94,7 +95,7 @@ class IbkrClient(
                     throw e
                 }
 
-                delay(2_000)
+                delay(10_000.milliseconds)
             }
         }
     }
@@ -183,7 +184,7 @@ class IbkrClient(
         )
 
         return try {
-            withTimeout(10_000){
+            withTimeout(10_000.milliseconds){
                 result.await()
             }
         } finally {
@@ -202,7 +203,7 @@ class IbkrClient(
 
         client.reqAccountSummary(requestId, "All", "AvailableFunds")
         return try{
-            withTimeout(10_000){
+            withTimeout(10_000.milliseconds){
                 result.await()
             }
         }finally {
@@ -244,7 +245,7 @@ class IbkrClient(
         )
 
         return try {
-            withTimeout(10_000){
+            withTimeout(10_000.milliseconds){
                 result.await()
             }
         } finally {

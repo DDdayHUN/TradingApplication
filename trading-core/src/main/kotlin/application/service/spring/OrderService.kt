@@ -103,9 +103,17 @@ class OrderService(
             event.averageFillPrice
         )
 
-        orderRepository.save(order.filled(
+        var filledOrder = order.filled(
             filledQuantity = event.filled,
             averageFillPrice = event.averageFillPrice
-        )).getOrThrow()
+        )
+
+        if(order.action == OrderAction.SELL){
+            filledOrder = filledOrder.copy(
+                sellAllocations = emptyList()
+            )
+        }
+
+        orderRepository.save(filledOrder).getOrThrow()
     }
 }

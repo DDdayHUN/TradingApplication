@@ -2,12 +2,11 @@ package application.service.spring
 
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
-import api.dto.TraderResponse
+import application.logging.logger
 import application.service.IPortfolioService
 import application.service.ITraderService
 import data.network.MarketDataProvider
 import domain.algorithm.TradingAlgorithm
-import domain.market.Quote
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import domain.trader.TradingOrder
@@ -26,6 +25,13 @@ class TraderService(
     private val portfolioService: IPortfolioService,
     private val ibkrSession: IbkrSession,
 ) : ITraderService {
+
+    //===========================================================//
+    //===========================================================//
+    // Private Field(s)
+
+    private val logger = logger<TraderService>()
+
     //===========================================================//
     //===========================================================//
     // Public Method(s)
@@ -62,15 +68,15 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAllByPortfolioId(userId: UUID, portfolioId: UUID): Set<Trader> {
-       return portfolioService.getPortfolio(userId,portfolioId).traders
+    override suspend fun getAllByPortfolioId(portfolioId: UUID): Set<Trader> {
+       return portfolioService.getPortfolio(portfolioId).traders
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getById(userId: UUID, portfolioId: UUID, traderId: UUID): Trader? {
-        val portfolio =  portfolioService.getPortfolio(userId, portfolioId)
+    override suspend fun getById(portfolioId: UUID, traderId: UUID): Trader? {
+        val portfolio =  portfolioService.getPortfolio(portfolioId)
 
         val trader = portfolio.traders.find { trader ->
             trader.id == traderId
@@ -82,8 +88,24 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    suspend fun changeAlgorithm(traderId: UUID, userId: UUID,portfolioId: UUID, request: ChangeTraderAlgorithmRequest): TraderResponse {
-        TODO("Implement later")
+    override suspend fun changeAlgorithm(portfolioId: UUID,traderId: UUID,  request: ChangeTraderAlgorithmRequest): Trader {
+        val portfolio = portfolioService.getPortfolio(portfolioId)
+        val trader = portfolio.traders.find {trader ->
+            trader.id == traderId
+        } ?: throw TraderNotFoundException(traderId)
+
+        val algorithmType = parseAlgorithmType(request.algorithmType)
+
+        val algorithm = TradingAlgorithm.create(
+            type = algorithmType,
+            securityIdentifier = trader.securityIdentifier,
+        )
+
+        trader.changeAlgorithm(algorithm)
+
+        portfolioService.save(portfolio)
+
+        return trader
     }
 
     //===========================================================//
@@ -96,14 +118,23 @@ class TraderService(
             trader.id == traderId
         }?: throw TraderNotFoundException(traderId)
 
-        //val quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(trader.securityIdentifier).getOrThrow()
-        val quote = Quote(220.0)
-        val order = trader.createOrder(quote)
+        val finnhubProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
+        var quote = finnhubProvider.getQuote(trader.securityIdentifier)
+
+        if(!quote.isSuccess){
+            logger.warn("Finnhub quote failed for {}, trying IBKR", trader.securityIdentifier.tickerSymbol)
+            quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(trader.securityIdentifier)
+        }
+
+       // quote = Quote(220.0)
+        val order = trader.createOrder(quote.getOrThrow())
 
         portfolioService.save(portfolio)
 
         return order
     }
+
+    //===========================================================//
 
     @Transactional
     override suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double) {
@@ -120,6 +151,8 @@ class TraderService(
 
         portfolioService.save(portfolio)
     }
+
+    //===========================================================//
 
     @Transactional
     override suspend fun applySellFill(

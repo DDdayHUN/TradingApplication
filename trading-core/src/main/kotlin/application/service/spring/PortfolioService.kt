@@ -3,6 +3,7 @@ package application.service.spring
 import application.service.IPortfolioService
 import domain.Portfolio
 import domain.interfaces.IPortfolioRepository
+import infrastructure.broker.IbkrSession
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -22,6 +23,8 @@ class PortfolioService(
     override suspend fun save(portfolio: Portfolio): Portfolio {
         return portfolioRepository.save(portfolio).getOrThrow()
     }
+
+    //===========================================================//
 
     @Transactional
     override suspend fun createPortfolio(userId: UUID): Portfolio {
@@ -43,10 +46,14 @@ class PortfolioService(
         return  portfolioRepository.getByIdForUser(userId, id).getOrThrow()
     }
 
+    //===========================================================//
+
     @Transactional(readOnly = true)
     override suspend fun getPortfolio(portfolioId: UUID): Portfolio {
         return portfolioRepository.getById(portfolioId).getOrThrow()
     }
+
+    //===========================================================//
 
     @Transactional(readOnly = true)
     override suspend fun getPortfolioByTraderId(traderId: UUID): Portfolio {

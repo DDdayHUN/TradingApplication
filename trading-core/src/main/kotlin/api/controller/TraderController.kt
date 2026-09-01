@@ -24,8 +24,7 @@ class TraderController(
     // GET
     @GetMapping
     suspend fun getAllTraders(@PathVariable portfolioId: UUID): ResponseEntity<List<TraderResponse>> {
-        val userId = session.currentUser().id
-        val response = traderService.getAllByPortfolioId(userId, portfolioId).map { trader ->
+        val response = traderService.getAllByPortfolioId(portfolioId).map { trader ->
             trader.toResponse()
         }
         return ResponseEntity.ok(response)
@@ -35,8 +34,7 @@ class TraderController(
 
     @GetMapping("/{traderId}")
     suspend fun getTraderById(@PathVariable traderId: UUID, @PathVariable portfolioId: UUID): ResponseEntity<TraderResponse> {
-        val userId = session.currentUser().id
-        val response = traderService.getById(userId, portfolioId, traderId)
+        val response = traderService.getById(portfolioId, traderId)
             ?: throw TraderNotFoundException(traderId)
 
         return ResponseEntity.ok(response.toResponse())
