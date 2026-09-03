@@ -8,7 +8,10 @@ import domain.market.security.SecurityIdentifier
 import infrastructure.broker.IbkrAccountSummary
 import infrastructure.broker.IbkrHistoricalBar
 import infrastructure.broker.IbkrSession
+import kotlinx.coroutines.delay
 import org.springframework.stereotype.Service
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 
@@ -79,11 +82,44 @@ class InteractiveBrokersService(
         to: Instant
     ): List<IbkrHistoricalBar> {
         val client = session.getClient()
-        return client.getHistoricalData(
-            identifier = securityIdentifier,
-            from = from,
-            to = to
-        )
+
+        val allBars =
+            mutableListOf<IbkrHistoricalBar>()
+
+        var currentEnd = to
+
+        while (currentEnd > from) {
+
+            val currentStart =
+                maxOf(
+                    from,
+                    currentEnd - 7.days
+                )
+
+            logger.info(
+                "Fetching IBKR historical data ticker={} from={} to={}",
+                securityIdentifier.tickerSymbol,
+                currentStart,
+                currentEnd
+            )
+
+            val bars =
+                client.getHistoricalData(
+                    identifier = securityIdentifier,
+                    from = currentStart,
+                    to = currentEnd
+                )
+
+            allBars.addAll(bars)
+
+            currentEnd = currentStart
+
+            delay(500.milliseconds)
+        }
+
+        return allBars
+            .distinctBy { it.timestamp }
+            .sortedBy { it.timestamp }
     }
 
     //===========================================================//

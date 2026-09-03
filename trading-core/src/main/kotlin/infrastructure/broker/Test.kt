@@ -4,6 +4,8 @@ import application.logging.logger
 import application.service.order.IOrderService
 import application.service.portfolio.IPortfolioService
 import application.service.trader.ITraderService
+import data.network.ibkr.backtest.BacktestDataService
+import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -12,13 +14,16 @@ import kotlinx.coroutines.launch
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.*
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 
 @Deprecated("ONLY TESTING")
 @Component
 class Test(
     private val orderService: IOrderService,
     private val traderService: ITraderService,
-    private val portfolioService: IPortfolioService
+    private val portfolioService: IPortfolioService,
+    private val backtestDataService: BacktestDataService
 ) {
 
     private val logger = logger<Test>()
@@ -27,7 +32,7 @@ class Test(
     )
 
     @Scheduled(
-        cron = "0 */1 * * * *",
+        cron = "0 */5 * * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {
@@ -81,28 +86,23 @@ class Test(
 
 
 
-    //@Scheduled(
-    //   cron = "*/10 * * * * *",
-    //    zone = "Europe/Budapest"
-    //)
-    /*
-    private suspend fun getFinnhubQuote() {
-        scope.launch{
-            try{
-                val provider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
-                val identifier = SecurityIdentifier(
-                    isin = "US67066G1040",
-                    tickerSymbol = "NVDA",
-                    currency = "USD",
-                )
-                val quote = provider.getQuote(identifier).getOrThrow()
+    @Scheduled(
+        cron = "0 18 19 * * *",
+        zone = "Europe/Budapest"
+    )
+    fun getHistoricalData(){
+        scope.launch {
+            val identifier = SecurityIdentifier(
+                isin = "US0378331005",
+                tickerSymbol = "AAPL",
+                currency = "USD",
+            )
 
-                logger.info("Current Price for ${identifier.tickerSymbol} : ${quote.currentPrice}")
-            } catch (e: Exception) {
-                logger.error("Failed to get Finnhub Quote}", e)
-            }
+            val to = Clock.System.now()
+            val from = to - (365.days)
+
+            backtestDataService.download(identifier, from, to)
         }
     }
-    */
 
 }

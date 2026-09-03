@@ -222,29 +222,37 @@ class IbkrClient(
     }
 
     suspend fun getHistoricalData(identifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar> {
-        check(client.isConnected){"IBKR client is not connected"}
+        check(client.isConnected) {
+            "IBKR client is not connected"
+        }
 
-        val requestId = historicalDataRequestId.getAndIncrement()
-        val result = CompletableDeferred<List<IbkrHistoricalBar>>()
+        val requestId =
+            historicalDataRequestId.getAndIncrement()
 
-        pendingHistoricalData[requestId] = HistoricalDataRequest(result = result)
+        val result =
+            CompletableDeferred<List<IbkrHistoricalBar>>()
 
-        val contract = Contract().apply{
+        pendingHistoricalData[requestId] =
+            HistoricalDataRequest(
+                result = result
+            )
+
+        val contract = Contract().apply {
             symbol(identifier.tickerSymbol)
             secType("STK")
             exchange("SMART")
             currency(identifier.currency)
         }
 
-        val endDateTime = formatHistoricalEndDate(to)
-        val duration = calculateHistoricalDuration(from, to)
+        val endDateTime =
+            formatHistoricalEndDate(to)
 
         client.reqHistoricalData(
             requestId,
             contract,
             endDateTime,
-            duration,
-            "1 day",
+            "1 W",
+            "10 mins",
             "TRADES",
             1,
             1,
@@ -253,12 +261,11 @@ class IbkrClient(
         )
 
         return try {
-            withTimeout(10_000.milliseconds){
+            withTimeout(30_000.milliseconds) {
                 result.await()
             }
         } finally {
             pendingHistoricalData.remove(requestId)
-            delay(1_000.milliseconds)
         }
     }
 
@@ -685,8 +692,8 @@ class IbkrClient(
         message.historicalDataBarsList.forEach {bar ->
             request.bars.add(
                 IbkrHistoricalBar(
-                    date = bar.date,
-                    closingPrice = bar.close
+                    timestamp = bar.date,
+                    price = bar.close
                 )
             )
         }
