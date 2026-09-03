@@ -1,22 +1,25 @@
 package infrastructure.broker
 
+import application.logging.logger
 import com.ib.client.*
 import com.ib.client.protobuf.*
-import java.lang.Exception
-import application.logging.logger
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 @Component
-class IbkrClient : EWrapper {
+class IbkrClient(
+    private val event: ApplicationEventPublisher
+) : EWrapper {
 
     //===========================================================//
     //===========================================================//
@@ -31,8 +34,15 @@ class IbkrClient : EWrapper {
     private val logger = logger<IbkrClient>()
     private val marketDataRequestId = AtomicInteger(1_000)
     private val pendingPrices = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
-    private val accountSummaryRequestId = AtomicInteger(2_000)
-    private val pendingAccountSummaryRequests = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
+
+    private val accountSummaryRequestId = 2_000
+
+    @Volatile
+    private var latestAvailableFunds: Double? = null
+
+    @Volatile
+    private var latestNetLiquidation: Double? = null
+
     private val historicalDataRequestId = AtomicInteger(3_000)
     private val pendingHistoricalData = ConcurrentHashMap<Int, HistoricalDataRequest>()
 
@@ -40,7 +50,7 @@ class IbkrClient : EWrapper {
     //===========================================================//
     // Public Method(s)
 
-    suspend fun connect(host: String, port: Int, clientId: Int, maxAttempts: Int = 3) {
+    suspend fun connect(host: String, port: Int, clientId: Int, maxAttempts: Int = 5) {
         if(client.isConnected && nextOrderId.get() >= 0) {
             logger.warn("IBKR client is already connected and ready")
             return
@@ -68,11 +78,13 @@ class IbkrClient : EWrapper {
 
                 startMessageReader()
 
-                withTimeout(10_000) {
+                withTimeout(10_000.milliseconds) {
                     readySignal.await()
                 }
 
                 logger.info("IBKR client is ready")
+
+                subscribeAccountSummary()
                 return
             } catch(e: Exception) {
                 logger.warn("IBKR conntection attempt {}/{} failed",
@@ -92,7 +104,7 @@ class IbkrClient : EWrapper {
                     throw e
                 }
 
-                delay(2_000)
+                delay(10_000.milliseconds)
             }
         }
     }
@@ -104,6 +116,9 @@ class IbkrClient : EWrapper {
         }
 
         logger.info("Disconnecting from IBKR Gateway")
+        client.cancelAccountSummary(
+            accountSummaryRequestId
+        )
 
         client.eDisconnect()
 
@@ -113,8 +128,6 @@ class IbkrClient : EWrapper {
         nextOrderId.set(-1)
         pendingPrices.values.forEach { pending -> pending.cancel() }
         pendingPrices.clear()
-        pendingAccountSummaryRequests.values.forEach { pending -> pending.cancel() }
-        pendingAccountSummaryRequests.clear()
         pendingHistoricalData.values.forEach {pending ->pending.result.cancel()}
         pendingHistoricalData.clear()
 
@@ -123,8 +136,11 @@ class IbkrClient : EWrapper {
     fun isConnected(): Boolean{
         return client.isConnected
     }
+    fun getNextOrderId(): Int{
+        return nextOrderId.getAndIncrement()
+    }
 
-    fun placeOrder(contract: Contract, order: Order): Int {
+    fun placeOrder(orderId: Int, contract: Contract, order: Order): Int {
         check(client.isConnected){
             "IBKR client is not connected"
         }
@@ -132,8 +148,6 @@ class IbkrClient : EWrapper {
         check(nextOrderId.get() >= 0) {
             "IBKR has not provided a valid order id"
         }
-
-        val orderId = nextOrderId.getAndIncrement()
 
         logger.info(
             "Submitting IBKR order orderId={} symbol={} action={} quantity={}",
@@ -150,6 +164,23 @@ class IbkrClient : EWrapper {
         )
 
         return orderId
+    }
+
+    fun getAccountSummary(): IbkrAccountSummary {
+        val availableFunds = latestAvailableFunds
+            ?: throw IllegalStateException(
+                "IBKR AvailableFunds has not been received yet"
+            )
+
+        val netLiquidation = latestNetLiquidation
+            ?: throw IllegalStateException(
+                "IBKR NetLiquidation has not been received yet"
+            )
+
+        return IbkrAccountSummary(
+            availableCapital = availableFunds,
+            netLiquidation = netLiquidation
+        )
     }
 
     suspend fun getCurrentPrice(ticker: String, currency: String): Double {
@@ -180,59 +211,48 @@ class IbkrClient : EWrapper {
         )
 
         return try {
-            withTimeout(10_000){
+            withTimeout(10_000.milliseconds){
                 result.await()
             }
         } finally {
             pendingPrices.remove(requestId)
             client.cancelMktData(requestId)
+            delay(1_000.milliseconds)
         }
-    }
-
-    suspend fun getAvailableCapital(): Double{
-        check(client.isConnected){ "IBKR client is not connected" }
-
-        val requestId = accountSummaryRequestId.getAndIncrement()
-        val result = CompletableDeferred<Double>()
-
-        pendingAccountSummaryRequests[requestId] = result
-
-        client.reqAccountSummary(requestId, "All", "AvailableFunds")
-        return try{
-            withTimeout(10_000){
-                result.await()
-            }
-        }finally {
-            pendingAccountSummaryRequests.remove(requestId)
-            client.cancelAccountSummary(requestId)
-        }
-
     }
 
     suspend fun getHistoricalData(identifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar> {
-        check(client.isConnected){"IBKR client is not connected"}
+        check(client.isConnected) {
+            "IBKR client is not connected"
+        }
 
-        val requestId = historicalDataRequestId.getAndIncrement()
-        val result = CompletableDeferred<List<IbkrHistoricalBar>>()
+        val requestId =
+            historicalDataRequestId.getAndIncrement()
 
-        pendingHistoricalData[requestId] = HistoricalDataRequest(result = result)
+        val result =
+            CompletableDeferred<List<IbkrHistoricalBar>>()
 
-        val contract = Contract().apply{
+        pendingHistoricalData[requestId] =
+            HistoricalDataRequest(
+                result = result
+            )
+
+        val contract = Contract().apply {
             symbol(identifier.tickerSymbol)
             secType("STK")
             exchange("SMART")
             currency(identifier.currency)
         }
 
-        val endDateTime = formatHistoricalEndDate(to)
-        val duration = calculateHistoricalDuration(from, to)
+        val endDateTime =
+            formatHistoricalEndDate(to)
 
         client.reqHistoricalData(
             requestId,
             contract,
             endDateTime,
-            duration,
-            "1 day",
+            "1 W",
+            "10 mins",
             "TRADES",
             1,
             1,
@@ -241,7 +261,7 @@ class IbkrClient : EWrapper {
         )
 
         return try {
-            withTimeout(10_000){
+            withTimeout(30_000.milliseconds) {
                 result.await()
             }
         } finally {
@@ -258,6 +278,20 @@ class IbkrClient : EWrapper {
     //===========================================================//
     //===========================================================//
     // Private Method(s)
+
+    private fun subscribeAccountSummary() {
+        check(client.isConnected) {
+            "IBKR client is not connected"
+        }
+
+        client.reqAccountSummary(
+            accountSummaryRequestId,
+            "All",
+            "AvailableFunds,NetLiquidation"
+        )
+
+        logger.info("Subscribed to IBKR account summary")
+    }
 
     private fun startMessageReader() {
         logger.debug("Starting IBKR message reader")
@@ -432,14 +466,17 @@ class IbkrClient : EWrapper {
             return
         }
 
-        logger.info(
-            "IBKR order status orderId={} status={} filled={} remaining={} avgFillPrice={}",
-            message.orderId,
-            message.status,
-            message.filled,
-            message.remaining,
-            message.avgFillPrice
-        )
+        when(message.status){
+            "Submitted" -> {
+                event.publishEvent(OrderSubmittedEvent(message.orderId))
+            }
+            "Filled" -> {
+                event.publishEvent(OrderFilledEvent(message.orderId, message.filled, message.avgFillPrice))
+            }
+            "Cancelled" -> {
+                event.publishEvent(OrderCancelledEvent(message.orderId))
+            }
+        }
     }
 
     override fun openOrderProtoBuf(
@@ -541,14 +578,29 @@ class IbkrClient : EWrapper {
 
     override fun contractDataEndProtoBuf(p0: ContractDataEndProto.ContractDataEnd?) {}
 
-    override fun tickPriceProtoBuf(message: TickPriceProto.TickPrice?) {
-        if(message == null || message.price <= 0) return
+    override fun tickPriceProtoBuf(
+        message: TickPriceProto.TickPrice?
+    ) {
+        if (message == null || message.price <= 0) return
 
-        if(message.tickType != 4 && message.tickType != 68) return
+        logger.info(
+            "IBKR PRICE TICK reqId={} tickType={} price={}",
+            message.reqId,
+            message.tickType,
+            message.price
+        )
 
-        pendingPrices[message.reqId]
-            ?.takeIf { !it.isCompleted }
-            ?.complete(message.price)
+        when (message.tickType) {
+            4,   // LAST
+            68,  // DELAYED_LAST
+            9,   // CLOSE
+            75   // DELAYED_CLOSE
+                -> {
+                pendingPrices[message.reqId]
+                    ?.takeIf { !it.isCompleted }
+                    ?.complete(message.price)
+            }
+        }
     }
 
     override fun tickSizeProtoBuf(p0: TickSizeProto.TickSize?) {}
@@ -594,12 +646,31 @@ class IbkrClient : EWrapper {
     override fun positionEndProtoBuf(p0: PositionEndProto.PositionEnd?) {}
 
     override fun accountSummaryProtoBuf(message: AccountSummaryProto.AccountSummary?) {
-        if(message == null) return
-        if(message.tag != "AvailableFunds") return
-        val value = message.value.toDoubleOrNull()?: return
-        pendingAccountSummaryRequests[message.reqId]
-            ?.takeIf{pending-> !pending.isCompleted}
-            ?.complete(value)
+        if (message == null) return
+
+        val value = message.value.toDoubleOrNull()
+            ?: return
+
+        when (message.tag) {
+
+            "AvailableFunds" -> {
+                latestAvailableFunds = value
+
+                logger.debug(
+                    "IBKR AvailableFunds updated: {}",
+                    value
+                )
+            }
+
+            "NetLiquidation" -> {
+                latestNetLiquidation = value
+
+                logger.debug(
+                    "IBKR NetLiquidation updated: {}",
+                    value
+                )
+            }
+        }
     }
 
     override fun accountSummaryEndProtoBuf(p0: AccountSummaryEndProto.AccountSummaryEnd?) {
@@ -621,8 +692,8 @@ class IbkrClient : EWrapper {
         message.historicalDataBarsList.forEach {bar ->
             request.bars.add(
                 IbkrHistoricalBar(
-                    date = bar.date,
-                    closingPrice = bar.close
+                    timestamp = bar.date,
+                    price = bar.close
                 )
             )
         }

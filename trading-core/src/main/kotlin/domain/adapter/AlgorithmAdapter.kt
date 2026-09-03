@@ -1,19 +1,7 @@
 package domain.adapter
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonParseException
-import com.google.gson.JsonSerializationContext
-import com.google.gson.JsonSerializer
-import domain.algorithm.ALGDES2
-import domain.algorithm.ALGDES3
-import domain.algorithm.ALGDES31
-import domain.algorithm.ALGDES4
-import domain.algorithm.BUYANDHOLD
-import domain.algorithm.ITradingAlgorithm
-import domain.algorithm.TACPP46
-import domain.algorithm.TACPP462
+import com.google.gson.*
+import domain.algorithm.*
 import java.lang.reflect.Type
 
 class AlgorithmAdapter : JsonSerializer<ITradingAlgorithm>, JsonDeserializer<ITradingAlgorithm> {

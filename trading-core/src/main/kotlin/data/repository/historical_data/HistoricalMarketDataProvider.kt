@@ -1,9 +1,9 @@
 package data.repository.historical_data
 
 import data.repository.historical_data.yahoo.YahooHistoricalMarketDataRepository
+import domain.interfaces.IHistoricalMarketDataProvider
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityIdentifier
-import domain.interfaces.IHistoricalMarketDataProvider
 import kotlin.time.Instant
 
 object HistoricalMarketDataProvider: IHistoricalMarketDataProvider {

@@ -1,29 +1,26 @@
 package api.dto
 
 import domain.Portfolio
-import java.util.UUID
+import java.util.*
 
 //===========================================================//
 //===========================================================//
-
-data class CreatePortfolioRequest(
-    val capital: Double
-)
-
 //===========================================================//
 
 data class PortfolioResponse(
     val id: UUID,
-    val capital: Double,
+    val availableCapital: Double,
+    val accountLiquidation: Double,
     val traders: List<TraderResponse>
 )
 
 //===========================================================//
 
-fun Portfolio.toResponse(): PortfolioResponse {
+fun Portfolio.toResponse(availableCapital: Double, liquidation: Double): PortfolioResponse {
     return PortfolioResponse(
         id = id,
-        capital = capital,
+        availableCapital = availableCapital,
+        accountLiquidation = liquidation,
         traders = traders.map { trader ->
             trader.toResponse()
         }

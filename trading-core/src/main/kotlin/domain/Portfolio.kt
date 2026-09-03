@@ -1,7 +1,7 @@
 package domain
 
 import domain.trader.Trader
-import java.util.UUID
+import java.util.*
 
 //===========================================================//
 //===========================================================//
@@ -13,14 +13,12 @@ class Portfolio {
 
     val id: UUID
     val traders: Set<Trader> get() = m_Traders.toSet()
-    val capital: Double get() = m_Capital
 
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
     private val m_Traders: MutableSet<Trader>
-    private var m_Capital: Double
 
     //===========================================================//
     //===========================================================//
@@ -33,23 +31,27 @@ class Portfolio {
     //===========================================================//
 
     fun removeTrader(trader: Trader) {
+        require(trader.holdings.isEmpty()){
+            "Trader cannot be removed while it has open holdings"
+        }
         m_Traders.remove(trader)
     }
 
     //===========================================================//
 
-    fun changeCapital(capital: Double) {
-        if(capital < 0.0) require(m_Capital + capital >= 0.0) { "Capital must be greater or equal to 0 after change" }
-        m_Capital += capital
+    fun allocatedCapital(): Double {
+        return m_Traders.sumOf {trader ->
+            trader.allocatedValue()
+        }
     }
+
 
     //===========================================================//
     //===========================================================//
     // Constructor(s)
 
-    constructor(id: UUID = UUID.randomUUID(), traders: MutableSet<Trader> = HashSet(), capital: Double = 0.0) {
+    constructor(id: UUID = UUID.randomUUID(), traders: MutableSet<Trader> = HashSet()) {
         this.id = id
         this.m_Traders = traders
-        this.m_Capital = capital
     }
 }

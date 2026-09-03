@@ -1,16 +1,17 @@
-package application.service.borker
+package application.service.broker
 
 import application.logging.logger
-import application.service.broker.BrokerOrderRequest
-import application.service.broker.IBrokerService
 import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
 import domain.market.security.SecurityIdentifier
-import infrastructure.broker.IbkrClient
+import infrastructure.broker.IbkrAccountSummary
 import infrastructure.broker.IbkrHistoricalBar
 import infrastructure.broker.IbkrSession
+import kotlinx.coroutines.delay
 import org.springframework.stereotype.Service
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 
@@ -29,7 +30,7 @@ class InteractiveBrokersService(
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun placeOrder(request: BrokerOrderRequest): Int {
+    override suspend fun placeOrder(orderId: Int, request: BrokerOrderRequest): Int {
         require(request.ticker.isNotBlank()) { "Ticker must not be blank" }
         require(request.currency.isNotBlank()) { "Currency must not be blank" }
         require(request.quantity > 0) { "Quantity must be greater than zero" }
@@ -46,20 +47,34 @@ class InteractiveBrokersService(
         )
 
         return client.placeOrder(
+            orderId = orderId,
             contract = contract,
             order = order
         )
     }
+
+    //===========================================================//
 
     override suspend fun requestOrderStatus() {
         val client = session.getClient()
         client.requestOpenOrders()
     }
 
-    override suspend fun getAvailableCapital(): Double {
+    //===========================================================//
+
+    override suspend fun getAccountSummary(): IbkrAccountSummary {
         val client = session.getClient()
-        return client.getAvailableCapital()
+        return client.getAccountSummary()
     }
+
+    //===========================================================//
+
+    override suspend fun getNextOrderId(): Int {
+        val client = session.getClient()
+        return client.getNextOrderId()
+    }
+
+    //===========================================================//
 
     override suspend fun getHistoricalData(
         securityIdentifier: SecurityIdentifier,
@@ -67,11 +82,44 @@ class InteractiveBrokersService(
         to: Instant
     ): List<IbkrHistoricalBar> {
         val client = session.getClient()
-        return client.getHistoricalData(
-            identifier = securityIdentifier,
-            from = from,
-            to = to
-        )
+
+        val allBars =
+            mutableListOf<IbkrHistoricalBar>()
+
+        var currentEnd = to
+
+        while (currentEnd > from) {
+
+            val currentStart =
+                maxOf(
+                    from,
+                    currentEnd - 7.days
+                )
+
+            logger.info(
+                "Fetching IBKR historical data ticker={} from={} to={}",
+                securityIdentifier.tickerSymbol,
+                currentStart,
+                currentEnd
+            )
+
+            val bars =
+                client.getHistoricalData(
+                    identifier = securityIdentifier,
+                    from = currentStart,
+                    to = currentEnd
+                )
+
+            allBars.addAll(bars)
+
+            currentEnd = currentStart
+
+            delay(500.milliseconds)
+        }
+
+        return allBars
+            .distinctBy { it.timestamp }
+            .sortedBy { it.timestamp }
     }
 
     //===========================================================//
@@ -88,6 +136,8 @@ class InteractiveBrokersService(
             currency(request.currency)
         }
     }
+
+    //===========================================================//
 
     private fun createMarketOrder(request: BrokerOrderRequest): Order {
         return Order().apply {
