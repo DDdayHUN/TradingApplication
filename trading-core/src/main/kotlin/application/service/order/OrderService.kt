@@ -1,8 +1,7 @@
-package application.service.spring
+package application.service.order
 
 import application.logging.logger
-import application.service.IOrderService
-import application.service.ITraderService
+import application.service.trader.ITraderService
 import application.service.broker.IBrokerService
 import data.repository.order.toBrokerOrder
 import domain.interfaces.IOrderRepository

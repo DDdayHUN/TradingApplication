@@ -2,8 +2,8 @@ package api.controller
 
 import api.dto.PortfolioResponse
 import api.dto.toResponse
-import application.service.IAuthenticationService
-import application.service.IPortfolioService
+import application.service.auth.IAuthenticationService
+import application.service.portfolio.IPortfolioService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -26,9 +26,10 @@ class PortfolioController(
     suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
         val userId = session.currentUser().id
         val response = portfolioService.getAllPortfolio(userId).map { portfolio ->
+            val summary = portfolioService.getAccountSummary(portfolio.id)
             portfolio.toResponse(
-                availableCapital = portfolioService.getAvailableCapital(portfolio.id),
-                liquidation = portfolioService.getLiquidation()
+                availableCapital = summary.availableCapital,
+                liquidation = summary.netLiquidation
             )
         }
 
@@ -41,9 +42,10 @@ class PortfolioController(
 
     @GetMapping("/{portfolioId}")
     suspend fun getPortfolioById(@PathVariable portfolioId: UUID): ResponseEntity<PortfolioResponse> {
+        val summary = portfolioService.getAccountSummary(portfolioId)
         val response = portfolioService.getPortfolio(portfolioId).toResponse(
-            availableCapital = portfolioService.getAvailableCapital(portfolioId),
-            liquidation = portfolioService.getLiquidation()
+            availableCapital = summary.availableCapital,
+            liquidation = summary.netLiquidation
         )
 
         return ResponseEntity.ok(response)
@@ -57,9 +59,10 @@ class PortfolioController(
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
         val userId = session.currentUser().id
         val portfolio = portfolioService.createPortfolio(userId)
+        val summary = portfolioService.getAccountSummary(portfolio.id)
         val response = portfolio.toResponse(
-            availableCapital = portfolioService.getAvailableCapital(portfolio.id),
-            liquidation = portfolioService.getLiquidation()
+            availableCapital = summary.availableCapital,
+            liquidation = summary.netLiquidation
         )
 
 

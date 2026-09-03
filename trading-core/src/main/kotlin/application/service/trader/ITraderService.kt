@@ -1,11 +1,11 @@
-package application.service
+package application.service.trader
 
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import domain.trader.Trader
 import domain.trader.TradingOrder
 import infrastructure.broker.SellAllocation
-import java.util.*
+import java.util.UUID
 
 interface ITraderService {
     suspend fun createTrader(userId: UUID, portfolioId: UUID, request: CreateTraderRequest): Trader

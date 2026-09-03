@@ -3,8 +3,8 @@ package api.controller
 import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
 import api.dto.toResponse
-import application.service.IAuthenticationService
-import application.service.ITraderService
+import application.service.auth.IAuthenticationService
+import application.service.trader.ITraderService
 import exception.api.TraderNotFoundException
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

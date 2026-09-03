@@ -1,4 +1,4 @@
-package application.service
+package application.service.auth
 
 import domain.User
 

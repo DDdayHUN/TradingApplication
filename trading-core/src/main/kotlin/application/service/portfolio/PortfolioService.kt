@@ -1,16 +1,12 @@
-package application.service.spring
+package application.service.portfolio
 
-import application.service.IPortfolioService
 import application.service.broker.IBrokerService
 import domain.Portfolio
 import domain.interfaces.IPortfolioRepository
-import infrastructure.broker.IbkrSession
+import infrastructure.broker.IbkrAccountSummary
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
-
-//===========================================================//
-//===========================================================//
+import java.util.UUID
 
 @Service
 class PortfolioService(
@@ -79,22 +75,18 @@ class PortfolioService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAvailableCapital(portfolioId: UUID): Double {
+    override suspend fun getAccountSummary(portfolioId: UUID): IbkrAccountSummary {
         val portfolio = getPortfolio(portfolioId)
 
-        val brokerAvailableCash = ibkrService.getAvailableCapital()
+        val summary = ibkrService.getAccountSummary()
 
         val traderCapital = portfolio.traders.sumOf{trader->
             trader.capital
         }
 
-        return (brokerAvailableCash - traderCapital).coerceAtLeast(0.0)
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    override suspend fun getLiquidation(): Double {
-        return ibkrService.getNetLiquidation()
+       return IbkrAccountSummary(
+           availableCapital = (summary.availableCapital - traderCapital).coerceAtLeast(0.0),
+           netLiquidation = summary.netLiquidation,
+       )
     }
 }

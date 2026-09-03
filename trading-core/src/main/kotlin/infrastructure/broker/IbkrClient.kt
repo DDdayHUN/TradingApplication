@@ -6,8 +6,6 @@ import com.ib.client.protobuf.*
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
@@ -36,9 +34,15 @@ class IbkrClient(
     private val logger = logger<IbkrClient>()
     private val marketDataRequestId = AtomicInteger(1_000)
     private val pendingPrices = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
-    private val accountSummaryRequestId = AtomicInteger(2_000)
-    private val pendingAccountSummaryRequests = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
-    private val accountSummaryMutex = Mutex()
+
+    private val accountSummaryRequestId = 2_000
+
+    @Volatile
+    private var latestAvailableFunds: Double? = null
+
+    @Volatile
+    private var latestNetLiquidation: Double? = null
+
     private val historicalDataRequestId = AtomicInteger(3_000)
     private val pendingHistoricalData = ConcurrentHashMap<Int, HistoricalDataRequest>()
 
@@ -79,6 +83,8 @@ class IbkrClient(
                 }
 
                 logger.info("IBKR client is ready")
+
+                subscribeAccountSummary()
                 return
             } catch(e: Exception) {
                 logger.warn("IBKR conntection attempt {}/{} failed",
@@ -110,6 +116,9 @@ class IbkrClient(
         }
 
         logger.info("Disconnecting from IBKR Gateway")
+        client.cancelAccountSummary(
+            accountSummaryRequestId
+        )
 
         client.eDisconnect()
 
@@ -119,8 +128,6 @@ class IbkrClient(
         nextOrderId.set(-1)
         pendingPrices.values.forEach { pending -> pending.cancel() }
         pendingPrices.clear()
-        pendingAccountSummaryRequests.values.forEach { pending -> pending.cancel() }
-        pendingAccountSummaryRequests.clear()
         pendingHistoricalData.values.forEach {pending ->pending.result.cancel()}
         pendingHistoricalData.clear()
 
@@ -159,6 +166,23 @@ class IbkrClient(
         return orderId
     }
 
+    fun getAccountSummary(): IbkrAccountSummary {
+        val availableFunds = latestAvailableFunds
+            ?: throw IllegalStateException(
+                "IBKR AvailableFunds has not been received yet"
+            )
+
+        val netLiquidation = latestNetLiquidation
+            ?: throw IllegalStateException(
+                "IBKR NetLiquidation has not been received yet"
+            )
+
+        return IbkrAccountSummary(
+            availableCapital = availableFunds,
+            netLiquidation = netLiquidation
+        )
+    }
+
     suspend fun getCurrentPrice(ticker: String, currency: String): Double {
         check(client.isConnected){
             "IBKR client is not connected"
@@ -193,15 +217,8 @@ class IbkrClient(
         } finally {
             pendingPrices.remove(requestId)
             client.cancelMktData(requestId)
+            delay(1_000.milliseconds)
         }
-    }
-
-    suspend fun getAvailableCapital(): Double {
-        return getAccountSummaryValue("AvailableFunds")
-    }
-
-    suspend fun getNetLiquidation(): Double {
-        return getAccountSummaryValue("NetLiquidation")
     }
 
     suspend fun getHistoricalData(identifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar> {
@@ -241,6 +258,7 @@ class IbkrClient(
             }
         } finally {
             pendingHistoricalData.remove(requestId)
+            delay(1_000.milliseconds)
         }
     }
 
@@ -253,6 +271,20 @@ class IbkrClient(
     //===========================================================//
     //===========================================================//
     // Private Method(s)
+
+    private fun subscribeAccountSummary() {
+        check(client.isConnected) {
+            "IBKR client is not connected"
+        }
+
+        client.reqAccountSummary(
+            accountSummaryRequestId,
+            "All",
+            "AvailableFunds,NetLiquidation"
+        )
+
+        logger.info("Subscribed to IBKR account summary")
+    }
 
     private fun startMessageReader() {
         logger.debug("Starting IBKR message reader")
@@ -278,40 +310,6 @@ class IbkrClient(
             name = "ibkr-reader"
             isDaemon = true
             start()
-        }
-    }
-
-    private suspend fun getAccountSummaryValue(
-        tag: String
-    ): Double {
-        return accountSummaryMutex.withLock {
-
-            check(client.isConnected) {
-                "IBKR client is not connected"
-            }
-
-            val requestId =
-                accountSummaryRequestId.getAndIncrement()
-
-            val result =
-                CompletableDeferred<Double>()
-
-            pendingAccountSummaryRequests[requestId] = result
-
-            client.reqAccountSummary(
-                requestId,
-                "All",
-                tag
-            )
-
-            try {
-                withTimeout(10_000.milliseconds) {
-                    result.await()
-                }
-            } finally {
-                pendingAccountSummaryRequests.remove(requestId)
-                client.cancelAccountSummary(requestId)
-            }
         }
     }
 
@@ -643,15 +641,29 @@ class IbkrClient(
     override fun accountSummaryProtoBuf(message: AccountSummaryProto.AccountSummary?) {
         if (message == null) return
 
-        val value =
-            message.value.toDoubleOrNull()
-                ?: return
+        val value = message.value.toDoubleOrNull()
+            ?: return
 
-        pendingAccountSummaryRequests[message.reqId]
-            ?.takeIf { pending ->
-                !pending.isCompleted
+        when (message.tag) {
+
+            "AvailableFunds" -> {
+                latestAvailableFunds = value
+
+                logger.debug(
+                    "IBKR AvailableFunds updated: {}",
+                    value
+                )
             }
-            ?.complete(value)
+
+            "NetLiquidation" -> {
+                latestNetLiquidation = value
+
+                logger.debug(
+                    "IBKR NetLiquidation updated: {}",
+                    value
+                )
+            }
+        }
     }
 
     override fun accountSummaryEndProtoBuf(p0: AccountSummaryEndProto.AccountSummaryEnd?) {

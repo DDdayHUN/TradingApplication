@@ -1,6 +1,6 @@
 package infrastructure.broker
 
-import application.service.spring.OrderService
+import application.service.order.OrderService
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
@@ -11,7 +11,7 @@ class IbkrOrderEventHandler(
 
     @EventListener
     suspend fun handle(event: OrderSubmittedEvent) {
-        orderService.handleOrderSubmitted(event)
+        return orderService.handleOrderSubmitted(event)
     }
 
     @EventListener

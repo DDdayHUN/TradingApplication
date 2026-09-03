@@ -1,4 +1,4 @@
-package application.service
+package application.service.order
 
 import domain.trader.TradingOrder
 import infrastructure.broker.OrderCancelledEvent

@@ -5,6 +5,7 @@ import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
 import domain.market.security.SecurityIdentifier
+import infrastructure.broker.IbkrAccountSummary
 import infrastructure.broker.IbkrHistoricalBar
 import infrastructure.broker.IbkrSession
 import org.springframework.stereotype.Service
@@ -58,14 +59,9 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
-    override suspend fun getAvailableCapital(): Double {
+    override suspend fun getAccountSummary(): IbkrAccountSummary {
         val client = session.getClient()
-        return client.getAvailableCapital()
-    }
-
-    override suspend fun getNetLiquidation(): Double {
-        val client = session.getClient()
-        return client.getNetLiquidation()
+        return client.getAccountSummary()
     }
 
     //===========================================================//

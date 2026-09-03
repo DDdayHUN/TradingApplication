@@ -1,11 +1,13 @@
 package infrastructure.broker
 
 import application.logging.logger
-import application.service.IOrderService
-import application.service.ITraderService
+import application.service.order.IOrderService
+import application.service.portfolio.IPortfolioService
+import application.service.trader.ITraderService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -15,7 +17,8 @@ import java.util.*
 @Component
 class Test(
     private val orderService: IOrderService,
-    private val traderService: ITraderService
+    private val traderService: ITraderService,
+    private val portfolioService: IPortfolioService
 ) {
 
     private val logger = logger<Test>()
@@ -24,24 +27,52 @@ class Test(
     )
 
     @Scheduled(
-        cron = "0 06 16 * * *",
+        cron = "0 */5 * * * *",
         zone = "Europe/Budapest"
     )
-    fun placeNvdaTestOrder() {
+    fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-                val portfolioId = UUID.fromString("8f69dedf-d2c1-4ac5-846e-639ef99603cf")
-                val traderId = UUID.fromString("43bf3b43-6b10-46af-8a63-60266d2d4322")
+                val portfolioId =
+                    UUID.fromString("73676208-6428-44e0-898f-4368d551df2c")
 
-                val order = traderService.executeTrader(portfolioId, traderId)
-                logger.info("TRADING ORDER: ${order.toReadableText()}")
-                logger.info("QUOTE: ${order.atPrice}")
+                val portfolio =
+                    portfolioService.getPortfolio(portfolioId)
 
-                orderService.submit(order)
+                val jobs = portfolio.traders.map { trader ->
+                    launch {
+                        try {
+                            val order =
+                                traderService.executeTrader(
+                                    portfolioId,
+                                    trader.id
+                                )
+
+                            logger.info(
+                                "Submitting trader={} order={}",
+                                trader.id,
+                                order.toReadableText()
+                            )
+
+                            orderService.submit(order)
+
+                        } catch (e: Exception) {
+                            logger.error(
+                                "Failed trader={}",
+                                trader.id,
+                                e
+                            )
+                        }
+                    }
+                }
+
+                jobs.joinAll()
+
+                logger.info("All concurrent trader jobs finished")
 
             } catch (e: Exception) {
                 logger.error(
-                    "TEST: failed to submit NVDA order",
+                    "Concurrent trading test failed",
                     e
                 )
             }
