@@ -1,8 +1,10 @@
-package data.repository.trader
+package application.provider
 
+import data.repository.trader.FakeTraderRepository
 import domain.interfaces.ITraderRepository
 
-object TraderRepositoryProvider {
+@Deprecated(message = "Is superseded by IPortfolioRepository")
+object TraderProvider {
     fun get(type: Type): ITraderRepository {
         return when (type) {
             is Type.Fake -> FakeTraderRepository

@@ -1,6 +1,7 @@
 package application
 
 import domain.algorithm.TradingAlgorithm
+import domain.interfaces.IHistoricalMarketDataProvider
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
 import domain.trader.TradingOrder
@@ -24,6 +25,7 @@ class ManualTrading {
     //===========================================================//
     // Private Field(s)
 
+    private val m_Provider: IHistoricalMarketDataProvider
     private val m_AlgorithmType: TradingAlgorithm.Type
     private val m_SecurityIdentifier: SecurityIdentifier
 
@@ -35,7 +37,11 @@ class ManualTrading {
     // Public Method(es)
 
     fun run(currentPrice: Double) {
-        val alg = TradingAlgorithm.create(m_AlgorithmType, m_SecurityIdentifier)
+        val alg = TradingAlgorithm.create(
+            provider = m_Provider,
+            type = m_AlgorithmType,
+            securityIdentifier = m_SecurityIdentifier
+        )
         val output = alg.run(m_Holdings, m_AllocatedCapital, currentPrice)
         val text = output.toTradingOrder(currentPrice).toReadableText()
         println("#===============================================================#")
@@ -53,10 +59,12 @@ class ManualTrading {
     // Constructor(s)
 
     constructor(
+        provider: IHistoricalMarketDataProvider,
         algorithm: TradingAlgorithm.Type,
         securityIdentifier: SecurityIdentifier,
         allocatedCapital: Double
     ) {
+        m_Provider = provider
         m_AlgorithmType = algorithm
         m_SecurityIdentifier = securityIdentifier
         m_AllocatedCapital = allocatedCapital

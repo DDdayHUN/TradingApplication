@@ -7,7 +7,6 @@ import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
 import domain.market.security.SecurityIdentifier
-import infrastructure.broker.IbkrClient
 import infrastructure.broker.IbkrHistoricalBar
 import infrastructure.broker.IbkrSession
 import org.springframework.stereotype.Service

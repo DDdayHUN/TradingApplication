@@ -1,6 +1,5 @@
 package data.repository.historical_data.yahoo
 
-import data.repository.historical_data.HistoricalMarketDataDto
 import kotlin.time.Instant
 
 internal data class YahooMarketDataDto(

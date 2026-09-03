@@ -6,6 +6,7 @@ import api.dto.TraderResponse
 import application.service.IPortfolioService
 import application.service.ITraderService
 import domain.algorithm.TradingAlgorithm
+import domain.interfaces.IHistoricalMarketDataProvider
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import domain.trader.TradingOrder
@@ -19,6 +20,7 @@ import java.util.UUID
 
 @Service
 class TraderService(
+    private val provider: IHistoricalMarketDataProvider,
     private val portfolioService: IPortfolioService
 ) : ITraderService {
     //===========================================================//
@@ -35,6 +37,7 @@ class TraderService(
         )
         val algorithmType = parseAlgorithmType(request.algorithmType)
         val algorithm = TradingAlgorithm.create(
+            provider = provider,
             type = algorithmType,
             securityIdentifier = securityIdentifier
         )

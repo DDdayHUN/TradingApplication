@@ -1,6 +1,6 @@
 package domain.algorithm
 
-import data.repository.historical_data.HistoricalMarketDataProvider
+import domain.interfaces.IHistoricalMarketDataProvider
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
@@ -29,8 +29,11 @@ object TradingAlgorithm {
      * @param to the end date (inclusive).
      * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
      */
-    fun create(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
-        return initForBackTest(type, securityIdentifier, from, to)
+    fun create(provider: IHistoricalMarketDataProvider, type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
+        val history = getHistory(provider, securityIdentifier, from, to)
+        val backtest = forBackTest(type, history)
+        val algorithm = create(provider, type, securityIdentifier, backtest.first)
+        return Pair(backtest.second, algorithm)
     }
 
     //===========================================================//
@@ -41,8 +44,11 @@ object TradingAlgorithm {
      * @param securityIdentifier the identifier identifies a security.
      * @return the configured algorithm instance.
      */
-    fun create(type: Type, securityIdentifier: SecurityIdentifier, history: List<SecurityHistory>? = null): ITradingAlgorithm {
-        return initForTrading(type, securityIdentifier, history)
+    fun create(provider: IHistoricalMarketDataProvider, type: Type, securityIdentifier: SecurityIdentifier, history: List<SecurityHistory>? = null): ITradingAlgorithm {
+        val history = getHistory(provider, securityIdentifier)
+        val trading = forTrading(type, history)
+        val algorithm = create(provider, type, securityIdentifier, trading)
+        return algorithm
     }
 
     //===========================================================//
@@ -50,93 +56,84 @@ object TradingAlgorithm {
     // Private Method(es)
 
     /**
-     * Core initialization method used by backtesting setups.
+     * Fetches market history for a given security between specified timestamps.
      *
-     * @param type the type of algorithm to initialize.
-     * @param securityIdentifier the identifier identifies a security.
-     * @param from the start date (inclusive).
-     * @param to the end date (inclusive).
-     * @return a pair that consists of history data that has not been used up in the initialization process and of an initialized algorithm.
+     * @param provider the market data provider instance.
+     * @param securityIdentifier the identifier of the security to query.
+     * @param from the start instant of the historical range.
+     * @param to the end instant of the historical range.
+     * @return the list of historical market entries.
      */
-    private fun initForBackTest(type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
-        val retHistory = runBlocking {
-            val a1 = async { HistoricalMarketDataProvider.getBySecurityIdentifier(securityIdentifier, from, to).getOrThrow().toMutableList() }
-            a1.await()
+    private fun getHistory(
+        provider: IHistoricalMarketDataProvider,
+        securityIdentifier: SecurityIdentifier,
+        from: Instant = Instant.DISTANT_PAST,
+        to: Instant = Instant.DISTANT_FUTURE
+    ): List<SecurityHistory> {
+        return runBlocking {
+            async {
+                provider.getBySecurityIdentifier(securityIdentifier, from, to).getOrThrow()
+            }.await()
         }
-        val retTradingAlgorithm = when (type) {
-            is Type.TACPP46 -> {
-                val init = retHistory.subList(0, type.initSize).toList()
-                retHistory.subList(0, type.initSize).clear()
-                TACPP46(init)
-            }
-            is Type.ALGDES2 -> {
-                val init = retHistory.subList(0, type.initSize).toList()
-                retHistory.subList(0, type.initSize).clear()
-                ALGDES2(init)
-            }
-            is Type.ALGDES3 -> {
-                val init = retHistory.subList(0, type.initSize).toList()
-                retHistory.subList(0, type.initSize).clear()
-                ALGDES3(init)
-            }
-            is Type.ALGDES31 -> {
-                val init = retHistory.subList(0, type.initSize).toList()
-                retHistory.subList(0, type.initSize).clear()
-                ALGDES31(init)
-            }
-            is Type.ALGDES4 -> {
-                val init = retHistory.subList(0, type.initSize).toList()
-                retHistory.subList(0, type.initSize).clear()
-                ALGDES4(init)
-            }
-            is Type.BUYANDHOLD -> {
-                BUYANDHOLD()
-            }
-            is Type.TACPP462 -> {
-                val init = retHistory.subList(0, type.initSize).toList()
-                retHistory.subList(0, type.initSize).clear()
-                TACPP462(init)
-            }
-        }
-        return Pair(retHistory, retTradingAlgorithm)
     }
 
-    //===========================================================//
     /**
-     * Core initialization method used by trading setups.
+     * Splits the historical data for backtesting into initial and remaining subsets.
      *
-     * @param type the type of algorithm to initialize.
-     * @param securityIdentifier the identifier identifies a security.
-     * @return an initialized algorithm for trading.
+     * @param type the type of the algorithm for [Type.initSize].
+     * @param history the full historical data of the given asset.
+     * @return a pair containing the for initialization history as first, and the remaining history as second.
      */
-    private fun initForTrading(type: Type, securityIdentifier: SecurityIdentifier, history: List<SecurityHistory>?= null): ITradingAlgorithm {
+    private fun forBackTest(type: Type, history: List<SecurityHistory>): Pair<List<SecurityHistory>, List<SecurityHistory>> {
+        val init = history.subList(0, type.initSize).toList()
+        val remainder = history.drop(type.initSize)
 
-       val resolvedHistory = history ?: runBlocking {
-           val a1 = async { HistoricalMarketDataProvider.getBySecurityIdentifier(securityIdentifier, Instant.DISTANT_PAST, Instant.DISTANT_FUTURE) }
-           a1.await().getOrThrow()
-       }
+        return Pair(init, remainder)
+    }
+
+    /**
+     * Prepares market history for live trading by retaining only the most recent data
+     * required by the algorithm strategy.
+     *
+     *  @param type the type of the algorithm for [Type.initSize].
+     *  @param history the history with of the given asset.
+     *  @return the history .
+     */
+    private fun forTrading(type: Type, history: List<SecurityHistory>): List<SecurityHistory> {
+        return history.takeLast(type.initSize)
+    }
+
+    /**
+     * Factory function that instantiates a trading algorithm.
+     *
+     *  @param type the type of the algorithm to be instantiated.
+     *  @param history the history with which we initialize the algorithm.
+     *  @return the instantiated algorithm.
+     */
+    private fun createAlgorithm(type: Type, history: List<SecurityHistory>): ITradingAlgorithm {
+        require(history.size == type.initSize) { "Size" }
 
         return when (type) {
             is Type.TACPP46 -> {
-                TACPP46(resolvedHistory.takeLast(type.initSize))
+                TACPP46(history)
             }
             is Type.ALGDES2 -> {
-                ALGDES2(resolvedHistory.takeLast(type.initSize))
+                ALGDES2(history)
             }
             is Type.ALGDES3 -> {
-                ALGDES3(resolvedHistory.takeLast(type.initSize))
+                ALGDES3(history)
             }
             is Type.ALGDES31 -> {
-                ALGDES31(resolvedHistory.takeLast(type.initSize))
+                ALGDES31(history)
             }
             is Type.ALGDES4 -> {
-                ALGDES4(resolvedHistory.takeLast(type.initSize))
+                ALGDES4(history)
             }
             is Type.BUYANDHOLD -> {
                 BUYANDHOLD()
             }
             is Type.TACPP462 -> {
-                TACPP462(resolvedHistory.takeLast(type.initSize))
+                TACPP462(history)
             }
         }
     }

@@ -1,13 +1,11 @@
 import application.service.borker.InteractiveBrokersService
-import application.service.broker.IBrokerService
 import application.service.broker.toBrokerOrder
 import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
-import data.network.MarketDataProvider
-import data.repository.historical_data.HistoricalMarketDataProvider
-import data.repository.historical_data.ibkr.IbkrHistoricalMarketDataProvider
-import data.repository.trader.TraderRepositoryProvider
+import application.provider.MarketDataProvider
+import application.provider.HistoricalMarketDataProvider
+import application.provider.TraderProvider
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
@@ -37,7 +35,7 @@ suspend fun main() {
 
     val c_RUN_TRADER_TEST = false
     val c_CLEAR_TRADER_TEST_FOLDER = false
-    val c_RUN_IBKR_TEST = true
+    val c_RUN_IBKR_TEST = false
 
     //===========================================================//
     //===========================================================//
@@ -57,6 +55,9 @@ suspend fun main() {
     val endDate = Instant.parse("2026-01-01T00:00:00Z")
     val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
+    val yahooHistoricalMarketDataProvider =
+        HistoricalMarketDataProvider.get(HistoricalMarketDataProvider.Type.YahooHistoricalMarketDataRepository)
+
     //===========================================================//
     //===========================================================//
     // Config Checks
@@ -72,6 +73,7 @@ suspend fun main() {
     if(c_RUN_BACKTEST_ON_ONE_SECURITY) {
         run{
             TradingAlgorithmBackTester(
+                provider = yahooHistoricalMarketDataProvider,
                 type = algorithm,
                 securityIdentifier = identifier,
                 startingCapital = startCapital,
@@ -87,17 +89,20 @@ suspend fun main() {
     if(c_RUN_BACKTEST_ON_ALL_SECURITY) {
         run {
             coroutineScope {
-                val listOfOutput = HistoricalMarketDataProvider.getAllSecurityIdentifiers().getOrThrow().map {
-                    async {
-                        TradingAlgorithmBackTester(
-                            type = algorithm,
-                            securityIdentifier = it,
-                            startingCapital = startCapital,
-                            taxation = taxation,
-                            from = startDate,
-                            to = endDate
-                        ).runBackTest()
-                    }
+                val listOfOutput = yahooHistoricalMarketDataProvider
+                    .getAllSecurityIdentifiers()
+                    .getOrThrow().map {
+                        async {
+                            TradingAlgorithmBackTester(
+                                provider = yahooHistoricalMarketDataProvider,
+                                type = algorithm,
+                                securityIdentifier = it,
+                                startingCapital = startCapital,
+                                taxation = taxation,
+                                from = startDate,
+                                to = endDate
+                            ).runBackTest()
+                        }
                 }.awaitAll()
 
                 listOfOutput.forEach {
@@ -112,6 +117,7 @@ suspend fun main() {
     if(c_RUN_EVAL_ON_ONE_ALGORITHM) {
         run{
             TradingAlgorithmEvaluator(
+                yahooHistoricalMarketDataProvider,
                 algorithm,
                 startCapital,
                 taxation,
@@ -130,6 +136,7 @@ suspend fun main() {
                 val listOfOutput = TradingAlgorithm.Type.entries.map {
                     async {
                         TradingAlgorithmEvaluator(
+                            yahooHistoricalMarketDataProvider,
                             it,
                             startCapital,
                             taxation,
@@ -154,7 +161,7 @@ suspend fun main() {
 
             if (c_CLEAR_TRADER_TEST_FOLDER) clearTestFolder()
 
-            val traderList = TraderRepositoryProvider.get(TraderRepositoryProvider.Type.Fake).getAll().getOrThrow()
+            val traderList = TraderProvider.get(TraderProvider.Type.Fake).getAll().getOrThrow()
 
             val tradersToTest =
                 if (traderList.any { it.securityIdentifier.isin == identifier.isin }) traderList
@@ -164,7 +171,8 @@ suspend fun main() {
                         holdings = mutableSetOf(),
                         allocatedCapital = startCapital,
                         algorithm = TradingAlgorithm.create(
-                            algorithm,
+                            provider = yahooHistoricalMarketDataProvider,
+                            type = algorithm,
                             securityIdentifier = identifier,
                         )
                     )
@@ -185,8 +193,12 @@ suspend fun main() {
             val session = IbkrSession(client, config)
 
             val brokerService = InteractiveBrokersService(session)
-            val marketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(session))
-            val historicalMarketDataProvider = IbkrHistoricalMarketDataProvider(brokerService)
+
+            val marketDataProvider = MarketDataProvider
+                .create(MarketDataProvider.Type.Ibkr(session))
+
+            val historicalMarketDataProvider = HistoricalMarketDataProvider
+                .get(HistoricalMarketDataProvider.Type.IbkrHistoricalMarketDataProvider(brokerService))
 
 
             try {
@@ -204,6 +216,7 @@ suspend fun main() {
                     securityIdentifier = identifier,
                     allocatedCapital = 10_000.0,
                     algorithm = TradingAlgorithm.create(
+                        provider = HistoricalMarketDataProvider.get(HistoricalMarketDataProvider.Type.YahooHistoricalMarketDataRepository),
                         type = TradingAlgorithm.Type.TACPP46,
                         securityIdentifier = identifier,
                         history = historicalData

@@ -1,7 +1,8 @@
 package application.tester
 
-import data.repository.historical_data.HistoricalMarketDataProvider
+import application.provider.HistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
+import domain.interfaces.IHistoricalMarketDataProvider
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.utils.Math.bottom
@@ -30,6 +31,7 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Private Field(s)
 
+    private val m_Provider: IHistoricalMarketDataProvider
     private val m_TradingAlgorithmType: TradingAlgorithm.Type
     private val m_TaxationType: Taxation.Type?
     private val m_StartingCapital: Double
@@ -43,7 +45,7 @@ class TradingAlgorithmEvaluator {
     // Public Method(es)
 
     suspend fun runEvaluation(): Output = coroutineScope {
-        val listOfSecurityIdentifiers = HistoricalMarketDataProvider.getAllSecurityIdentifiers().getOrThrow()
+        val listOfSecurityIdentifiers = m_Provider.getAllSecurityIdentifiers().getOrThrow()
 
         val timePeriods = listOf(
             TimePeriod.Year10,
@@ -163,6 +165,7 @@ class TradingAlgorithmEvaluator {
         val outputs = listOfSecurityIdentifiers.map { securityIdentifier ->
             async {
                 val out = TradingAlgorithmBackTester(
+                    provider = m_Provider,
                     type = m_TradingAlgorithmType,
                     securityIdentifier = securityIdentifier,
                     startingCapital = m_StartingCapital,
@@ -183,6 +186,7 @@ class TradingAlgorithmEvaluator {
     // Constructor(s)
 
     constructor(
+        provider: IHistoricalMarketDataProvider,
         tradingAlgorithmType: TradingAlgorithm.Type,
         capital: Double,
         taxation: Taxation.Type? = null,
@@ -190,6 +194,7 @@ class TradingAlgorithmEvaluator {
         evaluationEndYear: Instant = Instant.parse("2025-01-01T00:00:00Z"),
         windowStepYears: Int = 1
     ) {
+        m_Provider = provider
         m_TradingAlgorithmType = tradingAlgorithmType
         m_StartingCapital = capital
         m_TaxationType = taxation

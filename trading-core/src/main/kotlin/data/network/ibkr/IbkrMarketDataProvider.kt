@@ -3,7 +3,6 @@ package data.network.ibkr
 import domain.interfaces.IMarketDataProvider
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
-import infrastructure.broker.IbkrClient
 import infrastructure.broker.IbkrSession
 
 class IbkrMarketDataProvider(
