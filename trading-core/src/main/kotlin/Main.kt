@@ -16,12 +16,8 @@ suspend fun main() {
 
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
     val c_RUN_BACKTEST_ON_ALL_SECURITY = false // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
-    val c_RUN_EVAL_ON_ONE_ALGORITHM = false
+    val c_RUN_EVAL_ON_ONE_ALGORITHM = true
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
-
-    val c_RUN_TRADER_TEST = false
-    val c_CLEAR_TRADER_TEST_FOLDER = false
-    val c_RUN_IBKR_TEST = false
 
     //===========================================================//
     //===========================================================//
@@ -37,7 +33,7 @@ suspend fun main() {
     )
 
     val startCapital = 5000.0
-    val startDate = Instant.parse("2025-01-01T00:00:00Z")
+    val startDate = Instant.parse("2020-01-01T00:00:00Z")
     val endDate = Instant.parse("2026-01-01T00:00:00Z")
     val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
@@ -139,91 +135,4 @@ suspend fun main() {
             }
         }
     }
-
-    //===========================================================//
-
-    /*if(c_RUN_TRADER_TEST) {
-        run {
-
-            if (c_CLEAR_TRADER_TEST_FOLDER) clearTestFolder()
-
-            val traderList = TraderProvider.get(TraderProvider.Type.Fake).getAll().getOrThrow()
-
-            val tradersToTest =
-                if (traderList.any { it.securityIdentifier.isin == identifier.isin }) traderList
-                else {
-                    traderList + Trader(
-                        securityIdentifier = identifier,
-                        holdings = mutableSetOf(),
-                        allocatedCapital = startCapital,
-                        algorithm = TradingAlgorithm.create(
-                            provider = yahooHistoricalMarketDataProvider,
-                            type = algorithm,
-                            securityIdentifier = identifier,
-                        )
-                    )
-                }
-
-            tradersToTest.forEach { trader ->
-                TraderTester(trader).runTest()
-            }
-        }
-    }
-
-    //===========================================================//
-
-    if (c_RUN_IBKR_TEST) {
-        withContext(Dispatchers.Default) {
-            val client = IbkrClient()
-            val config = IbkrConfig.fromEnv()
-            val session = IbkrSession(client, config)
-
-            val brokerService = InteractiveBrokersService(session)
-
-            val marketDataProvider = MarketDataProvider
-                .create(MarketDataProvider.Type.Ibkr(session))
-
-            val historicalMarketDataProvider = HistoricalMarketDataProvider
-                .get(HistoricalMarketDataProvider.Type.IbkrHistoricalMarketDataProvider(brokerService))
-
-
-            try {
-                val to = Clock.System.now()
-                val from = to - 90.days
-
-                val historicalData = historicalMarketDataProvider.getBySecurityIdentifier(
-                    securityIdentifier = identifier,
-                    from = from,
-                    to = to
-                ).getOrThrow()
-
-
-                val trader = Trader(
-                    securityIdentifier = identifier,
-                    allocatedCapital = 10_000.0,
-                    algorithm = TradingAlgorithm.create(
-                        provider = HistoricalMarketDataProvider.get(HistoricalMarketDataProvider.Type.YahooHistoricalMarketDataRepository),
-                        type = TradingAlgorithm.Type.TACPP46,
-                        securityIdentifier = identifier,
-                        history = historicalData
-                    )
-                )
-                val quote = marketDataProvider.getQuote(trader.securityIdentifier).getOrThrow()
-                println("Quote: ${quote.currentPrice}")
-                val tradingOrder = trader.createOrder(quote)
-                println("Trading order: ${tradingOrder.toReadableText()}")
-                val brokerOrder = tradingOrder.toBrokerOrder()
-                if(brokerOrder != null ){
-                    val ibkrOrderId = brokerService.placeOrder(brokerOrder)
-                    println("Submitted IBKR orderId=$ibkrOrderId")
-                } else {
-                    println("HOLD - no broker order created")
-                }
-            }
-            finally {
-                delay(60_000)
-                session.disconnect()
-            }
-        }
-    }*/
 }

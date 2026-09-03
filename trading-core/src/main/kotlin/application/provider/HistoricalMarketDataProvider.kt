@@ -1,7 +1,5 @@
 package application.provider
 
-import application.service.borker.InteractiveBrokersService
-import data.repository.historical_data.ibkr.IbkrHistoricalMarketDataProvider
 import data.repository.historical_data.yahoo.YahooHistoricalMarketDataRepository
 import domain.interfaces.IHistoricalMarketDataProvider
 import org.springframework.stereotype.Component
@@ -17,9 +15,6 @@ object HistoricalMarketDataProvider {
             is Type.YahooHistoricalMarketDataRepository -> {
                 YahooHistoricalMarketDataRepository
             }
-            is Type.IbkrHistoricalMarketDataProvider -> {
-                IbkrHistoricalMarketDataProvider(type.service)
-            }
         }
     }
 
@@ -29,6 +24,5 @@ object HistoricalMarketDataProvider {
 
     sealed interface Type {
         data object YahooHistoricalMarketDataRepository : Type
-        data class IbkrHistoricalMarketDataProvider(val service: InteractiveBrokersService) : Type
     }
 }

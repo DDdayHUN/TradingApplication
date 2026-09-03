@@ -32,7 +32,7 @@ object TradingAlgorithm {
     fun create(provider: IHistoricalMarketDataProvider, type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, ITradingAlgorithm> {
         val history = getHistory(provider, securityIdentifier, from, to)
         val backtest = forBackTest(type, history)
-        val algorithm = create(provider, type, securityIdentifier, backtest.first)
+        val algorithm = createAlgorithm(type, backtest.first)
         return Pair(backtest.second, algorithm)
     }
 
@@ -47,7 +47,7 @@ object TradingAlgorithm {
     fun create(provider: IHistoricalMarketDataProvider, type: Type, securityIdentifier: SecurityIdentifier, history: List<SecurityHistory>? = null): ITradingAlgorithm {
         val history = getHistory(provider, securityIdentifier)
         val trading = forTrading(type, history)
-        val algorithm = create(provider, type, securityIdentifier, trading)
+        val algorithm = createAlgorithm( type, trading)
         return algorithm
     }
 
