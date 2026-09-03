@@ -1,14 +1,15 @@
 package data.repository.historical_data.yahoo
 
 import com.google.gson.GsonBuilder
-import data.repository.historical_data.HistoricalMarketDataDto
-import data.repository.historical_data.IHistoricalMarketDataRepository
 import data.repository.utils.RepositoryUtils
+import domain.interfaces.IHistoricalMarketDataProvider
+import domain.market.security.SecurityHistory
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.*
 import java.io.File
+import kotlin.time.Instant
 
-internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepository {
+internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvider {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -29,7 +30,45 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
     //===========================================================//
     // Public Method(es)
 
-    override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto = withContext(Dispatchers.IO) {
+    override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Result<List<SecurityHistory>> {
+        try {
+            val data = getBySecurityIdentifier(securityIdentifier)
+
+            val ret = data.history
+                .filter { it.date in from..to }
+                .sortedBy { it.date }
+                .map { SecurityHistory(it.closingPrice) }
+                .toMutableList()
+
+            return Result.success(ret)
+        }
+        catch (e: Exception) {
+            return Result.failure(e)
+        }
+    }
+
+    //===========================================================//
+
+    @Deprecated("We need to redo this, because this is too expensive")
+    override suspend fun getAllSecurityIdentifiers(): Result<List<SecurityIdentifier>> {
+        try {
+            val data = getAll()
+            val ret = data
+                .map {
+                    SecurityIdentifier(it.meta.isin, it.meta.tickerSymbol, it.meta.currency)
+                }
+            return Result.success(ret)
+        }
+        catch (e: Exception) {
+            return Result.failure(e)
+        }
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Private Method(es)
+
+    private suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto = withContext(Dispatchers.IO) {
         val targetFile = s_RootDir.walkTopDown()
             .filter { it.isFile }
             .find {
@@ -43,7 +82,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataRepos
 
     //===========================================================//
 
-    override suspend fun getAll(): List<HistoricalMarketDataDto> = withContext(Dispatchers.IO) {
+    private suspend fun getAll(): List<HistoricalMarketDataDto> = withContext(Dispatchers.IO) {
         val files = s_RootDir
             .walkTopDown()
             .filter { it.isFile }

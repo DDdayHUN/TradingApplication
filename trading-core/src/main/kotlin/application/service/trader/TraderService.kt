@@ -4,9 +4,10 @@ import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import application.logging.logger
 import application.service.portfolio.IPortfolioService
-import data.network.MarketDataProvider
+import application.provider.MarketDataProvider
 import data.network.finnhub.FinnhubConfig
 import domain.algorithm.TradingAlgorithm
+import domain.interfaces.IHistoricalMarketDataProvider
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import domain.trader.TradingOrder
@@ -19,6 +20,7 @@ import java.util.UUID
 
 @Service
 class TraderService(
+    private val provider: IHistoricalMarketDataProvider,
     private val portfolioService: IPortfolioService,
     private val ibkrSession: IbkrSession,
     private val finnhubConfig: FinnhubConfig,
@@ -50,6 +52,7 @@ class TraderService(
         )
         val algorithmType = parseAlgorithmType(request.algorithmType)
         val algorithm = TradingAlgorithm.create(
+            provider = provider,
             type = algorithmType,
             securityIdentifier = securityIdentifier
         )
@@ -100,6 +103,7 @@ class TraderService(
         val algorithmType = parseAlgorithmType(request.algorithmType)
 
         val algorithm = TradingAlgorithm.create(
+            provider = provider,
             type = algorithmType,
             securityIdentifier = trader.securityIdentifier,
         )

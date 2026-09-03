@@ -1,11 +1,9 @@
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
-import data.repository.historical_data.HistoricalMarketDataProvider
-import data.repository.trader.TraderRepositoryProvider
+import application.provider.HistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
-import domain.trader.Trader
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -18,11 +16,8 @@ suspend fun main() {
 
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
     val c_RUN_BACKTEST_ON_ALL_SECURITY = false // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
-    val c_RUN_EVAL_ON_ONE_ALGORITHM = false
+    val c_RUN_EVAL_ON_ONE_ALGORITHM = true
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
-
-    val c_RUN_TRADER_TEST = false
-    val c_CLEAR_TRADER_TEST_FOLDER = false
 
     //===========================================================//
     //===========================================================//
@@ -38,9 +33,12 @@ suspend fun main() {
     )
 
     val startCapital = 5000.0
-    val startDate = Instant.parse("2025-01-01T00:00:00Z")
+    val startDate = Instant.parse("2020-01-01T00:00:00Z")
     val endDate = Instant.parse("2026-01-01T00:00:00Z")
     val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
+
+    val yahooHistoricalMarketDataProvider =
+        HistoricalMarketDataProvider.get(HistoricalMarketDataProvider.Type.YahooHistoricalMarketDataRepository)
 
     //===========================================================//
     //===========================================================//
@@ -57,6 +55,7 @@ suspend fun main() {
     if(c_RUN_BACKTEST_ON_ONE_SECURITY) {
         run{
             TradingAlgorithmBackTester(
+                provider = yahooHistoricalMarketDataProvider,
                 type = algorithm,
                 securityIdentifier = identifier,
                 startingCapital = startCapital,
@@ -72,17 +71,20 @@ suspend fun main() {
     if(c_RUN_BACKTEST_ON_ALL_SECURITY) {
         run {
             coroutineScope {
-                val listOfOutput = HistoricalMarketDataProvider.getAllSecurityIdentifiers().getOrThrow().map {
-                    async {
-                        TradingAlgorithmBackTester(
-                            type = algorithm,
-                            securityIdentifier = it,
-                            startingCapital = startCapital,
-                            taxation = taxation,
-                            from = startDate,
-                            to = endDate
-                        ).runBackTest()
-                    }
+                val listOfOutput = yahooHistoricalMarketDataProvider
+                    .getAllSecurityIdentifiers()
+                    .getOrThrow().map {
+                        async {
+                            TradingAlgorithmBackTester(
+                                provider = yahooHistoricalMarketDataProvider,
+                                type = algorithm,
+                                securityIdentifier = it,
+                                startingCapital = startCapital,
+                                taxation = taxation,
+                                from = startDate,
+                                to = endDate
+                            ).runBackTest()
+                        }
                 }.awaitAll()
 
                 listOfOutput.forEach {
@@ -97,6 +99,7 @@ suspend fun main() {
     if(c_RUN_EVAL_ON_ONE_ALGORITHM) {
         run{
             TradingAlgorithmEvaluator(
+                yahooHistoricalMarketDataProvider,
                 algorithm,
                 startCapital,
                 taxation,
@@ -115,6 +118,7 @@ suspend fun main() {
                 val listOfOutput = TradingAlgorithm.Type.entries.map {
                     async {
                         TradingAlgorithmEvaluator(
+                            yahooHistoricalMarketDataProvider,
                             it,
                             startCapital,
                             taxation,
@@ -131,33 +135,4 @@ suspend fun main() {
             }
         }
     }
-
-    //===========================================================//
-
-    /*if(c_RUN_TRADER_TEST) {
-        run {
-
-            if (c_CLEAR_TRADER_TEST_FOLDER) clearTestFolder()
-
-            val traderList = TraderRepositoryProvider.get(TraderRepositoryProvider.Type.Fake).getAll().getOrThrow()
-
-            val tradersToTest =
-                if (traderList.any { it.securityIdentifier.isin == identifier.isin }) traderList
-                else {
-                    traderList + Trader(
-                        securityIdentifier = identifier,
-                        holdings = mutableSetOf(),
-                        allocatedCapital = startCapital,
-                        algorithm = TradingAlgorithm.create(
-                            algorithm,
-                            securityIdentifier = identifier,
-                        )
-                    )
-                }
-
-            tradersToTest.forEach { trader ->
-                TraderTester(trader).runTest()
-            }
-        }
-    }*/
 }

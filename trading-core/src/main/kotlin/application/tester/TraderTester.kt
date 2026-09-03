@@ -1,12 +1,11 @@
-/*package application.tester
-
-import data.network.MarketDataProvider
-import data.network.finnhub.FinnhubConfig
-import data.repository.trader.FakeTraderRepository
-import domain.interfaces.IMarketDataProvider
-import domain.interfaces.ITraderRepository
+package application.tester
+/*
 import domain.market.security.SecurityHolding
+import data.repository.trader.FakeTraderRepository
+import domain.interfaces.ITraderRepository
 import domain.trader.Trader
+import domain.interfaces.IMarketDataProvider
+import application.provider.MarketDataProvider
 
 //===========================================================//
 /**
@@ -27,7 +26,6 @@ class TraderTester {
     private val m_MarketDataProvider: IMarketDataProvider
 
     private val m_Trader: Trader
-    private val m_finnhubConfig: FinnhubConfig
 
     //===========================================================//
     //===========================================================//
@@ -92,9 +90,8 @@ class TraderTester {
     //===========================================================//
     // Constructor(s)
 
-    constructor(trader: Trader, finnhubConfig: FinnhubConfig) {
+    constructor(trader: Trader){
         m_Trader = trader
-        m_finnhubConfig = finnhubConfig
     }
 
     //===========================================================//
@@ -103,6 +100,6 @@ class TraderTester {
 
     init{
         m_TraderRepository = FakeTraderRepository
-        m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub(m_finnhubConfig))
+        m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
     }
 }*/

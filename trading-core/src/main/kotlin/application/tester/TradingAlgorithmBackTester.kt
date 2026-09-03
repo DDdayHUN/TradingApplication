@@ -2,6 +2,7 @@ package application.tester
 
 import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
+import domain.interfaces.IHistoricalMarketDataProvider
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
@@ -49,6 +50,7 @@ class TradingAlgorithmBackTester {
     private val m_TaxationType: Taxation.Type?
     private var m_Taxation: ITaxation?
 
+    private val m_Provider: IHistoricalMarketDataProvider
     private val m_TradingAlgorithmType: TradingAlgorithm.Type
     private var m_TradingAlgorithm: ITradingAlgorithm
     private var m_HistoryWeRunAgainst: List<SecurityHistory>
@@ -77,7 +79,7 @@ class TradingAlgorithmBackTester {
     // Private Method(es)
 
     private fun reset() {
-        val pair = TradingAlgorithm.create(m_TradingAlgorithmType, m_SecurityIdentifier, m_From, m_To)
+        val pair = TradingAlgorithm.create(m_Provider, m_TradingAlgorithmType, m_SecurityIdentifier, m_From, m_To)
 
         if(m_TaxationType != null) m_Taxation = Taxation.create(m_TaxationType)
 
@@ -219,6 +221,7 @@ class TradingAlgorithmBackTester {
     // Constructor(s)
 
     constructor(
+        provider: IHistoricalMarketDataProvider,
         type: TradingAlgorithm.Type,
         securityIdentifier: SecurityIdentifier,
         startingCapital: Double,
@@ -236,8 +239,9 @@ class TradingAlgorithmBackTester {
         m_TaxationType = taxation
         m_Taxation = if(m_TaxationType != null) Taxation.create(m_TaxationType) else null
 
+        m_Provider = provider
         m_TradingAlgorithmType = type
-        val pair = TradingAlgorithm.create(m_TradingAlgorithmType, securityIdentifier, m_From, m_To)
+        val pair = TradingAlgorithm.create(m_Provider, m_TradingAlgorithmType, securityIdentifier, m_From, m_To)
         m_TradingAlgorithm = pair.second
         m_HistoryWeRunAgainst = pair.first
 

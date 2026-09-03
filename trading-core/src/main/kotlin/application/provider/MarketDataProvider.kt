@@ -1,4 +1,4 @@
-package data.network
+package application.provider
 
 import data.network.finnhub.FinnhubClient
 import data.network.finnhub.FinnhubConfig
@@ -7,11 +7,6 @@ import data.network.ibkr.IbkrMarketDataProvider
 import domain.interfaces.IMarketDataProvider
 import infrastructure.broker.IbkrSession
 
-//===========================================================//
-/**
- * Factory object for creating market data provider implementations
- */
-//===========================================================//
 object MarketDataProvider {
     fun create(type: Type): IMarketDataProvider {
         return when (type) {

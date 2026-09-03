@@ -1,4 +1,4 @@
-package data.repository.historical_data
+package data.repository.historical_data.yahoo
 
 import kotlin.time.Instant
 
