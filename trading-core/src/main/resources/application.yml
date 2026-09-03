@@ -9,10 +9,6 @@ spring:
         jwt:
           issuer-uri: http://localhost:8081/realms/trading
 
-  ibkr:
-    host: ${IBKR_HOST}
-    port: ${IBKR_PORT}
-    client-id: ${IBKR_CLIENT_ID}
 
   flyway:
     locations: classpath:database/migration
@@ -26,6 +22,16 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+
+ibkr:
+  host: ${IBKR_HOST}
+  port: ${IBKR_PORT}
+  client-id: ${IBKR_CLIENT_ID}
+
+finnhub:
+  apiKey: ${FINNHUB_API_KEY}
+  baseUrl: ${FINNHUB_BASE_URL}
+  timeout: 10s
 
 
 logging:

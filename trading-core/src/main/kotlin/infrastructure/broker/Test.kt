@@ -27,7 +27,7 @@ class Test(
     )
 
     @Scheduled(
-        cron = "0 */5 * * * *",
+        cron = "0 */1 * * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {
@@ -50,7 +50,7 @@ class Test(
 
                             logger.info(
                                 "Submitting trader={} order={}",
-                                trader.id,
+                                trader.securityIdentifier.tickerSymbol,
                                 order.toReadableText()
                             )
 

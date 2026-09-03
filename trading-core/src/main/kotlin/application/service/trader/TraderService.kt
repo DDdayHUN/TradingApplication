@@ -5,6 +5,7 @@ import api.dto.CreateTraderRequest
 import application.logging.logger
 import application.service.portfolio.IPortfolioService
 import data.network.MarketDataProvider
+import data.network.finnhub.FinnhubConfig
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
@@ -20,6 +21,7 @@ import java.util.UUID
 class TraderService(
     private val portfolioService: IPortfolioService,
     private val ibkrSession: IbkrSession,
+    private val finnhubConfig: FinnhubConfig,
 ) : ITraderService {
 
     //===========================================================//
@@ -119,7 +121,7 @@ class TraderService(
             trader.id == traderId
         }?: throw TraderNotFoundException(traderId)
 
-        val finnhubProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
+        val finnhubProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub(finnhubConfig))
         var quote = finnhubProvider.getQuote(trader.securityIdentifier)
 
         if(!quote.isSuccess){

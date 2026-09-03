@@ -1,4 +1,3 @@
-import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
 import data.repository.historical_data.HistoricalMarketDataProvider
@@ -135,7 +134,7 @@ suspend fun main() {
 
     //===========================================================//
 
-    if(c_RUN_TRADER_TEST) {
+    /*if(c_RUN_TRADER_TEST) {
         run {
 
             if (c_CLEAR_TRADER_TEST_FOLDER) clearTestFolder()
@@ -160,5 +159,5 @@ suspend fun main() {
                 TraderTester(trader).runTest()
             }
         }
-    }
+    }*/
 }

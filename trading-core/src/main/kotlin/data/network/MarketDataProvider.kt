@@ -15,8 +15,10 @@ import infrastructure.broker.IbkrSession
 object MarketDataProvider {
     fun create(type: Type): IMarketDataProvider {
         return when (type) {
-            Type.Finnhub -> {
-                FinnhubMarketDataProvider(FinnhubClient(FinnhubConfig()))
+            is Type.Finnhub -> {
+                FinnhubMarketDataProvider(FinnhubClient(
+                    m_Config = type.finnhubConfig
+                ))
             }
             is Type.Ibkr -> {
                 IbkrMarketDataProvider(type.session)
@@ -29,7 +31,9 @@ object MarketDataProvider {
     // Helper Class(es)
 
     sealed interface Type {
-        data object Finnhub : Type
+        data class Finnhub(
+            val finnhubConfig: FinnhubConfig
+        ): Type
         data class Ibkr(
             val session: IbkrSession
         ): Type
