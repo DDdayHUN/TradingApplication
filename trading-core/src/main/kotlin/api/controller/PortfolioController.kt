@@ -2,15 +2,12 @@ package api.controller
 
 import api.dto.PortfolioResponse
 import api.dto.toResponse
-import application.service.IPortfolioService
+import application.service.auth.IAuthenticationService
+import application.service.portfolio.IPortfolioService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 //===========================================================//
 //===========================================================//
@@ -18,7 +15,8 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api/portfolio")
 class PortfolioController(
-    private val portfolioService: IPortfolioService
+    private val portfolioService: IPortfolioService,
+    private val session: IAuthenticationService
 ) {
     //===========================================================//
     //===========================================================//
@@ -26,7 +24,14 @@ class PortfolioController(
 
     @GetMapping
     suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
-        val response = portfolioService.getAllPortfolio().map { portfolio -> portfolio.toResponse() }
+        val userId = session.currentUser().id
+        val response = portfolioService.getAllPortfolio(userId).map { portfolio ->
+            val summary = portfolioService.getAccountSummary(portfolio.id)
+            portfolio.toResponse(
+                availableCapital = summary.availableCapital,
+                liquidation = summary.netLiquidation
+            )
+        }
 
         return ResponseEntity.ok(
             response
@@ -37,7 +42,12 @@ class PortfolioController(
 
     @GetMapping("/{portfolioId}")
     suspend fun getPortfolioById(@PathVariable portfolioId: UUID): ResponseEntity<PortfolioResponse> {
-        val response = portfolioService.getPortfolio(portfolioId).toResponse()
+        val summary = portfolioService.getAccountSummary(portfolioId)
+        val response = portfolioService.getPortfolio(portfolioId).toResponse(
+            availableCapital = summary.availableCapital,
+            liquidation = summary.netLiquidation
+        )
+
         return ResponseEntity.ok(response)
     }
 
@@ -47,7 +57,14 @@ class PortfolioController(
 
     @PostMapping
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
-        val response = portfolioService.createPortfolio().toResponse()
+        val userId = session.currentUser().id
+        val portfolio = portfolioService.createPortfolio(userId)
+        val summary = portfolioService.getAccountSummary(portfolio.id)
+        val response = portfolio.toResponse(
+            availableCapital = summary.availableCapital,
+            liquidation = summary.netLiquidation
+        )
+
 
         return ResponseEntity
             .status(HttpStatus.CREATED)

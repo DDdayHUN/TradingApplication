@@ -1,7 +1,6 @@
-package application.service.spring
+package application.service.auth
 
 import application.logging.logger
-import application.service.IAuthenticationService
 import domain.User
 import domain.interfaces.IUserRepository
 import exception.api.AuthenticationException
@@ -11,9 +10,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
-
-//===========================================================//
-//===========================================================//
 
 @Service
 class AuthenticationService(

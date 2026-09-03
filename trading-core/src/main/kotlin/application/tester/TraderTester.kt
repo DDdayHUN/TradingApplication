@@ -1,5 +1,5 @@
 package application.tester
-
+/*
 import domain.market.security.SecurityHolding
 import data.repository.trader.FakeTraderRepository
 import domain.interfaces.ITraderRepository
@@ -102,4 +102,4 @@ class TraderTester {
         m_TraderRepository = FakeTraderRepository
         m_MarketDataProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub)
     }
-}
+}*/

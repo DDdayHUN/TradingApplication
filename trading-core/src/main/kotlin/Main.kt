@@ -1,26 +1,12 @@
-import application.service.borker.InteractiveBrokersService
-import application.service.broker.toBrokerOrder
-import application.tester.TraderTester
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
-import application.provider.MarketDataProvider
 import application.provider.HistoricalMarketDataProvider
-import application.provider.TraderProvider
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
-import domain.trader.Trader
-import infrastructure.broker.IbkrClient
-import infrastructure.broker.IbkrConfig
-import infrastructure.broker.IbkrSession
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import kotlin.time.Clock
-import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 suspend fun main() {
@@ -41,7 +27,7 @@ suspend fun main() {
     //===========================================================//
     // Config
 
-    val algorithm = TradingAlgorithm.Type.TACPP462
+    val algorithm = TradingAlgorithm.Type.TACPP46
     val taxation = Taxation.Type.Hungary
 
     val identifier = SecurityIdentifier(
@@ -50,8 +36,8 @@ suspend fun main() {
         "USD"
     )
 
-    val startCapital = 1000.0
-    val startDate = Instant.parse("2020-01-01T00:00:00Z")
+    val startCapital = 5000.0
+    val startDate = Instant.parse("2025-01-01T00:00:00Z")
     val endDate = Instant.parse("2026-01-01T00:00:00Z")
     val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
@@ -156,7 +142,7 @@ suspend fun main() {
 
     //===========================================================//
 
-    if(c_RUN_TRADER_TEST) {
+    /*if(c_RUN_TRADER_TEST) {
         run {
 
             if (c_CLEAR_TRADER_TEST_FOLDER) clearTestFolder()
@@ -239,5 +225,5 @@ suspend fun main() {
                 session.disconnect()
             }
         }
-    }
+    }*/
 }

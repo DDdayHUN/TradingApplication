@@ -2,7 +2,7 @@ package api.controller
 
 import api.dto.UserResponse
 import api.dto.toResponse
-import application.service.IAuthenticationService
+import application.service.auth.IAuthenticationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

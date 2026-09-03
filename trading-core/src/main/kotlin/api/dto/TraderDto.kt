@@ -2,7 +2,7 @@ package api.dto
 
 import domain.algorithm.ITradingAlgorithm
 import domain.trader.Trader
-import java.util.UUID
+import java.util.*
 
 //===========================================================//
 //===========================================================//

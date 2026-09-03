@@ -4,7 +4,8 @@ import domain.algorithm.ITradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
-import java.util.UUID
+import infrastructure.broker.SellAllocation
+import java.util.*
 
 //===========================================================//
 /**
@@ -63,6 +64,7 @@ class Trader {
      *
      * @param order the order that has been accepted and should be finalized.
      */
+    @Deprecated("Will be removed in the future")
     fun finalizeOrder(order: TradingOrder) {
         if(order.buy != null) buy(order.atPrice, order.buy.amount)
         if(order.sell != null) {
@@ -71,6 +73,36 @@ class Trader {
                 val amountToSell = batch.second
                 sell(holding, order.atPrice, amountToSell)
             }
+        }
+    }
+
+    //===========================================================//
+
+    fun applyBuyFill(price: Double, amount: Int) {
+        buy(
+            price = price,
+            amount = amount
+        )
+    }
+
+    //===========================================================//
+
+    fun applySellFill(
+        price: Double,
+        allocations: List<SellAllocation>
+    ) {
+        allocations.forEach { allocation ->
+            val holding = m_Holdings.find {
+                it.id == allocation.holdingId
+            } ?: throw IllegalStateException(
+                "Holding ${allocation.holdingId} not found"
+            )
+
+            sell(
+                holding = holding,
+                price = price,
+                amount = allocation.amount
+            )
         }
     }
 
@@ -85,6 +117,14 @@ class Trader {
 
     fun equity(currentPrice: Double): Double {
         return m_Capital + m_Holdings.sumOf { it.amount * currentPrice }
+    }
+
+    //===========================================================//
+
+    fun allocatedValue(): Double {
+        return m_Capital + m_Holdings.sumOf { holding ->
+            holding.entryPrice + holding.amount
+        }
     }
 
     //===========================================================//

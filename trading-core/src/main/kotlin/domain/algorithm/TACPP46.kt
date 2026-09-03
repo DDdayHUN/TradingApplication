@@ -4,8 +4,7 @@ import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
 import domain.utils.Math.rsi
 import domain.utils.Math.stdDev
-import java.util.ArrayDeque
-import java.util.Deque
+import java.util.*
 
 //===========================================================//
 /**
@@ -22,8 +21,8 @@ internal class TACPP46: ITradingAlgorithm {
 
     private val m_EmaHistory: Deque<Double>
 
-    private val m_TrailingHigh: MutableMap<SecurityHolding, Double>
-    private val m_MarkedForSelling: MutableList<SecurityHolding>
+    private val m_TrailingHigh: MutableMap<UUID, Double>
+    private val m_MarkedForSelling: MutableList<UUID>
 
     private val m_LastInputArr: Deque<Double>
 
@@ -70,22 +69,22 @@ internal class TACPP46: ITradingAlgorithm {
 
         // Trailing-profit logic
         for (item in holdings) {
-            var isMarked = m_MarkedForSelling.contains(item)
+            var isMarked = m_MarkedForSelling.contains(item.id)
 
             // Activate trailing if gained > risk
             if (!isMarked && currentPrice > item.entryPrice * (1.0 + risk)) {
-                m_MarkedForSelling.add(item)
-                m_TrailingHigh[item] = currentPrice
+                m_MarkedForSelling.add(item.id)
+                m_TrailingHigh[item.id] = currentPrice
                 isMarked = true
             }
 
             if (isMarked) {
-                var high: Double = m_TrailingHigh.getOrDefault(item, currentPrice)
+                var high: Double = m_TrailingHigh.getOrDefault(item.id, currentPrice)
 
                 // Update trailing high if still rising
                 if (currentPrice > high) {
                     high = currentPrice
-                    m_TrailingHigh[item] = high
+                    m_TrailingHigh[item.id] = high
                 }
 
                 // Sell if price falls more than risk from peak
@@ -93,8 +92,8 @@ internal class TACPP46: ITradingAlgorithm {
                     toBeSold.add(Pair(item, item.amount))
 
                     // cleanup
-                    m_MarkedForSelling.remove(item)
-                    m_TrailingHigh.remove(item)
+                    m_MarkedForSelling.remove(item.id)
+                    m_TrailingHigh.remove(item.id)
                 }
             }
         }
@@ -105,8 +104,8 @@ internal class TACPP46: ITradingAlgorithm {
                 toBeSold.add(Pair(item, item.amount))
 
                 // cleanup
-                m_MarkedForSelling.remove(item)
-                m_TrailingHigh.remove(item)
+                m_MarkedForSelling.remove(item.id)
+                m_TrailingHigh.remove(item.id)
             }
         }
 
