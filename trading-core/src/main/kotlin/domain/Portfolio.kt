@@ -31,9 +31,7 @@ class Portfolio {
     //===========================================================//
 
     fun removeTrader(trader: Trader) {
-        require(trader.holdings.isEmpty()){
-            "Trader cannot be removed while it has open holdings"
-        }
+        require(trader.holdings.isEmpty()){ "Trader cannot be removed while it has open holdings" }
         m_Traders.remove(trader)
     }
 
