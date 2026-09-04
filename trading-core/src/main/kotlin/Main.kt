@@ -40,6 +40,9 @@ suspend fun main() {
     val yahooHistoricalMarketDataProvider =
         HistoricalMarketDataProvider.get(HistoricalMarketDataProvider.Type.YahooHistoricalMarketDataRepository)
 
+    val ibkrHistoricalMarketDataProvider =
+        HistoricalMarketDataProvider.get(HistoricalMarketDataProvider.Type.IbkrHistoricalMarketDataRepository)
+
     //===========================================================//
     //===========================================================//
     // Config Checks

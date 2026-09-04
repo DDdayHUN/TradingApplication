@@ -1,7 +1,8 @@
 package application.provider
 
-import data.repository.historical_data.yahoo.YahooHistoricalMarketDataRepository
-import domain.interfaces.IHistoricalMarketDataProvider
+import data.repository.historical_data.json.yahoo.YahooHistoricalMarketDataRepository
+import data.repository.historical_data.json.ibkr.IbkrHistoricalMarketDataRepository
+import data.repository.historical_data.IHistoricalMarketDataProvider
 import org.springframework.stereotype.Component
 
 @Component
@@ -15,6 +16,9 @@ object HistoricalMarketDataProvider {
             is Type.YahooHistoricalMarketDataRepository -> {
                 YahooHistoricalMarketDataRepository
             }
+            is Type.IbkrHistoricalMarketDataRepository -> {
+                IbkrHistoricalMarketDataRepository
+            }
         }
     }
 
@@ -24,5 +28,6 @@ object HistoricalMarketDataProvider {
 
     sealed interface Type {
         data object YahooHistoricalMarketDataRepository : Type
+        data object IbkrHistoricalMarketDataRepository : Type
     }
 }

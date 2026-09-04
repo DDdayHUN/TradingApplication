@@ -1,4 +1,4 @@
-package data.repository.user
+package data.repository.user.sql
 
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*

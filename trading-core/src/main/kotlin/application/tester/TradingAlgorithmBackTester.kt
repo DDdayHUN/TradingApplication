@@ -2,7 +2,7 @@ package application.tester
 
 import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
-import domain.interfaces.IHistoricalMarketDataProvider
+import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
@@ -160,7 +160,7 @@ class TradingAlgorithmBackTester {
             check(m_CurrentCapital > 0.0) { "Capital" }
 
             m_Holdings.add(SecurityHolding(
-                entryPrice = currentPrice,
+                purchasePrice = currentPrice,
                 amount = ret.buy.amount
             ))
             m_TotalBuysMade++
@@ -178,19 +178,19 @@ class TradingAlgorithmBackTester {
                 if (m_Taxation == null) m_CurrentCapital += amount * currentPrice
                 else {
                     val revenue = amount * currentPrice
-                    val costBasis = amount * bought.entryPrice
+                    val costBasis = amount * bought.purchasePrice
                     m_CurrentCapital += m_Taxation!!.calculateRevenueAfterTax(revenue, costBasis)
                 }
 
                 if (amount != bought.amount) m_Holdings.add(
                     SecurityHolding(
-                        entryPrice = bought.entryPrice,
+                        purchasePrice = bought.purchasePrice,
                         amount = bought.amount - amount
                     )
                 )
 
                 m_TotalSellsMade++
-                if (currentPrice > bought.entryPrice) m_WinningTrades++
+                if (currentPrice > bought.purchasePrice) m_WinningTrades++
             }
         }
 
@@ -207,11 +207,11 @@ class TradingAlgorithmBackTester {
             if (m_Taxation == null) m_CurrentCapital += holding.amount * lastPrice
             else {
                 val revenue = holding.amount * lastPrice
-                val costBasis = holding.amount * holding.entryPrice
+                val costBasis = holding.amount * holding.purchasePrice
                 m_CurrentCapital += m_Taxation!!.calculateRevenueAfterTax(revenue, costBasis)
             }
             m_TotalSellsMade++
-            if (lastPrice > holding.entryPrice) m_WinningTrades++
+            if (lastPrice > holding.purchasePrice) m_WinningTrades++
             m_ForceClosedTrades++
         }
     }

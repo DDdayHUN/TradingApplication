@@ -1,8 +1,7 @@
 package application.tester
 
-import application.provider.HistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
-import domain.interfaces.IHistoricalMarketDataProvider
+import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.utils.Math.bottom

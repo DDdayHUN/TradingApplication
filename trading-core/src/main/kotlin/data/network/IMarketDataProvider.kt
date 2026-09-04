@@ -1,4 +1,4 @@
-package domain.interfaces
+package data.network
 
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier

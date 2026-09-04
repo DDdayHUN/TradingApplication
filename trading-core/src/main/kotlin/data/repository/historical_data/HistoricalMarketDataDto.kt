@@ -1,4 +1,4 @@
-package data.repository.historical_data.yahoo
+package data.repository.historical_data
 
 import kotlin.time.Instant
 
@@ -15,6 +15,6 @@ internal data class HistoricalMarketDataDto(
 
     data class MarketHistory(
         val date: Instant,
-        val closingPrice: Double,
+        val price: Double,
     )
 }

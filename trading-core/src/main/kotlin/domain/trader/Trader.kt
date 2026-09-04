@@ -123,7 +123,7 @@ class Trader {
 
     fun allocatedValue(): Double {
         return m_Capital + m_Holdings.sumOf { holding ->
-            holding.entryPrice + holding.amount
+            holding.purchasePrice + holding.amount
         }
     }
 
@@ -144,7 +144,7 @@ class Trader {
 
         m_Holdings.add(
             SecurityHolding(
-                entryPrice = price,
+                purchasePrice = price,
                 amount = amount,
             )
         )
@@ -163,7 +163,7 @@ class Trader {
                 SecurityHolding(
                     holding.id,
                     holding.timestamp,
-                    holding.entryPrice,
+                    holding.purchasePrice,
                     holding.amount - amount
                 )
             )

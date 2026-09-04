@@ -1,7 +1,7 @@
-package domain.interfaces
+package data.repository.user
 
 import domain.User
-import java.util.*
+import java.util.UUID
 
 interface IUserRepository {
     suspend fun save(user: User): Result<User>

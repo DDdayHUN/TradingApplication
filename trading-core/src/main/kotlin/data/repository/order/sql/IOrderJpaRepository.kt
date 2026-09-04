@@ -1,4 +1,4 @@
-package data.repository.order
+package data.repository.order.sql
 
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository

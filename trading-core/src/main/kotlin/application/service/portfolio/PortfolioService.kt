@@ -2,7 +2,7 @@ package application.service.portfolio
 
 import application.service.broker.IBrokerService
 import domain.Portfolio
-import domain.interfaces.IPortfolioRepository
+import data.repository.portfolio.IPortfolioRepository
 import infrastructure.broker.IbkrAccountSummary
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

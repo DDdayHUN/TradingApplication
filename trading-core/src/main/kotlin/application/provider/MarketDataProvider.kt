@@ -4,7 +4,7 @@ import data.network.finnhub.FinnhubClient
 import data.network.finnhub.FinnhubConfig
 import data.network.finnhub.FinnhubMarketDataProvider
 import data.network.ibkr.IbkrMarketDataProvider
-import domain.interfaces.IMarketDataProvider
+import data.network.IMarketDataProvider
 import infrastructure.broker.IbkrSession
 
 object MarketDataProvider {

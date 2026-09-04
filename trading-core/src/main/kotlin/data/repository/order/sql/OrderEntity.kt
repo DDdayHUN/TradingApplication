@@ -1,4 +1,4 @@
-package data.repository.order
+package data.repository.order.sql
 
 import application.service.broker.BrokerOrderRequest
 import data.repository.trader.TraderEntity

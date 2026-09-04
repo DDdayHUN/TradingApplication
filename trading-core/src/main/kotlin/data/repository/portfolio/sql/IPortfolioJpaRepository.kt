@@ -1,4 +1,4 @@
-package data.repository.portfolio
+package data.repository.portfolio.sql
 
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository

@@ -1,5 +1,6 @@
-package data.repository.historical_data.yahoo
+package data.repository.historical_data.json.yahoo
 
+import data.repository.historical_data.HistoricalMarketDataDto
 import kotlin.time.Instant
 
 internal data class YahooMarketDataDto(
@@ -79,7 +80,7 @@ internal data class YahooMarketDataDto(
                 else {
                     HistoricalMarketDataDto.MarketHistory(
                         date = Instant.fromEpochSeconds(time),
-                        closingPrice = price
+                        price = price
                     )
                 }
             }

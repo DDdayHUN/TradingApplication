@@ -1,8 +1,9 @@
-package data.repository.historical_data.yahoo
+package data.repository.historical_data.json.yahoo
 
 import com.google.gson.GsonBuilder
-import data.repository.utils.RepositoryUtils
-import domain.interfaces.IHistoricalMarketDataProvider
+import data.repository.historical_data.HistoricalMarketDataDto
+import data.repository.historical_data.IHistoricalMarketDataProvider
+import data.repository.loadFromFile
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.*
@@ -30,6 +31,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
     //===========================================================//
     // Public Method(es)
 
+    @Suppress("DuplicatedCode")
     override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Result<List<SecurityHistory>> {
         try {
             val data = getBySecurityIdentifier(securityIdentifier)
@@ -37,7 +39,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
             val ret = data.history
                 .filter { it.date in from..to }
                 .sortedBy { it.date }
-                .map { SecurityHistory(it.closingPrice) }
+                .map { SecurityHistory(it.price) }
                 .toMutableList()
 
             return Result.success(ret)
@@ -50,6 +52,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
     //===========================================================//
 
     @Deprecated("We need to redo this, because this is too expensive")
+    @Suppress("DuplicatedCode")
     override suspend fun getAllSecurityIdentifiers(): Result<List<SecurityIdentifier>> {
         try {
             val data = getAll()
@@ -72,12 +75,12 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
         val targetFile = s_RootDir.walkTopDown()
             .filter { it.isFile }
             .find {
-                val yahooMarketDataDto = RepositoryUtils.loadFromFile<YahooMarketDataDto>(s_GSON, it)
+                val yahooMarketDataDto = loadFromFile<YahooMarketDataDto>(s_GSON, it)
                 yahooMarketDataDto.isin == securityIdentifier.isin
             }
 
         require(targetFile != null) { "There is no file with the given identifier" }
-        return@withContext RepositoryUtils.loadFromFile<YahooMarketDataDto>(s_GSON, targetFile).toHistoricalMarketDataDto()
+        return@withContext loadFromFile<YahooMarketDataDto>(s_GSON, targetFile).toHistoricalMarketDataDto()
     }
 
     //===========================================================//
@@ -91,8 +94,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
         coroutineScope {
             files.map {
                 async {
-                    RepositoryUtils
-                        .loadFromFile<YahooMarketDataDto>(s_GSON, it)
+                    loadFromFile<YahooMarketDataDto>(s_GSON, it)
                         .toHistoricalMarketDataDto()
                 }
             }.awaitAll()

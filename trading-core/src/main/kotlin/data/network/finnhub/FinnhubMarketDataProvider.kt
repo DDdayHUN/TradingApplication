@@ -1,6 +1,6 @@
 package data.network.finnhub
 
-import domain.interfaces.IMarketDataProvider
+import data.network.IMarketDataProvider
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
 

@@ -1,6 +1,6 @@
-package data.repository.user
+package data.repository.user.sql
 
-import data.repository.portfolio.PortfolioEntity
+import data.repository.portfolio.sql.PortfolioEntity
 import domain.User
 import jakarta.persistence.*
 import java.util.*

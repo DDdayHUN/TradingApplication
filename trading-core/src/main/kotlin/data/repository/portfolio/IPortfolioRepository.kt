@@ -1,7 +1,7 @@
-package domain.interfaces
+package data.repository.portfolio
 
 import domain.Portfolio
-import java.util.*
+import java.util.UUID
 
 interface IPortfolioRepository {
     suspend fun create(userId: UUID, portfolio: Portfolio): Result<Portfolio>
