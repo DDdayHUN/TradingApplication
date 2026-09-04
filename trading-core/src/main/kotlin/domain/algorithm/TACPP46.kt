@@ -22,7 +22,7 @@ internal class TACPP46: ITradingAlgorithm {
     private val m_EmaHistory: Deque<Double>
 
     private val m_TrailingHigh: MutableMap<UUID, Double>
-    private val m_MarkedForSelling: MutableList<UUID>
+    private val m_MarkedForSelling: MutableMap<UUID, Int>
 
     private val m_LastInputArr: Deque<Double>
 
@@ -73,7 +73,7 @@ internal class TACPP46: ITradingAlgorithm {
 
             // Activate trailing if gained > risk
             if (!isMarked && currentPrice > item.purchasePrice * (1.0 + risk)) {
-                m_MarkedForSelling.add(item.id)
+                m_MarkedForSelling[item.id] = item.amount
                 m_TrailingHigh[item.id] = currentPrice
                 isMarked = true
             }
@@ -159,7 +159,7 @@ internal class TACPP46: ITradingAlgorithm {
         m_EmaHistory = ArrayDeque()
 
         m_TrailingHigh = HashMap()
-        m_MarkedForSelling = ArrayList()
+        m_MarkedForSelling = HashMap()
 
         m_LastInputArr = ArrayDeque()
     }
