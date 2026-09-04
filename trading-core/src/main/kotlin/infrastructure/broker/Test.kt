@@ -32,7 +32,7 @@ class Test(
     )
 
     @Scheduled(
-        cron = "0 */5 * * * *",
+        cron = "0 */2 * * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {

@@ -14,12 +14,14 @@ import domain.trader.TradingOrder
 import exception.api.TraderNotFoundException
 import infrastructure.broker.IbkrSession
 import infrastructure.broker.SellAllocation
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
 class TraderService(
+    @param:Qualifier("yahoo")
     private val provider: IHistoricalMarketDataProvider,
     private val portfolioService: IPortfolioService,
     private val ibkrSession: IbkrSession,
