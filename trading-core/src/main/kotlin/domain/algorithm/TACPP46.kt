@@ -36,7 +36,7 @@ internal class TACPP46: ITradingAlgorithm {
 
         val ema: List<Double> = ArrayList(m_EmaHistory)
         val std: Double = ema.stdDev()
-        val rsi: Double = ema.rsi()
+        val rsi: Double = ema.rsi(14)
         val ma: Double = ema.average()
 
         val lowerBand = ma - 4.0 * std * ma

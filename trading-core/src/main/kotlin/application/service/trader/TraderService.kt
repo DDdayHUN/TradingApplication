@@ -189,6 +189,7 @@ class TraderService(
         return when (value.trim().uppercase()) {
             "TACPP46" -> TradingAlgorithm.Type.TACPP46
             "TACPP462" -> TradingAlgorithm.Type.TACPP462
+            "TACPP463" -> TradingAlgorithm.Type.TACPP463
             "ALGDES2" -> TradingAlgorithm.Type.ALGDES2
             "ALGDES3" -> TradingAlgorithm.Type.ALGDES3
             "ALGDES31" -> TradingAlgorithm.Type.ALGDES31

@@ -65,6 +65,8 @@ class TradingAlgorithmBackTester {
     private var m_WinningTrades: Int
     private var m_ForceClosedTrades: Int
 
+    private val m_TradeReturns: MutableList<Double> = ArrayList()
+
     //===========================================================//
     //===========================================================//
     // Public Method(es)
@@ -89,6 +91,7 @@ class TradingAlgorithmBackTester {
         m_Holdings.clear()
         m_CapitalHistory.clear()
         m_TradingOrders.clear()
+        m_TradeReturns.clear()
 
         m_CurrentCapital = m_StartingCapital
         m_TotalBuysMade = 0
@@ -120,6 +123,31 @@ class TradingAlgorithmBackTester {
             maxDrawdown = max(maxDrawdown, drawdown)
         }
 
+        val winningReturns =
+            m_TradeReturns.filter { it > 0.0 }
+
+        val losingReturns =
+            m_TradeReturns.filter { it < 0.0 }
+
+        val averageWin =
+            if (winningReturns.isEmpty())
+                0.0
+            else
+                winningReturns.average()
+
+        val averageLoss =
+            if (losingReturns.isEmpty())
+                0.0
+            else
+                losingReturns.average()
+
+        val profitFactor =
+            if (losingReturns.isEmpty())
+                Double.POSITIVE_INFINITY
+            else
+                winningReturns.sum() /
+                        -losingReturns.sum()
+
         return Output(
             m_TradingAlgorithmType,
             m_SecurityIdentifier,
@@ -136,6 +164,9 @@ class TradingAlgorithmBackTester {
             sharpeRatio = Math.sharpeRatio(m_CapitalHistory),
             stockHistory = m_HistoryWeRunAgainst.toList(),
             tradingOrders = m_TradingOrders.toList(),
+            averageWin = averageWin,
+            averageLoss = averageLoss,
+            profitFactor = profitFactor,
         )
     }
 
@@ -171,6 +202,12 @@ class TradingAlgorithmBackTester {
                 val bought = item.first
                 val amount = item.second
 
+                val tradeReturn =
+                    (currentPrice - bought.purchasePrice) /
+                            bought.purchasePrice
+
+                m_TradeReturns.add(tradeReturn)
+
                 check(amount <= bought.amount) { "Sell Amount" }
 
                 m_Holdings.remove(bought)
@@ -204,6 +241,11 @@ class TradingAlgorithmBackTester {
     private fun forceSell() {
         val lastPrice = m_HistoryWeRunAgainst.last().closingPrice
         for(holding in m_Holdings) {
+            val tradeReturn =
+                (lastPrice - holding.purchasePrice) /
+                        holding.purchasePrice
+
+            m_TradeReturns.add(tradeReturn)
             if (m_Taxation == null) m_CurrentCapital += holding.amount * lastPrice
             else {
                 val revenue = holding.amount * lastPrice
@@ -275,8 +317,12 @@ class TradingAlgorithmBackTester {
         val maxDrawdown: Double,
         val sharpeRatio: Double,
 
+        val averageWin: Double,
+        val averageLoss: Double,
+        val profitFactor: Double,
+
         val stockHistory: List<SecurityHistory>,
-        val tradingOrders: List<TradingOrder>,
+        val tradingOrders: List<TradingOrder>
     ) {
         fun display() {
             val tax = if(taxation != null) "With" else "Without"
@@ -318,6 +364,9 @@ class TradingAlgorithmBackTester {
             println("| ${"Max Drawdown".padEnd(padding)} | ${(maxDrawdown.times(100.0).format(2) + "%").padStart(padding)} |")
             println("| ${"Sharpe Ratio".padEnd(padding)} | ${sharpeRatio.format(2).padStart(padding)} |")
             println("| ${"Calmar Ratio".padEnd(padding)} | ${calmar.format(2).padStart(padding)} |")
+            println("| ${"Average Win".padEnd(padding)} | ${((averageWin * 100.0).format(2) + "%").padStart(padding)} |")
+            println("| ${"Average Loss".padEnd(padding)} | ${((averageLoss * 100.0).format(2) + "%").padStart(padding)} |")
+            println("| ${"Profit Factor".padEnd(padding)} | ${profitFactor.format(2).padStart(padding)} |")
             println()
         }
     }
