@@ -77,6 +77,7 @@ object TradingAlgorithm {
         }
     }
 
+    //===========================================================//
     /**
      * Splits the historical data for backtesting into initial and remaining subsets.
      *
@@ -85,12 +86,15 @@ object TradingAlgorithm {
      * @return a pair containing the for initialization history as first, and the remaining history as second.
      */
     private fun forBackTest(type: Type, history: List<SecurityHistory>): Pair<List<SecurityHistory>, List<SecurityHistory>> {
+        check(history.size >= type.initSize) { "Init" }
+
         val init = history.subList(0, type.initSize).toList()
         val remainder = history.drop(type.initSize)
 
         return Pair(init, remainder)
     }
 
+    //===========================================================//
     /**
      * Prepares market history for live trading by retaining only the most recent data
      * required by the algorithm strategy.
@@ -100,9 +104,12 @@ object TradingAlgorithm {
      *  @return the history .
      */
     private fun forTrading(type: Type, history: List<SecurityHistory>): List<SecurityHistory> {
+        check(history.size >= type.initSize) { "Init" }
+
         return history.takeLast(type.initSize)
     }
 
+    //===========================================================//
     /**
      * Factory function that instantiates a trading algorithm.
      *
@@ -111,7 +118,7 @@ object TradingAlgorithm {
      *  @return the instantiated algorithm.
      */
     private fun createAlgorithm(type: Type, history: List<SecurityHistory>): ITradingAlgorithm {
-        require(history.size == type.initSize) { "Size" }
+        check(history.size == type.initSize) { "Size" }
 
         return when (type) {
             is Type.TACPP46 -> {
