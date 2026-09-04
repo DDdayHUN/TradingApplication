@@ -45,7 +45,7 @@ internal class ALGDES3 : ITradingAlgorithm {
         val toSell = mutableSetOf<Pair<SecurityHolding, Int>>()
 
         for (holding in holdings) {
-            val gain = (currentPrice - holding.entryPrice) / holding.entryPrice
+            val gain = (currentPrice - holding.purchasePrice) / holding.purchasePrice
 
             when {
                 // Price is high relative to average

@@ -4,7 +4,7 @@ import domain.market.security.SecurityHolding
 import data.repository.trader.FakeTraderRepository
 import domain.interfaces.ITraderRepository
 import domain.trader.Trader
-import domain.interfaces.IMarketDataProvider
+import data.network.IMarketDataProvider
 import application.provider.MarketDataProvider
 
 //===========================================================//

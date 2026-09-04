@@ -3,8 +3,8 @@ package application.service.order
 import application.logging.logger
 import application.service.trader.ITraderService
 import application.service.broker.IBrokerService
-import data.repository.order.toBrokerOrder
-import domain.interfaces.IOrderRepository
+import data.repository.order.sql.toBrokerOrder
+import data.repository.order.IOrderRepository
 import domain.order.OrderAction
 import domain.order.OrderStatus
 import domain.order.toOrder

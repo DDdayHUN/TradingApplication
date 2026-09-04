@@ -1,7 +1,7 @@
-package data.repository.user
+package data.repository.user.sql
 
+import data.repository.user.IUserRepository
 import domain.User
-import domain.interfaces.IUserRepository
 import exception.api.UserNotFoundException
 import org.springframework.stereotype.Repository
 import java.util.*

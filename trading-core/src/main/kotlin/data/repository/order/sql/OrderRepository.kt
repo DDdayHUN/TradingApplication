@@ -1,7 +1,7 @@
-package data.repository.order
+package data.repository.order.sql
 
-import data.repository.portfolio.IPortfolioJpaRepository
-import domain.interfaces.IOrderRepository
+import data.repository.order.IOrderRepository
+import data.repository.portfolio.sql.IPortfolioJpaRepository
 import domain.order.Order
 import exception.api.TraderNotFoundException
 import jakarta.transaction.Transactional

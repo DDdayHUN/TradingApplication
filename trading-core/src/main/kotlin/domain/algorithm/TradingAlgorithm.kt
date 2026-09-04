@@ -1,6 +1,6 @@
 package domain.algorithm
 
-import domain.interfaces.IHistoricalMarketDataProvider
+import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
@@ -44,7 +44,7 @@ object TradingAlgorithm {
      * @param securityIdentifier the identifier identifies a security.
      * @return the configured algorithm instance.
      */
-    fun create(provider: IHistoricalMarketDataProvider, type: Type, securityIdentifier: SecurityIdentifier, history: List<SecurityHistory>? = null): ITradingAlgorithm {
+    fun create(provider: IHistoricalMarketDataProvider, type: Type, securityIdentifier: SecurityIdentifier): ITradingAlgorithm {
         val history = getHistory(provider, securityIdentifier)
         val trading = forTrading(type, history)
         val algorithm = createAlgorithm( type, trading)

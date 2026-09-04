@@ -1,11 +1,8 @@
-package domain.interfaces
+package data.repository.historical_data
 
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityIdentifier
 import kotlin.time.Instant
-
-//===========================================================//
-//===========================================================//
 
 interface IHistoricalMarketDataProvider {
     //===========================================================//

@@ -1,8 +1,8 @@
 package application.service.auth
 
 import application.logging.logger
+import data.repository.user.IUserRepository
 import domain.User
-import domain.interfaces.IUserRepository
 import exception.api.AuthenticationException
 import exception.api.UserAlreadyExistsException
 import org.springframework.security.core.context.SecurityContextHolder

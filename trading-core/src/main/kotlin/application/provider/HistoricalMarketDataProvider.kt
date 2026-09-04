@@ -1,7 +1,7 @@
 package application.provider
 
-import data.repository.historical_data.yahoo.YahooHistoricalMarketDataRepository
-import domain.interfaces.IHistoricalMarketDataProvider
+import data.repository.historical_data.json.yahoo.YahooHistoricalMarketDataRepository
+import data.repository.historical_data.IHistoricalMarketDataProvider
 import org.springframework.stereotype.Component
 
 @Component

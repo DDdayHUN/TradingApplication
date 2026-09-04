@@ -1,9 +1,9 @@
-package data.repository.portfolio
+package data.repository.portfolio.sql
 
-import data.repository.user.toEntity
+import data.repository.portfolio.IPortfolioRepository
+import data.repository.user.sql.toEntity
 import domain.Portfolio
-import domain.interfaces.IPortfolioRepository
-import domain.interfaces.IUserRepository
+import data.repository.user.IUserRepository
 import exception.api.PortfolioNotFoundException
 import org.springframework.stereotype.Repository
 import java.util.*

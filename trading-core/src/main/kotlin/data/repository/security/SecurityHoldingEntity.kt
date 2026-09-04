@@ -31,7 +31,7 @@ fun SecurityHolding.toEntity(trader: TraderEntity): SecurityHoldingEntity {
     return SecurityHoldingEntity(
         id = id,
         timestamp = timestamp,
-        entryPrice = entryPrice,
+        entryPrice = purchasePrice,
         amount = amount,
         trader = trader
     )
@@ -41,7 +41,7 @@ fun SecurityHoldingEntity.toDomain(): SecurityHolding {
     return SecurityHolding(
         id = id,
         timestamp = timestamp,
-        entryPrice = entryPrice,
+        purchasePrice = entryPrice,
         amount = amount
     )
 }

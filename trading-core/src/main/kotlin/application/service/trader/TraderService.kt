@@ -7,7 +7,7 @@ import application.service.portfolio.IPortfolioService
 import application.provider.MarketDataProvider
 import data.network.finnhub.FinnhubConfig
 import domain.algorithm.TradingAlgorithm
-import domain.interfaces.IHistoricalMarketDataProvider
+import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import domain.trader.TradingOrder

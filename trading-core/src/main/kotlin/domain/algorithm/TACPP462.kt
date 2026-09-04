@@ -65,7 +65,7 @@ internal class TACPP462: ITradingAlgorithm {
             var isMarked = m_MarkedForSelling.contains(item.id)
 
             // Activate trailing if gained > risk
-            if (!isMarked && currentPrice > item.entryPrice * (1 + std)) {
+            if (!isMarked && currentPrice > item.purchasePrice * (1 + std)) {
                 m_MarkedForSelling.add(item.id)
                 m_TrailingHigh[item.id] = currentPrice
                 isMarked = true
@@ -94,7 +94,7 @@ internal class TACPP462: ITradingAlgorithm {
 
         // Stop-loss
         for (item in holdings) {
-            if (currentPrice < item.entryPrice * (1.0 - std * 2)) {
+            if (currentPrice < item.purchasePrice * (1.0 - std * 2)) {
                 val pair = Pair(item, item.amount)
                 if(!toBeSold.contains(pair)) toBeSold.add(pair)
 

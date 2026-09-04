@@ -43,7 +43,7 @@ fun Trader.toResponse(): TraderResponse {
         holdings = holdings.map { holding ->
             SecurityHoldingResponse(
                 id = holding.id,
-                entryPrice = holding.entryPrice,
+                entryPrice = holding.purchasePrice,
                 amount = holding.amount
             )
         },

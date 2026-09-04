@@ -11,7 +11,7 @@ import java.util.*
  *
  * @param id the uuid of the given holding.
  * @param timestamp the time at which the holding was acquired.
- * @param entryPrice the average purchase price per share.
+ * @param purchasePrice the average purchase price of the shares.
  * @param amount the number of shares held.
  */
 //===========================================================//
@@ -20,11 +20,11 @@ data class SecurityHolding(
     val id: UUID = UUID.randomUUID(),
     @JsonAdapter(InstantAdapter::class)
     val timestamp: Instant = Instant.now(),
-    val entryPrice: Double,
+    val purchasePrice: Double,
     val amount: Int
 ) {
     init {
-        require(entryPrice >= 0.0) { "Price" }
+        require(purchasePrice >= 0.0) { "Price" }
         require(amount > 0) { "Amount must be greater than 0" }
     }
 }

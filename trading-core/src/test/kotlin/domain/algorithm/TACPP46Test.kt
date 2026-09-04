@@ -165,7 +165,7 @@ internal class TACPP46Test {
             val output = algorithm.run(
                 holdings = setOf(holding),
                 allocatedCapital = DEFAULT_CAPITAL,
-                currentPrice = holding.entryPrice
+                currentPrice = holding.purchasePrice
             )
 
             assertNull(output.sell)
@@ -176,12 +176,12 @@ internal class TACPP46Test {
             val algorithm = createFlatAlgorithm()
 
             val firstHolding = SecurityHolding(
-                entryPrice = 100.0,
+                purchasePrice = 100.0,
                 amount = 5
             )
 
             val secondHolding = SecurityHolding(
-                entryPrice = 200.0,
+                purchasePrice = 200.0,
                 amount = 3
             )
 
@@ -264,7 +264,7 @@ internal class TACPP46Test {
 
     private fun defaultHolding(): SecurityHolding {
         return SecurityHolding(
-            entryPrice = DEFAULT_PRICE,
+            purchasePrice = DEFAULT_PRICE,
             amount = 5
         )
     }

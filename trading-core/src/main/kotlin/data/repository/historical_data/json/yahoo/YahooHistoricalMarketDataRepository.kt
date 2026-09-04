@@ -1,8 +1,8 @@
-package data.repository.historical_data.yahoo
+package data.repository.historical_data.json.yahoo
 
 import com.google.gson.GsonBuilder
-import data.repository.utils.RepositoryUtils
-import domain.interfaces.IHistoricalMarketDataProvider
+import data.repository.historical_data.IHistoricalMarketDataProvider
+import data.repository.loadFromFile
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.*
@@ -72,12 +72,12 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
         val targetFile = s_RootDir.walkTopDown()
             .filter { it.isFile }
             .find {
-                val yahooMarketDataDto = RepositoryUtils.loadFromFile<YahooMarketDataDto>(s_GSON, it)
+                val yahooMarketDataDto = loadFromFile<YahooMarketDataDto>(s_GSON, it)
                 yahooMarketDataDto.isin == securityIdentifier.isin
             }
 
         require(targetFile != null) { "There is no file with the given identifier" }
-        return@withContext RepositoryUtils.loadFromFile<YahooMarketDataDto>(s_GSON, targetFile).toHistoricalMarketDataDto()
+        return@withContext loadFromFile<YahooMarketDataDto>(s_GSON, targetFile).toHistoricalMarketDataDto()
     }
 
     //===========================================================//
@@ -91,8 +91,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
         coroutineScope {
             files.map {
                 async {
-                    RepositoryUtils
-                        .loadFromFile<YahooMarketDataDto>(s_GSON, it)
+                    loadFromFile<YahooMarketDataDto>(s_GSON, it)
                         .toHistoricalMarketDataDto()
                 }
             }.awaitAll()

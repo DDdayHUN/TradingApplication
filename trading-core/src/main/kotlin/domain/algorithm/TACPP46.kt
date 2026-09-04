@@ -72,7 +72,7 @@ internal class TACPP46: ITradingAlgorithm {
             var isMarked = m_MarkedForSelling.contains(item.id)
 
             // Activate trailing if gained > risk
-            if (!isMarked && currentPrice > item.entryPrice * (1.0 + risk)) {
+            if (!isMarked && currentPrice > item.purchasePrice * (1.0 + risk)) {
                 m_MarkedForSelling.add(item.id)
                 m_TrailingHigh[item.id] = currentPrice
                 isMarked = true
@@ -100,7 +100,7 @@ internal class TACPP46: ITradingAlgorithm {
 
         // Stop-loss
         for (item in holdings) {
-            if (currentPrice < item.entryPrice * (1.0 - risk * 2.0)) {
+            if (currentPrice < item.purchasePrice * (1.0 - risk * 2.0)) {
                 toBeSold.add(Pair(item, item.amount))
 
                 // cleanup

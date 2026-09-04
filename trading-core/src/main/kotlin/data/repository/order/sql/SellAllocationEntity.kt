@@ -1,4 +1,4 @@
-package data.repository.order
+package data.repository.order.sql
 
 import jakarta.persistence.*
 import java.util.*

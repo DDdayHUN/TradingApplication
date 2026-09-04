@@ -1,7 +1,7 @@
 package data.repository.trader
 
 import com.google.gson.Gson
-import data.repository.portfolio.PortfolioEntity
+import data.repository.portfolio.sql.PortfolioEntity
 import data.repository.security.SecurityHoldingEntity
 import data.repository.security.SecurityIdentifierEntity
 import data.repository.security.toDomain

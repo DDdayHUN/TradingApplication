@@ -1,4 +1,4 @@
-package domain.interfaces
+package data.repository.order
 
 import domain.order.Order
 
