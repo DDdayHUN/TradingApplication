@@ -15,4 +15,5 @@ interface ITraderService {
     suspend fun executeTrader(portfolioId: UUID, traderId: UUID): TradingOrder
     suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double)
     suspend fun applySellFill(traderId: UUID, sellAllocations: List<SellAllocation>, averageFillPrice: Double)
+    suspend fun forceSellHolding(traderId: UUID, securityHoldingId: UUID): TradingOrder
 }

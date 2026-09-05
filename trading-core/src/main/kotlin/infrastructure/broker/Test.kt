@@ -31,6 +31,11 @@ class Test(
         SupervisorJob() + Dispatchers.IO
     )
 
+    private val portfolioId =
+        UUID.fromString("73676208-6428-44e0-898f-4368d551df2c")
+
+
+
     @Scheduled(
         cron = "0 */2 * * * *",
         zone = "Europe/Budapest"
@@ -38,8 +43,6 @@ class Test(
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-                val portfolioId =
-                    UUID.fromString("73676208-6428-44e0-898f-4368d551df2c")
 
                 val portfolio =
                     portfolioService.getPortfolio(portfolioId)
@@ -102,6 +105,16 @@ class Test(
             val from = to - (365.days)
 
             backtestDataService.download(identifier, from, to)
+        }
+    }
+
+    @Scheduled(
+        cron = "* * * * * *",
+        zone = "Europe/Budapest"
+    )
+    fun sellHolding(){
+        scope.launch {
+
         }
     }
 

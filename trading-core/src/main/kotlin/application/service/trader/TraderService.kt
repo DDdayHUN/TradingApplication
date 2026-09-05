@@ -8,9 +8,11 @@ import application.provider.MarketDataProvider
 import data.network.finnhub.FinnhubConfig
 import domain.algorithm.TradingAlgorithm
 import data.repository.historical_data.IHistoricalMarketDataProvider
+import domain.market.Quote
 import domain.market.security.SecurityIdentifier
 import domain.trader.Trader
 import domain.trader.TradingOrder
+import exception.api.HoldingNotFoundException
 import exception.api.TraderNotFoundException
 import infrastructure.broker.IbkrSession
 import infrastructure.broker.SellAllocation
@@ -127,16 +129,9 @@ class TraderService(
             trader.id == traderId
         }?: throw TraderNotFoundException(traderId)
 
-        val finnhubProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub(finnhubConfig))
-        var quote = finnhubProvider.getQuote(trader.securityIdentifier)
-
-        if(!quote.isSuccess){
-            logger.warn("Finnhub quote failed for {}, trying IBKR", trader.securityIdentifier.tickerSymbol)
-            quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(trader.securityIdentifier)
-        }
-
+        val quote = getCurrentPrice(trader.securityIdentifier)
        // val quote = Quote(160.0)
-        val order = trader.createOrder(quote.getOrThrow())
+        val order = trader.createOrder(quote)
 
         portfolioService.save(portfolio)
 
@@ -183,6 +178,37 @@ class TraderService(
         portfolioService.save(portfolio)
     }
 
+    @Transactional(readOnly = true)
+    override suspend fun forceSellHolding(traderId: UUID, securityHoldingId: UUID): TradingOrder {
+        val portfolio = portfolioService.getPortfolioByTraderId(traderId)
+        val trader = portfolio.traders.find { trader ->
+            trader.id == traderId
+        }?: throw TraderNotFoundException(traderId)
+
+        val holding = trader.holdings.find {holding ->
+            holding.id == securityHoldingId
+        }?: throw HoldingNotFoundException(securityHoldingId)
+
+
+
+        val order = TradingOrder(
+            traderId = trader.id,
+            securityIdentifier = trader.securityIdentifier,
+            buy = null,
+            sell = TradingAlgorithm.Output.Sell(
+                batches = setOf(
+                    Pair(
+                        holding,
+                        holding.amount
+                    )
+                )
+            ),
+            atPrice = getCurrentPrice(trader.securityIdentifier).currentPrice,
+        )
+
+        return order
+    }
+
     //===========================================================//
 
     private fun parseAlgorithmType(value: String): TradingAlgorithm.Type {
@@ -201,4 +227,19 @@ class TraderService(
             )
         }
     }
+
+    //===========================================================//
+
+    private suspend fun getCurrentPrice(securityIdentifier: SecurityIdentifier): Quote{
+        val finnhubProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub(finnhubConfig))
+        var quote = finnhubProvider.getQuote(securityIdentifier)
+
+        if(!quote.isSuccess){
+            logger.warn("Finnhub quote failed for {}, trying IBKR", securityIdentifier.tickerSymbol)
+            quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(securityIdentifier)
+        }
+
+        return quote.getOrThrow()
+    }
+
 }
