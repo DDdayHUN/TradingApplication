@@ -142,9 +142,6 @@ object TradingAlgorithm {
             is Type.TACPP462 -> {
                 TACPP462(history)
             }
-            is Type.TACPP463 -> {
-                TACPP463(history)
-            }
         }
     }
 
@@ -160,7 +157,6 @@ object TradingAlgorithm {
         data object ALGDES4 : Type { override val initSize = 7 }
         data object BUYANDHOLD : Type { override val initSize = 0 }
         data object TACPP462 : Type { override val initSize = 42 }
-        data object TACPP463: Type {override val initSize = 78 }
 
         val initSize: Int
 
@@ -172,8 +168,7 @@ object TradingAlgorithm {
                 ALGDES31,
                 ALGDES4,
                 BUYANDHOLD,
-                TACPP462,
-                TACPP463
+                TACPP462
             )
         }
     }

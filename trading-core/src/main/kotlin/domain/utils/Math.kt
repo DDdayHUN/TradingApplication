@@ -69,6 +69,45 @@ object Math {
      *   If average gain is zero, RSI = 0.
      */
     /**
+     * Computes the Relative Strength Index (RSI) for a sequence of prices.
+     * The list must contain prices in chronological order.
+     *
+     * It uses simple averages of gains and losses `(not Wilder's smoothing)`.
+     * Consecutive increases contribute to the gain list, while decreases or equal
+     * values contribute to the loss list.
+     *
+     * @return The RSI value in the range [0, 100].
+     */
+    fun List<Double>.rsi(): Double {
+        require(this.size >= 2) { "Size" }
+
+        val gaines: MutableList<Double> = ArrayList()
+        val losses: MutableList<Double> = ArrayList()
+
+        // Collect gains and losses
+        for (i in 1..<this.size) {
+            val prev = this[i - 1]
+            val curr = this[i]
+
+            if (curr > prev) gaines.add(curr - prev)
+            else losses.add(prev - curr)
+        }
+
+        if (gaines.isEmpty()) return 0.0
+        if (losses.isEmpty()) return 100.0
+
+        val avgGain = gaines.average()
+        val avgLoss = losses.average()
+
+        if (avgLoss == 0.0) return 100.0
+        if (avgGain == 0.0) return 0.0
+
+        val rs = avgGain / avgLoss
+
+        return 100.0 - (100.0 / (1.0 + rs))
+    }
+
+    /**
      * Computes Wilder's Relative Strength Index (RSI).
      *
      * The first average gain/loss is calculated using a simple average
@@ -78,7 +117,7 @@ object Math {
      * @param period RSI period. Standard value is 14.
      * @return RSI in the range [0, 100].
      */
-    fun List<Double>.rsi(period: Int = 14): Double {
+    fun List<Double>.wilderRsi(period: Int = 14): Double {
         require(period > 0) { "Period must be positive" }
         require(size >= period + 1) {
             "Need at least ${period + 1} prices for RSI($period)"
@@ -87,7 +126,6 @@ object Math {
         var totalGain = 0.0
         var totalLoss = 0.0
 
-        // Initial average: first `period` changes
         for (i in 1..period) {
             val change = this[i] - this[i - 1]
 
@@ -101,44 +139,24 @@ object Math {
         var avgGain = totalGain / period
         var avgLoss = totalLoss / period
 
-        // Wilder smoothing for all remaining prices
         for (i in (period + 1)..<size) {
             val change = this[i] - this[i - 1]
 
-            val gain =
-                if (change > 0.0) change
-                else 0.0
+            val gain = if (change > 0.0) change else 0.0
+            val loss = if (change < 0.0) -change else 0.0
 
-            val loss =
-                if (change < 0.0) -change
-                else 0.0
-
-            avgGain =
-                (
-                        avgGain * (period - 1) +
-                                gain
-                        ) / period
-
-            avgLoss =
-                (
-                        avgLoss * (period - 1) +
-                                loss
-                        ) / period
+            avgGain = (avgGain * (period - 1) + gain) / period
+            avgLoss = (avgLoss * (period - 1) + loss) / period
         }
 
-        if (avgLoss == 0.0 && avgGain == 0.0)
-            return 50.0
+        if (avgLoss == 0.0 && avgGain == 0.0) return 50.0
 
-        if (avgLoss == 0.0)
-            return 100.0
-
-        if (avgGain == 0.0)
-            return 0.0
+        if (avgLoss == 0.0) return 100.0
+        if (avgGain == 0.0) return 0.0
 
         val rs = avgGain / avgLoss
 
-        return 100.0 -
-                (100.0 / (1.0 + rs))
+        return 100.0 - (100.0 / (1.0 + rs))
     }
 
     /*===========================================================*/

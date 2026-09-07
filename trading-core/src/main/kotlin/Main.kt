@@ -33,7 +33,7 @@ suspend fun main() {
     )
 
     val startCapital = 5000.0
-    val startDate = Instant.parse("2025-01-01T00:00:00Z")
+    val startDate = Instant.parse("2020-01-01T00:00:00Z")
     val endDate = Instant.parse("2026-01-01T00:00:00Z")
     val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 

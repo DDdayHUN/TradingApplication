@@ -31,7 +31,6 @@ sealed interface ITradingAlgorithm {
                 is ALGDES4 -> "ALGDES4"
                 is BUYANDHOLD -> "BUYANDHOLD"
                 is TACPP462 -> "TACPP462"
-                is TACPP463 -> "TACPP463"
             }
         }
     }

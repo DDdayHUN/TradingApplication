@@ -9,6 +9,7 @@ import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.springframework.scheduling.annotation.Scheduled
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 
 @Deprecated("ONLY TESTING")
 @Component
@@ -36,10 +38,6 @@ class Test(
 
 
 
-    @Scheduled(
-        cron = "0 */2 * * * *",
-        zone = "Europe/Budapest"
-    )
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
@@ -87,12 +85,6 @@ class Test(
         }
     }
 
-
-
-    @Scheduled(
-        cron = "0 18 19 * * *",
-        zone = "Europe/Budapest"
-    )
     fun getHistoricalData(){
         scope.launch {
             val identifier = SecurityIdentifier(
@@ -109,13 +101,29 @@ class Test(
     }
 
     @Scheduled(
-        cron = "* * * * * *",
+        cron = "0 07 16 * * *",
         zone = "Europe/Budapest"
     )
-    fun sellHolding(){
+    fun sellAllHolding(){
         scope.launch {
-
+            val portfolio = portfolioService.getPortfolio(portfolioId)
+            val jobs =  portfolio.traders.map { trader ->
+                launch {
+                    try {
+                        traderService.forceSellAllHolding(trader.id).forEach { order ->
+                            logger.info(
+                                "Submitting trader={} order={}",
+                                trader.securityIdentifier.tickerSymbol,
+                                order.toReadableText()
+                            )
+                            orderService.submit(order)
+                        }
+                    }catch(e: Exception){
+                        throw e
+                    }
+                }
+            }
+            jobs.joinAll()
         }
     }
-
 }

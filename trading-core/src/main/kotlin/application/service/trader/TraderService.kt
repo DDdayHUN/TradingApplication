@@ -189,8 +189,6 @@ class TraderService(
             holding.id == securityHoldingId
         }?: throw HoldingNotFoundException(securityHoldingId)
 
-
-
         val order = TradingOrder(
             traderId = trader.id,
             securityIdentifier = trader.securityIdentifier,
@@ -205,9 +203,26 @@ class TraderService(
             ),
             atPrice = getCurrentPrice(trader.securityIdentifier).currentPrice,
         )
-
         return order
     }
+
+    @Transactional(readOnly = true)
+    override suspend fun forceSellAllHolding(traderId: UUID): List<TradingOrder> {
+        val portfolio = portfolioService.getPortfolioByTraderId(traderId)
+        val trader = portfolio.traders.find { trader ->
+            trader.id == traderId
+        } ?: throw TraderNotFoundException(traderId)
+
+        val orderList = mutableListOf<TradingOrder>()
+
+        trader.holdings.forEach { holding ->
+            val order = forceSellHolding(traderId, holding.id)
+            orderList.add(order)
+        }
+
+        return orderList
+    }
+
 
     //===========================================================//
 
@@ -215,7 +230,6 @@ class TraderService(
         return when (value.trim().uppercase()) {
             "TACPP46" -> TradingAlgorithm.Type.TACPP46
             "TACPP462" -> TradingAlgorithm.Type.TACPP462
-            "TACPP463" -> TradingAlgorithm.Type.TACPP463
             "ALGDES2" -> TradingAlgorithm.Type.ALGDES2
             "ALGDES3" -> TradingAlgorithm.Type.ALGDES3
             "ALGDES31" -> TradingAlgorithm.Type.ALGDES31

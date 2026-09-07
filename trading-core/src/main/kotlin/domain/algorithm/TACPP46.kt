@@ -4,6 +4,7 @@ import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
 import domain.utils.Math.rsi
 import domain.utils.Math.stdDev
+import domain.utils.Math.wilderRsi
 import java.util.*
 
 //===========================================================//
@@ -36,7 +37,7 @@ internal class TACPP46: ITradingAlgorithm {
 
         val ema: List<Double> = ArrayList(m_EmaHistory)
         val std: Double = ema.stdDev()
-        val rsi: Double = ema.rsi(14)
+        val rsi: Double = ema.rsi()
         val ma: Double = ema.average()
 
         val lowerBand = ma - 4.0 * std * ma
