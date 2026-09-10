@@ -1,11 +1,12 @@
 package data.repository.order.sql
 
 import application.service.broker.BrokerOrderRequest
+import data.repository.security.SecurityIdentifierEntity
+import data.repository.security.toDomain
 import data.repository.trader.TraderEntity
 import domain.order.Order
-import domain.order.OrderAction
-import domain.order.OrderStatus
-import domain.trader.TradingOrder
+import domain.order.Order.OrderAction
+import domain.order.Order.Status
 import infrastructure.broker.SellAllocation
 import jakarta.persistence.*
 import java.time.Instant
@@ -19,12 +20,29 @@ class OrderEntity(
     @Column(name ="id", nullable = false, updatable = false)
     var id: UUID,
 
-    @Column(name = "ibkr_order_id", nullable = false)
-    var ibkrOrderId: Int,
+    @Column(name = "ibkr_order_id")
+    var ibkrOrderId: Int?,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "trader_id", nullable = false)
     var trader: TraderEntity,
+
+    @Embedded
+    @AttributeOverrides(
+        AttributeOverride(
+            name = "isin",
+            column = Column(name = "security_isin", nullable = false)
+        ),
+        AttributeOverride(
+            name = "tickerSymbol",
+            column = Column(name = "security_ticker", nullable = false)
+        ),
+        AttributeOverride(
+            name = "currency",
+            column = Column(name = "security_currency", nullable = false)
+        )
+    )
+    var securityIdentifier: SecurityIdentifierEntity,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false)
@@ -38,7 +56,7 @@ class OrderEntity(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    var status: OrderStatus,
+    var status: Status,
 
     @Column(name = "filled_quantity", nullable = false)
     var filledQuantity: String = "",
@@ -53,31 +71,32 @@ class OrderEntity(
     var createdAt: Instant = Instant.now(),
 )
 
-fun TradingOrder.toBrokerOrder(): BrokerOrderRequest? {
-    if(this.buy == null && this.sell == null) return null
-    val quantity: Double
-    val side: OrderAction
-
-    if(this.buy != null){
-        quantity = this.buy.amount.toDouble()
-        side = OrderAction.BUY
-    }else {
-        quantity = this.sell!!.batches.sumOf {(_,amount) -> amount}.toDouble()
-        side = OrderAction.SELL
+fun Order.toBrokerOrder(): BrokerOrderRequest {
+    val side = when (signal) {
+        is Order.Signal.Buy -> OrderAction.BUY
+        is Order.Signal.Sell -> OrderAction.SELL
     }
+
     return BrokerOrderRequest(
-        ticker = this.securityIdentifier.tickerSymbol,
-        currency = this.securityIdentifier.currency,
+        ticker = securityIdentifier.tickerSymbol,
+        currency = securityIdentifier.currency,
         quantity = quantity,
         side = side
     )
 }
 
 fun Order.toEntity(trader: TraderEntity): OrderEntity {
+
+    val action = when (signal){
+        is Order.Signal.Buy -> OrderAction.BUY
+        is Order.Signal.Sell -> OrderAction.SELL
+    }
+
     val entity = OrderEntity(
         id = id,
         ibkrOrderId = ibkrOrderId,
         trader = trader,
+        securityIdentifier = trader.securityIdentifier,
         action = action,
         quantity = quantity,
         signalPrice = signalPrice,
@@ -86,36 +105,50 @@ fun Order.toEntity(trader: TraderEntity): OrderEntity {
         averageFillPrice = averageFillPrice,
         createdAt = createdAt
     )
-
-    entity.sellAllocations = sellAllocations.map { allocation ->
-        SellAllocationEntity(
-            order = entity,
-            holdingId = allocation.holdingId,
-            amount = allocation.amount
-        )
-    }.toMutableList()
-
+    if(signal is Order.Signal.Sell){
+        entity.sellAllocations =
+            signal.allocations.map { (holding, amount) ->
+                SellAllocationEntity(
+                    order = entity,
+                    holdingId = holding,
+                    amount = amount
+                )
+            }.toMutableList()
+    }
     return entity
 }
 
 fun OrderEntity.toDomain(): Order {
+    val signal = when (action) {
+
+        OrderAction.BUY -> {
+            Order.Signal.Buy(
+                amount = quantity.toInt()
+            )
+        }
+
+        OrderAction.SELL -> {
+            Order.Signal.Sell(
+                allocations = sellAllocations.map {
+                    SellAllocation(
+                        holdingId = it.holdingId,
+                        amount = it.amount
+                    )
+                }
+            )
+        }
+    }
+
     return Order(
         id = id,
         ibkrOrderId = ibkrOrderId,
         traderId = trader.id,
-        action = action,
-        quantity = quantity,
+        securityIdentifier = securityIdentifier.toDomain(),
+        signal = signal,
         signalPrice = signalPrice,
         status = status,
         filledQuantity = filledQuantity,
         averageFillPrice = averageFillPrice,
-
-        sellAllocations = sellAllocations.map { holding ->
-            SellAllocation(
-                holdingId = holding.holdingId,
-                amount = holding.amount,
-            )
-        },
         createdAt = createdAt
     )
 }

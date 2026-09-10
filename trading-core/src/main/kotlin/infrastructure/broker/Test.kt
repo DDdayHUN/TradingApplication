@@ -6,6 +6,8 @@ import application.service.portfolio.IPortfolioService
 import application.service.trader.ITraderService
 import data.network.ibkr.backtest.BacktestDataService
 import domain.market.security.SecurityIdentifier
+import domain.order.Order
+import exception.api.TraderNotFoundException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -37,7 +39,10 @@ class Test(
         UUID.fromString("73676208-6428-44e0-898f-4368d551df2c")
 
 
-
+    @Scheduled(
+        cron = "0 54 21 * * *",
+        zone = "Europe/Budapest"
+    )
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
@@ -48,19 +53,15 @@ class Test(
                 val jobs = portfolio.traders.map { trader ->
                     launch {
                         try {
-                            val order =
-                                traderService.executeTrader(
-                                    portfolioId,
-                                    trader.id
-                                )
+                            val order = traderService.executeTrader(portfolioId, trader.id)
 
                             logger.info(
                                 "Submitting trader={} order={}",
                                 trader.securityIdentifier.tickerSymbol,
-                                order.toReadableText()
+                                order.toString()
                             )
 
-                            orderService.submit(order)
+                            if(order != null) orderService.submit(order)
 
                         } catch (e: Exception) {
                             logger.error(
@@ -100,10 +101,7 @@ class Test(
         }
     }
 
-    @Scheduled(
-        cron = "0 07 16 * * *",
-        zone = "Europe/Budapest"
-    )
+
     fun sellAllHolding(){
         scope.launch {
             val portfolio = portfolioService.getPortfolio(portfolioId)
@@ -114,7 +112,7 @@ class Test(
                             logger.info(
                                 "Submitting trader={} order={}",
                                 trader.securityIdentifier.tickerSymbol,
-                                order.toReadableText()
+                                order.toString()
                             )
                             orderService.submit(order)
                         }
@@ -124,6 +122,35 @@ class Test(
                 }
             }
             jobs.joinAll()
+        }
+    }
+
+    @Scheduled(
+        cron = "0 48 21 * * *",
+        zone = "Europe/Budapest"
+    )
+    fun buyHolding(){
+        scope.launch {
+            try {
+                val portfolio = portfolioService.getPortfolio(portfolioId)
+                val traderId = UUID.fromString("c9f713f5-d56a-48e0-904b-fef13118210c")
+
+                val trader = portfolio.traders.find { trader ->
+                    traderId == trader.id
+                } ?: throw TraderNotFoundException(traderId)
+
+                val order = Order(
+                    traderId = trader.id,
+                    securityIdentifier = trader.securityIdentifier,
+                    signal = Order.Signal.Buy(amount = 1),
+                    signalPrice = 433.0,
+                )
+
+                orderService.submit(order)
+            } catch(e: Exception){
+                throw e
+            }
+
         }
     }
 }

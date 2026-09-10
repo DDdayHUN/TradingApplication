@@ -3,15 +3,15 @@ package application.service.trader
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import application.logging.logger
-import application.service.portfolio.IPortfolioService
 import application.provider.MarketDataProvider
+import application.service.portfolio.IPortfolioService
 import data.network.finnhub.FinnhubConfig
-import domain.algorithm.TradingAlgorithm
 import data.repository.historical_data.IHistoricalMarketDataProvider
+import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
+import domain.order.Order
 import domain.trader.Trader
-import domain.trader.TradingOrder
 import exception.api.HoldingNotFoundException
 import exception.api.TraderNotFoundException
 import infrastructure.broker.IbkrSession
@@ -19,7 +19,7 @@ import infrastructure.broker.SellAllocation
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 
 @Service
 class TraderService(
@@ -122,7 +122,7 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun executeTrader(portfolioId: UUID, traderId: UUID): TradingOrder {
+    override suspend fun executeTrader(portfolioId: UUID, traderId: UUID): Order? {
         val portfolio = portfolioService.getPortfolio(portfolioId)
 
         val trader = portfolio.traders.find {trader ->
@@ -131,7 +131,7 @@ class TraderService(
 
         val quote = getCurrentPrice(trader.securityIdentifier)
        // val quote = Quote(160.0)
-        val order = trader.createOrder(quote)
+        val order = trader.createOrder(quote) ?: return null
 
         portfolioService.save(portfolio)
 
@@ -179,7 +179,7 @@ class TraderService(
     }
 
     @Transactional(readOnly = true)
-    override suspend fun forceSellHolding(traderId: UUID, securityHoldingId: UUID): TradingOrder {
+    override suspend fun forceSellHolding(traderId: UUID, securityHoldingId: UUID): Order {
         val portfolio = portfolioService.getPortfolioByTraderId(traderId)
         val trader = portfolio.traders.find { trader ->
             trader.id == traderId
@@ -189,31 +189,29 @@ class TraderService(
             holding.id == securityHoldingId
         }?: throw HoldingNotFoundException(securityHoldingId)
 
-        val order = TradingOrder(
+        val order = Order(
             traderId = trader.id,
             securityIdentifier = trader.securityIdentifier,
-            buy = null,
-            sell = TradingAlgorithm.Output.Sell(
-                batches = setOf(
-                    Pair(
-                        holding,
-                        holding.amount
-                    )
-                )
+            signal = Order.Signal.Sell(
+                allocations = mutableListOf(
+                    SellAllocation(
+                        holdingId = holding.id,
+                        amount = holding.amount
+                ))
             ),
-            atPrice = getCurrentPrice(trader.securityIdentifier).currentPrice,
+            signalPrice = getCurrentPrice(trader.securityIdentifier).currentPrice,
         )
         return order
     }
 
     @Transactional(readOnly = true)
-    override suspend fun forceSellAllHolding(traderId: UUID): List<TradingOrder> {
+    override suspend fun forceSellAllHolding(traderId: UUID): List<Order> {
         val portfolio = portfolioService.getPortfolioByTraderId(traderId)
         val trader = portfolio.traders.find { trader ->
             trader.id == traderId
         } ?: throw TraderNotFoundException(traderId)
 
-        val orderList = mutableListOf<TradingOrder>()
+        val orderList = mutableListOf<Order>()
 
         trader.holdings.forEach { holding ->
             val order = forceSellHolding(traderId, holding.id)

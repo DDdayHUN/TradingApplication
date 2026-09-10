@@ -1,14 +1,12 @@
 package application.service.order
 
 import application.logging.logger
-import application.service.trader.ITraderService
 import application.service.broker.IBrokerService
-import data.repository.order.sql.toBrokerOrder
+import application.service.trader.ITraderService
 import data.repository.order.IOrderRepository
-import domain.order.OrderAction
-import domain.order.OrderStatus
-import domain.order.toOrder
-import domain.trader.TradingOrder
+import data.repository.order.sql.toBrokerOrder
+import domain.order.Order
+import domain.order.Order.Status
 import infrastructure.broker.OrderCancelledEvent
 import infrastructure.broker.OrderFilledEvent
 import infrastructure.broker.OrderSubmittedEvent
@@ -31,21 +29,21 @@ class OrderService(
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun submit(order: TradingOrder) {
-        if(order.buy == null && order.sell == null) return
+    override suspend fun submit(order: Order) {
 
         val ibkrOrderId = ibkrService.getNextOrderId()
 
-        val persistedOrder = order.toOrder(
+        val persistedOrder = order.withIbkrOrderId(
             ibkrOrderId = ibkrOrderId,
         )
+
         orderRepository.create(persistedOrder).getOrThrow()
 
         try {
-            ibkrService.placeOrder(ibkrOrderId, order.toBrokerOrder()!!)
+            ibkrService.placeOrder(ibkrOrderId, order.toBrokerOrder())
         } catch(e: Exception){
             orderRepository.save(persistedOrder.copy(
-                status = OrderStatus.CANCELLED
+                status = Status.CANCELLED
             )).getOrThrow()
             throw e
         }
@@ -56,7 +54,7 @@ class OrderService(
     @Transactional
     override suspend fun handleOrderSubmitted(event: OrderSubmittedEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        orderRepository.save(order.submitted()).getOrThrow()
+        orderRepository.save(order.submit().getOrThrow()).getOrThrow()
     }
 
     //===========================================================//
@@ -64,9 +62,9 @@ class OrderService(
     @Transactional
     override suspend fun handleOrderCancelled(event: OrderCancelledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status == OrderStatus.FILLED) return
+        if(order.status == Status.FILLED) return
 
-        orderRepository.save(order.cancelled()).getOrThrow()
+        orderRepository.save(order.cancel().getOrThrow()).getOrThrow()
     }
 
     //===========================================================//
@@ -74,11 +72,11 @@ class OrderService(
     @Transactional
     override suspend fun handleOrderFilled(event: OrderFilledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status == OrderStatus.FILLED) return
+        if(order.status == Order.Status.FILLED) return
 
-        when (order.action) {
+        when (val signal = order.signal) {
 
-            OrderAction.BUY -> {
+            is Order.Signal.Buy -> {
                 traderService.applyBuyFill(
                     traderId = order.traderId,
                     filledQuantity = event.filled.toInt(),
@@ -86,10 +84,10 @@ class OrderService(
                 )
             }
 
-            OrderAction.SELL -> {
+            is Order.Signal.Sell -> {
                 traderService.applySellFill(
                     traderId = order.traderId,
-                    sellAllocations = order.sellAllocations,
+                    sellAllocations = signal.allocations,
                     averageFillPrice = event.averageFillPrice
                 )
             }
@@ -102,16 +100,10 @@ class OrderService(
             event.averageFillPrice
         )
 
-        var filledOrder = order.filled(
+        val filledOrder = order.fill(
             filledQuantity = event.filled,
             averageFillPrice = event.averageFillPrice
-        )
-
-        if(order.action == OrderAction.SELL){
-            filledOrder = filledOrder.copy(
-                sellAllocations = emptyList()
-            )
-        }
+        ).getOrThrow()
 
         orderRepository.save(filledOrder).getOrThrow()
     }

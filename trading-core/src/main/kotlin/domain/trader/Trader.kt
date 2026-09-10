@@ -4,6 +4,7 @@ import domain.algorithm.ITradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
+import domain.order.Order
 import infrastructure.broker.SellAllocation
 import java.util.*
 
@@ -40,19 +41,16 @@ class Trader {
     //===========================================================//
     //===========================================================//
     // Public Method(es)
-    fun createOrder(quote: Quote): TradingOrder {
+    fun createOrder(quote: Quote): Order? {
         val currentPrice = quote.currentPrice
         val output = algorithm.run(holdings, capital, currentPrice)
 
-        val order = TradingOrder(
+        return Order.fromAlgorithm(
             traderId = id,
             securityIdentifier = securityIdentifier,
-            buy = output.buy,
-            sell = output.sell,
-            atPrice = currentPrice,
+            output = output,
+            atPrice = currentPrice
         )
-
-        return order
     }
 
     //===========================================================//
