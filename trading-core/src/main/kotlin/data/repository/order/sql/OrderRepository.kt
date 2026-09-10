@@ -4,8 +4,9 @@ import data.repository.order.IOrderRepository
 import data.repository.portfolio.sql.IPortfolioJpaRepository
 import domain.order.Order
 import exception.api.TraderNotFoundException
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Repository
 class OrderRepository(
@@ -46,12 +47,23 @@ class OrderRepository(
         }
     }
 
+    @Transactional(readOnly = true)
     override suspend fun getByIbkrOrderId(ibkrOrderId: Int): Result<Order> {
         return runCatching{
             val order = orderRepository.findByIbkrOrderId(ibkrOrderId)
                 ?: throw IllegalArgumentException("Order not found with Ibkr Id: ${ibkrOrderId}")
 
             order.toDomain()
+        }
+    }
+
+    @Transactional
+    override suspend fun clearOrderAllocation(orderId: UUID): Result<Unit> {
+        return runCatching {
+            val order = orderRepository.findWithSellAllocationsById(orderId)?:
+            throw IllegalArgumentException("Order not found with Id: ${orderId}")
+
+            order.sellAllocations.clear()
         }
     }
 }

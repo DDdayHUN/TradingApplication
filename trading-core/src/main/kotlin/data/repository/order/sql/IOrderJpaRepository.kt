@@ -7,4 +7,7 @@ import java.util.*
 interface IOrderJpaRepository : JpaRepository<OrderEntity, UUID> {
     @EntityGraph(attributePaths = ["sellAllocations"])
     fun findByIbkrOrderId(ibkrOrderId: Int): OrderEntity?
+
+    @EntityGraph(attributePaths = ["sellAllocations"])
+    fun findWithSellAllocationsById(orderId: UUID): OrderEntity?
 }

@@ -1,6 +1,7 @@
 package domain.trader
 
 import domain.algorithm.ITradingAlgorithm
+import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
@@ -136,7 +137,6 @@ class Trader {
     // Private Method(es)
 
     private fun buy(price: Double, amount: Int) {
-        require(amount * price <= m_Capital) { "Insufficient Capital" }
 
         changeCapital(-(amount * price))
 
@@ -151,9 +151,6 @@ class Trader {
     //===========================================================//
 
     private fun sell(holding: SecurityHolding, price: Double, amount: Int) {
-        require(amount <= holding.amount) { "Amount" }
-        require(m_Holdings.remove(holding)) { "Not contained in the holdings list" }
-
         changeCapital(price * amount)
 
         if (amount != holding.amount) {

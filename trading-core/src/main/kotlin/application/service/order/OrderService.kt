@@ -72,7 +72,7 @@ class OrderService(
     @Transactional
     override suspend fun handleOrderFilled(event: OrderFilledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status == Order.Status.FILLED) return
+        if(order.status == Status.FILLED) return
 
         when (val signal = order.signal) {
 
@@ -90,6 +90,8 @@ class OrderService(
                     sellAllocations = signal.allocations,
                     averageFillPrice = event.averageFillPrice
                 )
+
+                orderRepository.clearOrderAllocation(order.id).getOrThrow()
             }
         }
 
