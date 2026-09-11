@@ -153,7 +153,8 @@ class Trader {
     private fun sell(holding: SecurityHolding, price: Double, amount: Int) {
         changeCapital(price * amount)
 
-        if (amount != holding.amount) {
+        m_Holdings.remove(holding)
+        if (amount < holding.amount) {
             m_Holdings.add(
                 SecurityHolding(
                     holding.id,

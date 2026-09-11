@@ -21,7 +21,7 @@ export default function TraderPage(): ReactElement {
     }, [portfolioId]);
 
     return(
-        <div className = "bg-gray-800 min-w-full min-h-full pt-10 pl-10">
+        <div className = "bg-gray-800 min-w-full min-h-full p-10">
             {!portfolio ? (
                 <>
 

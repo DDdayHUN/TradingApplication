@@ -95,7 +95,10 @@ class Test(
         }
     }
 
-
+    @Scheduled(
+        cron = "0 38 16 * * *",
+        zone = "Europe/Budapest"
+    )
     fun sellAllHolding(){
         scope.launch {
             val portfolio = portfolioService.getPortfolio(portfolioId)
@@ -120,14 +123,14 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 48 21 * * *",
+        cron = "0 37 16 * * *",
         zone = "Europe/Budapest"
     )
     fun buyHolding(){
         scope.launch {
             try {
                 val portfolio = portfolioService.getPortfolio(portfolioId)
-                val traderId = UUID.fromString("c9f713f5-d56a-48e0-904b-fef13118210c")
+                val traderId = UUID.fromString("d93f4ea1-4abb-42e0-a28b-648957b81388")
 
                 val trader = portfolio.traders.find { trader ->
                     traderId == trader.id
@@ -136,7 +139,7 @@ class Test(
                 val order = Order(
                     traderId = trader.id,
                     securityIdentifier = trader.securityIdentifier,
-                    signal = Order.Signal.Buy(amount = 1),
+                    signal = Order.Signal.Buy(amount = 3),
                     signalPrice = 433.0,
                 )
 

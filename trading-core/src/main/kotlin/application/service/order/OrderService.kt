@@ -90,8 +90,6 @@ class OrderService(
                     sellAllocations = signal.allocations,
                     averageFillPrice = event.averageFillPrice
                 )
-
-                orderRepository.clearOrderAllocation(order.id).getOrThrow()
             }
         }
 
@@ -108,5 +106,11 @@ class OrderService(
         ).getOrThrow()
 
         orderRepository.save(filledOrder).getOrThrow()
+
+        if (order.signal is Order.Signal.Sell) {
+            orderRepository
+                .clearOrderAllocation(order.id)
+                .getOrThrow()
+        }
     }
 }
