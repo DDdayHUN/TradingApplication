@@ -7,10 +7,9 @@ import data.repository.order.IOrderRepository
 import data.repository.order.sql.toBrokerOrder
 import domain.order.Order
 import domain.order.Order.Status
-import infrastructure.broker.OrderCancelledEvent
-import infrastructure.broker.OrderFilledEvent
-import infrastructure.broker.OrderSubmittedEvent
+import infrastructure.broker.IbkrEvent
 import jakarta.transaction.Transactional
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 @Service
@@ -52,7 +51,8 @@ class OrderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun handleOrderSubmitted(event: OrderSubmittedEvent) {
+    @EventListener
+    override suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
         orderRepository.save(order.submit().getOrThrow()).getOrThrow()
     }
@@ -60,7 +60,8 @@ class OrderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun handleOrderCancelled(event: OrderCancelledEvent) {
+    @EventListener
+    override suspend fun handle(event: IbkrEvent.OrderCancelledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
         if(order.status == Status.FILLED) return
 
@@ -70,7 +71,8 @@ class OrderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun handleOrderFilled(event: OrderFilledEvent) {
+    @EventListener
+    override suspend fun handle(event: IbkrEvent.OrderFilledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
         if(order.status == Status.FILLED) return
 
@@ -109,7 +111,7 @@ class OrderService(
 
         if (order.signal is Order.Signal.Sell) {
             orderRepository
-                .clearOrderAllocation(order.id)
+                .clearOrderAllocation(filledOrder.id)
                 .getOrThrow()
         }
     }

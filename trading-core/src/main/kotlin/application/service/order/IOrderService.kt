@@ -1,13 +1,11 @@
 package application.service.order
 
 import domain.order.Order
-import infrastructure.broker.OrderCancelledEvent
-import infrastructure.broker.OrderFilledEvent
-import infrastructure.broker.OrderSubmittedEvent
+import infrastructure.broker.IbkrEvent
 
 interface IOrderService {
     suspend fun submit(order: Order)
-    suspend fun handleOrderSubmitted(event: OrderSubmittedEvent)
-    suspend fun handleOrderCancelled(event: OrderCancelledEvent)
-    suspend fun handleOrderFilled(event: OrderFilledEvent)
+    suspend fun handle(event: IbkrEvent.OrderSubmittedEvent)
+    suspend fun handle(event: IbkrEvent.OrderCancelledEvent)
+    suspend fun handle(event: IbkrEvent.OrderFilledEvent)
 }

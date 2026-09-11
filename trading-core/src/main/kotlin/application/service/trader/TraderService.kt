@@ -132,11 +132,7 @@ class TraderService(
 
         val quote = getCurrentPrice(trader.securityIdentifier)
        // val quote = Quote(160.0)
-        val order = trader.createOrder(quote) ?: return null
-
-        portfolioService.save(portfolio)
-
-        return order
+       return trader.createOrder(quote)
     }
 
     //===========================================================//

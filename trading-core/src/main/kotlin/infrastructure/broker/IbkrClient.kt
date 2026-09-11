@@ -468,13 +468,13 @@ class IbkrClient(
 
         when(message.status){
             "Submitted" -> {
-                event.publishEvent(OrderSubmittedEvent(message.orderId))
+                event.publishEvent(IbkrEvent.OrderSubmittedEvent(message.orderId))
             }
             "Filled" -> {
-                event.publishEvent(OrderFilledEvent(message.orderId, message.filled, message.avgFillPrice))
+                event.publishEvent(IbkrEvent.OrderFilledEvent(message.orderId, message.filled, message.avgFillPrice))
             }
             "Cancelled" -> {
-                event.publishEvent(OrderCancelledEvent(message.orderId))
+                event.publishEvent(IbkrEvent.OrderCancelledEvent(message.orderId))
             }
         }
     }

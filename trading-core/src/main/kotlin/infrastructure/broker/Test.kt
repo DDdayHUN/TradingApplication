@@ -96,7 +96,7 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 38 16 * * *",
+        cron = "0 25 17 * * *",
         zone = "Europe/Budapest"
     )
     fun sellAllHolding(){
@@ -123,7 +123,7 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 37 16 * * *",
+        cron = "0 54 21 * * *",
         zone = "Europe/Budapest"
     )
     fun buyHolding(){
