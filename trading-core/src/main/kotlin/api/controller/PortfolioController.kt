@@ -16,7 +16,6 @@ import java.util.*
 @RequestMapping("/api/portfolio")
 class PortfolioController(
     private val portfolioService: IPortfolioService,
-    private val session: IAuthenticationService
 ) {
     //===========================================================//
     //===========================================================//
@@ -24,8 +23,7 @@ class PortfolioController(
 
     @GetMapping
     suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
-        val userId = session.currentUser().id
-        val response = portfolioService.getAllPortfolio(userId).map { portfolio ->
+        val response = portfolioService.getAllPortfolio().map { portfolio ->
             val summary = portfolioService.getAccountSummary(portfolio.id)
             portfolio.toResponse(
                 availableCapital = summary.availableCapital,
@@ -57,14 +55,12 @@ class PortfolioController(
 
     @PostMapping
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
-        val userId = session.currentUser().id
-        val portfolio = portfolioService.createPortfolio(userId)
+        val portfolio = portfolioService.createPortfolio()
         val summary = portfolioService.getAccountSummary(portfolio.id)
         val response = portfolio.toResponse(
             availableCapital = summary.availableCapital,
             liquidation = summary.netLiquidation
         )
-
 
         return ResponseEntity
             .status(HttpStatus.CREATED)

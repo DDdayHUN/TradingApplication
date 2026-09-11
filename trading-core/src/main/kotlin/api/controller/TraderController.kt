@@ -16,8 +16,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/portfolio/{portfolioId}/traders")
 class TraderController(
-    private val traderService: ITraderService,
-    private val session: IAuthenticationService
+    private val traderService: ITraderService
 ) {
     //===========================================================//
     //===========================================================//
@@ -34,7 +33,7 @@ class TraderController(
 
     @GetMapping("/{traderId}")
     suspend fun getTraderById(@PathVariable traderId: UUID, @PathVariable portfolioId: UUID): ResponseEntity<TraderResponse> {
-        val response = traderService.getById(portfolioId, traderId)
+        val response = traderService.getById(traderId)
             ?: throw TraderNotFoundException(traderId)
 
         return ResponseEntity.ok(response.toResponse())
@@ -45,8 +44,8 @@ class TraderController(
     // POST
     @PostMapping
     suspend fun createTrader(@PathVariable portfolioId: UUID, @RequestBody request: CreateTraderRequest): ResponseEntity<TraderResponse> {
-        val userId= session.currentUser().id
-        val response = traderService.createTrader(userId, portfolioId, request).toResponse()
+
+        val response = traderService.createTrader(portfolioId, request).toResponse()
 
         return ResponseEntity.ok(response)
     }

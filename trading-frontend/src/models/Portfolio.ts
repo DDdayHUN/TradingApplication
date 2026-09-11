@@ -2,6 +2,7 @@ import type {Trader} from "./Trader.ts";
 
 export default interface Portfolio {
     id: string;
-    capital: number;
+    availableCapital: number;
+    accountLiquidation: number;
     traders: Trader[];
 }

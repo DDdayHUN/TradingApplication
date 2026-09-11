@@ -4,6 +4,7 @@ import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import application.logging.logger
 import application.provider.MarketDataProvider
+import application.service.auth.IAuthenticationService
 import application.service.portfolio.IPortfolioService
 import data.network.finnhub.FinnhubConfig
 import data.repository.historical_data.IHistoricalMarketDataProvider
@@ -27,7 +28,7 @@ class TraderService(
     private val provider: IHistoricalMarketDataProvider,
     private val portfolioService: IPortfolioService,
     private val ibkrSession: IbkrSession,
-    private val finnhubConfig: FinnhubConfig,
+    private val finnhubConfig: FinnhubConfig
 ) : ITraderService {
 
     //===========================================================//
@@ -41,8 +42,8 @@ class TraderService(
     // Public Method(s)
 
     @Transactional
-    override suspend fun createTrader(userId: UUID, portfolioId: UUID, request: CreateTraderRequest): Trader {
-        val portfolio = portfolioService.getPortfolio(userId, portfolioId)
+    override suspend fun createTrader(portfolioId: UUID, request: CreateTraderRequest): Trader {
+        val portfolio = portfolioService.getPortfolio(portfolioId)
         val availableCapital = portfolioService.getAccountSummary(portfolioId).availableCapital
 
         require(request.capital <= availableCapital){
@@ -85,8 +86,8 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getById(portfolioId: UUID, traderId: UUID): Trader? {
-        val portfolio =  portfolioService.getPortfolio(portfolioId)
+    override suspend fun getById(traderId: UUID): Trader? {
+        val portfolio =  portfolioService.getPortfolioByTraderId(traderId)
 
         val trader = portfolio.traders.find { trader ->
             trader.id == traderId
@@ -98,8 +99,8 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun changeAlgorithm(portfolioId: UUID, traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader {
-        val portfolio = portfolioService.getPortfolio(portfolioId)
+    override suspend fun changeAlgorithm(traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader {
+        val portfolio = portfolioService.getPortfolioByTraderId(traderId)
         val trader = portfolio.traders.find {trader ->
             trader.id == traderId
         } ?: throw TraderNotFoundException(traderId)
@@ -122,8 +123,8 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun executeTrader(portfolioId: UUID, traderId: UUID): Order? {
-        val portfolio = portfolioService.getPortfolio(portfolioId)
+    override suspend fun executeTrader(traderId: UUID): Order? {
+        val portfolio = portfolioService.getPortfolioByTraderId(traderId)
 
         val trader = portfolio.traders.find {trader ->
             trader.id == traderId

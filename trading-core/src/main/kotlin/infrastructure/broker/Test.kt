@@ -8,18 +8,12 @@ import data.network.ibkr.backtest.BacktestDataService
 import domain.market.security.SecurityIdentifier
 import domain.order.Order
 import exception.api.TraderNotFoundException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.*
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.milliseconds
 
 @Deprecated("ONLY TESTING")
 @Component
@@ -53,7 +47,7 @@ class Test(
                 val jobs = portfolio.traders.map { trader ->
                     launch {
                         try {
-                            val order = traderService.executeTrader(portfolioId, trader.id)
+                            val order = traderService.executeTrader(trader.id)
 
                             logger.info(
                                 "Submitting trader={} order={}",
