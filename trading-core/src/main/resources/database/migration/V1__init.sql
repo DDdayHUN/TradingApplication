@@ -52,7 +52,7 @@ CREATE TABLE app_order(
             ON DELETE CASCADE
 );
 
-CREATE INDEX idx_oder_ibkr_order_id ON app_order (ibkr_order_id);
+CREATE INDEX idx_app_oder_ibkr_order_id ON app_order (ibkr_order_id);
 CREATE INDEX idx_app_order_trader_id ON app_order (trader_id);
 
 CREATE TABLE app_security_holding(

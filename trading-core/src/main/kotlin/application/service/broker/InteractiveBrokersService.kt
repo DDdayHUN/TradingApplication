@@ -5,6 +5,9 @@ import application.service.trader.ITraderService
 import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
+import data.repository.order.sql.InteractiveBrokersOrderRepository
+import data.repository.trader.ITraderRepository
+import data.repository.trader.sql.TraderRepository
 import domain.market.security.SecurityIdentifier
 import infrastructure.broker.IbkrAccountSummary
 import infrastructure.broker.IbkrHistoricalBar
@@ -17,7 +20,7 @@ import kotlin.time.Instant
 
 @Service
 class InteractiveBrokersService(
-    private val traderService: ITraderService,
+    private val traderRepository: ITraderRepository,
     private val session: InteractiveBrokersSession,
 ) {
     //===========================================================//
@@ -40,13 +43,6 @@ class InteractiveBrokersService(
             contract = clientContract,
             order = clientOrder
         )
-    }
-
-    //===========================================================//
-
-    suspend fun requestOrderStatus() {
-        val client = session.getClient()
-        client.requestOpenOrders()
     }
 
     //===========================================================//
@@ -116,7 +112,7 @@ class InteractiveBrokersService(
     // Private Method(s)
 
     private suspend fun createStockContract(order: InteractiveBrokersOrder): Contract {
-        val securityIdentifier = traderService.getById(order.traderId).securityIdentifier
+        val securityIdentifier = traderRepository.getById(order.traderId).getOrThrow().securityIdentifier
 
         return Contract().apply {
             symbol(securityIdentifier.tickerSymbol)
