@@ -1,7 +1,7 @@
 package application.service.portfolio
 
 import application.service.auth.IAuthenticationService
-import application.service.broker.IBrokerService
+import application.service.broker.InteractiveBrokersService
 import domain.Portfolio
 import data.repository.portfolio.IPortfolioRepository
 import infrastructure.broker.IbkrAccountSummary
@@ -13,7 +13,7 @@ import java.util.UUID
 class PortfolioService(
     private val session: IAuthenticationService,
     private val portfolioRepository: IPortfolioRepository,
-    private val ibkrService: IBrokerService
+    private val ibkrService: InteractiveBrokersService
 ) : IPortfolioService {
     //===========================================================//
     //===========================================================//

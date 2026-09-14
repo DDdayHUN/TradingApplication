@@ -3,10 +3,10 @@ package data.network.ibkr
 import data.network.IMarketDataProvider
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
-import infrastructure.broker.IbkrSession
+import infrastructure.broker.InteractiveBrokersSession
 
 class IbkrMarketDataProvider(
-    private val session: IbkrSession
+    private val session: InteractiveBrokersSession
 ): IMarketDataProvider {
     override suspend fun getQuote(identifier: SecurityIdentifier): Result<Quote> {
         return runCatching {

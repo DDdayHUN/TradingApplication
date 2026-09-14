@@ -1,13 +1,15 @@
 package infrastructure.broker
 
 import application.logging.logger
-import application.service.order.IOrderService
 import application.service.portfolio.IPortfolioService
 import application.service.trader.ITraderService
 import data.network.ibkr.backtest.BacktestDataService
 import domain.market.security.SecurityIdentifier
-import domain.order.Order
-import exception.api.TraderNotFoundException
+import application.service.broker.InteractiveBrokersOrder
+import application.service.broker.InteractiveBrokersOrderService
+import application.service.broker.toInteractiveBrokersOrder
+import domain.algorithm.TradingAlgorithm
+import domain.trader.TradingOrder
 import kotlinx.coroutines.*
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -18,20 +20,14 @@ import kotlin.time.Duration.Companion.days
 @Deprecated("ONLY TESTING")
 @Component
 class Test(
-    private val orderService: IOrderService,
+    private val orderService: InteractiveBrokersOrderService,
     private val traderService: ITraderService,
     private val portfolioService: IPortfolioService,
     private val backtestDataService: BacktestDataService
 ) {
-
     private val logger = logger<Test>()
-    private val scope = CoroutineScope(
-        SupervisorJob() + Dispatchers.IO
-    )
-
-    private val portfolioId =
-        UUID.fromString("07cd85e1-8e40-4fe7-ba4a-8959344b9259")
-
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val portfolioId = UUID.fromString("07cd85e1-8e40-4fe7-ba4a-8959344b9259")
 
     @Scheduled(
         cron = "*/4 * * * * *",
@@ -40,9 +36,7 @@ class Test(
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-
-                val portfolio =
-                    portfolioService.getPortfolio(portfolioId)
+                val portfolio = portfolioService.getPortfolio(portfolioId)
 
                 val orders = coroutineScope {
                     portfolio.traders.map { trader ->
@@ -71,7 +65,7 @@ class Test(
 
                 orders
                     .filterNotNull()
-                    .forEach{ order ->
+                    .forEach { order ->
                         orderService.submit(order)
                     }
 
@@ -132,11 +126,10 @@ class Test(
                 val portfolio = portfolioService.getPortfolio(portfolioId)
 
                 portfolio.traders.forEach { trader ->
-                        val order = Order(
+                        val order = TradingOrder(
                             traderId = trader.id,
-                            securityIdentifier = trader.securityIdentifier,
-                            signal = Order.Signal.Buy(amount = 3),
-                            signalPrice = 433.0,
+                            signal = TradingAlgorithm.Output(TradingAlgorithm.Output.Buy(amount = 3), null),
+                            atPrice = 433.0,
                         )
                         orderService.submit(order)
                 }

@@ -1,50 +1,46 @@
-package application.service.order
+package application.service.broker
 
 import application.logging.logger
-import application.service.broker.IBrokerService
 import application.service.trader.ITraderService
-import data.repository.order.IOrderRepository
-import data.repository.order.sql.toBrokerOrder
-import domain.order.Order
-import domain.order.Order.Status
+import data.repository.order.sql.InteractiveBrokersOrderRepository
+import domain.trader.TradingOrder
 import infrastructure.broker.IbkrEvent
 import jakarta.transaction.Transactional
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 @Service
-class OrderService(
-    private val ibkrService: IBrokerService,
-    private val orderRepository: IOrderRepository,
+class InteractiveBrokersOrderService(
+    private val brokerService: InteractiveBrokersService,
+    private val orderRepository: InteractiveBrokersOrderRepository,
     private val traderService: ITraderService,
-) : IOrderService {
+) {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private val logger = logger<OrderService>()
+    private val logger = logger<InteractiveBrokersOrderService>()
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun submit(order: Order) {
+    suspend fun submit(order: TradingOrder) {
+        val persistedOrders = order.toInteractiveBrokersOrder(brokerService)
 
-        val ibkrOrderId = ibkrService.reserveOrderId()
+        persistedOrders.forEach { order ->
+            orderRepository.save(order).getOrThrow()
+        }
 
-        val persistedOrder = order.withIbkrOrderId(
-            ibkrOrderId = ibkrOrderId,
-        )
-
-        orderRepository.create(persistedOrder).getOrThrow()
-
-        try {
-            ibkrService.placeOrder( ibkrOrderId, order.toBrokerOrder())
-        } catch(e: Exception){
-            orderRepository.save(persistedOrder.copy(
-                status = Status.CANCELLED
-            )).getOrThrow()
-            throw e
+        persistedOrders.forEach { order ->
+            try {
+                brokerService.placeOrder(order)
+            } catch(e: Exception){
+                orderRepository.save(order.copy(
+                    status = InteractiveBrokersOrder.Status.CANCELLED
+                )).getOrThrow()
+                throw e
+            }
         }
     }
 
@@ -52,9 +48,9 @@ class OrderService(
 
     @Transactional
     @EventListener
-    override suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
+    suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status != Status.PENDING) return
+        if(order.status != InteractiveBrokersOrder.Status.PENDING) return
         orderRepository.save(order.submit().getOrThrow()).getOrThrow()
     }
 
@@ -62,9 +58,9 @@ class OrderService(
 
     @Transactional
     @EventListener
-    override suspend fun handle(event: IbkrEvent.OrderCancelledEvent) {
+    suspend fun handle(event: IbkrEvent.OrderCancelledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status == Status.FILLED) return
+        if(order.status == InteractiveBrokersOrder.Status.FILLED) return
 
         orderRepository.save(order.cancel().getOrThrow()).getOrThrow()
     }
@@ -73,13 +69,13 @@ class OrderService(
 
     @Transactional
     @EventListener
-    override suspend fun handle(event: IbkrEvent.OrderFilledEvent) {
+    suspend fun handle(event: IbkrEvent.OrderFilledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status == Status.FILLED) return
+        if(order.status == InteractiveBrokersOrder.Status.FILLED) return
 
         when (val signal = order.signal) {
 
-            is Order.Signal.Buy -> {
+            is InteractiveBrokersOrder.Signal.Buy -> {
                 traderService.applyBuyFill(
                     traderId = order.traderId,
                     filledQuantity = event.filled.toInt(),
@@ -87,7 +83,7 @@ class OrderService(
                 )
             }
 
-            is Order.Signal.Sell -> {
+            is InteractiveBrokersOrder.Signal.Sell -> {
                 traderService.applySellFill(
                     traderId = order.traderId,
                     sellAllocations = signal.allocations,
@@ -110,7 +106,7 @@ class OrderService(
 
         orderRepository.save(filledOrder).getOrThrow()
 
-        if (order.signal is Order.Signal.Sell) {
+        if (order.signal is InteractiveBrokersOrder.Signal.Sell) {
             orderRepository
                 .clearOrderAllocation(filledOrder.id)
                 .getOrThrow()

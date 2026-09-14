@@ -3,18 +3,18 @@ package domain.utils
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-/*===========================================================*/
-/*===========================================================*/
+//===========================================================//
+//===========================================================//
 
 object Math {
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Constant(s)
 
     private const val TRADING_DAYS: Int = 252
 
-    /*===========================================================*/
-    /*===========================================================*/
+    //===========================================================//
+    //===========================================================//
     // Public Method(es)
     /**
      * Computes the standard deviation of returns derived from a price series.
@@ -41,7 +41,7 @@ object Math {
         return sqrt(returnsList.variance())
     }
 
-    /*===========================================================*/
+    //===========================================================//
     /**
      * Computes the sample variance of a list of numeric values.
      * 
@@ -61,7 +61,8 @@ object Math {
         return variance / (this.size - 1)
     }
 
-    /*===========================================================*/ /*
+    //===========================================================//
+    /*
      * Special cases:
      *   If there are no gains, RSI = 0.
      *   If there are no losses, RSI = 100.
@@ -107,6 +108,7 @@ object Math {
         return 100.0 - (100.0 / (1.0 + rs))
     }
 
+    //===========================================================//
     /**
      * Computes Wilder's Relative Strength Index (RSI).
      *
@@ -119,9 +121,7 @@ object Math {
      */
     fun List<Double>.wilderRsi(period: Int = 14): Double {
         require(period > 0) { "Period must be positive" }
-        require(size >= period + 1) {
-            "Need at least ${period + 1} prices for RSI($period)"
-        }
+        require(size >= period + 1) { "Need at least ${period + 1} prices for RSI($period)" }
 
         var totalGain = 0.0
         var totalLoss = 0.0
@@ -159,7 +159,7 @@ object Math {
         return 100.0 - (100.0 / (1.0 + rs))
     }
 
-    /*===========================================================*/
+    //===========================================================//
     /**
      * Computes the annualized Sharpe Ratio for a portfolio's capital history.
      * 
@@ -191,7 +191,7 @@ object Math {
         return (meanReturn * TRADING_DAYS - riskFreeRate) / (stdDev * sqrt(TRADING_DAYS.toDouble()))
     }
 
-    /*===========================================================*/
+    //===========================================================//
     /**
      * Returns the median value of the list.
      *
@@ -210,7 +210,7 @@ object Math {
         else sorted[middle]
     }
 
-    /*===========================================================*/
+    //===========================================================//
     /**
      * Removes a percentage of values from both ends of the list.
      *
@@ -234,7 +234,7 @@ object Math {
             .dropLast(removeCount)
     }
 
-    /*===========================================================*/
+    //===========================================================//
     /**
      * Returns the bottom percentage of values in the list.
      *
@@ -253,7 +253,7 @@ object Math {
         return sorted.take(removeCount)
     }
 
-    /*===========================================================*/
+    //===========================================================//
     /**
      * Returns the top percentage of values in the list.
      *

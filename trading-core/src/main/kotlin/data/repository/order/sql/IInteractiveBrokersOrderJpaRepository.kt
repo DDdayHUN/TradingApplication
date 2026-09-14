@@ -8,9 +8,9 @@ import org.springframework.data.repository.query.Param
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
-interface IOrderJpaRepository : JpaRepository<OrderEntity, UUID> {
+interface IInteractiveBrokersOrderJpaRepository : JpaRepository<InteractiveBrokersOrderEntity, UUID> {
     @EntityGraph(attributePaths = ["sellAllocations"])
-    fun findByIbkrOrderId(ibkrOrderId: Int): OrderEntity?
+    fun findByIbkrOrderId(ibkrOrderId: Int): InteractiveBrokersOrderEntity?
 
     @Modifying(
         flushAutomatically = true,

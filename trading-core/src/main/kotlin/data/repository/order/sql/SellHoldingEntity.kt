@@ -5,7 +5,7 @@ import java.util.*
 
 @Entity
 @Table(name = "app_order_sell_allocation")
-class SellAllocationEntity(
+class SellHoldingEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -13,7 +13,7 @@ class SellAllocationEntity(
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
-    var order: OrderEntity,
+    var order: InteractiveBrokersOrderEntity,
 
     @Column(name = "holding_id", nullable = false)
     var holdingId : UUID,

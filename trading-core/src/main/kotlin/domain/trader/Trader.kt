@@ -1,12 +1,10 @@
 package domain.trader
 
 import domain.algorithm.ITradingAlgorithm
-import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
-import domain.order.Order
-import infrastructure.broker.SellAllocation
+import application.service.broker.InteractiveBrokersOrder
 import java.util.*
 
 //===========================================================//
@@ -42,37 +40,16 @@ class Trader {
     //===========================================================//
     //===========================================================//
     // Public Method(es)
-    fun createOrder(quote: Quote): Order? {
+
+    fun createOrder(quote: Quote): TradingOrder {
         val currentPrice = quote.currentPrice
         val output = algorithm.run(holdings, capital, currentPrice)
 
-        return Order.fromAlgorithm(
+        return TradingOrder(
             traderId = id,
-            securityIdentifier = securityIdentifier,
-            output = output,
+            signal = output,
             atPrice = currentPrice
         )
-    }
-
-    //===========================================================//
-    /**
-     * Applies a successfully executed order.
-     *
-     * This method should only be called after the trading data.service has confirmed
-     * that the buy order was executed successfully.
-     *
-     * @param order the order that has been accepted and should be finalized.
-     */
-    @Deprecated("Will be removed in the future")
-    fun finalizeOrder(order: TradingOrder) {
-        if(order.buy != null) buy(order.atPrice, order.buy.amount)
-        if(order.sell != null) {
-            order.sell.batches.forEach{ batch ->
-                val holding = batch.first
-                val amountToSell = batch.second
-                sell(holding, order.atPrice, amountToSell)
-            }
-        }
     }
 
     //===========================================================//
@@ -86,21 +63,15 @@ class Trader {
 
     //===========================================================//
 
-    fun applySellFill(
-        price: Double,
-        allocations: List<SellAllocation>
-    ) {
-        allocations.forEach { allocation ->
-            val holding = m_Holdings.find {
-                it.id == allocation.holdingId
-            } ?: throw IllegalStateException(
-                "Holding ${allocation.holdingId} not found"
-            )
+    fun applySellFill(price: Double, holdingsToSell: Set<SellHolding>) {
+        holdingsToSell.forEach { item ->
+            val holding = m_Holdings.find { it.id == item.id }
+                ?: throw IllegalStateException("Holding ${item.id} not found")
 
             sell(
                 holding = holding,
                 price = price,
-                amount = allocation.amount
+                amount = item.amount
             )
         }
     }

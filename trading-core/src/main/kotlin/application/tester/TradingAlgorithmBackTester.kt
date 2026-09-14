@@ -123,30 +123,16 @@ class TradingAlgorithmBackTester {
             maxDrawdown = max(maxDrawdown, drawdown)
         }
 
-        val winningReturns =
-            m_TradeReturns.filter { it > 0.0 }
-
-        val losingReturns =
-            m_TradeReturns.filter { it < 0.0 }
+        val winningReturns = m_TradeReturns.filter { it > 0.0 }
+        val losingReturns = m_TradeReturns.filter { it < 0.0 }
 
         val averageWin =
-            if (winningReturns.isEmpty())
-                0.0
-            else
-                winningReturns.average()
+            if (winningReturns.isEmpty()) 0.0
+            else winningReturns.average()
 
         val averageLoss =
-            if (losingReturns.isEmpty())
-                0.0
-            else
-                losingReturns.average()
-
-        val profitFactor =
-            if (losingReturns.isEmpty())
-                Double.POSITIVE_INFINITY
-            else
-                winningReturns.sum() /
-                        -losingReturns.sum()
+            if (losingReturns.isEmpty()) 0.0
+            else losingReturns.average()
 
         return Output(
             m_TradingAlgorithmType,
@@ -166,7 +152,6 @@ class TradingAlgorithmBackTester {
             tradingOrders = m_TradingOrders.toList(),
             averageWin = averageWin,
             averageLoss = averageLoss,
-            profitFactor = profitFactor,
         )
     }
 
@@ -178,11 +163,8 @@ class TradingAlgorithmBackTester {
         m_TradingOrders.add(
             TradingOrder(
                 traderId = UUID.randomUUID(),
-                securityIdentifier = m_SecurityIdentifier,
-                buy = ret.buy,
-                sell = ret.sell,
+                signal = ret,
                 atPrice = currentPrice,
-                createdAt = java.time.Instant.now(),
             )
         )
 
@@ -202,15 +184,12 @@ class TradingAlgorithmBackTester {
                 val bought = item.first
                 val amount = item.second
 
-                val tradeReturn =
-                    (currentPrice - bought.purchasePrice) /
-                            bought.purchasePrice
-
-                m_TradeReturns.add(tradeReturn)
-
                 check(amount <= bought.amount) { "Sell Amount" }
 
                 m_Holdings.remove(bought)
+
+                val tradeReturn = (currentPrice - bought.purchasePrice) / bought.purchasePrice
+                m_TradeReturns.add(tradeReturn)
 
                 if (m_Taxation == null) m_CurrentCapital += amount * currentPrice
                 else {
@@ -240,12 +219,11 @@ class TradingAlgorithmBackTester {
 
     private fun forceSell() {
         val lastPrice = m_HistoryWeRunAgainst.last().closingPrice
-        for(holding in m_Holdings) {
-            val tradeReturn =
-                (lastPrice - holding.purchasePrice) /
-                        holding.purchasePrice
 
+        for(holding in m_Holdings) {
+            val tradeReturn = (lastPrice - holding.purchasePrice) / holding.purchasePrice
             m_TradeReturns.add(tradeReturn)
+
             if (m_Taxation == null) m_CurrentCapital += holding.amount * lastPrice
             else {
                 val revenue = holding.amount * lastPrice
@@ -319,7 +297,6 @@ class TradingAlgorithmBackTester {
 
         val averageWin: Double,
         val averageLoss: Double,
-        val profitFactor: Double,
 
         val stockHistory: List<SecurityHistory>,
         val tradingOrders: List<TradingOrder>
@@ -366,7 +343,6 @@ class TradingAlgorithmBackTester {
             println("| ${"Calmar Ratio".padEnd(padding)} | ${calmar.format(2).padStart(padding)} |")
             println("| ${"Average Win".padEnd(padding)} | ${((averageWin * 100.0).format(2) + "%").padStart(padding)} |")
             println("| ${"Average Loss".padEnd(padding)} | ${((averageLoss * 100.0).format(2) + "%").padStart(padding)} |")
-            println("| ${"Profit Factor".padEnd(padding)} | ${profitFactor.format(2).padStart(padding)} |")
             println()
         }
     }

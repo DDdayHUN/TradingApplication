@@ -5,19 +5,13 @@ import data.network.finnhub.FinnhubConfig
 import data.network.finnhub.FinnhubMarketDataProvider
 import data.network.ibkr.IbkrMarketDataProvider
 import data.network.IMarketDataProvider
-import infrastructure.broker.IbkrSession
+import infrastructure.broker.InteractiveBrokersSession
 
 object MarketDataProvider {
     fun create(type: Type): IMarketDataProvider {
         return when (type) {
-            is Type.Finnhub -> {
-                FinnhubMarketDataProvider(FinnhubClient(
-                    m_Config = type.finnhubConfig
-                ))
-            }
-            is Type.Ibkr -> {
-                IbkrMarketDataProvider(type.session)
-            }
+            is Type.Finnhub -> FinnhubMarketDataProvider(FinnhubClient(m_Config = type.finnhubConfig))
+            is Type.Ibkr -> IbkrMarketDataProvider(type.session)
         }
     }
 
@@ -26,11 +20,7 @@ object MarketDataProvider {
     // Helper Class(es)
 
     sealed interface Type {
-        data class Finnhub(
-            val finnhubConfig: FinnhubConfig
-        ): Type
-        data class Ibkr(
-            val session: IbkrSession
-        ): Type
+        data class Finnhub(val finnhubConfig: FinnhubConfig): Type
+        data class Ibkr(val session: InteractiveBrokersSession): Type
     }
 }

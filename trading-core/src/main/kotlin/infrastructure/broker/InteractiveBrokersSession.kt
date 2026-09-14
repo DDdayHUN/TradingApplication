@@ -12,7 +12,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
 @Component
-class IbkrSession(
+class InteractiveBrokersSession(
     private val client: IbkrClient,
     private val config: IbkrConfig
 ) {
@@ -20,16 +20,12 @@ class IbkrSession(
     //===========================================================//
     // Private Field(s)
 
-    private val logger = logger<IbkrSession>()
-    private val scope = CoroutineScope(
-        SupervisorJob() + Dispatchers.IO
-    )
+    private val logger = logger<InteractiveBrokersSession>()
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
-
-    //===========================================================//
 
     suspend fun getClient(): IbkrClient {
         connect()
