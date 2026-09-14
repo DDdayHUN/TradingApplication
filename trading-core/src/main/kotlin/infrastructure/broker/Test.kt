@@ -34,7 +34,7 @@ class Test(
 
 
     @Scheduled(
-        cron = "0 15 19 * * *",
+        cron = "*/4 * * * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {

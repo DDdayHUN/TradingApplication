@@ -116,13 +116,16 @@ class TraderService(
 
     //===========================================================//
 
-    @Transactional(readOnly = true)
+    @Transactional
     override suspend fun executeTrader(traderId: UUID): Order? {
         val trader = traderRepository.getById(traderId).getOrThrow()
 
         val quote = getCurrentPrice(trader.securityIdentifier)
-       // val quote = Quote(160.0)
-       return trader.createOrder(quote)
+        //val quote = Quote(540.0)
+        val order = trader.createOrder(quote)
+
+        traderRepository.save(trader).getOrThrow()
+        return order
     }
 
     //===========================================================//

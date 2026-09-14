@@ -54,6 +54,7 @@ class OrderService(
     @EventListener
     override suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
+        if(order.status != Status.PENDING) return
         orderRepository.save(order.submit().getOrThrow()).getOrThrow()
     }
 
