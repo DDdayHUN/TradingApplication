@@ -19,8 +19,5 @@ ALTER TABLE app_order
     ALTER COLUMN security_ticker SET NOT NULL,
     ALTER COLUMN security_currency SET NOT NULL;
 
-ALTER TABLE app_order
-    ADD COLUMN sell_allocations JSONB;
-
 ALTER INDEX idx_oder_ibkr_order_id
     RENAME TO idx_app_order_ibkr_order_id;

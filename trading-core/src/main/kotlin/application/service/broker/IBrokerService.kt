@@ -9,6 +9,6 @@ interface IBrokerService {
     suspend fun placeOrder(orderId: Int, request: BrokerOrderRequest): Int
     suspend fun requestOrderStatus()
     suspend fun getAccountSummary(): IbkrAccountSummary
-    suspend fun getNextOrderId(): Int
+    suspend fun reserveOrderId(): Int
     suspend fun getHistoricalData(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar>
 }

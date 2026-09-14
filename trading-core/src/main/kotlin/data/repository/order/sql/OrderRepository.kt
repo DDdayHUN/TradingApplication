@@ -60,10 +60,7 @@ class OrderRepository(
     @Transactional
     override suspend fun clearOrderAllocation(orderId: UUID): Result<Unit> {
         return runCatching {
-            val order = orderRepository.findWithSellAllocationsById(orderId)?:
-            throw IllegalArgumentException("Order not found with Id: ${orderId}")
-
-            order.sellAllocations.clear()
+            orderRepository.deleteSellAllocationsByOrderId(orderId)
         }
     }
 }

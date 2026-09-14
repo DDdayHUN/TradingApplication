@@ -30,7 +30,7 @@ class OrderService(
 
     override suspend fun submit(order: Order) {
 
-        val ibkrOrderId = ibkrService.getNextOrderId()
+        val ibkrOrderId = ibkrService.reserveOrderId()
 
         val persistedOrder = order.withIbkrOrderId(
             ibkrOrderId = ibkrOrderId,
@@ -39,7 +39,7 @@ class OrderService(
         orderRepository.create(persistedOrder).getOrThrow()
 
         try {
-            ibkrService.placeOrder(ibkrOrderId, order.toBrokerOrder())
+            ibkrService.placeOrder( ibkrOrderId, order.toBrokerOrder())
         } catch(e: Exception){
             orderRepository.save(persistedOrder.copy(
                 status = Status.CANCELLED

@@ -3,7 +3,7 @@ package data.repository.order.sql
 import application.service.broker.BrokerOrderRequest
 import data.repository.security.SecurityIdentifierEntity
 import data.repository.security.toDomain
-import data.repository.trader.TraderEntity
+import data.repository.trader.sql.TraderEntity
 import domain.order.Order
 import domain.order.Order.OrderAction
 import domain.order.Order.Status
@@ -94,7 +94,7 @@ fun Order.toEntity(trader: TraderEntity): OrderEntity {
 
     val entity = OrderEntity(
         id = id,
-        ibkrOrderId = ibkrOrderId,
+        ibkrOrderId = brokerOrderId,
         trader = trader,
         securityIdentifier = trader.securityIdentifier,
         action = action,
@@ -141,7 +141,7 @@ fun OrderEntity.toDomain(): Order {
 
     return Order(
         id = id,
-        ibkrOrderId = ibkrOrderId,
+        brokerOrderId = ibkrOrderId,
         traderId = trader.id,
         securityIdentifier = securityIdentifier.toDomain(),
         signal = signal,

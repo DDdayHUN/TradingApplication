@@ -1,4 +1,4 @@
-package data.repository.trader
+package data.repository.trader.sql
 
 import com.google.gson.Gson
 import data.repository.portfolio.sql.PortfolioEntity
@@ -119,4 +119,40 @@ fun TraderEntity.toDomain(gson: Gson = Gson()): Trader {
         allocatedCapital = capital,
         algorithm = algorithm
     )
+}
+
+fun TraderEntity.updateFrom(trader: Trader, gson: Gson = Gson()) {
+    securityIdentifier = trader.securityIdentifier.toEntity()
+    capital = trader.capital
+
+    algorithmType = ITradingAlgorithm.typeTagOf(trader.algorithm)
+    algorithmState = gson.toJson(
+        trader.algorithm,
+        ITradingAlgorithm::class.java
+    )
+
+    val domainHoldings = trader.holdings.associateBy { holding -> holding.id }
+
+    holdings.removeIf {holding->
+        holding.id !in domainHoldings
+    }
+
+    holdings.forEach { holding ->
+        val domainHolding = domainHoldings[holding.id] ?: return@forEach
+        holding.entryPrice = domainHolding.purchasePrice
+        holding.amount = domainHolding.amount
+        holding.timestamp = domainHolding.timestamp
+    }
+
+    val existingHoldingIds = holdings
+        .map { it.id }
+        .toSet()
+
+    trader.holdings
+        .filter { it.id !in existingHoldingIds }
+        .forEach { holding ->
+            addHolding(
+                holding.toEntity(this)
+            )
+        }
 }

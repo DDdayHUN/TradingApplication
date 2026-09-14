@@ -8,7 +8,7 @@ import java.util.*
 
 data class Order(
     val id: UUID = UUID.randomUUID(),
-    val ibkrOrderId: Int? = null,
+    val brokerOrderId: Int? = null,
 
     val traderId: UUID,
     val securityIdentifier: SecurityIdentifier,
@@ -30,7 +30,7 @@ data class Order(
 
     fun withIbkrOrderId(ibkrOrderId: Int): Order {
         return copy(
-            ibkrOrderId = ibkrOrderId
+            brokerOrderId = ibkrOrderId
         )
     }
 
