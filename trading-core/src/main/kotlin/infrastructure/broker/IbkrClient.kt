@@ -249,7 +249,7 @@ class IbkrClient(
             contract,
             endDateTime,
             "1 W",
-            "10 mins",
+            "1 Day",
             "TRADES",
             1,
             1,

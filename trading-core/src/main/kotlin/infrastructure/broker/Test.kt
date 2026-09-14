@@ -27,10 +27,10 @@ class Test(
 ) {
     private val logger = logger<Test>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val portfolioId = UUID.fromString("07cd85e1-8e40-4fe7-ba4a-8959344b9259")
+    private val portfolioId = UUID.fromString("19dc426c-14b2-4cd9-9707-cd803a457f1d")
 
     @Scheduled(
-        cron = "*/4 * * * * *",
+        cron = "0 0 0 * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {
@@ -79,12 +79,15 @@ class Test(
             }
         }
     }
-
+    @Scheduled(
+        cron = "0 51  0 * * *",
+        zone = "Europe/Budapest"
+    )
     fun getHistoricalData(){
         scope.launch {
             val identifier = SecurityIdentifier(
-                isin = "US0378331005",
-                tickerSymbol = "AAPL",
+                isin = "US02079K3059",
+                tickerSymbol = "GOOGL",
                 currency = "USD",
             )
 

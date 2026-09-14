@@ -1,0 +1,1025 @@
+{
+  "isin" : "US02079K3059",
+  "list": [
+    {
+      "timestamp": "20250909",
+      "price": 239.63
+    },
+    {
+      "timestamp": "20250910",
+      "price": 239.17
+    },
+    {
+      "timestamp": "20250911",
+      "price": 240.37
+    },
+    {
+      "timestamp": "20250912",
+      "price": 240.8
+    },
+    {
+      "timestamp": "20250915",
+      "price": 251.61
+    },
+    {
+      "timestamp": "20250916",
+      "price": 251.16
+    },
+    {
+      "timestamp": "20250917",
+      "price": 249.53
+    },
+    {
+      "timestamp": "20250918",
+      "price": 252.03
+    },
+    {
+      "timestamp": "20250919",
+      "price": 254.72
+    },
+    {
+      "timestamp": "20250922",
+      "price": 252.53
+    },
+    {
+      "timestamp": "20250923",
+      "price": 251.66
+    },
+    {
+      "timestamp": "20250924",
+      "price": 247.14
+    },
+    {
+      "timestamp": "20250925",
+      "price": 245.79
+    },
+    {
+      "timestamp": "20250926",
+      "price": 246.54
+    },
+    {
+      "timestamp": "20250929",
+      "price": 244.05
+    },
+    {
+      "timestamp": "20250930",
+      "price": 243.1
+    },
+    {
+      "timestamp": "20251001",
+      "price": 244.9
+    },
+    {
+      "timestamp": "20251002",
+      "price": 245.69
+    },
+    {
+      "timestamp": "20251003",
+      "price": 245.35
+    },
+    {
+      "timestamp": "20251006",
+      "price": 250.43
+    },
+    {
+      "timestamp": "20251007",
+      "price": 245.76
+    },
+    {
+      "timestamp": "20251008",
+      "price": 244.62
+    },
+    {
+      "timestamp": "20251009",
+      "price": 241.53
+    },
+    {
+      "timestamp": "20251010",
+      "price": 236.57
+    },
+    {
+      "timestamp": "20251013",
+      "price": 244.15
+    },
+    {
+      "timestamp": "20251014",
+      "price": 245.45
+    },
+    {
+      "timestamp": "20251015",
+      "price": 251.03
+    },
+    {
+      "timestamp": "20251016",
+      "price": 251.46
+    },
+    {
+      "timestamp": "20251017",
+      "price": 253.3
+    },
+    {
+      "timestamp": "20251020",
+      "price": 256.55
+    },
+    {
+      "timestamp": "20251021",
+      "price": 250.46
+    },
+    {
+      "timestamp": "20251022",
+      "price": 251.69
+    },
+    {
+      "timestamp": "20251023",
+      "price": 253.08
+    },
+    {
+      "timestamp": "20251024",
+      "price": 259.92
+    },
+    {
+      "timestamp": "20251027",
+      "price": 269.27
+    },
+    {
+      "timestamp": "20251028",
+      "price": 267.47
+    },
+    {
+      "timestamp": "20251029",
+      "price": 274.57
+    },
+    {
+      "timestamp": "20251030",
+      "price": 281.48
+    },
+    {
+      "timestamp": "20251031",
+      "price": 281.19
+    },
+    {
+      "timestamp": "20251103",
+      "price": 283.72
+    },
+    {
+      "timestamp": "20251104",
+      "price": 277.54
+    },
+    {
+      "timestamp": "20251105",
+      "price": 284.31
+    },
+    {
+      "timestamp": "20251106",
+      "price": 284.75
+    },
+    {
+      "timestamp": "20251107",
+      "price": 278.83
+    },
+    {
+      "timestamp": "20251110",
+      "price": 290.1
+    },
+    {
+      "timestamp": "20251111",
+      "price": 291.31
+    },
+    {
+      "timestamp": "20251112",
+      "price": 286.71
+    },
+    {
+      "timestamp": "20251113",
+      "price": 278.57
+    },
+    {
+      "timestamp": "20251114",
+      "price": 276.41
+    },
+    {
+      "timestamp": "20251117",
+      "price": 285.02
+    },
+    {
+      "timestamp": "20251118",
+      "price": 284.28
+    },
+    {
+      "timestamp": "20251119",
+      "price": 292.81
+    },
+    {
+      "timestamp": "20251120",
+      "price": 289.45
+    },
+    {
+      "timestamp": "20251121",
+      "price": 299.66
+    },
+    {
+      "timestamp": "20251124",
+      "price": 318.58
+    },
+    {
+      "timestamp": "20251125",
+      "price": 323.44
+    },
+    {
+      "timestamp": "20251126",
+      "price": 319.95
+    },
+    {
+      "timestamp": "20251128",
+      "price": 320.18
+    },
+    {
+      "timestamp": "20251201",
+      "price": 314.89
+    },
+    {
+      "timestamp": "20251202",
+      "price": 315.81
+    },
+    {
+      "timestamp": "20251203",
+      "price": 319.63
+    },
+    {
+      "timestamp": "20251204",
+      "price": 317.62
+    },
+    {
+      "timestamp": "20251205",
+      "price": 321.27
+    },
+    {
+      "timestamp": "20251208",
+      "price": 313.72
+    },
+    {
+      "timestamp": "20251209",
+      "price": 317.08
+    },
+    {
+      "timestamp": "20251210",
+      "price": 320.21
+    },
+    {
+      "timestamp": "20251211",
+      "price": 312.43
+    },
+    {
+      "timestamp": "20251212",
+      "price": 309.29
+    },
+    {
+      "timestamp": "20251215",
+      "price": 308.22
+    },
+    {
+      "timestamp": "20251216",
+      "price": 306.57
+    },
+    {
+      "timestamp": "20251217",
+      "price": 296.72
+    },
+    {
+      "timestamp": "20251218",
+      "price": 302.46
+    },
+    {
+      "timestamp": "20251219",
+      "price": 307.16
+    },
+    {
+      "timestamp": "20251222",
+      "price": 309.78
+    },
+    {
+      "timestamp": "20251223",
+      "price": 314.35
+    },
+    {
+      "timestamp": "20251224",
+      "price": 314.09
+    },
+    {
+      "timestamp": "20251226",
+      "price": 313.51
+    },
+    {
+      "timestamp": "20251229",
+      "price": 313.56
+    },
+    {
+      "timestamp": "20251230",
+      "price": 313.85
+    },
+    {
+      "timestamp": "20251231",
+      "price": 313.0
+    },
+    {
+      "timestamp": "20260102",
+      "price": 315.15
+    },
+    {
+      "timestamp": "20260105",
+      "price": 316.54
+    },
+    {
+      "timestamp": "20260106",
+      "price": 314.34
+    },
+    {
+      "timestamp": "20260107",
+      "price": 321.98
+    },
+    {
+      "timestamp": "20260108",
+      "price": 325.44
+    },
+    {
+      "timestamp": "20260109",
+      "price": 328.57
+    },
+    {
+      "timestamp": "20260112",
+      "price": 331.86
+    },
+    {
+      "timestamp": "20260113",
+      "price": 335.97
+    },
+    {
+      "timestamp": "20260114",
+      "price": 335.84
+    },
+    {
+      "timestamp": "20260115",
+      "price": 332.78
+    },
+    {
+      "timestamp": "20260116",
+      "price": 330.0
+    },
+    {
+      "timestamp": "20260120",
+      "price": 322.0
+    },
+    {
+      "timestamp": "20260121",
+      "price": 328.38
+    },
+    {
+      "timestamp": "20260122",
+      "price": 330.54
+    },
+    {
+      "timestamp": "20260123",
+      "price": 327.93
+    },
+    {
+      "timestamp": "20260126",
+      "price": 333.26
+    },
+    {
+      "timestamp": "20260127",
+      "price": 334.55
+    },
+    {
+      "timestamp": "20260128",
+      "price": 336.01
+    },
+    {
+      "timestamp": "20260129",
+      "price": 338.25
+    },
+    {
+      "timestamp": "20260130",
+      "price": 338.0
+    },
+    {
+      "timestamp": "20260202",
+      "price": 343.69
+    },
+    {
+      "timestamp": "20260203",
+      "price": 339.71
+    },
+    {
+      "timestamp": "20260204",
+      "price": 333.04
+    },
+    {
+      "timestamp": "20260205",
+      "price": 331.25
+    },
+    {
+      "timestamp": "20260206",
+      "price": 322.86
+    },
+    {
+      "timestamp": "20260209",
+      "price": 324.32
+    },
+    {
+      "timestamp": "20260210",
+      "price": 318.58
+    },
+    {
+      "timestamp": "20260211",
+      "price": 310.96
+    },
+    {
+      "timestamp": "20260212",
+      "price": 309.0
+    },
+    {
+      "timestamp": "20260213",
+      "price": 305.72
+    },
+    {
+      "timestamp": "20260217",
+      "price": 302.02
+    },
+    {
+      "timestamp": "20260218",
+      "price": 303.33
+    },
+    {
+      "timestamp": "20260219",
+      "price": 302.85
+    },
+    {
+      "timestamp": "20260220",
+      "price": 314.98
+    },
+    {
+      "timestamp": "20260223",
+      "price": 311.49
+    },
+    {
+      "timestamp": "20260224",
+      "price": 310.9
+    },
+    {
+      "timestamp": "20260225",
+      "price": 312.9
+    },
+    {
+      "timestamp": "20260226",
+      "price": 307.38
+    },
+    {
+      "timestamp": "20260227",
+      "price": 311.76
+    },
+    {
+      "timestamp": "20260302",
+      "price": 306.52
+    },
+    {
+      "timestamp": "20260303",
+      "price": 303.58
+    },
+    {
+      "timestamp": "20260304",
+      "price": 303.13
+    },
+    {
+      "timestamp": "20260305",
+      "price": 300.88
+    },
+    {
+      "timestamp": "20260306",
+      "price": 298.52
+    },
+    {
+      "timestamp": "20260309",
+      "price": 306.36
+    },
+    {
+      "timestamp": "20260310",
+      "price": 307.04
+    },
+    {
+      "timestamp": "20260311",
+      "price": 308.7
+    },
+    {
+      "timestamp": "20260312",
+      "price": 303.55
+    },
+    {
+      "timestamp": "20260313",
+      "price": 302.28
+    },
+    {
+      "timestamp": "20260316",
+      "price": 305.56
+    },
+    {
+      "timestamp": "20260317",
+      "price": 310.92
+    },
+    {
+      "timestamp": "20260318",
+      "price": 307.69
+    },
+    {
+      "timestamp": "20260319",
+      "price": 307.13
+    },
+    {
+      "timestamp": "20260320",
+      "price": 301.0
+    },
+    {
+      "timestamp": "20260323",
+      "price": 302.06
+    },
+    {
+      "timestamp": "20260324",
+      "price": 290.44
+    },
+    {
+      "timestamp": "20260325",
+      "price": 290.93
+    },
+    {
+      "timestamp": "20260326",
+      "price": 280.92
+    },
+    {
+      "timestamp": "20260327",
+      "price": 274.34
+    },
+    {
+      "timestamp": "20260330",
+      "price": 273.5
+    },
+    {
+      "timestamp": "20260331",
+      "price": 287.56
+    },
+    {
+      "timestamp": "20260401",
+      "price": 297.39
+    },
+    {
+      "timestamp": "20260402",
+      "price": 295.77
+    },
+    {
+      "timestamp": "20260406",
+      "price": 299.99
+    },
+    {
+      "timestamp": "20260407",
+      "price": 305.46
+    },
+    {
+      "timestamp": "20260408",
+      "price": 317.32
+    },
+    {
+      "timestamp": "20260409",
+      "price": 318.49
+    },
+    {
+      "timestamp": "20260410",
+      "price": 317.24
+    },
+    {
+      "timestamp": "20260413",
+      "price": 321.31
+    },
+    {
+      "timestamp": "20260414",
+      "price": 332.91
+    },
+    {
+      "timestamp": "20260415",
+      "price": 337.12
+    },
+    {
+      "timestamp": "20260416",
+      "price": 336.02
+    },
+    {
+      "timestamp": "20260417",
+      "price": 341.68
+    },
+    {
+      "timestamp": "20260420",
+      "price": 337.42
+    },
+    {
+      "timestamp": "20260421",
+      "price": 332.29
+    },
+    {
+      "timestamp": "20260422",
+      "price": 339.32
+    },
+    {
+      "timestamp": "20260423",
+      "price": 338.89
+    },
+    {
+      "timestamp": "20260424",
+      "price": 344.4
+    },
+    {
+      "timestamp": "20260427",
+      "price": 350.34
+    },
+    {
+      "timestamp": "20260428",
+      "price": 349.78
+    },
+    {
+      "timestamp": "20260429",
+      "price": 349.94
+    },
+    {
+      "timestamp": "20260430",
+      "price": 384.8
+    },
+    {
+      "timestamp": "20260501",
+      "price": 385.69
+    },
+    {
+      "timestamp": "20260504",
+      "price": 383.25
+    },
+    {
+      "timestamp": "20260505",
+      "price": 388.43
+    },
+    {
+      "timestamp": "20260506",
+      "price": 398.04
+    },
+    {
+      "timestamp": "20260507",
+      "price": 397.99
+    },
+    {
+      "timestamp": "20260508",
+      "price": 400.8
+    },
+    {
+      "timestamp": "20260511",
+      "price": 388.64
+    },
+    {
+      "timestamp": "20260512",
+      "price": 387.35
+    },
+    {
+      "timestamp": "20260513",
+      "price": 402.62
+    },
+    {
+      "timestamp": "20260514",
+      "price": 401.07
+    },
+    {
+      "timestamp": "20260515",
+      "price": 396.78
+    },
+    {
+      "timestamp": "20260518",
+      "price": 396.94
+    },
+    {
+      "timestamp": "20260519",
+      "price": 387.66
+    },
+    {
+      "timestamp": "20260520",
+      "price": 388.91
+    },
+    {
+      "timestamp": "20260521",
+      "price": 387.66
+    },
+    {
+      "timestamp": "20260522",
+      "price": 382.97
+    },
+    {
+      "timestamp": "20260526",
+      "price": 388.88
+    },
+    {
+      "timestamp": "20260527",
+      "price": 388.83
+    },
+    {
+      "timestamp": "20260528",
+      "price": 390.13
+    },
+    {
+      "timestamp": "20260529",
+      "price": 380.34
+    },
+    {
+      "timestamp": "20260601",
+      "price": 376.37
+    },
+    {
+      "timestamp": "20260602",
+      "price": 361.85
+    },
+    {
+      "timestamp": "20260603",
+      "price": 358.99
+    },
+    {
+      "timestamp": "20260604",
+      "price": 372.19
+    },
+    {
+      "timestamp": "20260605",
+      "price": 368.53
+    },
+    {
+      "timestamp": "20260608",
+      "price": 363.31
+    },
+    {
+      "timestamp": "20260609",
+      "price": 364.26
+    },
+    {
+      "timestamp": "20260610",
+      "price": 356.38
+    },
+    {
+      "timestamp": "20260611",
+      "price": 357.77
+    },
+    {
+      "timestamp": "20260612",
+      "price": 359.68
+    },
+    {
+      "timestamp": "20260615",
+      "price": 369.35
+    },
+    {
+      "timestamp": "20260616",
+      "price": 373.25
+    },
+    {
+      "timestamp": "20260617",
+      "price": 363.79
+    },
+    {
+      "timestamp": "20260618",
+      "price": 368.03
+    },
+    {
+      "timestamp": "20260622",
+      "price": 349.68
+    },
+    {
+      "timestamp": "20260623",
+      "price": 346.13
+    },
+    {
+      "timestamp": "20260624",
+      "price": 345.29
+    },
+    {
+      "timestamp": "20260625",
+      "price": 343.71
+    },
+    {
+      "timestamp": "20260626",
+      "price": 337.39
+    },
+    {
+      "timestamp": "20260629",
+      "price": 353.65
+    },
+    {
+      "timestamp": "20260630",
+      "price": 357.37
+    },
+    {
+      "timestamp": "20260701",
+      "price": 361.21
+    },
+    {
+      "timestamp": "20260702",
+      "price": 359.91
+    },
+    {
+      "timestamp": "20260706",
+      "price": 366.46
+    },
+    {
+      "timestamp": "20260707",
+      "price": 367.03
+    },
+    {
+      "timestamp": "20260708",
+      "price": 361.92
+    },
+    {
+      "timestamp": "20260709",
+      "price": 358.89
+    },
+    {
+      "timestamp": "20260710",
+      "price": 357.18
+    },
+    {
+      "timestamp": "20260713",
+      "price": 352.51
+    },
+    {
+      "timestamp": "20260714",
+      "price": 359.51
+    },
+    {
+      "timestamp": "20260715",
+      "price": 370.92
+    },
+    {
+      "timestamp": "20260716",
+      "price": 354.46
+    },
+    {
+      "timestamp": "20260717",
+      "price": 346.77
+    },
+    {
+      "timestamp": "20260720",
+      "price": 351.99
+    },
+    {
+      "timestamp": "20260721",
+      "price": 347.15
+    },
+    {
+      "timestamp": "20260722",
+      "price": 342.09
+    },
+    {
+      "timestamp": "20260723",
+      "price": 317.69
+    },
+    {
+      "timestamp": "20260724",
+      "price": 319.74
+    },
+    {
+      "timestamp": "20260727",
+      "price": 326.56
+    },
+    {
+      "timestamp": "20260728",
+      "price": 333.71
+    },
+    {
+      "timestamp": "20260729",
+      "price": 336.71
+    },
+    {
+      "timestamp": "20260730",
+      "price": 333.66
+    },
+    {
+      "timestamp": "20260731",
+      "price": 356.13
+    },
+    {
+      "timestamp": "20260803",
+      "price": 373.51
+    },
+    {
+      "timestamp": "20260804",
+      "price": 377.65
+    },
+    {
+      "timestamp": "20260805",
+      "price": 362.43
+    },
+    {
+      "timestamp": "20260806",
+      "price": 357.75
+    },
+    {
+      "timestamp": "20260807",
+      "price": 354.3
+    },
+    {
+      "timestamp": "20260810",
+      "price": 357.52
+    },
+    {
+      "timestamp": "20260811",
+      "price": 343.8
+    },
+    {
+      "timestamp": "20260812",
+      "price": 343.54
+    },
+    {
+      "timestamp": "20260813",
+      "price": 346.36
+    },
+    {
+      "timestamp": "20260814",
+      "price": 345.9
+    },
+    {
+      "timestamp": "20260817",
+      "price": 344.0
+    },
+    {
+      "timestamp": "20260818",
+      "price": 344.2
+    },
+    {
+      "timestamp": "20260819",
+      "price": 344.72
+    },
+    {
+      "timestamp": "20260820",
+      "price": 340.67
+    },
+    {
+      "timestamp": "20260821",
+      "price": 344.82
+    },
+    {
+      "timestamp": "20260824",
+      "price": 348.06
+    },
+    {
+      "timestamp": "20260825",
+      "price": 346.96
+    },
+    {
+      "timestamp": "20260826",
+      "price": 342.0
+    },
+    {
+      "timestamp": "20260827",
+      "price": 340.65
+    },
+    {
+      "timestamp": "20260828",
+      "price": 346.59
+    },
+    {
+      "timestamp": "20260831",
+      "price": 339.35
+    },
+    {
+      "timestamp": "20260901",
+      "price": 335.02
+    },
+    {
+      "timestamp": "20260902",
+      "price": 337.12
+    },
+    {
+      "timestamp": "20260903",
+      "price": 342.48
+    },
+    {
+      "timestamp": "20260904",
+      "price": 338.46
+    },
+    {
+      "timestamp": "20260908",
+      "price": 338.36
+    },
+    {
+      "timestamp": "20260909",
+      "price": 330.65
+    },
+    {
+      "timestamp": "20260910",
+      "price": 332.6
+    },
+    {
+      "timestamp": "20260911",
+      "price": 338.5
+    },
+    {
+      "timestamp": "20260914",
+      "price": 349.39
+    }
+  ]
+}
