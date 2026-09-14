@@ -1,6 +1,6 @@
 package data.repository.security
 
-import data.repository.trader.TraderEntity
+import data.repository.trader.sql.TraderEntity
 import domain.market.security.SecurityHolding
 import jakarta.persistence.*
 import java.time.Instant

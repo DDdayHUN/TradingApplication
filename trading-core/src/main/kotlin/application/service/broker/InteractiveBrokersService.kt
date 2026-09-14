@@ -39,13 +39,6 @@ class InteractiveBrokersService(
         val contract = createStockContract(request)
         val order = createMarketOrder(request)
 
-        logger.info(
-            "Submitting broker order ticker={} side={} quantity={}",
-            request.ticker,
-            request.side,
-            request.quantity
-        )
-
         return client.placeOrder(
             orderId = orderId,
             contract = contract,
@@ -65,13 +58,6 @@ class InteractiveBrokersService(
     override suspend fun getAccountSummary(): IbkrAccountSummary {
         val client = session.getClient()
         return client.getAccountSummary()
-    }
-
-    //===========================================================//
-
-    override suspend fun getNextOrderId(): Int {
-        val client = session.getClient()
-        return client.getNextOrderId()
     }
 
     //===========================================================//
@@ -120,6 +106,12 @@ class InteractiveBrokersService(
         return allBars
             .distinctBy { it.timestamp }
             .sortedBy { it.timestamp }
+    }
+
+    override suspend fun reserveOrderId(): Int {
+        val client = session.getClient()
+
+        return client.reserveOrderId()
     }
 
     //===========================================================//

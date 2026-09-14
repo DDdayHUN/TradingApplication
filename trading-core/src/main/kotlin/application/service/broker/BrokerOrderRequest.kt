@@ -1,10 +1,10 @@
 package application.service.broker
 
-import domain.order.OrderAction
+import domain.order.Order
 
 data class BrokerOrderRequest(
     val ticker: String,
     val currency: String,
     val quantity: Double,
-    val side: OrderAction
+    val side: Order.OrderAction
 )

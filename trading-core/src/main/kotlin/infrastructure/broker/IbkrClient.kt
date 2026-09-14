@@ -136,9 +136,6 @@ class IbkrClient(
     fun isConnected(): Boolean{
         return client.isConnected
     }
-    fun getNextOrderId(): Int{
-        return nextOrderId.getAndIncrement()
-    }
 
     fun placeOrder(orderId: Int, contract: Contract, order: Order): Int {
         check(client.isConnected){
@@ -273,6 +270,16 @@ class IbkrClient(
         check(client.isConnected) {"IBKR client is not connected"}
         logger.debug("Requesting current IBKR open orders")
         client.reqOpenOrders()
+    }
+
+    fun reserveOrderId(): Int {
+        val orderId = nextOrderId.getAndIncrement()
+
+        check(orderId >= 0) {
+            "IBKR has not provided a valid order id"
+        }
+
+        return orderId
     }
 
     //===========================================================//
@@ -468,13 +475,13 @@ class IbkrClient(
 
         when(message.status){
             "Submitted" -> {
-                event.publishEvent(OrderSubmittedEvent(message.orderId))
+                event.publishEvent(IbkrEvent.OrderSubmittedEvent(message.orderId))
             }
             "Filled" -> {
-                event.publishEvent(OrderFilledEvent(message.orderId, message.filled, message.avgFillPrice))
+                event.publishEvent(IbkrEvent.OrderFilledEvent(message.orderId, message.filled, message.avgFillPrice))
             }
             "Cancelled" -> {
-                event.publishEvent(OrderCancelledEvent(message.orderId))
+                event.publishEvent(IbkrEvent.OrderCancelledEvent(message.orderId))
             }
         }
     }
@@ -790,7 +797,9 @@ class IbkrClient(
             return
         }
 
-        nextOrderId.set(message.orderId)
+        nextOrderId.updateAndGet { current ->
+            maxOf(current, message.orderId)
+        }
 
         logger.info("IBKR next valid orderId={}", message.orderId)
 

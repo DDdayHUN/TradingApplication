@@ -1,9 +1,11 @@
 package domain.trader
 
 import domain.algorithm.ITradingAlgorithm
+import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
+import domain.order.Order
 import infrastructure.broker.SellAllocation
 import java.util.*
 
@@ -40,19 +42,16 @@ class Trader {
     //===========================================================//
     //===========================================================//
     // Public Method(es)
-    fun createOrder(quote: Quote): TradingOrder {
+    fun createOrder(quote: Quote): Order? {
         val currentPrice = quote.currentPrice
         val output = algorithm.run(holdings, capital, currentPrice)
 
-        val order = TradingOrder(
+        return Order.fromAlgorithm(
             traderId = id,
             securityIdentifier = securityIdentifier,
-            buy = output.buy,
-            sell = output.sell,
-            atPrice = currentPrice,
+            output = output,
+            atPrice = currentPrice
         )
-
-        return order
     }
 
     //===========================================================//
@@ -138,7 +137,6 @@ class Trader {
     // Private Method(es)
 
     private fun buy(price: Double, amount: Int) {
-        require(amount * price <= m_Capital) { "Insufficient Capital" }
 
         changeCapital(-(amount * price))
 
@@ -153,12 +151,10 @@ class Trader {
     //===========================================================//
 
     private fun sell(holding: SecurityHolding, price: Double, amount: Int) {
-        require(amount <= holding.amount) { "Amount" }
-        require(m_Holdings.remove(holding)) { "Not contained in the holdings list" }
-
         changeCapital(price * amount)
 
-        if (amount != holding.amount) {
+        m_Holdings.remove(holding)
+        if (amount < holding.amount) {
             m_Holdings.add(
                 SecurityHolding(
                     holding.id,

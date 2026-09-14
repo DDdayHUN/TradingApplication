@@ -71,7 +71,7 @@ object Math {
     /**
      * Computes the Relative Strength Index (RSI) for a sequence of prices.
      * The list must contain prices in chronological order.
-     * 
+     *
      * It uses simple averages of gains and losses `(not Wilder's smoothing)`.
      * Consecutive increases contribute to the gain list, while decreases or equal
      * values contribute to the loss list.
@@ -98,6 +98,58 @@ object Math {
 
         val avgGain = gaines.average()
         val avgLoss = losses.average()
+
+        if (avgLoss == 0.0) return 100.0
+        if (avgGain == 0.0) return 0.0
+
+        val rs = avgGain / avgLoss
+
+        return 100.0 - (100.0 / (1.0 + rs))
+    }
+
+    /**
+     * Computes Wilder's Relative Strength Index (RSI).
+     *
+     * The first average gain/loss is calculated using a simple average
+     * over the first [period] price changes. All subsequent values use
+     * Wilder's smoothing.
+     *
+     * @param period RSI period. Standard value is 14.
+     * @return RSI in the range [0, 100].
+     */
+    fun List<Double>.wilderRsi(period: Int = 14): Double {
+        require(period > 0) { "Period must be positive" }
+        require(size >= period + 1) {
+            "Need at least ${period + 1} prices for RSI($period)"
+        }
+
+        var totalGain = 0.0
+        var totalLoss = 0.0
+
+        for (i in 1..period) {
+            val change = this[i] - this[i - 1]
+
+            if (change > 0.0) {
+                totalGain += change
+            } else {
+                totalLoss += -change
+            }
+        }
+
+        var avgGain = totalGain / period
+        var avgLoss = totalLoss / period
+
+        for (i in (period + 1)..<size) {
+            val change = this[i] - this[i - 1]
+
+            val gain = if (change > 0.0) change else 0.0
+            val loss = if (change < 0.0) -change else 0.0
+
+            avgGain = (avgGain * (period - 1) + gain) / period
+            avgLoss = (avgLoss * (period - 1) + loss) / period
+        }
+
+        if (avgLoss == 0.0 && avgGain == 0.0) return 50.0
 
         if (avgLoss == 0.0) return 100.0
         if (avgGain == 0.0) return 0.0

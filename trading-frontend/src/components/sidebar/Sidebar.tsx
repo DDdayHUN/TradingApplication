@@ -1,7 +1,6 @@
 import {type ReactElement, useEffect, useState} from "react";
 import NavigationElement from "../elements/basic/NavigationElement.tsx";
 import logo from "../../../public/logo.png"
-import homeIcon from "../../assets/icons/home.svg"
 import portfolioIcon from "../../assets/icons/portfolio.svg"
 import terminalIcon from "../../assets/icons/terminal.svg"
 import {NavLink} from "react-router";
@@ -31,7 +30,6 @@ export default function Sidebar(): ReactElement {
                 </NavLink>
 
                 <div className = "flex-1 h-80 justify-center pt-3">
-                    <NavigationElement text = "Home" icon = {homeIcon} iconClassName = "h-5 object-contain" to= "/"/>
                     <NavigationElement text = "Portfolio" icon = {portfolioIcon} iconClassName= "h-5 object-contain" to="/portfolio"/>
                     <NavigationElement text = "Backtest" icon = {terminalIcon} iconClassName= "h-5 object-contain" to="/backtest" />
                 </div>

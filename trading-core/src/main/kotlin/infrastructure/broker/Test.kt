@@ -6,11 +6,9 @@ import application.service.portfolio.IPortfolioService
 import application.service.trader.ITraderService
 import data.network.ibkr.backtest.BacktestDataService
 import domain.market.security.SecurityIdentifier
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
+import domain.order.Order
+import exception.api.TraderNotFoundException
+import kotlinx.coroutines.*
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.*
@@ -31,47 +29,51 @@ class Test(
         SupervisorJob() + Dispatchers.IO
     )
 
+    private val portfolioId =
+        UUID.fromString("07cd85e1-8e40-4fe7-ba4a-8959344b9259")
+
+
     @Scheduled(
-        cron = "0 */5 * * * *",
+        cron = "*/4 * * * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-                val portfolioId =
-                    UUID.fromString("73676208-6428-44e0-898f-4368d551df2c")
 
                 val portfolio =
                     portfolioService.getPortfolio(portfolioId)
 
-                val jobs = portfolio.traders.map { trader ->
-                    launch {
-                        try {
-                            val order =
-                                traderService.executeTrader(
-                                    portfolioId,
-                                    trader.id
+                val orders = coroutineScope {
+                    portfolio.traders.map { trader ->
+                        async {
+                            try {
+                                val order = traderService.executeTrader(trader.id)
+
+                                logger.info(
+                                    "Submitting trader={} order={}",
+                                    trader.securityIdentifier.tickerSymbol,
+                                    order.toString()
                                 )
 
-                            logger.info(
-                                "Submitting trader={} order={}",
-                                trader.securityIdentifier.tickerSymbol,
-                                order.toReadableText()
-                            )
-
-                            orderService.submit(order)
-
-                        } catch (e: Exception) {
-                            logger.error(
-                                "Failed trader={}",
-                                trader.id,
-                                e
-                            )
+                                order
+                            } catch (e: Exception) {
+                                logger.error(
+                                    "Failed trader={}",
+                                    trader.id,
+                                    e
+                                )
+                                null
+                            }
                         }
                     }
-                }
+                }.awaitAll()
 
-                jobs.joinAll()
+                orders
+                    .filterNotNull()
+                    .forEach{ order ->
+                        orderService.submit(order)
+                    }
 
                 logger.info("All concurrent trader jobs finished")
 
@@ -84,12 +86,6 @@ class Test(
         }
     }
 
-
-
-    @Scheduled(
-        cron = "0 18 19 * * *",
-        zone = "Europe/Budapest"
-    )
     fun getHistoricalData(){
         scope.launch {
             val identifier = SecurityIdentifier(
@@ -105,4 +101,48 @@ class Test(
         }
     }
 
+    @Scheduled(
+        cron = "0 12 19 * * *",
+        zone = "Europe/Budapest"
+    )
+    fun sellAllHolding() {
+        scope.launch {
+            val portfolio = portfolioService.getPortfolio(portfolioId)
+
+            portfolio.traders.forEach { trader ->
+
+                val orders = traderService.forceSellAllHolding(
+                    trader.id
+                )
+
+                orders.forEach { order ->
+                    orderService.submit(order)
+                }
+            }
+        }
+    }
+
+    @Scheduled(
+        cron = "0 11 19 * * *",
+        zone = "Europe/Budapest"
+    )
+    fun buyHolding(){
+        scope.launch {
+            try {
+                val portfolio = portfolioService.getPortfolio(portfolioId)
+
+                portfolio.traders.forEach { trader ->
+                        val order = Order(
+                            traderId = trader.id,
+                            securityIdentifier = trader.securityIdentifier,
+                            signal = Order.Signal.Buy(amount = 3),
+                            signalPrice = 433.0,
+                        )
+                        orderService.submit(order)
+                }
+            } catch(e: Exception){
+                throw e
+            }
+        }
+    }
 }

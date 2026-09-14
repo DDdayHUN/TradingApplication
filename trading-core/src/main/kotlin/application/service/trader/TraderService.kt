@@ -3,27 +3,34 @@ package application.service.trader
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import application.logging.logger
-import application.service.portfolio.IPortfolioService
 import application.provider.MarketDataProvider
+import application.service.auth.IAuthenticationService
+import application.service.portfolio.IPortfolioService
 import data.network.finnhub.FinnhubConfig
-import domain.algorithm.TradingAlgorithm
 import data.repository.historical_data.IHistoricalMarketDataProvider
+import data.repository.trader.ITraderRepository
+import domain.algorithm.TradingAlgorithm
+import domain.market.Quote
 import domain.market.security.SecurityIdentifier
+import domain.order.Order
 import domain.trader.Trader
-import domain.trader.TradingOrder
+import exception.api.HoldingNotFoundException
 import exception.api.TraderNotFoundException
 import infrastructure.broker.IbkrSession
 import infrastructure.broker.SellAllocation
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 
 @Service
 class TraderService(
+    @param:Qualifier("yahoo")
     private val provider: IHistoricalMarketDataProvider,
     private val portfolioService: IPortfolioService,
     private val ibkrSession: IbkrSession,
     private val finnhubConfig: FinnhubConfig,
+    private val traderRepository: ITraderRepository
 ) : ITraderService {
 
     //===========================================================//
@@ -37,8 +44,8 @@ class TraderService(
     // Public Method(s)
 
     @Transactional
-    override suspend fun createTrader(userId: UUID, portfolioId: UUID, request: CreateTraderRequest): Trader {
-        val portfolio = portfolioService.getPortfolio(userId, portfolioId)
+    override suspend fun createTrader(portfolioId: UUID, request: CreateTraderRequest): Trader {
+        val portfolio = portfolioService.getPortfolio(portfolioId)
         val availableCapital = portfolioService.getAccountSummary(portfolioId).availableCapital
 
         require(request.capital <= availableCapital){
@@ -81,24 +88,16 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getById(portfolioId: UUID, traderId: UUID): Trader? {
-        val portfolio =  portfolioService.getPortfolio(portfolioId)
-
-        val trader = portfolio.traders.find { trader ->
-            trader.id == traderId
-        }
-
-        return trader
+    override suspend fun getById(traderId: UUID): Trader? {
+        val trader = traderRepository.getById(traderId)
+        return trader.getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun changeAlgorithm(portfolioId: UUID, traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader {
-        val portfolio = portfolioService.getPortfolio(portfolioId)
-        val trader = portfolio.traders.find {trader ->
-            trader.id == traderId
-        } ?: throw TraderNotFoundException(traderId)
+    override suspend fun changeAlgorithm(traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader {
+        val trader = traderRepository.getById(traderId).getOrThrow()
 
         val algorithmType = parseAlgorithmType(request.algorithmType)
 
@@ -110,7 +109,7 @@ class TraderService(
 
         trader.changeAlgorithm(algorithm)
 
-        portfolioService.save(portfolio)
+        traderRepository.save(trader)
 
         return trader
     }
@@ -118,26 +117,14 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun executeTrader(portfolioId: UUID, traderId: UUID): TradingOrder {
-        val portfolio = portfolioService.getPortfolio(portfolioId)
+    override suspend fun executeTrader(traderId: UUID): Order? {
+        val trader = traderRepository.getById(traderId).getOrThrow()
 
-        val trader = portfolio.traders.find {trader ->
-            trader.id == traderId
-        }?: throw TraderNotFoundException(traderId)
+        val quote = getCurrentPrice(trader.securityIdentifier)
+        //val quote = Quote(540.0)
+        val order = trader.createOrder(quote)
 
-        val finnhubProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub(finnhubConfig))
-        var quote = finnhubProvider.getQuote(trader.securityIdentifier)
-
-        if(!quote.isSuccess){
-            logger.warn("Finnhub quote failed for {}, trying IBKR", trader.securityIdentifier.tickerSymbol)
-            quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(trader.securityIdentifier)
-        }
-
-       // val quote = Quote(160.0)
-        val order = trader.createOrder(quote.getOrThrow())
-
-        portfolioService.save(portfolio)
-
+        traderRepository.save(trader).getOrThrow()
         return order
     }
 
@@ -145,18 +132,14 @@ class TraderService(
 
     @Transactional
     override suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double) {
-        val portfolio = portfolioService.getPortfolioByTraderId(traderId)
-
-        val trader = portfolio.traders.find {
-            it.id == traderId
-        } ?: throw TraderNotFoundException(traderId)
+       val trader = traderRepository.getById(traderId).getOrThrow()
 
         trader.applyBuyFill(
             price = averageFillPrice,
             amount = filledQuantity
         )
 
-        portfolioService.save(portfolio)
+        traderRepository.save(trader).getOrThrow()
     }
 
     //===========================================================//
@@ -167,19 +150,53 @@ class TraderService(
         sellAllocations: List<SellAllocation>,
         averageFillPrice: Double
     ) {
-        val portfolio = portfolioService.getPortfolioByTraderId(traderId)
-
-        val trader = portfolio.traders.find {trader ->
-            trader.id == traderId
-        }?: throw TraderNotFoundException(traderId)
+        val trader = traderRepository.getById(traderId).getOrThrow()
 
         trader.applySellFill(
             price = averageFillPrice,
             allocations = sellAllocations
         )
 
-        portfolioService.save(portfolio)
+       traderRepository.save(trader).getOrThrow()
     }
+
+    @Transactional(readOnly = true)
+    override suspend fun forceSellHolding(traderId: UUID, securityHoldingId: UUID): Order {
+       val trader = traderRepository.getById(traderId).getOrThrow()
+
+        val holding = trader.holdings.find {holding ->
+            holding.id == securityHoldingId
+        }?: throw HoldingNotFoundException(securityHoldingId)
+
+        val order = Order(
+            traderId = trader.id,
+            securityIdentifier = trader.securityIdentifier,
+            signal = Order.Signal.Sell(
+                allocations = mutableListOf(
+                    SellAllocation(
+                        holdingId = holding.id,
+                        amount = holding.amount
+                ))
+            ),
+            signalPrice = getCurrentPrice(trader.securityIdentifier).currentPrice,
+        )
+        return order
+    }
+
+    @Transactional(readOnly = true)
+    override suspend fun forceSellAllHolding(traderId: UUID): List<Order> {
+        val trader = traderRepository.getById(traderId).getOrThrow()
+
+        val orderList = mutableListOf<Order>()
+
+        trader.holdings.forEach { holding ->
+            val order = forceSellHolding(traderId, holding.id)
+            orderList.add(order)
+        }
+
+        return orderList
+    }
+
 
     //===========================================================//
 
@@ -198,4 +215,19 @@ class TraderService(
             )
         }
     }
+
+    //===========================================================//
+
+    private suspend fun getCurrentPrice(securityIdentifier: SecurityIdentifier): Quote{
+        val finnhubProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub(finnhubConfig))
+        var quote = finnhubProvider.getQuote(securityIdentifier)
+
+        if(!quote.isSuccess){
+            logger.warn("Finnhub quote failed for {}, trying IBKR", securityIdentifier.tickerSymbol)
+            quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(securityIdentifier)
+        }
+
+        return quote.getOrThrow()
+    }
+
 }

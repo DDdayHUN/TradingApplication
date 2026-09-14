@@ -10,7 +10,7 @@ import java.util.*
  * Represents formatted trading signal that can be displayed
  */
 //===========================================================//
-
+@Deprecated("Deprecated by domain.order")
 data class TradingOrder(
     val orderId: UUID = UUID.randomUUID(),
     val traderId: UUID,
@@ -20,25 +20,5 @@ data class TradingOrder(
     val atPrice: Double,
     val createdAt: Instant = Instant.now(),
 ) {
-    //===========================================================//
-    //===========================================================//
-    // Public Method(es)
 
-    fun toReadableText(): String {
-        val action = if(buy == null && sell == null) "HOLD"
-        else if(buy != null && sell != null) "BUY, SELL"
-        else if(buy != null) "BUY" else "SELL"
-
-        val amount = if(buy == null && sell == null) ""
-        else if(buy != null && sell != null) " | Buy Amount: ${buy.amount} | Sell: ${sell.batches.map { it.first }.toList()}"
-        else if(buy != null) " | Buy Amount: ${buy.amount}" else " | Sell: ${sell!!.batches.map { it.first }.toList()}}"
-
-        return ("" +
-                action
-                + " | At Price: "
-                + String.format("%.2f", atPrice)
-                + amount
-                + " | At: "
-                + createdAt)
-    }
 }
