@@ -1,13 +1,13 @@
 package data.network.ibkr.backtest
 
-import application.service.broker.IBrokerService
+import application.service.broker.InteractiveBrokersService
 import domain.market.security.SecurityIdentifier
 import org.springframework.stereotype.Service
 import kotlin.time.Instant
 
 @Service
 class BacktestDataService(
-    private val brokerService: IBrokerService,
+    private val brokerService: InteractiveBrokersService,
     private val fileWriter: BacktestFileWriter,
 ) {
 

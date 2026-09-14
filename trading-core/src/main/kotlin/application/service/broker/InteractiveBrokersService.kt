@@ -1,25 +1,25 @@
 package application.service.broker
 
 import application.logging.logger
+import application.service.trader.ITraderService
 import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
 import domain.market.security.SecurityIdentifier
 import infrastructure.broker.IbkrAccountSummary
 import infrastructure.broker.IbkrHistoricalBar
-import infrastructure.broker.IbkrSession
+import infrastructure.broker.InteractiveBrokersSession
 import kotlinx.coroutines.delay
 import org.springframework.stereotype.Service
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
-
 @Service
 class InteractiveBrokersService(
-    private val session: IbkrSession,
-) : IBrokerService {
-
+    private val traderService: ITraderService,
+    private val session: InteractiveBrokersSession,
+) {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -30,39 +30,35 @@ class InteractiveBrokersService(
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun placeOrder(orderId: Int, request: BrokerOrderRequest): Int {
-        require(request.ticker.isNotBlank()) { "Ticker must not be blank" }
-        require(request.currency.isNotBlank()) { "Currency must not be blank" }
-        require(request.quantity > 0) { "Quantity must be greater than zero" }
-
+    suspend fun placeOrder(order: InteractiveBrokersOrder) {
         val client = session.getClient()
-        val contract = createStockContract(request)
-        val order = createMarketOrder(request)
+        val clientContract = createStockContract(order)
+        val clientOrder = createMarketOrder(order)
 
-        return client.placeOrder(
-            orderId = orderId,
-            contract = contract,
-            order = order
+        client.placeOrder(
+            orderId = order.brokerOrderId,
+            contract = clientContract,
+            order = clientOrder
         )
     }
 
     //===========================================================//
 
-    override suspend fun requestOrderStatus() {
+    suspend fun requestOrderStatus() {
         val client = session.getClient()
         client.requestOpenOrders()
     }
 
     //===========================================================//
 
-    override suspend fun getAccountSummary(): IbkrAccountSummary {
+    suspend fun getAccountSummary(): IbkrAccountSummary {
         val client = session.getClient()
         return client.getAccountSummary()
     }
 
     //===========================================================//
 
-    override suspend fun getHistoricalData(
+    suspend fun getHistoricalData(
         securityIdentifier: SecurityIdentifier,
         from: Instant,
         to: Instant
@@ -108,9 +104,10 @@ class InteractiveBrokersService(
             .sortedBy { it.timestamp }
     }
 
-    override suspend fun reserveOrderId(): Int {
-        val client = session.getClient()
+    //===========================================================//
 
+    suspend fun reserveOrderId(): Int {
+        val client = session.getClient()
         return client.reserveOrderId()
     }
 
@@ -118,24 +115,24 @@ class InteractiveBrokersService(
     //===========================================================//
     // Private Method(s)
 
-    private fun createStockContract(
-        request: BrokerOrderRequest
-    ): Contract {
+    private suspend fun createStockContract(order: InteractiveBrokersOrder): Contract {
+        val securityIdentifier = traderService.getById(order.traderId).securityIdentifier
+
         return Contract().apply {
-            symbol(request.ticker)
+            symbol(securityIdentifier.tickerSymbol)
             secType("STK")
             exchange("SMART")
-            currency(request.currency)
+            currency(securityIdentifier.currency)
         }
     }
 
     //===========================================================//
 
-    private fun createMarketOrder(request: BrokerOrderRequest): Order {
+    private fun createMarketOrder(order: InteractiveBrokersOrder): Order {
         return Order().apply {
-            action(request.side.name)
+            action(order.action.name)
             orderType("MKT")
-            totalQuantity(Decimal.get(request.quantity))
+            totalQuantity(Decimal.get(order.quantity))
             tif("DAY")
         }
     }
