@@ -1,5 +1,7 @@
 package infrastructure.broker
 
+import api.dto.CreateTraderRequest
+import api.dto.SecurityIdentifierRequest
 import application.logging.logger
 import application.service.portfolio.IPortfolioService
 import application.service.trader.ITraderService
@@ -8,9 +10,12 @@ import domain.market.security.SecurityIdentifier
 import application.service.broker.InteractiveBrokersOrder
 import application.service.broker.InteractiveBrokersOrderService
 import application.service.broker.toInteractiveBrokersOrder
+import data.repository.historical_data.IHistoricalMarketDataProvider
+import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
 import domain.trader.TradingOrder
 import kotlinx.coroutines.*
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.*
@@ -23,14 +28,16 @@ class Test(
     private val orderService: InteractiveBrokersOrderService,
     private val traderService: ITraderService,
     private val portfolioService: IPortfolioService,
-    private val backtestDataService: BacktestDataService
+    private val backtestDataService: BacktestDataService,
+    @param:Qualifier("yahoo")
+    private val provider: IHistoricalMarketDataProvider
 ) {
     private val logger = logger<Test>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val portfolioId = UUID.fromString("19dc426c-14b2-4cd9-9707-cd803a457f1d")
+    private val portfolioId = UUID.fromString("562437c9-c738-4d59-8bbc-f8a577d838b4")
 
     @Scheduled(
-        cron = "0 0 0 * * *",
+        cron = "0 51 19 * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {
@@ -99,7 +106,7 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 12 19 * * *",
+        cron = "0 35 19 * * *",
         zone = "Europe/Budapest"
     )
     fun sellAllHolding() {
@@ -108,19 +115,21 @@ class Test(
 
             portfolio.traders.forEach { trader ->
 
-                val orders = traderService.forceSellAllHolding(
-                    trader.id
-                )
+                if(trader.holdings.isNotEmpty()){
+                    val orders = traderService.forceSellAllHolding(
+                        trader.id
+                    )
 
-                orders.forEach { order ->
-                    orderService.submit(order)
+                    orders.forEach { order ->
+                        orderService.submit(order)
+                    }
                 }
             }
         }
     }
 
     @Scheduled(
-        cron = "0 11 19 * * *",
+        cron = "0 47 19 * * *",
         zone = "Europe/Budapest"
     )
     fun buyHolding(){
@@ -138,6 +147,51 @@ class Test(
                 }
             } catch(e: Exception){
                 throw e
+            }
+        }
+    }
+    @Scheduled(
+        cron = "0 45 19 * * *",
+        zone = "Europe/Budapest"
+    )
+    fun createTraders() {
+        scope.launch {
+            var securityList = provider.getAllSecurityIdentifiers().getOrThrow()
+            val traders = traderService.getAllByPortfolioId(portfolioId)
+            val traderSecurities = traders.map {
+                trader-> trader.securityIdentifier
+            }
+            securityList = securityList.filter { security ->
+                security !in traderSecurities
+            }
+
+            securityList.forEach { security ->
+                traderService.createTrader(
+                    portfolioId = portfolioId,
+                    request = CreateTraderRequest(
+                        securityIdentifier = SecurityIdentifierRequest(
+                            isin = security.isin,
+                            tickerSymbol = security.tickerSymbol,
+                            currency = security.currency,
+                        ),
+                        capital = 20000.0,
+                        algorithmType = "TACPP46"
+                    )
+                )
+            }
+        }
+    }
+
+    @Scheduled(
+        cron = "0 41 19 * * *",
+        zone = "Europe/Budapest"
+    )
+    fun deleteTraders() {
+        scope.launch {
+            sellAllHolding()
+            val portfolio = portfolioService.getPortfolio(portfolioId)
+            portfolio.traders.forEach { trader ->
+                traderService.deleteTrader(trader.id)
             }
         }
     }

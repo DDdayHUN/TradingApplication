@@ -30,4 +30,10 @@ class TraderRepository(
         }
     }
 
+    override suspend fun delete(traderId: UUID): Result<Unit> {
+        return runCatching {
+            traderRepository.deleteById(traderId)
+        }
+    }
+
 }

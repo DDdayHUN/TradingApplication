@@ -187,6 +187,16 @@ class TraderService(
         return orderList
     }
 
+    @Transactional
+    override suspend fun deleteTrader(traderId: UUID) {
+        val trader = traderRepository.getById(traderId).getOrThrow()
+
+        if(trader.holdings.isNotEmpty()) throw IllegalStateException("Trader with holding cannot be deleted.")
+
+        logger.info("Deleting trader with id: ${trader.id}")
+        traderRepository.delete(traderId).getOrThrow()
+    }
+
 
     //===========================================================//
 
