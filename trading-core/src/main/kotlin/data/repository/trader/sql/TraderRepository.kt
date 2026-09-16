@@ -37,7 +37,7 @@ class TraderRepository(
                 ?: throw TraderNotFoundException(traderId)
 
             if (entity.holdings.isNotEmpty()) throw TraderHoldingsNotEmptyException(traderId)
-            traderRepository.deleteById(traderId)
+            traderRepository.deleteById(entity.id)
         }
     }
 
