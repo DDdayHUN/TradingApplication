@@ -20,7 +20,6 @@ import kotlin.time.Instant
 
 @Service
 class InteractiveBrokersService(
-    private val traderRepository: ITraderRepository,
     private val session: InteractiveBrokersSession,
 ) {
     //===========================================================//
@@ -112,13 +111,11 @@ class InteractiveBrokersService(
     // Private Method(s)
 
     private suspend fun createStockContract(order: InteractiveBrokersOrder): Contract {
-        val securityIdentifier = traderRepository.getById(order.traderId).getOrThrow().securityIdentifier
-
         return Contract().apply {
-            symbol(securityIdentifier.tickerSymbol)
+            symbol(order.securityIdentifier.tickerSymbol)
             secType("STK")
             exchange("SMART")
-            currency(securityIdentifier.currency)
+            currency(order.securityIdentifier.currency)
         }
     }
 

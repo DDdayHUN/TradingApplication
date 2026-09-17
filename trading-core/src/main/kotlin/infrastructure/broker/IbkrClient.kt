@@ -342,22 +342,6 @@ class IbkrClient(
         return historicalEndDateFormatter.format(javaInstant)
     }
 
-    private fun calculateHistoricalDuration(
-        from: Instant,
-        to: Instant
-    ): String {
-        val seconds = (to - from).inWholeSeconds.coerceAtLeast(1)
-        val days = ((seconds + 86_399) / 86_400).coerceAtLeast(1)
-
-        return if(days <= 365) {
-            "$days D"
-        }
-        else {
-            val years = (days + 364) / 365
-            "$years Y"
-        }
-    }
-
     //===========================================================//
     //===========================================================//
     // LEGACY

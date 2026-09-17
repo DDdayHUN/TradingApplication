@@ -15,6 +15,7 @@ import domain.trader.SellHolding
 import domain.trader.Trader
 import domain.trader.TradingOrder
 import exception.api.HoldingNotFoundException
+import exception.api.TraderHoldingsNotEmptyException
 import infrastructure.broker.InteractiveBrokersSession
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -166,7 +167,8 @@ class TraderService(
         return TradingOrder(
             traderId = trader.id,
             signal = TradingAlgorithm.Output(null, TradingAlgorithm.Output.Sell(setOf(Pair(holding, holding.amount)))),
-            atPrice = getCurrentPrice(trader.securityIdentifier).currentPrice
+            atPrice = getCurrentPrice(trader.securityIdentifier).currentPrice,
+            securityIdentifier = trader.securityIdentifier
         )
     }
 
@@ -184,6 +186,16 @@ class TraderService(
         }
 
         return orderList
+    }
+
+    @Transactional
+    override suspend fun deleteTrader(traderId: UUID) {
+        val trader = traderRepository.getById(traderId).getOrThrow()
+
+        if(trader.holdings.isNotEmpty()) throw TraderHoldingsNotEmptyException(traderId)
+
+        logger.info("Deleting trader with id: ${trader.id}")
+        traderRepository.delete(traderId).getOrThrow()
     }
 
 

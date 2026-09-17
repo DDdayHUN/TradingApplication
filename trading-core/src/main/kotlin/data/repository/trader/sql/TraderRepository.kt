@@ -2,6 +2,7 @@ package data.repository.trader.sql
 
 import data.repository.trader.ITraderRepository
 import domain.trader.Trader
+import exception.api.TraderHoldingsNotEmptyException
 import exception.api.TraderNotFoundException
 import org.springframework.stereotype.Repository
 import java.util.UUID
@@ -27,6 +28,16 @@ class TraderRepository(
             entity.updateFrom(trader)
 
             traderRepository.save(entity).toDomain()
+        }
+    }
+
+    override suspend fun delete(traderId: UUID): Result<Unit> {
+        return runCatching {
+            val entity = traderRepository.findByIdWithHoldings(traderId)
+                ?: throw TraderNotFoundException(traderId)
+
+            if (entity.holdings.isNotEmpty()) throw TraderHoldingsNotEmptyException(traderId)
+            traderRepository.deleteById(entity.id)
         }
     }
 

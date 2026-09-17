@@ -20,7 +20,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
     // Private Field(s)
 
     private val s_RootDir = run {
-        val resource = javaClass.getResource("/backtest/yahoo/")
+        val resource = javaClass.getResource("/backtest/yahoo/us")
             ?: error("Resource directory '/backtest/yahoo/' not found")
 
         File(resource.toURI())
