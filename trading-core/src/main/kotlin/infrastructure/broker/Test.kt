@@ -142,6 +142,7 @@ class Test(
                             traderId = trader.id,
                             signal = TradingAlgorithm.Output(TradingAlgorithm.Output.Buy(amount = 3), null),
                             atPrice = 433.0,
+                            securityIdentifier = trader.securityIdentifier,
                         )
                         orderService.submit(order)
                 }

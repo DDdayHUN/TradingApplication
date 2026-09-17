@@ -12,6 +12,7 @@ data class InteractiveBrokersOrder(
     val id: UUID = UUID.randomUUID(),
     val brokerOrderId: Int,
     val traderId: UUID,
+    val securityIdentifier: SecurityIdentifier,
     val signal: Signal,
     val action: Action,
     val signalPrice: Double,
@@ -87,7 +88,8 @@ suspend fun TradingOrder.toInteractiveBrokersOrder(brokerService: InteractiveBro
             signal = Signal.Buy(signal.buy.amount),
             action = InteractiveBrokersOrder.Action.BUY,
             signalPrice = this.atPrice,
-            status = InteractiveBrokersOrder.Status.PENDING
+            status = InteractiveBrokersOrder.Status.PENDING,
+            securityIdentifier = this.securityIdentifier
         ))
     }
 
@@ -105,7 +107,8 @@ suspend fun TradingOrder.toInteractiveBrokersOrder(brokerService: InteractiveBro
             signal = Signal.Sell(sell),
             action = InteractiveBrokersOrder.Action.SELL,
             signalPrice = this.atPrice,
-            status = InteractiveBrokersOrder.Status.PENDING
+            status = InteractiveBrokersOrder.Status.PENDING,
+            securityIdentifier = this.securityIdentifier
         ))
     }
 

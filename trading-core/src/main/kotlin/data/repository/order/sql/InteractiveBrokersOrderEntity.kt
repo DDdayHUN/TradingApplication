@@ -4,6 +4,9 @@ import data.repository.trader.sql.TraderEntity
 import application.service.broker.InteractiveBrokersOrder
 import application.service.broker.InteractiveBrokersOrder.Action
 import application.service.broker.InteractiveBrokersOrder.Status
+import data.repository.security.SecurityIdentifierEntity
+import data.repository.security.toDomain
+import data.repository.security.toEntity
 import domain.trader.SellHolding
 import jakarta.persistence.*
 import java.time.Instant
@@ -23,6 +26,32 @@ class InteractiveBrokersOrderEntity(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "trader_id", nullable = false, updatable = false)
     var trader: TraderEntity,
+
+    @Embedded
+    @AttributeOverrides(
+        AttributeOverride(
+            name = "isin",
+            column = Column(
+                name = "security_isin",
+                nullable = false
+            )
+        ),
+        AttributeOverride(
+            name = "tickerSymbol",
+            column = Column(
+                name = "security_ticker",
+                nullable = false
+            )
+        ),
+        AttributeOverride(
+            name = "currency",
+            column = Column(
+                name = "security_currency",
+                nullable = false
+            )
+        )
+    )
+    var securityIdentifier: SecurityIdentifierEntity,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false, updatable = false)
@@ -66,7 +95,8 @@ fun InteractiveBrokersOrder.toEntity(trader: TraderEntity): InteractiveBrokersOr
         status = status,
         filledQuantity = filledQuantity,
         averageFillPrice = averageFillPrice,
-        createdAt = createdAt
+        createdAt = createdAt,
+        securityIdentifier = securityIdentifier.toEntity()
     )
     if(signal is InteractiveBrokersOrder.Signal.Sell){
         entity.sellAllocations =
@@ -108,7 +138,8 @@ fun InteractiveBrokersOrderEntity.toInteractiveBrokersOrder(): InteractiveBroker
         status = status,
         filledQuantity = filledQuantity,
         averageFillPrice = averageFillPrice,
-        createdAt = createdAt
+        createdAt = createdAt,
+        securityIdentifier = securityIdentifier.toDomain()
     )
 }
 
