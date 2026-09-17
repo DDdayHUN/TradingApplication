@@ -48,7 +48,8 @@ class Trader {
         return TradingOrder(
             traderId = id,
             signal = output,
-            atPrice = currentPrice
+            atPrice = currentPrice,
+            securityIdentifier = securityIdentifier,
         )
     }
 

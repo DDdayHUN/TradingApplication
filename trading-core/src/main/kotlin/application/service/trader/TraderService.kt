@@ -167,7 +167,8 @@ class TraderService(
         return TradingOrder(
             traderId = trader.id,
             signal = TradingAlgorithm.Output(null, TradingAlgorithm.Output.Sell(setOf(Pair(holding, holding.amount)))),
-            atPrice = getCurrentPrice(trader.securityIdentifier).currentPrice
+            atPrice = getCurrentPrice(trader.securityIdentifier).currentPrice,
+            securityIdentifier = trader.securityIdentifier
         )
     }
 

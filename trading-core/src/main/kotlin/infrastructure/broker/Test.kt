@@ -34,10 +34,10 @@ class Test(
 ) {
     private val logger = logger<Test>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val portfolioId = UUID.fromString("562437c9-c738-4d59-8bbc-f8a577d838b4")
+    private val portfolioId = UUID.fromString("ce961a98-7f5a-4f6f-8030-2a9178f79101")
 
     @Scheduled(
-        cron = "0 51 19 * * *",
+        cron = "0 5 12 * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {
@@ -106,7 +106,7 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 35 19 * * *",
+        cron = "0 22 18 * * *",
         zone = "Europe/Budapest"
     )
     fun sellAllHolding() {
@@ -129,7 +129,7 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 47 19 * * *",
+        cron = "0 06 18 * * *",
         zone = "Europe/Budapest"
     )
     fun buyHolding(){
@@ -142,6 +142,7 @@ class Test(
                             traderId = trader.id,
                             signal = TradingAlgorithm.Output(TradingAlgorithm.Output.Buy(amount = 3), null),
                             atPrice = 433.0,
+                            securityIdentifier = trader.securityIdentifier,
                         )
                         orderService.submit(order)
                 }
@@ -151,7 +152,7 @@ class Test(
         }
     }
     @Scheduled(
-        cron = "0 45 19 * * *",
+        cron = "0 03 18 * * *",
         zone = "Europe/Budapest"
     )
     fun createTraders() {
@@ -183,7 +184,7 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 41 19 * * *",
+        cron = "0 25 18 * * *",
         zone = "Europe/Budapest"
     )
     fun deleteTraders() {

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service
 @Service
 class InteractiveBrokersOrderService(
     private val brokerService: InteractiveBrokersService,
-    private val orderRepository: InteractiveBrokersOrderRepository,
     private val traderService: ITraderService,
+    private val orderRepository: InteractiveBrokersOrderRepository,
 ) {
     //===========================================================//
     //===========================================================//

@@ -165,6 +165,7 @@ class TradingAlgorithmBackTester {
                 traderId = UUID.randomUUID(),
                 signal = ret,
                 atPrice = currentPrice,
+                securityIdentifier = m_SecurityIdentifier,
             )
         )
 
