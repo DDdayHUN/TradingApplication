@@ -2,8 +2,10 @@ package application.tester
 
 import domain.algorithm.TradingAlgorithm
 import data.repository.historical_data.IHistoricalMarketDataProvider
+import domain.market.security.SecurityHistory
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
+import domain.trader.TradingOrder
 import domain.utils.Math.bottom
 import domain.utils.Math.median
 import domain.utils.Math.top
@@ -67,7 +69,10 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Private Method(es)
 
-    private suspend fun years(cycle: TimePeriod, listOfSecurityIdentifiers: List<SecurityIdentifier>): Pair<List<TradingAlgorithmBackTesterOutputConverted>, TimePeriod>? = coroutineScope {
+    private suspend fun years(
+        cycle: TimePeriod,
+        listOfSecurityIdentifiers: List<SecurityIdentifier>
+    ): Pair<Map<SecurityIdentifier, List<TradingAlgorithmBackTesterOutputConverted>>, TimePeriod>? = coroutineScope {
         val zone = ZoneOffset.UTC
         val windowSizeYears = cycle.toInt()
 
@@ -81,11 +86,9 @@ class TradingAlgorithmEvaluator {
             .atZone(zone)
             .year
 
-
         if ((endYear - windowSizeYears) < startYear) return@coroutineScope null
 
-
-        val results = (startYear..endYear - windowSizeYears step m_WindowStepYears)
+        val out = (startYear..endYear - windowSizeYears step m_WindowStepYears)
             .map { year ->
                 async {
                     val startDate = Instant.parse("${year}-01-01T00:00:00Z")
@@ -101,66 +104,20 @@ class TradingAlgorithmEvaluator {
             .awaitAll()
             .flatten()
 
+        if (out.isEmpty()) return@coroutineScope null // TODO : Nem tudom hogy kell-e ez.
 
-        if (results.isEmpty()) return@coroutineScope null
+        val ret = out.groupBy { it.securityIdentifier }
 
-
-        return@coroutineScope Pair(results, cycle)
+        return@coroutineScope Pair(ret, cycle)
     }
 
     //===========================================================//
 
-    private fun calculateStatistics(list: List<TradingAlgorithmBackTesterOutputConverted>): EvaluationStatistics {
-        val trim = 0.2
-
-        val capitals = list.map { it.totalCapital }
-        val cagrs = list.map { it.cagr }
-        val sharpes = list.map { it.sharpeRatio }
-        val drawdowns = list.map { it.maxDrawdown }
-        val calmar = list
-            .filter { it.maxDrawdown != 0.0 }
-            .map { it.cagr / it.maxDrawdown }
-
-        return EvaluationStatistics(
-            tradingAlgorithmType = m_TradingAlgorithmType,
-            taxation = m_TaxationType,
-            startingCapital = m_StartingCapital,
-
-            totalCapitalMean = capitals.average(),
-            totalCapitalTrimmedMean = capitals.trim(trim).average(),
-            totalCapitalMedian = capitals.median(),
-            totalCapitalT20 = capitals.top(trim).average(),
-            totalCapitalB20 = capitals.bottom(trim).average(),
-
-            cagrMean = cagrs.average(),
-            cagrTrimmedMean = cagrs.trim(trim).average(),
-            cagrMedian = cagrs.median(),
-            cagrT20 = cagrs.top(trim).average(),
-            cagrB20 = cagrs.bottom(trim).average(),
-
-            sharpeMean = sharpes.average(),
-            sharpeTrimmedMean = sharpes.trim(trim).average(),
-            sharpeMedian = sharpes.median(),
-            sharpeT20 = sharpes.top(trim).average(),
-            sharpeB20 = sharpes.bottom(trim).average(),
-
-            maxDrawdownMean = drawdowns.average(),
-            maxDrawdownTrimmedMean = drawdowns.trim(trim).average(),
-            maxDrawdownMedian = drawdowns.median(),
-            maxDrawdownT20 = drawdowns.bottom(trim).average(),
-            maxDrawdownB20 = drawdowns.top(trim).average(),
-
-            calmarMean = calmar.average(),
-            calmarTrimmedMean = calmar.trim(trim).average(),
-            calmarMedian = calmar.median(),
-            calmarT20 = calmar.top(trim).average(),
-            calmarB20 = calmar.bottom(trim).average()
-        )
-    }
-
-    //===========================================================//
-
-    private suspend fun runBackTesters(listOfSecurityIdentifiers: List<SecurityIdentifier>, startDate: Instant, endDate: Instant): List<TradingAlgorithmBackTesterOutputConverted> = coroutineScope {
+    private suspend fun runBackTesters(
+        listOfSecurityIdentifiers: List<SecurityIdentifier>,
+        startDate: Instant,
+        endDate: Instant
+    ): List<TradingAlgorithmBackTesterOutputConverted> = coroutineScope {
         val outputs = listOfSecurityIdentifiers.map { securityIdentifier ->
             async {
                 val out = TradingAlgorithmBackTester(
@@ -178,6 +135,81 @@ class TradingAlgorithmEvaluator {
         }.awaitAll()
 
         return@coroutineScope outputs.filterNotNull().map { it.toConvertedOutput() }
+    }
+
+    //===========================================================//
+
+    private fun calculateStatistics(
+        map: Map<SecurityIdentifier, List<TradingAlgorithmBackTesterOutputConverted>>
+    ): EvaluationStatistics {
+        val trim = 0.2
+
+        // Statistics gathered and mapped to Map<SecurityIdentifier, VALUE>
+        val capitals = map.mapValues { (_, converted) -> converted.map { it.totalCapital } }
+        val cagrs = map.mapValues { (_, converted) -> converted.map { it.cagr } }
+        val sharpes = map.mapValues { (_, converted) -> converted.map { it.sharpeRatio } }
+        val drawdowns = map.mapValues { (_, converted) -> converted.map { it.maxDrawdown } }
+        val calmar = map.mapValues { (_, converted) ->
+            converted
+                .filter { it.maxDrawdown != 0.0 }
+                .map { it.cagr / it.maxDrawdown }
+        }
+
+        return EvaluationStatistics(
+            tradingAlgorithmType = m_TradingAlgorithmType,
+            taxation = m_TaxationType,
+            startingCapital = m_StartingCapital,
+
+            totalCapitalMean = capitals.values.flatten().average(),
+            totalCapitalTrimmedMean = capitals.values.flatten().trim(trim).average(),
+            totalCapitalMedian = capitals.values.flatten().median(),
+            totalCapitalT20 = capitals
+                .map { (_, list) -> list.average() }
+                .top(trim).average(),
+            totalCapitalB20 = capitals
+                .map { (_, list) -> list.average() }
+                .bottom(trim).average(),
+
+            cagrMean = cagrs.values.flatten().average(),
+            cagrTrimmedMean = cagrs.values.flatten().trim(trim).average(),
+            cagrMedian = cagrs.values.flatten().median(),
+            cagrT20 = cagrs
+                .map { (_, list) -> list.average() }
+                .top(trim).average(),
+            cagrB20 = cagrs
+                .map { (_, list) -> list.average() }
+                .bottom(trim).average(),
+
+            sharpeMean = sharpes.values.flatten().average(),
+            sharpeTrimmedMean = sharpes.values.flatten().trim(trim).average(),
+            sharpeMedian = sharpes.values.flatten().median(),
+            sharpeT20 = sharpes
+                .map { (_, list) -> list.average() }
+                .top(trim).average(),
+            sharpeB20 = sharpes
+                .map { (_, list) -> list.average() }
+                .bottom(trim).average(),
+
+            maxDrawdownMean = drawdowns.values.flatten().average(),
+            maxDrawdownTrimmedMean = drawdowns.values.flatten().trim(trim).average(),
+            maxDrawdownMedian = drawdowns.values.flatten().median(),
+            maxDrawdownT20 = drawdowns
+                .map { (_, list) -> list.average() }
+                .bottom(trim).average(),
+            maxDrawdownB20 = drawdowns
+                .map { (_, list) -> list.average() }
+                .top(trim).average(),
+
+            calmarMean = calmar.values.flatten().average(),
+            calmarTrimmedMean = calmar.values.flatten().trim(trim).average(),
+            calmarMedian = calmar.values.flatten().median(),
+            calmarT20 = calmar
+                .map { (_, list) -> list.average() }
+                .top(trim).average(),
+            calmarB20 = calmar
+                .map { (_, list) -> list.average() }
+                .bottom(trim).average(),
+        )
     }
 
     //===========================================================//
@@ -353,16 +385,26 @@ class TradingAlgorithmEvaluator {
 
     data class TradingAlgorithmBackTesterOutputConverted(
         val tradingAlgorithmType: TradingAlgorithm.Type,
-        val securityIdentifier: SecurityIdentifier,
         val taxation: Taxation.Type?,
+        val securityIdentifier: SecurityIdentifier,
+        val duration: Duration,
         val startingCapital: Double,
         val totalCapital: Double,
+
+        val cagr: Double,
+
         val totalBuysMade: Double,
         val totalSellsMade: Double,
         val forceClosedTrades: Double,
+        val tradeWinrate: Double,
         val maxDrawdown: Double,
         val sharpeRatio: Double,
-        val cagr: Double
+
+        val averageWin: Double,
+        val averageLoss: Double,
+
+        val stockHistory: List<SecurityHistory>,
+        val tradingOrders: List<TradingOrder>
     )
 
     //===========================================================//
@@ -409,19 +451,26 @@ class TradingAlgorithmEvaluator {
     private fun TradingAlgorithmBackTester.Output.toConvertedOutput(): TradingAlgorithmBackTesterOutputConverted {
         val years = Duration.between(from.toJavaInstant(), to.toJavaInstant()).toDays().toDouble() / 365.2425
         val cagr = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0)
+        val duration = Duration.between(from.toJavaInstant(), to.toJavaInstant())!!
 
         return TradingAlgorithmBackTesterOutputConverted(
             tradingAlgorithmType,
-            securityIdentifier,
             taxation,
+            securityIdentifier,
+            duration,
             startingCapital,
             totalCapital,
+            cagr,
             totalBuysMade.toDouble(),
             totalSellsMade.toDouble(),
             forceClosedTrades.toDouble(),
+            tradeWinrate,
             maxDrawdown,
             sharpeRatio,
-            cagr
+            averageWin,
+            averageLoss,
+            stockHistory,
+            tradingOrders
         )
     }
 }
