@@ -11,7 +11,6 @@ import data.repository.trader.ITraderRepository
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
-import application.service.broker.InteractiveBrokersOrder
 import domain.trader.SellHolding
 import domain.trader.Trader
 import domain.trader.TradingOrder
@@ -219,7 +218,7 @@ class TraderService(
 
     //===========================================================//
 
-    private suspend fun getCurrentPrice(securityIdentifier: SecurityIdentifier): Quote{
+    private suspend fun getCurrentPrice(securityIdentifier: SecurityIdentifier): Quote {
         val finnhubProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub(finnhubConfig))
         var quote = finnhubProvider.getQuote(securityIdentifier)
 
