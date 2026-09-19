@@ -155,6 +155,12 @@ class TradingAlgorithmEvaluator {
                 .map { it.cagr / it.maxDrawdown }
         }
 
+        val capitalBest20 = capitals.best20()
+        val capitalWorst20 = capitals.worst20()
+
+        val cagrBest20 = cagrs.best20()
+        val cagrWorst20 = cagrs.worst20()
+
         return EvaluationStatistics(
             tradingAlgorithmType = m_TradingAlgorithmType,
             taxation = m_TaxationType,
@@ -209,7 +215,12 @@ class TradingAlgorithmEvaluator {
             calmarB20 = calmar
                 .map { (_, list) -> list.average() }
                 .bottom(trim).average(),
-        )
+            totalCapitalBest20 = capitalBest20,
+            totalCapitalWorst20 = capitalWorst20,
+
+            cagrBest20 = cagrBest20,
+            cagrWorst20 = cagrWorst20,
+            )
     }
 
     //===========================================================//
@@ -307,6 +318,14 @@ class TradingAlgorithmEvaluator {
             row("Worst20", { it.calmarB20 },         { it.format(2) })
             println("-".repeat(14 + availablePeriods.size * 13))
             println()
+
+
+            header("Lists")
+            rankedLists("Best 20% - Total Capital", { it.totalCapitalBest20 }) { it.format(2) }
+            rankedLists("Worst 20% - Total Capital", { it.totalCapitalWorst20 }) { it.format(2) }
+            rankedLists("Best 20% - CAGR", { it.cagrBest20 }) { "${(it * 100).format(2)}%" }
+            rankedLists("Worst 20% - CAGR", { it.cagrWorst20 }){ "${(it * 100).format(2)}%" }
+
         }
 
         //===========================================================//
@@ -341,6 +360,31 @@ class TradingAlgorithmEvaluator {
 
             println("| ${label.padEnd(10)} $values |")
         }
+
+        private fun rankedLists(
+            title: String,
+            values: (EvaluationStatistics) -> List<Pair<SecurityIdentifier, Double>>,
+            formatter: (Double) -> String
+        ) {
+            val byPeriod = list.associate { it.second to it.first }
+
+            availablePeriods.forEach { period ->
+                val statistics = byPeriod[period] ?: return@forEach
+
+                println("$title | $period")
+                println("-".repeat(50))
+
+                values(statistics).forEachIndexed { index, item ->
+                    println(
+                        "${(index + 1).toString().padStart(2)}. " +
+                                "${item.first.tickerSymbol.padEnd(10)} " +
+                                formatter(item.second)
+                    )
+                }
+
+                println()
+            }
+        }
     }
 
     //===========================================================//
@@ -356,11 +400,17 @@ class TradingAlgorithmEvaluator {
         val totalCapitalT20: Double,
         val totalCapitalB20: Double,
 
+        val totalCapitalBest20: List<Pair<SecurityIdentifier,Double>>,
+        val totalCapitalWorst20: List<Pair<SecurityIdentifier, Double>>,
+
         val cagrMean: Double,
         val cagrTrimmedMean: Double,
         val cagrMedian: Double,
         val cagrT20: Double,
         val cagrB20: Double,
+
+        val cagrBest20: List<Pair<SecurityIdentifier,Double>>,
+        val cagrWorst20: List<Pair<SecurityIdentifier,Double>>,
 
         val sharpeMean: Double,
         val sharpeTrimmedMean: Double,
@@ -472,5 +522,39 @@ class TradingAlgorithmEvaluator {
             stockHistory,
             tradingOrders
         )
+    }
+
+    private fun Map<SecurityIdentifier, List<Double>>.best20(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
+        val count = kotlin.math.ceil(size * 0.20).toInt()
+        val ret = map { (security, values) ->
+            Pair(security, values.average())
+        }
+
+        return if (lowerIsBetter) {
+            ret.sortedBy { security ->
+                security.second
+            }.take(count)
+        } else {
+            ret.sortedByDescending {security ->
+                security.second
+            }.take(count)
+        }
+    }
+
+    private fun Map<SecurityIdentifier, List<Double>>.worst20(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
+        val count = kotlin.math.ceil(size * 0.20).toInt()
+        val ret = map { (security, values) ->
+            Pair(security, values.average())
+        }
+
+        return if (lowerIsBetter) {
+            ret.sortedByDescending { security ->
+                security.second
+            }.take(count)
+        } else {
+            ret.sortedBy {security ->
+                security.second
+            }.take(count)
+        }
     }
 }
