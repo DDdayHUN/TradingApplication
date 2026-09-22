@@ -45,8 +45,14 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Public Method(es)
 
-    suspend fun runEvaluation(): Output = coroutineScope {
-        val listOfSecurityIdentifiers = m_Provider.getAllSecurityIdentifiers().getOrThrow()
+    suspend fun runEvaluation(securityIdentifiers: List<SecurityIdentifier> = listOf()): Output = coroutineScope {
+        val listOfSecurityIdentifiers =
+            if (securityIdentifiers.isEmpty()) {
+                m_Provider.getAllSecurityIdentifiers().getOrThrow()
+            } else {
+                securityIdentifiers
+            }
+
 
         val timePeriods = listOf(
             TimePeriod.Year10,

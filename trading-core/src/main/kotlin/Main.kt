@@ -32,6 +32,37 @@ suspend fun main() {
         "USD"
     )
 
+    val identifierList = listOf(
+        identifier,
+        SecurityIdentifier(
+            "US30303M1027",
+            "META",
+            "USD"
+        ),
+        SecurityIdentifier(
+            "US5949181045",
+            "MSFT",
+            "USD"
+        ),
+        SecurityIdentifier(
+            "US67066G1040",
+            "NVDA",
+            "USD"
+        ),
+        SecurityIdentifier(
+            "US0079031078",
+            "AMD",
+            "USD"
+        ),
+        SecurityIdentifier(
+            "US0231351067",
+            "AMZN"
+        ),
+        SecurityIdentifier(
+            "US6541061031",
+            "NKE"
+        )
+    )
     val startCapital = 5000.0
     val startDate = Instant.parse("2020-01-01T00:00:00Z")
     val endDate = Instant.parse("2026-01-01T00:00:00Z")
@@ -109,7 +140,7 @@ suspend fun main() {
                 startDate,
                 endDate,
                 evaluationWindowStepYears
-            ).runEvaluation().display()
+            ).runEvaluation(identifierList).display()
         }
     }
 
