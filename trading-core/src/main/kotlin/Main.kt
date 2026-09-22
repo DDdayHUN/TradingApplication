@@ -7,6 +7,7 @@ import domain.tax.Taxation
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import org.springframework.context.support.beans
 import kotlin.time.Instant
 
 suspend fun main() {
@@ -16,7 +17,8 @@ suspend fun main() {
 
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
     val c_RUN_BACKTEST_ON_ALL_SECURITY = false // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
-    val c_RUN_EVAL_ON_ONE_ALGORITHM = true
+    val c_RUN_EVAL_ON_ONE_ALGORITHM = false
+    val c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT = true
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
 
     //===========================================================//
@@ -140,7 +142,34 @@ suspend fun main() {
                 startDate,
                 endDate,
                 evaluationWindowStepYears
-            ).runEvaluation(identifierList).display()
+            ).runEvaluation().display()
+        }
+    }
+
+    if(c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT){
+        run {
+            val first = TradingAlgorithmEvaluator(
+                yahooHistoricalMarketDataProvider,
+                algorithm,
+                startCapital,
+                taxation,
+                startDate,
+                endDate,
+                evaluationWindowStepYears
+            ).runEvaluation()
+            first.display()
+
+            val size = (first.getBestList().size * 0.25).toInt()
+            println("size: $size")
+            TradingAlgorithmEvaluator(
+                yahooHistoricalMarketDataProvider,
+                algorithm,
+                startCapital,
+                taxation,
+                startDate,
+                endDate,
+                evaluationWindowStepYears
+            ).runEvaluation(first.getBestList(size)).display()
         }
     }
 

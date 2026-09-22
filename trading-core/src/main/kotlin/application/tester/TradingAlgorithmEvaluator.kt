@@ -161,11 +161,11 @@ class TradingAlgorithmEvaluator {
                 .map { it.cagr / it.maxDrawdown }
         }
 
-        val capitalBest20 = capitals.best20()
-        val capitalWorst20 = capitals.worst20()
+        val capitalBest20 = capitals.bestList()
+        val capitalWorst20 = capitals.worstList()
 
-        val cagrBest20 = cagrs.best20()
-        val cagrWorst20 = cagrs.worst20()
+        val cagrBest20 = cagrs.bestList()
+        val cagrWorst20 = cagrs.worstList()
 
         return EvaluationStatistics(
             tradingAlgorithmType = m_TradingAlgorithmType,
@@ -258,6 +258,49 @@ class TradingAlgorithmEvaluator {
     data class Output(val list: List<Pair<EvaluationStatistics, TimePeriod>>) {
         private val availablePeriods: List<TimePeriod> get() = TimePeriod.entries.filter { period -> list.any { it.second == period } }
 
+        fun getBestList(
+            size: Int = 20,
+            metric: Metric = Metric.TOTAL_CAPITAL
+        ): List<SecurityIdentifier> {
+
+            val statistics = list
+                .firstOrNull()
+                ?.first
+                ?: return emptyList()
+
+            val values = when (metric) {
+                Metric.TOTAL_CAPITAL -> statistics.totalCapitalBest20
+                Metric.CAGR -> statistics.cagrBest20
+            }
+
+            return values
+                .take(size)
+                .map { it.first }
+        }
+
+        fun getWorstList(
+            size: Int = 20,
+            metric: Metric = Metric.TOTAL_CAPITAL
+        ): List<Pair<SecurityIdentifier, Double>> {
+
+            val statistics = list
+                .firstOrNull()
+                ?.first
+                ?: return emptyList()
+
+            val values = when (metric) {
+                Metric.TOTAL_CAPITAL -> statistics.totalCapitalWorst20
+                Metric.CAGR -> statistics.cagrWorst20
+            }
+
+            return values.take(size)
+        }
+
+        enum class Metric {
+            TOTAL_CAPITAL,
+            CAGR
+        }
+
         fun display() {
 
             require(list.isNotEmpty()) { "No evaluation results available." }
@@ -327,10 +370,11 @@ class TradingAlgorithmEvaluator {
 
 
             header("Lists")
-            rankedLists("Best 20% - Total Capital", { it.totalCapitalBest20 }) { it.format(2) }
-            rankedLists("Worst 20% - Total Capital", { it.totalCapitalWorst20 }) { it.format(2) }
-            rankedLists("Best 20% - CAGR", { it.cagrBest20 }) { "${(it * 100).format(2)}%" }
-            rankedLists("Worst 20% - CAGR", { it.cagrWorst20 }){ "${(it * 100).format(2)}%" }
+            println()
+            rankedLists("Total Capital", { it.totalCapitalBest20 }) { it.format(2) }
+            println("-".repeat(14 + availablePeriods.size * 13))
+            println()
+            rankedLists("CAGR", { it.cagrBest20 }) { "${(it * 100).format(2)}%" }
 
         }
 
@@ -530,8 +574,7 @@ class TradingAlgorithmEvaluator {
         )
     }
 
-    private fun Map<SecurityIdentifier, List<Double>>.best20(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
-        val count = kotlin.math.ceil(size * 0.20).toInt()
+    private fun Map<SecurityIdentifier, List<Double>>.bestList(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
         val ret = map { (security, values) ->
             Pair(security, values.average())
         }
@@ -539,16 +582,15 @@ class TradingAlgorithmEvaluator {
         return if (lowerIsBetter) {
             ret.sortedBy { security ->
                 security.second
-            }.take(count)
+            }
         } else {
             ret.sortedByDescending {security ->
                 security.second
-            }.take(count)
+            }
         }
     }
 
-    private fun Map<SecurityIdentifier, List<Double>>.worst20(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
-        val count = kotlin.math.ceil(size * 0.20).toInt()
+    private fun Map<SecurityIdentifier, List<Double>>.worstList(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
         val ret = map { (security, values) ->
             Pair(security, values.average())
         }
@@ -556,11 +598,11 @@ class TradingAlgorithmEvaluator {
         return if (lowerIsBetter) {
             ret.sortedByDescending { security ->
                 security.second
-            }.take(count)
+            }
         } else {
             ret.sortedBy {security ->
                 security.second
-            }.take(count)
+            }
         }
     }
 }
