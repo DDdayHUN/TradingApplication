@@ -10,9 +10,11 @@ import domain.market.security.SecurityIdentifier
 import application.service.broker.InteractiveBrokersOrder
 import application.service.broker.InteractiveBrokersOrderService
 import application.service.broker.toInteractiveBrokersOrder
+import application.tester.TradingAlgorithmEvaluator
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
+import domain.tax.Taxation
 import domain.trader.TradingOrder
 import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Qualifier
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 @Deprecated("ONLY TESTING")
 @Component
@@ -35,6 +38,10 @@ class Test(
     private val logger = logger<Test>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val portfolioId = UUID.fromString("ce961a98-7f5a-4f6f-8030-2a9178f79101")
+    private val startCapital = 10_000.0
+    private val startDate = Instant.parse("2021-01-01T00:00:00Z")
+    private val endDate = Instant.parse("2026-01-01T00:00:00Z")
+    private val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
     @Scheduled(
         cron = "0 5 12 * * *",
@@ -193,6 +200,47 @@ class Test(
             val portfolio = portfolioService.getPortfolio(portfolioId)
             portfolio.traders.forEach { trader ->
                 traderService.deleteTrader(trader.id)
+            }
+        }
+    }
+
+    @Scheduled(
+        cron = "0 30 12 * * *",
+        zone = "Europe/Budapest"
+    )
+    fun createTradersByEvalOutput() {
+        scope.launch {
+            var evalOutput = TradingAlgorithmEvaluator(
+                provider = provider,
+                tradingAlgorithmType = TradingAlgorithm.Type.TACPP46,
+                capital = startCapital,
+                taxation = Taxation.Type.Hungary,
+                evaluationStartYear = startDate,
+                evaluationEndYear = endDate,
+                windowStepYears = evaluationWindowStepYears
+            ).runEvaluation().getBestList(6)
+
+            val traders = traderService.getAllByPortfolioId(portfolioId)
+            val traderSecurities = traders.map {
+                    trader-> trader.securityIdentifier
+            }
+            evalOutput = evalOutput.filter { security ->
+                security !in traderSecurities
+            }
+
+            evalOutput.forEach { security ->
+                traderService.createTrader(
+                    portfolioId = portfolioId,
+                    request = CreateTraderRequest(
+                        securityIdentifier = SecurityIdentifierRequest(
+                            isin = security.isin,
+                            tickerSymbol = security.tickerSymbol,
+                            currency = security.currency,
+                        ),
+                        capital = 20_000.0,
+                        algorithmType = "TACPP46"
+                    )
+                )
             }
         }
     }

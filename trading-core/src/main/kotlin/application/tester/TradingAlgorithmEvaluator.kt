@@ -1,7 +1,7 @@
 package application.tester
 
-import domain.algorithm.TradingAlgorithm
 import data.repository.historical_data.IHistoricalMarketDataProvider
+import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
@@ -11,6 +11,7 @@ import domain.utils.Math.median
 import domain.utils.Math.top
 import domain.utils.Math.trim
 import format
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -41,6 +42,11 @@ class TradingAlgorithmEvaluator {
     private val m_EvaluationEndDate: Instant
     private val m_WindowStepYears: Int
 
+    private val backtestDispatcher =
+        Dispatchers.Default.limitedParallelism(
+            Runtime.getRuntime().availableProcessors()
+        )
+
     //===========================================================//
     //===========================================================//
     // Public Method(es)
@@ -52,7 +58,6 @@ class TradingAlgorithmEvaluator {
             } else {
                 securityIdentifiers
             }
-
 
         val timePeriods = listOf(
             TimePeriod.Year10,
@@ -125,7 +130,7 @@ class TradingAlgorithmEvaluator {
         endDate: Instant
     ): List<TradingAlgorithmBackTesterOutputConverted> = coroutineScope {
         val outputs = listOfSecurityIdentifiers.map { securityIdentifier ->
-            async {
+            async(backtestDispatcher) {
                 val out = TradingAlgorithmBackTester(
                     provider = m_Provider,
                     type = m_TradingAlgorithmType,
@@ -367,15 +372,6 @@ class TradingAlgorithmEvaluator {
             row("Worst20", { it.calmarB20 },         { it.format(2) })
             println("-".repeat(14 + availablePeriods.size * 13))
             println()
-
-
-            header("Lists")
-            println()
-            rankedLists("Total Capital", { it.totalCapitalBest20 }) { it.format(2) }
-            println("-".repeat(14 + availablePeriods.size * 13))
-            println()
-            rankedLists("CAGR", { it.cagrBest20 }) { "${(it * 100).format(2)}%" }
-
         }
 
         //===========================================================//

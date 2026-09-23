@@ -1,8 +1,8 @@
 package application.tester
 
+import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
-import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
