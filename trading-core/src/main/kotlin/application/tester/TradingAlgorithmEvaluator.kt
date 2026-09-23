@@ -264,7 +264,7 @@ class TradingAlgorithmEvaluator {
         private val availablePeriods: List<TimePeriod> get() = TimePeriod.entries.filter { period -> list.any { it.second == period } }
 
         fun getBestList(
-            size: Int = 20,
+            size: Int = 0,
             metric: Metric = Metric.TOTAL_CAPITAL
         ): List<SecurityIdentifier> {
 
@@ -278,27 +278,8 @@ class TradingAlgorithmEvaluator {
                 Metric.CAGR -> statistics.cagrBest20
             }
 
-            return values
-                .take(size)
-                .map { it.first }
-        }
-
-        fun getWorstList(
-            size: Int = 20,
-            metric: Metric = Metric.TOTAL_CAPITAL
-        ): List<Pair<SecurityIdentifier, Double>> {
-
-            val statistics = list
-                .firstOrNull()
-                ?.first
-                ?: return emptyList()
-
-            val values = when (metric) {
-                Metric.TOTAL_CAPITAL -> statistics.totalCapitalWorst20
-                Metric.CAGR -> statistics.cagrWorst20
-            }
-
-            return values.take(size)
+            if(size == 0) return values.map{it.first}
+            return values.take(size).map { it.first }
         }
 
         enum class Metric {

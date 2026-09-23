@@ -22,7 +22,7 @@ suspend fun main() {
     // Eval
 
     val c_RUN_EVAL_ON_ONE_ALGORITHM = false
-    val c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT = true; val percentToGetAfterEval = 0.30
+    val c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT = true; val percentToGetAfterEval = 0.10
     val c_RUN_EVAL_ON_N_SECURITY = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false
 
@@ -165,6 +165,8 @@ suspend fun main() {
             first.display()
 
             val size = (first.getBestList().size * percentToGetAfterEval).toInt()
+            println("list size: ${first.getBestList().size}")
+            println("size after: $size")
             TradingAlgorithmEvaluator(
                 yahooHistoricalMarketDataProvider,
                 algorithm,
