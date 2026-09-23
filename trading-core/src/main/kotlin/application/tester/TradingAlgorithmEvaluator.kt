@@ -1,7 +1,7 @@
 package application.tester
 
-import domain.algorithm.TradingAlgorithm
 import data.repository.historical_data.IHistoricalMarketDataProvider
+import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
@@ -11,6 +11,7 @@ import domain.utils.Math.median
 import domain.utils.Math.top
 import domain.utils.Math.trim
 import format
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -41,12 +42,22 @@ class TradingAlgorithmEvaluator {
     private val m_EvaluationEndDate: Instant
     private val m_WindowStepYears: Int
 
+    private val backtestDispatcher =
+        Dispatchers.Default.limitedParallelism(
+            Runtime.getRuntime().availableProcessors()
+        )
+
     //===========================================================//
     //===========================================================//
     // Public Method(es)
 
-    suspend fun runEvaluation(): Output = coroutineScope {
-        val listOfSecurityIdentifiers = m_Provider.getAllSecurityIdentifiers().getOrThrow()
+    suspend fun runEvaluation(securityIdentifiers: List<SecurityIdentifier> = listOf()): Output = coroutineScope {
+        val listOfSecurityIdentifiers =
+            if (securityIdentifiers.isEmpty()) {
+                m_Provider.getAllSecurityIdentifiers().getOrThrow()
+            } else {
+                securityIdentifiers
+            }
 
         val timePeriods = listOf(
             TimePeriod.Year10,
@@ -119,7 +130,7 @@ class TradingAlgorithmEvaluator {
         endDate: Instant
     ): List<TradingAlgorithmBackTesterOutputConverted> = coroutineScope {
         val outputs = listOfSecurityIdentifiers.map { securityIdentifier ->
-            async {
+            async(backtestDispatcher) {
                 val out = TradingAlgorithmBackTester(
                     provider = m_Provider,
                     type = m_TradingAlgorithmType,
@@ -155,11 +166,11 @@ class TradingAlgorithmEvaluator {
                 .map { it.cagr / it.maxDrawdown }
         }
 
-        val capitalBest20 = capitals.best20()
-        val capitalWorst20 = capitals.worst20()
+        val capitalBest20 = capitals.bestList()
+        val capitalWorst20 = capitals.worstList()
 
-        val cagrBest20 = cagrs.best20()
-        val cagrWorst20 = cagrs.worst20()
+        val cagrBest20 = cagrs.bestList()
+        val cagrWorst20 = cagrs.worstList()
 
         return EvaluationStatistics(
             tradingAlgorithmType = m_TradingAlgorithmType,
@@ -252,6 +263,30 @@ class TradingAlgorithmEvaluator {
     data class Output(val list: List<Pair<EvaluationStatistics, TimePeriod>>) {
         private val availablePeriods: List<TimePeriod> get() = TimePeriod.entries.filter { period -> list.any { it.second == period } }
 
+        fun getBestList(
+            size: Int = 0,
+            metric: Metric = Metric.TOTAL_CAPITAL
+        ): List<SecurityIdentifier> {
+
+            val statistics = list
+                .firstOrNull()
+                ?.first
+                ?: return emptyList()
+
+            val values = when (metric) {
+                Metric.TOTAL_CAPITAL -> statistics.totalCapitalBest20
+                Metric.CAGR -> statistics.cagrBest20
+            }
+
+            if(size == 0) return values.map{it.first}
+            return values.take(size).map { it.first }
+        }
+
+        enum class Metric {
+            TOTAL_CAPITAL,
+            CAGR
+        }
+
         fun display() {
 
             require(list.isNotEmpty()) { "No evaluation results available." }
@@ -318,14 +353,6 @@ class TradingAlgorithmEvaluator {
             row("Worst20", { it.calmarB20 },         { it.format(2) })
             println("-".repeat(14 + availablePeriods.size * 13))
             println()
-
-
-            header("Lists")
-            rankedLists("Best 20% - Total Capital", { it.totalCapitalBest20 }) { it.format(2) }
-            rankedLists("Worst 20% - Total Capital", { it.totalCapitalWorst20 }) { it.format(2) }
-            rankedLists("Best 20% - CAGR", { it.cagrBest20 }) { "${(it * 100).format(2)}%" }
-            rankedLists("Worst 20% - CAGR", { it.cagrWorst20 }){ "${(it * 100).format(2)}%" }
-
         }
 
         //===========================================================//
@@ -524,8 +551,7 @@ class TradingAlgorithmEvaluator {
         )
     }
 
-    private fun Map<SecurityIdentifier, List<Double>>.best20(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
-        val count = kotlin.math.ceil(size * 0.20).toInt()
+    private fun Map<SecurityIdentifier, List<Double>>.bestList(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
         val ret = map { (security, values) ->
             Pair(security, values.average())
         }
@@ -533,16 +559,15 @@ class TradingAlgorithmEvaluator {
         return if (lowerIsBetter) {
             ret.sortedBy { security ->
                 security.second
-            }.take(count)
+            }
         } else {
             ret.sortedByDescending {security ->
                 security.second
-            }.take(count)
+            }
         }
     }
 
-    private fun Map<SecurityIdentifier, List<Double>>.worst20(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
-        val count = kotlin.math.ceil(size * 0.20).toInt()
+    private fun Map<SecurityIdentifier, List<Double>>.worstList(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
         val ret = map { (security, values) ->
             Pair(security, values.average())
         }
@@ -550,11 +575,11 @@ class TradingAlgorithmEvaluator {
         return if (lowerIsBetter) {
             ret.sortedByDescending { security ->
                 security.second
-            }.take(count)
+            }
         } else {
             ret.sortedBy {security ->
                 security.second
-            }.take(count)
+            }
         }
     }
 }

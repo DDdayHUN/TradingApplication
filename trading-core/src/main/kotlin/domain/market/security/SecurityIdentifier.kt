@@ -17,7 +17,7 @@ package domain.market.security
 data class SecurityIdentifier(
     val isin: String,
     val tickerSymbol: String,
-    val currency: String
+    val currency: String = "USD"
 ) {
     init {
         require(isin.matches(Regex("[A-Z]{2}[A-Z0-9]{9}[0-9]"))) { "ISIN" }

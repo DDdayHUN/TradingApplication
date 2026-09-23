@@ -1,6 +1,6 @@
+import application.provider.HistoricalMarketDataProvider
 import application.tester.TradingAlgorithmBackTester
 import application.tester.TradingAlgorithmEvaluator
-import application.provider.HistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
@@ -12,12 +12,19 @@ import kotlin.time.Instant
 suspend fun main() {
     //===========================================================//
     //===========================================================//
-    // Settings
+    // Backtest
 
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
-    val c_RUN_BACKTEST_ON_ALL_SECURITY = false // NOTE : This might take some time, it is a HEAVY COMPUTATION :)
-    val c_RUN_EVAL_ON_ONE_ALGORITHM = true
-    val c_RUN_EVAL_ON_ALL_ALGORITHM = false // NOTE : This might take some time, it is a VERY HEAVY COMPUTATION :)
+    val c_RUN_BACKTEST_ON_ALL_SECURITY = false
+
+    //===========================================================//
+    //===========================================================//
+    // Eval
+
+    val c_RUN_EVAL_ON_ONE_ALGORITHM = false
+    val c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT = true; val percentToGetAfterEval = 0.10
+    val c_RUN_EVAL_ON_N_SECURITY = false
+    val c_RUN_EVAL_ON_ALL_ALGORITHM = false
 
     //===========================================================//
     //===========================================================//
@@ -32,8 +39,39 @@ suspend fun main() {
         "USD"
     )
 
-    val startCapital = 5000.0
-    val startDate = Instant.parse("2020-01-01T00:00:00Z")
+    val identifierList = listOf(
+        identifier,
+        SecurityIdentifier(
+            "US30303M1027",
+            "META",
+            "USD"
+        ),
+        SecurityIdentifier(
+            "US5949181045",
+            "MSFT",
+            "USD"
+        ),
+        SecurityIdentifier(
+            "US67066G1040",
+            "NVDA",
+            "USD"
+        ),
+        SecurityIdentifier(
+            "US0079031078",
+            "AMD",
+            "USD"
+        ),
+        SecurityIdentifier(
+            "US0231351067",
+            "AMZN"
+        ),
+        SecurityIdentifier(
+            "US6541061031",
+            "NKE"
+        )
+    )
+    val startCapital = 10_000.0
+    val startDate = Instant.parse("2021-01-01T00:00:00Z")
     val endDate = Instant.parse("2026-01-01T00:00:00Z")
     val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
@@ -110,6 +148,50 @@ suspend fun main() {
                 endDate,
                 evaluationWindowStepYears
             ).runEvaluation().display()
+        }
+    }
+
+    if(c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT){
+        run {
+            val first = TradingAlgorithmEvaluator(
+                yahooHistoricalMarketDataProvider,
+                algorithm,
+                startCapital,
+                taxation,
+                startDate,
+                endDate,
+                evaluationWindowStepYears
+            ).runEvaluation()
+            first.display()
+
+            val size = (first.getBestList().size * percentToGetAfterEval).toInt()
+            println("list size: ${first.getBestList().size}")
+            println("size after: $size")
+            TradingAlgorithmEvaluator(
+                yahooHistoricalMarketDataProvider,
+                algorithm,
+                startCapital,
+                taxation,
+                startDate,
+                endDate,
+                evaluationWindowStepYears
+            ).runEvaluation(first.getBestList(size)).display()
+        }
+    }
+
+    //===========================================================//
+
+    if(c_RUN_EVAL_ON_N_SECURITY) {
+        run {
+            TradingAlgorithmEvaluator(
+                yahooHistoricalMarketDataProvider,
+                algorithm,
+                startCapital,
+                taxation,
+                startDate,
+                endDate,
+                evaluationWindowStepYears
+            ).runEvaluation(identifierList).display()
         }
     }
 
