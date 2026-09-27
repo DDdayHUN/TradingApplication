@@ -23,8 +23,8 @@ suspend fun main() {
     // Eval
 
     val c_RUN_EVAL_ON_ONE_ALGORITHM = true
-    val c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT = true; val percentToGetAfterEval = 0.10
-    val c_RUN_EVAL_ON_N_SECURITY = false
+    val c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT = false; val percentToGetAfterEval = 0.10
+    val c_RUN_EVAL_ON_ONE_ALGORITHM_N_SECURITY = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false
 
     //===========================================================//
@@ -199,7 +199,7 @@ suspend fun main() {
 
     //===========================================================//
 
-    if(c_RUN_EVAL_ON_N_SECURITY) {
+    if(c_RUN_EVAL_ON_ONE_ALGORITHM_N_SECURITY) {
         run {
             TradingAlgorithmEvaluator(
                 yahooHistoricalMarketDataProvider,

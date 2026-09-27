@@ -15,23 +15,34 @@ version = "1.0-SNAPSHOT"
 repositories { mavenCentral() }
 kotlin { jvmToolchain(21) }
 
+// ====================================
+// Versions
+// ====================================
+
+val protobufVersion = "4.31.1"
+val gsonVersion = "2.13.2"
+val coroutinesVersion = "1.10.2"
+val junitVersion = "5.11.4"
+
 dependencies {
     // ====================================
     // CORE
     // ====================================
+
     implementation(files("libs/TwsApi.jar"))
-    implementation("com.google.protobuf:protobuf-java:4.31.1")
-    implementation("com.google.code.gson:gson:2.13.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.10.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
+    implementation("com.google.protobuf:protobuf-java:$protobufVersion")
+    implementation("com.google.code.gson:gson:$gsonVersion")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$coroutinesVersion")
 
     // ====================================
     // SPRING
     // ====================================
 
     implementation(kotlin("reflect"))
-    implementation("org.springframework.boot:" + "spring-boot-starter-security-oauth2-resource-server")
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -48,7 +59,7 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(kotlin("test-junit5"))
-    testImplementation(platform("org.junit:junit-bom:5.11.4"))
+    testImplementation(platform("org.junit:junit-bom:$junitVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
@@ -65,4 +76,4 @@ tasks.test { useJUnitPlatform() }
 // Spring MAIN
 // ====================================
 
-springBoot { mainClass.set("api.SpringMainKt")}
+springBoot { mainClass.set("api.SpringMainKt") }

@@ -17,6 +17,9 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import java.time.Duration
 import java.time.ZoneOffset
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.mapValues
 import kotlin.math.pow
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
@@ -166,12 +169,6 @@ class TradingAlgorithmEvaluator {
                 .map { it.cagr / it.maxDrawdown }
         }
 
-        val capitalBest20 = capitals.bestList()
-        val capitalWorst20 = capitals.worstList()
-
-        val cagrBest20 = cagrs.bestList()
-        val cagrWorst20 = cagrs.worstList()
-
         return EvaluationStatistics(
             tradingAlgorithmType = m_TradingAlgorithmType,
             taxation = m_TaxationType,
@@ -227,11 +224,6 @@ class TradingAlgorithmEvaluator {
             calmarB20 = calmar
                 .map { (_, list) -> list.average() }
                 .bottom(trim).average(),
-            totalCapitalBest20 = capitalBest20,
-            totalCapitalWorst20 = capitalWorst20,
-
-            cagrBest20 = cagrBest20,
-            cagrWorst20 = cagrWorst20,
         )
     }
 
@@ -275,8 +267,8 @@ class TradingAlgorithmEvaluator {
                 ?: return emptyList()
 
             val values = when (metric) {
-                Metric.TOTAL_CAPITAL -> statistics.totalCapitalBest20
-                Metric.CAGR -> statistics.cagrBest20
+                Metric.TOTAL_CAPITAL -> statistics.source.mapValues { (_, converted) -> converted.map { it.totalCapital } }.bestList()
+                Metric.CAGR -> statistics.source.mapValues { (_, converted) -> converted.map { it.cagr } }.bestList()
             }
 
             if(size == 0) return values.map{it.first}
@@ -415,6 +407,42 @@ class TradingAlgorithmEvaluator {
                 println()
             }
         }
+
+        //===========================================================//
+
+        private fun Map<SecurityIdentifier, List<Double>>.bestList(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
+            val ret = map { (security, values) ->
+                Pair(security, values.average())
+            }
+
+            return if (lowerIsBetter) {
+                ret.sortedBy { security ->
+                    security.second
+                }
+            } else {
+                ret.sortedByDescending {security ->
+                    security.second
+                }
+            }
+        }
+
+        //===========================================================//
+
+        private fun Map<SecurityIdentifier, List<Double>>.worstList(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
+            val ret = map { (security, values) ->
+                Pair(security, values.average())
+            }
+
+            return if (lowerIsBetter) {
+                ret.sortedByDescending { security ->
+                    security.second
+                }
+            } else {
+                ret.sortedBy {security ->
+                    security.second
+                }
+            }
+        }
     }
 
     //===========================================================//
@@ -431,17 +459,11 @@ class TradingAlgorithmEvaluator {
         val totalCapitalT20: Double,
         val totalCapitalB20: Double,
 
-        val totalCapitalBest20: List<Pair<SecurityIdentifier,Double>>,
-        val totalCapitalWorst20: List<Pair<SecurityIdentifier, Double>>,
-
         val cagrMean: Double,
         val cagrTrimmedMean: Double,
         val cagrMedian: Double,
         val cagrT20: Double,
         val cagrB20: Double,
-
-        val cagrBest20: List<Pair<SecurityIdentifier,Double>>,
-        val cagrWorst20: List<Pair<SecurityIdentifier,Double>>,
 
         val sharpeMean: Double,
         val sharpeTrimmedMean: Double,
@@ -553,37 +575,5 @@ class TradingAlgorithmEvaluator {
             stockHistory,
             tradingOrders
         )
-    }
-
-    private fun Map<SecurityIdentifier, List<Double>>.bestList(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
-        val ret = map { (security, values) ->
-            Pair(security, values.average())
-        }
-
-        return if (lowerIsBetter) {
-            ret.sortedBy { security ->
-                security.second
-            }
-        } else {
-            ret.sortedByDescending {security ->
-                security.second
-            }
-        }
-    }
-
-    private fun Map<SecurityIdentifier, List<Double>>.worstList(lowerIsBetter: Boolean = false): List<Pair<SecurityIdentifier, Double>> {
-        val ret = map { (security, values) ->
-            Pair(security, values.average())
-        }
-
-        return if (lowerIsBetter) {
-            ret.sortedByDescending { security ->
-                security.second
-            }
-        } else {
-            ret.sortedBy {security ->
-                security.second
-            }
-        }
     }
 }
