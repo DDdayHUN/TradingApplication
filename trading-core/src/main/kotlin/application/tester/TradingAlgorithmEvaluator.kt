@@ -176,6 +176,7 @@ class TradingAlgorithmEvaluator {
             tradingAlgorithmType = m_TradingAlgorithmType,
             taxation = m_TaxationType,
             startingCapital = m_StartingCapital,
+            source = map,
 
             totalCapitalMean = capitals.values.flatten().average(),
             totalCapitalTrimmedMean = capitals.values.flatten().trim(trim).average(),
@@ -388,6 +389,8 @@ class TradingAlgorithmEvaluator {
             println("| ${label.padEnd(10)} $values |")
         }
 
+        //===========================================================//
+
         private fun rankedLists(
             title: String,
             values: (EvaluationStatistics) -> List<Pair<SecurityIdentifier, Double>>,
@@ -420,6 +423,7 @@ class TradingAlgorithmEvaluator {
         val tradingAlgorithmType: TradingAlgorithm.Type,
         val taxation: Taxation.Type?,
         val startingCapital: Double,
+        val source: Map<SecurityIdentifier, List<TradingAlgorithmBackTesterOutputConverted>>,
 
         val totalCapitalMean: Double,
         val totalCapitalTrimmedMean: Double,

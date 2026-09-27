@@ -15,6 +15,7 @@ suspend fun main() {
     // Backtest
 
     val c_RUN_BACKTEST_ON_ONE_SECURITY = false
+    val c_RUN_BACKTEST_ON_N_SECURITY = false
     val c_RUN_BACKTEST_ON_ALL_SECURITY = false
 
     //===========================================================//
@@ -22,7 +23,7 @@ suspend fun main() {
     // Eval
 
     val c_RUN_EVAL_ON_ONE_ALGORITHM = true
-    val c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT = false; val percentToGetAfterEval = 0.10
+    val c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT = true; val percentToGetAfterEval = 0.10
     val c_RUN_EVAL_ON_N_SECURITY = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false
 
@@ -87,9 +88,22 @@ suspend fun main() {
     //===========================================================//
     // Config Checks
 
-    if(c_RUN_EVAL_ON_ONE_ALGORITHM && c_RUN_EVAL_ON_ALL_ALGORITHM) error("You can't run eval on one algorithm and on all at the same time")
-    if(c_RUN_BACKTEST_ON_ONE_SECURITY && c_RUN_BACKTEST_ON_ALL_SECURITY) error("You can't run backtest on one security and on all at the same time")
-    if(c_RUN_BACKTEST_ON_ALL_SECURITY && c_RUN_EVAL_ON_ONE_ALGORITHM) error("You can't run backtest on all security and eval on the same algorithm at the same time")
+    // Backtest
+    var c_BACKTEST_CONFIG_ERROR = false
+    if(c_RUN_BACKTEST_ON_ONE_SECURITY && c_RUN_BACKTEST_ON_N_SECURITY) c_BACKTEST_CONFIG_ERROR = true
+    if(c_RUN_BACKTEST_ON_ONE_SECURITY && c_RUN_BACKTEST_ON_ALL_SECURITY) c_BACKTEST_CONFIG_ERROR = true
+    if(c_RUN_BACKTEST_ON_ALL_SECURITY && c_RUN_BACKTEST_ON_N_SECURITY) c_BACKTEST_CONFIG_ERROR = true
+
+    // Eval
+    var c_EVAL_CONFIG_ERROR = false
+    // TODO : This shet
+
+    //===========================================================//
+    // Config Errors
+
+    if(c_BACKTEST_CONFIG_ERROR && c_EVAL_CONFIG_ERROR) error("Cannot run Backtest and Eval at the same time")
+    if(c_BACKTEST_CONFIG_ERROR) error("Backtest incorrectly set")
+    if(c_EVAL_CONFIG_ERROR) error("Eval incorrectly set")
 
     //===========================================================//
     //===========================================================//
@@ -152,6 +166,8 @@ suspend fun main() {
             ).runEvaluationOnAll().display()
         }
     }
+
+    //===========================================================//
 
     if(c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT){
         run {
