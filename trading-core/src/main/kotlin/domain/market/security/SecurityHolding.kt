@@ -23,8 +23,19 @@ data class SecurityHolding(
     val purchasePrice: Double,
     val amount: Int
 ) {
+
     init {
         require(purchasePrice >= 0.0) { "Price" }
         require(amount > 0) { "Amount must be greater than 0" }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is SecurityHolding) return false
+        return id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
     }
 }

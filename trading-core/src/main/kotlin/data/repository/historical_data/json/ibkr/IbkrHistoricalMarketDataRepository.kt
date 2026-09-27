@@ -1,6 +1,5 @@
 package data.repository.historical_data.json.ibkr
 
-import com.google.gson.GsonBuilder
 import data.repository.historical_data.HistoricalMarketDataDto
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.loadFromFile
@@ -25,11 +24,6 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
 
         File(resource.toURI())
     }
-
-    private val s_GSON = GsonBuilder()
-        .enableComplexMapKeySerialization()
-        .setPrettyPrinting()
-        .create()
 
     //===========================================================//
     //===========================================================//
@@ -83,12 +77,12 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
         val targetFile = s_RootDir.walkTopDown()
             .filter { it.isFile }
             .find {
-                val yahooMarketDataDto = loadFromFile<IbkrMarketDataDto>(s_GSON, it)
+                val yahooMarketDataDto = loadFromFile<IbkrMarketDataDto>(it)
                 yahooMarketDataDto.isin == securityIdentifier.isin
             }
 
         require(targetFile != null) { "There is no file with the given identifier" }
-        return@withContext loadFromFile<IbkrMarketDataDto>(s_GSON, targetFile).toHistoricalMarketDataDto()
+        return@withContext loadFromFile<IbkrMarketDataDto>(targetFile).toHistoricalMarketDataDto()
     }
 
     //===========================================================//
@@ -102,7 +96,7 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
         coroutineScope {
             files.map {
                 async {
-                    loadFromFile<IbkrMarketDataDto>(s_GSON, it)
+                    loadFromFile<IbkrMarketDataDto>(it)
                         .toHistoricalMarketDataDto()
                 }
             }.awaitAll()

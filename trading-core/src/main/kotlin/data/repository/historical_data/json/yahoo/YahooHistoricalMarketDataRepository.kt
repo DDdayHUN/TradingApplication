@@ -25,22 +25,13 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
         File(resource.toURI())
     }
 
-    private val s_GSON = GsonBuilder()
-        .enableComplexMapKeySerialization()
-        .setPrettyPrinting()
-        .create()
-
-
-    private val data: Map<String, HistoricalMarketDataDto> by lazy {
-
+    @Deprecated("Ez is eléggé veszélyes, hogyha nagy a file állományunk!")
+    private val s_Data: Map<String, HistoricalMarketDataDto> by lazy {
         s_RootDir
             .walkTopDown()
             .filter { it.isFile }
             .map {
-                loadFromFile<YahooMarketDataDto>(
-                    s_GSON,
-                    it
-                ).toHistoricalMarketDataDto()
+                loadFromFile<YahooMarketDataDto>(it).toHistoricalMarketDataDto()
             }
             .associateBy {
                 it.meta.isin
@@ -53,7 +44,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
 
     override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Result<List<SecurityHistory>> {
         return runCatching {
-            val securityData = requireNotNull(data[securityIdentifier.isin]){"There is no file with identifier ${securityIdentifier}"}
+            val securityData = requireNotNull(s_Data[securityIdentifier.isin]){"There is no file with identifier ${securityIdentifier}"}
 
             securityData.history
                 .asSequence()
@@ -68,7 +59,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
 
     override suspend fun getAllSecurityIdentifiers(): Result<List<SecurityIdentifier>> {
         return runCatching {
-            data.values.map { security ->
+            s_Data.values.map { security ->
                 SecurityIdentifier(
                     isin = security.meta.isin,
                     tickerSymbol = security.meta.tickerSymbol,

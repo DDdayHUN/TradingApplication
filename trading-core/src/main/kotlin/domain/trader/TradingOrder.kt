@@ -12,4 +12,15 @@ data class TradingOrder(
     val signal: TradingAlgorithm.Output,
     val atPrice: Double,
     val createdAt: Instant = Instant.now(),
-)
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is TradingOrder) return false
+        return orderId == other.orderId
+    }
+
+    override fun hashCode(): Int {
+        return orderId.hashCode()
+    }
+}
