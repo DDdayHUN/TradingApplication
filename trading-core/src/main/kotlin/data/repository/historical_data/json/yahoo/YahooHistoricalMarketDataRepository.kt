@@ -6,7 +6,6 @@ import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.loadFromFile
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityIdentifier
-import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import java.io.File
@@ -31,77 +30,51 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
         .setPrettyPrinting()
         .create()
 
+
+    private val data: Map<String, HistoricalMarketDataDto> by lazy {
+
+        s_RootDir
+            .walkTopDown()
+            .filter { it.isFile }
+            .map {
+                loadFromFile<YahooMarketDataDto>(
+                    s_GSON,
+                    it
+                ).toHistoricalMarketDataDto()
+            }
+            .associateBy {
+                it.meta.isin
+            }
+    }
+
     //===========================================================//
     //===========================================================//
     // Public Method(es)
 
-    @Suppress("DuplicatedCode")
     override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Result<List<SecurityHistory>> {
-        try {
-            val data = getBySecurityIdentifier(securityIdentifier)
+        return runCatching {
+            val securityData = requireNotNull(data[securityIdentifier.isin]){"There is no file with identifier ${securityIdentifier}"}
 
-            val ret = data.history
-                .filter { it.date in from..to }
-                .sortedBy { it.date }
-                .map { SecurityHistory(it.price) }
-                .toMutableList()
-
-            return Result.success(ret)
-        }
-        catch (e: Exception) {
-            return Result.failure(e)
+            securityData.history
+                .asSequence()
+                .filter { security -> security.date in from..to}
+                .sortedBy { security -> security.date }
+                .map { security -> SecurityHistory(security.price) }
+                .toList()
         }
     }
 
     //===========================================================//
 
-    @Deprecated("We need to redo this, because this is too expensive")
-    @Suppress("DuplicatedCode")
     override suspend fun getAllSecurityIdentifiers(): Result<List<SecurityIdentifier>> {
-        try {
-            val data = getAll()
-            val ret = data
-                .map {
-                    SecurityIdentifier(it.meta.isin, it.meta.tickerSymbol, it.meta.currency)
-                }
-            return Result.success(ret)
-        }
-        catch (e: Exception) {
-            return Result.failure(e)
-        }
-    }
-
-    //===========================================================//
-    //===========================================================//
-    // Private Method(es)
-
-    private suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto = withContext(Dispatchers.IO) {
-        val targetFile = s_RootDir.walkTopDown()
-            .filter { it.isFile }
-            .find {
-                val yahooMarketDataDto = loadFromFile<YahooMarketDataDto>(s_GSON, it)
-                yahooMarketDataDto.isin == securityIdentifier.isin
+        return runCatching {
+            data.values.map { security ->
+                SecurityIdentifier(
+                    isin = security.meta.isin,
+                    tickerSymbol = security.meta.tickerSymbol,
+                    currency = security.meta.currency,
+                )
             }
-
-        require(targetFile != null) { "There is no file with the given identifier" }
-        return@withContext loadFromFile<YahooMarketDataDto>(s_GSON, targetFile).toHistoricalMarketDataDto()
-    }
-
-    //===========================================================//
-
-    private suspend fun getAll(): List<HistoricalMarketDataDto> = withContext(Dispatchers.IO) {
-        val files = s_RootDir
-            .walkTopDown()
-            .filter { it.isFile }
-            .toList()
-
-        coroutineScope {
-            files.map {
-                async {
-                    loadFromFile<YahooMarketDataDto>(s_GSON, it)
-                        .toHistoricalMarketDataDto()
-                }
-            }.awaitAll()
         }
     }
 }
