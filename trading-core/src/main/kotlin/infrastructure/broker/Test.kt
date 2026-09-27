@@ -218,7 +218,7 @@ class Test(
                 evaluationStartYear = startDate,
                 evaluationEndYear = endDate,
                 windowStepYears = evaluationWindowStepYears
-            ).runEvaluation().getBestList(6)
+            ).runEvaluationOnAll().getBestList(6)
 
             val traders = traderService.getAllByPortfolioId(portfolioId)
             val traderSecurities = traders.map {

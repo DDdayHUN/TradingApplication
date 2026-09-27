@@ -1,6 +1,6 @@
 package data.repository
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -8,14 +8,20 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 
-inline fun <reified T> loadFromFile(serializer: Gson, file: File): T {
+@PublishedApi
+internal val g_GSON = GsonBuilder()
+    .enableComplexMapKeySerialization()
+    .setPrettyPrinting()
+    .create()
+
+inline fun <reified T> loadFromFile(file: File): T {
     InputStreamReader(FileInputStream(file), StandardCharsets.UTF_8).use { reader ->
-        return serializer.fromJson(reader, T::class.java)
+        return g_GSON.fromJson(reader, T::class.java)
     }
 }
 
-inline fun <reified T> saveToFile(serializer: Gson, file: File, obj: T) {
+inline fun <reified T> saveToFile(file: File, obj: T) {
     OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8).use { writer ->
-        serializer.toJson(obj, T::class.java, writer)
+        g_GSON.toJson(obj, T::class.java, writer)
     }
 }

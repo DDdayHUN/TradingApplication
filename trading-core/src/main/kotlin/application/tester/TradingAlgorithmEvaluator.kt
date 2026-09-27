@@ -42,7 +42,8 @@ class TradingAlgorithmEvaluator {
     private val m_EvaluationEndDate: Instant
     private val m_WindowStepYears: Int
 
-    private val backtestDispatcher =
+    @Deprecated("This might be redundant")
+    private val m_BacktestDispatcher =
         Dispatchers.Default.limitedParallelism(
             Runtime.getRuntime().availableProcessors()
         )
@@ -51,14 +52,13 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Public Method(es)
 
-    suspend fun runEvaluation(securityIdentifiers: List<SecurityIdentifier> = listOf()): Output = coroutineScope {
-        val listOfSecurityIdentifiers =
-            if (securityIdentifiers.isEmpty()) {
-                m_Provider.getAllSecurityIdentifiers().getOrThrow()
-            } else {
-                securityIdentifiers
-            }
+    suspend fun runEvaluationOnAll(): Output {
+        return runEvaluation(m_Provider.getAllSecurityIdentifiers().getOrThrow())
+    }
 
+    //===========================================================//
+
+    suspend fun runEvaluation(securityIdentifiers: List<SecurityIdentifier>): Output = coroutineScope {
         val timePeriods = listOf(
             TimePeriod.Year10,
             TimePeriod.Year5,
@@ -69,7 +69,7 @@ class TradingAlgorithmEvaluator {
 
         val results = timePeriods.map {
             async {
-                years(it, listOfSecurityIdentifiers)
+                years(it, securityIdentifiers)
             }
         }.awaitAll().filterNotNull()
 
@@ -130,7 +130,7 @@ class TradingAlgorithmEvaluator {
         endDate: Instant
     ): List<TradingAlgorithmBackTesterOutputConverted> = coroutineScope {
         val outputs = listOfSecurityIdentifiers.map { securityIdentifier ->
-            async(backtestDispatcher) {
+            async(m_BacktestDispatcher) {
                 val out = TradingAlgorithmBackTester(
                     provider = m_Provider,
                     type = m_TradingAlgorithmType,
@@ -231,7 +231,7 @@ class TradingAlgorithmEvaluator {
 
             cagrBest20 = cagrBest20,
             cagrWorst20 = cagrWorst20,
-            )
+        )
     }
 
     //===========================================================//
