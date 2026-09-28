@@ -32,6 +32,11 @@ class InteractiveBrokersSession(
         return client
     }
 
+    suspend fun getAccountSummary(): AccountSummary {
+        connect()
+        return client.getAccountSummary()
+    }
+
     //===========================================================//
     //===========================================================//
     // Private Method(s)

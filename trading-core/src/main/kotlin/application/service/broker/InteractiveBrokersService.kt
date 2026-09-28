@@ -1,15 +1,11 @@
 package application.service.broker
 
 import application.logging.logger
-import application.service.trader.ITraderService
 import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
-import data.repository.order.sql.InteractiveBrokersOrderRepository
-import data.repository.trader.ITraderRepository
-import data.repository.trader.sql.TraderRepository
 import domain.market.security.SecurityIdentifier
-import infrastructure.broker.IbkrAccountSummary
+import infrastructure.broker.AccountSummary
 import infrastructure.broker.IbkrHistoricalBar
 import infrastructure.broker.InteractiveBrokersSession
 import kotlinx.coroutines.delay
@@ -42,13 +38,6 @@ class InteractiveBrokersService(
             contract = clientContract,
             order = clientOrder
         )
-    }
-
-    //===========================================================//
-
-    suspend fun getAccountSummary(): IbkrAccountSummary {
-        val client = session.getClient()
-        return client.getAccountSummary()
     }
 
     //===========================================================//

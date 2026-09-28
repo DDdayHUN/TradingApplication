@@ -45,7 +45,7 @@ class TraderService(
     @Transactional
     override suspend fun createTrader(portfolioId: UUID, request: CreateTraderRequest): Trader {
         val portfolio = portfolioService.getPortfolio(portfolioId)
-        val availableCapital = portfolioService.getAccountSummary(portfolioId).availableCapital
+        val availableCapital = portfolioService.getPortfolioFundSummary(portfolioId).availableCapital
 
         require(request.capital <= availableCapital){
             "Insufficient available capital to create new trader"

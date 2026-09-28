@@ -44,7 +44,7 @@ class Test(
     private val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
     @Scheduled(
-        cron = "0 5 12 * * *",
+        cron = "0 50 20 * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {

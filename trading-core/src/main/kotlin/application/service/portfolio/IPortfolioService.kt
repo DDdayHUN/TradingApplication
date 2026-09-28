@@ -1,7 +1,7 @@
 package application.service.portfolio
 
 import domain.Portfolio
-import infrastructure.broker.IbkrAccountSummary
+import infrastructure.broker.AccountSummary
 import java.util.UUID
 
 interface IPortfolioService {
@@ -12,5 +12,5 @@ interface IPortfolioService {
     suspend fun getPortfolioByTraderId(traderId: UUID): Portfolio
     suspend fun deleteAllPortfolio(): Boolean
     suspend fun deletePortfolio(portfolioId: UUID): Boolean
-    suspend fun getAccountSummary(portfolioId: UUID): IbkrAccountSummary
+    suspend fun getPortfolioFundSummary(portfolioId: UUID): AccountSummary
 }
