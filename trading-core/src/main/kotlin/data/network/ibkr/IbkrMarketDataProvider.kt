@@ -4,7 +4,9 @@ import data.network.IMarketDataProvider
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
 import infrastructure.broker.InteractiveBrokersSession
+import org.springframework.stereotype.Component
 
+@Component
 class IbkrMarketDataProvider(
     private val session: InteractiveBrokersSession
 ): IMarketDataProvider {

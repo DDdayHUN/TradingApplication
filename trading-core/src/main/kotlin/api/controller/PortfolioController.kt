@@ -23,7 +23,7 @@ class PortfolioController(
     @GetMapping
     suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
         val response = portfolioService.getAllPortfolio().map { portfolio ->
-            val summary = portfolioService.getPortfolioFundSummary(portfolio.id)
+            val summary = portfolioService.getPortfolioAccountSummary(portfolio.id)
             portfolio.toResponse(
                 availableCapital = summary.availableCapital,
                 liquidation = summary.netLiquidation
@@ -39,7 +39,7 @@ class PortfolioController(
 
     @GetMapping("/{portfolioId}")
     suspend fun getPortfolioById(@PathVariable portfolioId: UUID): ResponseEntity<PortfolioResponse> {
-        val summary = portfolioService.getPortfolioFundSummary(portfolioId)
+        val summary = portfolioService.getPortfolioAccountSummary(portfolioId)
         val response = portfolioService.getPortfolio(portfolioId).toResponse(
             availableCapital = summary.availableCapital,
             liquidation = summary.netLiquidation
@@ -55,7 +55,7 @@ class PortfolioController(
     @PostMapping
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
         val portfolio = portfolioService.createPortfolio()
-        val summary = portfolioService.getPortfolioFundSummary(portfolio.id)
+        val summary = portfolioService.getPortfolioAccountSummary(portfolio.id)
         val response = portfolio.toResponse(
             availableCapital = summary.availableCapital,
             liquidation = summary.netLiquidation

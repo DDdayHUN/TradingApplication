@@ -1,16 +1,14 @@
 package application.service.portfolio
 
 import domain.Portfolio
-import infrastructure.broker.AccountSummary
-import java.util.UUID
+import domain.Portfolio.PortfolioAccountSummary
+import java.util.*
 
 interface IPortfolioService {
     suspend fun save(portfolio: Portfolio): Portfolio
     suspend fun createPortfolio(): Portfolio
     suspend fun getAllPortfolio(): List<Portfolio>
     suspend fun getPortfolio(portfolioId: UUID): Portfolio
-    suspend fun getPortfolioByTraderId(traderId: UUID): Portfolio
-    suspend fun deleteAllPortfolio(): Boolean
     suspend fun deletePortfolio(portfolioId: UUID): Boolean
-    suspend fun getPortfolioFundSummary(portfolioId: UUID): AccountSummary
+    suspend fun getPortfolioAccountSummary(portfolioId: UUID):PortfolioAccountSummary
 }

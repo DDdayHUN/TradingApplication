@@ -1,17 +1,19 @@
 package application.provider
 
-import data.network.finnhub.FinnhubClient
-import data.network.finnhub.FinnhubConfig
+import data.network.IMarketDataProvider
 import data.network.finnhub.FinnhubMarketDataProvider
 import data.network.ibkr.IbkrMarketDataProvider
-import data.network.IMarketDataProvider
-import infrastructure.broker.InteractiveBrokersSession
+import org.springframework.stereotype.Component
 
-object MarketDataProvider {
-    fun create(type: Type): IMarketDataProvider {
+@Component
+class MarketDataProvider(
+    private val finnhubProvider: FinnhubMarketDataProvider,
+    private val ibkrProvider: IbkrMarketDataProvider
+) {
+    fun get(type: Type): IMarketDataProvider {
         return when (type) {
-            is Type.Finnhub -> FinnhubMarketDataProvider(FinnhubClient(m_Config = type.finnhubConfig))
-            is Type.Ibkr -> IbkrMarketDataProvider(type.session)
+            Type.Finnhub -> finnhubProvider
+            Type.Ibkr -> ibkrProvider
         }
     }
 
@@ -20,7 +22,7 @@ object MarketDataProvider {
     // Helper Class(es)
 
     sealed interface Type {
-        data class Finnhub(val finnhubConfig: FinnhubConfig): Type
-        data class Ibkr(val session: InteractiveBrokersSession): Type
+        data object Finnhub: Type
+        data object Ibkr: Type
     }
 }

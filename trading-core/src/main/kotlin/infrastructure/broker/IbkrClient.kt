@@ -163,7 +163,7 @@ class IbkrClient(
         return orderId
     }
 
-    fun getAccountSummary(): AccountSummary {
+    fun getAccountSummary(): IbkrPortfolioAccountSummary {
         val availableFunds = latestAvailableFunds
             ?: throw IllegalStateException(
                 "IBKR AvailableFunds has not been received yet"
@@ -174,7 +174,7 @@ class IbkrClient(
                 "IBKR NetLiquidation has not been received yet"
             )
 
-        return AccountSummary(
+        return IbkrPortfolioAccountSummary(
             availableCapital = availableFunds,
             netLiquidation = netLiquidation
         )
