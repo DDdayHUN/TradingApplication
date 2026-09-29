@@ -1,5 +1,6 @@
 package application.service.portfolio
 
+import application.provider.AccountSummaryProvider
 import application.service.auth.IAuthenticationService
 import application.service.broker.InteractiveBrokersService
 import data.repository.portfolio.IPortfolioRepository
@@ -12,7 +13,7 @@ import java.util.*
 @Service
 class PortfolioService(
     private val authService: IAuthenticationService,
-    private val ibkrService: InteractiveBrokersService,
+    private val accountSummaryProvider: AccountSummaryProvider,
     private val portfolioRepository: IPortfolioRepository,
 ) : IPortfolioService {
     //===========================================================//
@@ -61,11 +62,8 @@ class PortfolioService(
     override suspend fun getPortfolioAccountSummary(portfolioId: UUID): PortfolioAccountSummary {
         val portfolio = getPortfolio(portfolioId)
 
-        val summary = ibkrService.getAccountSummary()
-
-        val traderCapital = portfolio.traders.sumOf{trader->
-            trader.capital
-        }
+        val summary = accountSummaryProvider.get(AccountSummaryProvider.Type.Ibkr).getAccountSummary()
+        val traderCapital = portfolio.traders.sumOf{trader-> trader.capital }
 
        return PortfolioAccountSummary(
            availableCapital = (summary.availableCapital - traderCapital).coerceAtLeast(0.0),
