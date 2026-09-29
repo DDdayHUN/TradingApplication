@@ -33,10 +33,9 @@ class TraderController(
 
     @GetMapping("/{traderId}")
     suspend fun getTraderById(@PathVariable traderId: UUID, @PathVariable portfolioId: UUID): ResponseEntity<TraderResponse> {
-        val response = traderService.getById(traderId)
-            ?: throw TraderNotFoundException(traderId)
+        val response = traderService.getById(traderId).toResponse()
 
-        return ResponseEntity.ok(response.toResponse())
+        return ResponseEntity.ok(response)
     }
 
     //===========================================================//

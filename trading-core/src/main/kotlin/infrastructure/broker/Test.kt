@@ -7,12 +7,9 @@ import application.service.portfolio.IPortfolioService
 import application.service.trader.ITraderService
 import data.network.ibkr.backtest.BacktestDataService
 import domain.market.security.SecurityIdentifier
-import application.service.broker.InteractiveBrokersOrder
 import application.service.broker.InteractiveBrokersOrderService
-import application.service.broker.toInteractiveBrokersOrder
 import application.tester.TradingAlgorithmEvaluator
 import data.repository.historical_data.IHistoricalMarketDataProvider
-import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
 import domain.tax.Taxation
 import domain.trader.TradingOrder
@@ -44,7 +41,7 @@ class Test(
     private val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
     @Scheduled(
-        cron = "0 5 12 * * *",
+        cron = "0 32 15 * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {
@@ -199,7 +196,7 @@ class Test(
             sellAllHolding()
             val portfolio = portfolioService.getPortfolio(portfolioId)
             portfolio.traders.forEach { trader ->
-                traderService.deleteTrader(trader.id)
+                traderService.deleteTrader(portfolio.id,trader.id)
             }
         }
     }

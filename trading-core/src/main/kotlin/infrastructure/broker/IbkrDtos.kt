@@ -5,7 +5,7 @@ data class IbkrHistoricalBar(
     val price: Double
 )
 
-data class IbkrAccountSummary(
+data class IbkrPortfolioAccountSummary(
     val availableCapital: Double,
     val netLiquidation: Double
 )

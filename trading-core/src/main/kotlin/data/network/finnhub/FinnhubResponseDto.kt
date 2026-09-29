@@ -19,7 +19,7 @@ import domain.market.Quote
  */
 //===========================================================//
 
-internal data class FinnhubQuoteResponseDto(
+data class FinnhubQuoteResponseDto(
     val c: Double,
     val d: Double,
     val dp: Double,

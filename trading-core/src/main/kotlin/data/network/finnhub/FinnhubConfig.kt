@@ -1,6 +1,7 @@
 package data.network.finnhub
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.time.Duration
@@ -30,18 +31,20 @@ class FinnhubConfig(
 
 @ConfigurationProperties(prefix = "finnhub")
 data class FinnhubProperties(
-    var apiKey: String,
-    val baseUrl: String,
+    var apiKey: String = "",
+    val baseUrl: String = "",
     val timeout: Duration = Duration.ofSeconds(10)
 )
 
 @Configuration
+@EnableConfigurationProperties(FinnhubProperties::class)
 class FinnhubConfiguration{
     @Bean
     fun finnhubConfig(properties: FinnhubProperties): FinnhubConfig {
         return FinnhubConfig(
             apiKey = properties.apiKey,
             baseUrl = properties.baseUrl,
+            timeout = properties.timeout
         )
     }
 }

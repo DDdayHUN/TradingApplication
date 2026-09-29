@@ -1,6 +1,7 @@
 package domain
 
 import domain.trader.Trader
+import exception.api.TraderHoldingsNotEmptyException
 import java.util.*
 
 //===========================================================//
@@ -31,7 +32,9 @@ class Portfolio {
     //===========================================================//
 
     fun removeTrader(trader: Trader) {
-        require(trader.holdings.isEmpty()){ "Trader cannot be removed while it has open holdings" }
+        if(trader.holdings.isNotEmpty()){
+            throw TraderHoldingsNotEmptyException(trader.id)
+        }
         m_Traders.remove(trader)
     }
 
@@ -52,4 +55,13 @@ class Portfolio {
         this.id = id
         this.m_Traders = traders
     }
+
+    //===========================================================//
+    //===========================================================//
+    // Nested classes
+
+    data class PortfolioAccountSummary(
+        val availableCapital: Double,
+        val netLiquidation: Double
+    )
 }

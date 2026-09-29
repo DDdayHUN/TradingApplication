@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException
 import data.network.httpGetRequestBuilder
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.future.await
+import org.springframework.stereotype.Component
 import java.io.IOException
 import java.net.URLEncoder
 import java.net.http.HttpClient
@@ -21,8 +22,8 @@ import java.nio.charset.StandardCharsets
  * DTO into Quote domain model
  */
 //===========================================================//
-
-internal class FinnhubClient (
+@Component
+class FinnhubClient (
     private val m_Config: FinnhubConfig,
     private val m_HttpClient: HttpClient = HttpClient.newHttpClient(),
 )

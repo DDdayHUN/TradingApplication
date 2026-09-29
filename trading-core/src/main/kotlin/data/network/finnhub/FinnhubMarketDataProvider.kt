@@ -3,15 +3,21 @@ package data.network.finnhub
 import data.network.IMarketDataProvider
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
+import org.springframework.stereotype.Component
 
 //===========================================================//
 /**
  * Provider implementation that gets quote data from Finnhub.
  */
 //===========================================================//
-internal class FinnhubMarketDataProvider(
+@Component
+class FinnhubMarketDataProvider(
     private val client: FinnhubClient
 ) : IMarketDataProvider {
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
+
     override suspend fun getQuote(identifier: SecurityIdentifier): Result<Quote> {
         try {
             val ret = client.getQuoteAsync(identifier)

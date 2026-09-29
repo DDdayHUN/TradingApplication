@@ -5,7 +5,6 @@ import api.dto.CreateTraderRequest
 import application.logging.logger
 import application.provider.MarketDataProvider
 import application.service.portfolio.IPortfolioService
-import data.network.finnhub.FinnhubConfig
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.trader.ITraderRepository
 import domain.algorithm.TradingAlgorithm
@@ -15,8 +14,7 @@ import domain.trader.SellHolding
 import domain.trader.Trader
 import domain.trader.TradingOrder
 import exception.api.HoldingNotFoundException
-import exception.api.TraderHoldingsNotEmptyException
-import infrastructure.broker.InteractiveBrokersSession
+import exception.api.TraderNotFoundException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,10 +23,9 @@ import java.util.*
 @Service
 class TraderService(
     @param:Qualifier("yahoo")
-    private val provider: IHistoricalMarketDataProvider,
+    private val historiacalProvider: IHistoricalMarketDataProvider,
+    private val marketDataProvider: MarketDataProvider,
     private val portfolioService: IPortfolioService,
-    private val ibkrSession: InteractiveBrokersSession,
-    private val finnhubConfig: FinnhubConfig,
     private val traderRepository: ITraderRepository
 ) : ITraderService {
 
@@ -45,7 +42,7 @@ class TraderService(
     @Transactional
     override suspend fun createTrader(portfolioId: UUID, request: CreateTraderRequest): Trader {
         val portfolio = portfolioService.getPortfolio(portfolioId)
-        val availableCapital = portfolioService.getAccountSummary(portfolioId).availableCapital
+        val availableCapital = portfolioService.getPortfolioAccountSummary(portfolioId).availableCapital
 
         require(request.capital <= availableCapital){
             "Insufficient available capital to create new trader"
@@ -58,7 +55,7 @@ class TraderService(
         )
         val algorithmType = parseAlgorithmType(request.algorithmType)
         val algorithm = TradingAlgorithm.create(
-            provider = provider,
+            provider = historiacalProvider,
             type = algorithmType,
             securityIdentifier = securityIdentifier
         )
@@ -101,7 +98,7 @@ class TraderService(
         val algorithmType = parseAlgorithmType(request.algorithmType)
 
         val algorithm = TradingAlgorithm.create(
-            provider = provider,
+            provider = historiacalProvider,
             type = algorithmType,
             securityIdentifier = trader.securityIdentifier,
         )
@@ -189,13 +186,16 @@ class TraderService(
     }
 
     @Transactional
-    override suspend fun deleteTrader(traderId: UUID) {
-        val trader = traderRepository.getById(traderId).getOrThrow()
+    override suspend fun deleteTrader(portfolioId: UUID, traderId: UUID) {
+        val portfolio = portfolioService.getPortfolio(portfolioId)
 
-        if(trader.holdings.isNotEmpty()) throw TraderHoldingsNotEmptyException(traderId)
+        val trader = portfolio.traders.find { trader ->
+            trader.id == traderId
+        }?: throw TraderNotFoundException(traderId)
 
-        logger.info("Deleting trader with id: ${trader.id}")
-        traderRepository.delete(traderId).getOrThrow()
+        portfolio.removeTrader(trader)
+
+        portfolioService.save(portfolio)
     }
 
 
@@ -220,12 +220,11 @@ class TraderService(
     //===========================================================//
 
     private suspend fun getCurrentPrice(securityIdentifier: SecurityIdentifier): Quote {
-        val finnhubProvider = MarketDataProvider.create(MarketDataProvider.Type.Finnhub(finnhubConfig))
-        var quote = finnhubProvider.getQuote(securityIdentifier)
+        var quote = marketDataProvider.get(MarketDataProvider.Type.Finnhub).getQuote(securityIdentifier)
 
         if(!quote.isSuccess){
             logger.warn("Finnhub quote failed for {}, trying IBKR", securityIdentifier.tickerSymbol)
-            quote = MarketDataProvider.create(MarketDataProvider.Type.Ibkr(ibkrSession)).getQuote(securityIdentifier)
+            quote = marketDataProvider.get(MarketDataProvider.Type.Ibkr).getQuote(securityIdentifier)
         }
 
         return quote.getOrThrow()

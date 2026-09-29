@@ -9,6 +9,7 @@ import java.util.UUID
 
 interface ITraderService {
     suspend fun createTrader(portfolioId: UUID, request: CreateTraderRequest): Trader
+    suspend fun deleteTrader(portfolioId: UUID, traderId: UUID)
     suspend fun getAllByPortfolioId(portfolioId: UUID): Set<Trader>
     suspend fun getById(traderId: UUID): Trader
     suspend fun changeAlgorithm(traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader
@@ -17,5 +18,4 @@ interface ITraderService {
     suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellHolding>, averageFillPrice: Double)
     suspend fun forceSellHolding(traderId: UUID, securityHoldingId: UUID): TradingOrder
     suspend fun forceSellAllHolding(traderId: UUID): List<TradingOrder>
-    suspend fun deleteTrader(traderId: UUID)
 }
