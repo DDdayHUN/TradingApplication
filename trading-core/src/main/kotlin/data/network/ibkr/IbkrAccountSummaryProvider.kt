@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component
 class IbkrAccountSummaryProvider(
     private val ibkrService: InteractiveBrokersService
 ): IAccountSummaryProvider {
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
+
     override suspend fun getAccountSummary(): PortfolioAccountSummary {
         val summary = ibkrService.getAccountSummary()
         return PortfolioAccountSummary(

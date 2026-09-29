@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 object HistoricalMarketDataProvider {
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     fun get(type: Type): IHistoricalMarketDataProvider {
         return when (type) {

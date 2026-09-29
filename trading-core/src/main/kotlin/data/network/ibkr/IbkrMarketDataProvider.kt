@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component
 class IbkrMarketDataProvider(
     private val session: InteractiveBrokersSession
 ): IMarketDataProvider {
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
+
     override suspend fun getQuote(identifier: SecurityIdentifier): Result<Quote> {
         return runCatching {
             val client = session.getClient()

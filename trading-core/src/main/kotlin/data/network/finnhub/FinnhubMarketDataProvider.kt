@@ -14,6 +14,10 @@ import org.springframework.stereotype.Component
 class FinnhubMarketDataProvider(
     private val client: FinnhubClient
 ) : IMarketDataProvider {
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
+
     override suspend fun getQuote(identifier: SecurityIdentifier): Result<Quote> {
         try {
             val ret = client.getQuoteAsync(identifier)

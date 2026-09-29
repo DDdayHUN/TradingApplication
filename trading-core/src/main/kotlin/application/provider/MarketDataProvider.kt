@@ -11,6 +11,10 @@ class MarketDataProvider(
     private val finnhubProvider: ObjectProvider<FinnhubMarketDataProvider>,
     private val ibkrProvider: ObjectProvider<IbkrMarketDataProvider>
 ) {
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
+
     fun get(type: Type): IMarketDataProvider {
         return when (type) {
             Type.Finnhub -> finnhubProvider.getObject()
