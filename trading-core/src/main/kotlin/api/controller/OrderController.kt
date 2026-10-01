@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/portfolio/{portfolioId}/orders")
+@RequestMapping("/api/portfolio/orders/")
 class OrderController(
     private val orderService: InteractiveBrokersOrderService,
 ) {
     @GetMapping
-    suspend fun getAll(@PathVariable portfolioId: UUID): ResponseEntity<List<OrderResponse>>{
-        val response = orderService.getAllByPortfolioId(portfolioId).map {
+    suspend fun getAll(): ResponseEntity<List<OrderResponse>>{
+        val response = orderService.getAll().map {
             order -> order.toResponse()
         }
         return ResponseEntity.ok(response)

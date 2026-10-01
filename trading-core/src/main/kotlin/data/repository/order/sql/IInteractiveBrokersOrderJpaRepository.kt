@@ -28,5 +28,5 @@ interface IInteractiveBrokersOrderJpaRepository : JpaRepository<InteractiveBroke
     ): Int
 
     @EntityGraph(attributePaths = ["sellAllocations"])
-    fun findAllByTraderPortfolioId(portfolioId: UUID): List<InteractiveBrokersOrderEntity>
+     override fun findAll(): List<InteractiveBrokersOrderEntity>
 }

@@ -49,8 +49,8 @@ class InteractiveBrokersOrderService(
 
     //===========================================================//
 
-    suspend fun getAllByPortfolioId(portfolioId: UUID): List<InteractiveBrokersOrder>{
-        return orderRepository.getAllByPortfolioId(portfolioId).getOrThrow()
+    suspend fun getAll(): List<InteractiveBrokersOrder>{
+        return orderRepository.getAll().getOrThrow()
     }
 
     //===========================================================//

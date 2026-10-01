@@ -23,7 +23,7 @@ import java.util.*
 @Service
 class TraderService(
     @param:Qualifier("yahoo")
-    private val historiacalProvider: IHistoricalMarketDataProvider,
+    private val historicalProvider: IHistoricalMarketDataProvider,
     private val marketDataProvider: MarketDataProvider,
     private val portfolioService: IPortfolioService,
     private val traderRepository: ITraderRepository
@@ -40,9 +40,9 @@ class TraderService(
     // Public Method(s)
 
     @Transactional
-    override suspend fun createTrader(portfolioId: UUID, request: CreateTraderRequest): Trader {
-        val portfolio = portfolioService.getPortfolio(portfolioId)
-        val availableCapital = portfolioService.getPortfolioAccountSummary(portfolioId).availableCapital
+    override suspend fun createTrader(request: CreateTraderRequest): Trader {
+        val portfolio = portfolioService.getPortfolio()
+        val availableCapital = portfolioService.getPortfolioAccountSummary().availableCapital
 
         require(request.capital <= availableCapital){
             "Insufficient available capital to create new trader"
@@ -55,7 +55,7 @@ class TraderService(
         )
         val algorithmType = parseAlgorithmType(request.algorithmType)
         val algorithm = TradingAlgorithm.create(
-            provider = historiacalProvider,
+            provider = historicalProvider,
             type = algorithmType,
             securityIdentifier = securityIdentifier
         )
@@ -77,8 +77,8 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAllByPortfolioId(portfolioId: UUID): Set<Trader> {
-       return portfolioService.getPortfolio(portfolioId).traders
+    override suspend fun getAll(): Set<Trader> {
+       return portfolioService.getPortfolio().traders
     }
 
     //===========================================================//
@@ -98,7 +98,7 @@ class TraderService(
         val algorithmType = parseAlgorithmType(request.algorithmType)
 
         val algorithm = TradingAlgorithm.create(
-            provider = historiacalProvider,
+            provider = historicalProvider,
             type = algorithmType,
             securityIdentifier = trader.securityIdentifier,
         )
@@ -186,8 +186,8 @@ class TraderService(
     }
 
     @Transactional
-    override suspend fun deleteTrader(portfolioId: UUID, traderId: UUID) {
-        val portfolio = portfolioService.getPortfolio(portfolioId)
+    override suspend fun deleteTrader(traderId: UUID) {
+        val portfolio = portfolioService.getPortfolio()
 
         val trader = portfolio.traders.find { trader ->
             trader.id == traderId

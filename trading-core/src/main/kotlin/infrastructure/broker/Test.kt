@@ -3,21 +3,20 @@ package infrastructure.broker
 import api.dto.CreateTraderRequest
 import api.dto.SecurityIdentifierRequest
 import application.logging.logger
+import application.service.broker.InteractiveBrokersOrderService
 import application.service.portfolio.IPortfolioService
 import application.service.trader.ITraderService
-import data.network.ibkr.backtest.BacktestDataService
-import domain.market.security.SecurityIdentifier
-import application.service.broker.InteractiveBrokersOrderService
 import application.tester.TradingAlgorithmEvaluator
+import data.network.ibkr.backtest.BacktestDataService
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
+import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
 import domain.trader.TradingOrder
 import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import java.util.*
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
@@ -34,7 +33,6 @@ class Test(
 ) {
     private val logger = logger<Test>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val portfolioId = UUID.fromString("ce961a98-7f5a-4f6f-8030-2a9178f79101")
     private val startCapital = 10_000.0
     private val startDate = Instant.parse("2021-01-01T00:00:00Z")
     private val endDate = Instant.parse("2026-01-01T00:00:00Z")
@@ -47,7 +45,7 @@ class Test(
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-                val portfolio = portfolioService.getPortfolio(portfolioId)
+                val portfolio = portfolioService.getPortfolio()
 
                 val orders = coroutineScope {
                     portfolio.traders.map { trader ->
@@ -115,7 +113,7 @@ class Test(
     )
     fun sellAllHolding() {
         scope.launch {
-            val portfolio = portfolioService.getPortfolio(portfolioId)
+            val portfolio = portfolioService.getPortfolio()
 
             portfolio.traders.forEach { trader ->
 
@@ -139,7 +137,7 @@ class Test(
     fun buyHolding(){
         scope.launch {
             try {
-                val portfolio = portfolioService.getPortfolio(portfolioId)
+                val portfolio = portfolioService.getPortfolio()
 
                 portfolio.traders.forEach { trader ->
                         val order = TradingOrder(
@@ -162,7 +160,7 @@ class Test(
     fun createTraders() {
         scope.launch {
             var securityList = provider.getAllSecurityIdentifiers().getOrThrow()
-            val traders = traderService.getAllByPortfolioId(portfolioId)
+            val traders = traderService.getAll()
             val traderSecurities = traders.map {
                 trader-> trader.securityIdentifier
             }
@@ -172,7 +170,6 @@ class Test(
 
             securityList.forEach { security ->
                 traderService.createTrader(
-                    portfolioId = portfolioId,
                     request = CreateTraderRequest(
                         securityIdentifier = SecurityIdentifierRequest(
                             isin = security.isin,
@@ -194,9 +191,9 @@ class Test(
     fun deleteTraders() {
         scope.launch {
             sellAllHolding()
-            val portfolio = portfolioService.getPortfolio(portfolioId)
+            val portfolio = portfolioService.getPortfolio()
             portfolio.traders.forEach { trader ->
-                traderService.deleteTrader(portfolio.id,trader.id)
+                traderService.deleteTrader(trader.id)
             }
         }
     }
@@ -217,7 +214,7 @@ class Test(
                 windowStepYears = evaluationWindowStepYears
             ).runEvaluationOnAll().getBestList(6)
 
-            val traders = traderService.getAllByPortfolioId(portfolioId)
+            val traders = traderService.getAll()
             val traderSecurities = traders.map {
                     trader-> trader.securityIdentifier
             }
@@ -227,7 +224,6 @@ class Test(
 
             evalOutput.forEach { security ->
                 traderService.createTrader(
-                    portfolioId = portfolioId,
                     request = CreateTraderRequest(
                         securityIdentifier = SecurityIdentifierRequest(
                             isin = security.isin,

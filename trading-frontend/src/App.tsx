@@ -14,7 +14,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<PortfolioPage />} />
                 <Route path="/portfolio" element={<PortfolioPage />} />
-                <Route path="/portfolio/:portfolioId/traders" element={<TraderPage/>} />
+                <Route path="/portfolio/traders/" element={<TraderPage/>} />
                 <Route path="/backtest" element={<BacktestPage />} />
             </Routes>
         </main>

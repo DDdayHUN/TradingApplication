@@ -37,30 +37,22 @@ class PortfolioService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAllPortfolio(): List<Portfolio> {
-        val userId = authService.currentUser().id
-        return portfolioRepository.getAllByUserId(userId).getOrThrow()
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    override suspend fun getPortfolio(portfolioId: UUID): Portfolio {
-        return portfolioRepository.getById(portfolioId).getOrThrow()
+    override suspend fun getPortfolio(): Portfolio {
+        return portfolioRepository.getByUserId(authService.currentUser().id).getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun deletePortfolio(portfolioId: UUID): Boolean {
+    override suspend fun deletePortfolio(): Boolean {
         TODO("Not yet implemented")
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getPortfolioAccountSummary(portfolioId: UUID): PortfolioAccountSummary {
-        val portfolio = getPortfolio(portfolioId)
+    override suspend fun getPortfolioAccountSummary(): PortfolioAccountSummary {
+        val portfolio = portfolioRepository.getByUserId(authService.currentUser().id).getOrThrow()
 
         val summary = accountSummaryProvider.get(AccountSummaryProvider.Type.Ibkr).getAccountSummary()
         val traderCapital = portfolio.traders.sumOf{trader-> trader.capital }

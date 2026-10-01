@@ -12,7 +12,7 @@ import java.util.*
 //===========================================================//
 
 @RestController
-@RequestMapping("/api/portfolio")
+@RequestMapping("/api/portfolio/")
 class PortfolioController(
     private val portfolioService: IPortfolioService,
 ) {
@@ -20,27 +20,12 @@ class PortfolioController(
     //===========================================================//
     // GET
 
-    @GetMapping
-    suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
-        val response = portfolioService.getAllPortfolio().map { portfolio ->
-            val summary = portfolioService.getPortfolioAccountSummary(portfolio.id)
-            portfolio.toResponse(
-                availableCapital = summary.availableCapital,
-                liquidation = summary.netLiquidation
-            )
-        }
-
-        return ResponseEntity.ok(
-            response
-        )
-    }
-
     //===========================================================//
 
-    @GetMapping("/{portfolioId}")
-    suspend fun getPortfolioById(@PathVariable portfolioId: UUID): ResponseEntity<PortfolioResponse> {
-        val summary = portfolioService.getPortfolioAccountSummary(portfolioId)
-        val response = portfolioService.getPortfolio(portfolioId).toResponse(
+    @GetMapping
+    suspend fun getPortfolio(): ResponseEntity<PortfolioResponse> {
+        val summary = portfolioService.getPortfolioAccountSummary()
+        val response = portfolioService.getPortfolio().toResponse(
             availableCapital = summary.availableCapital,
             liquidation = summary.netLiquidation
         )
@@ -55,7 +40,7 @@ class PortfolioController(
     @PostMapping
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
         val portfolio = portfolioService.createPortfolio()
-        val summary = portfolioService.getPortfolioAccountSummary(portfolio.id)
+        val summary = portfolioService.getPortfolioAccountSummary()
         val response = portfolio.toResponse(
             availableCapital = summary.availableCapital,
             liquidation = summary.netLiquidation
