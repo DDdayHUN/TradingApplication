@@ -3,6 +3,7 @@ package application.service.broker
 import application.logging.logger
 import application.model.InteractiveBrokersOrder
 import application.model.toInteractiveBrokersOrder
+import application.service.auth.IAuthenticationService
 import application.service.trader.ITraderService
 import data.repository.order.sql.InteractiveBrokersOrderRepository
 import domain.trader.TradingOrder
@@ -10,12 +11,13 @@ import infrastructure.broker.IbkrEvent
 import jakarta.transaction.Transactional
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class InteractiveBrokersOrderService(
     private val brokerService: InteractiveBrokersService,
     private val traderService: ITraderService,
-    private val orderRepository: InteractiveBrokersOrderRepository,
+    private val orderRepository: InteractiveBrokersOrderRepository
 ) {
     //===========================================================//
     //===========================================================//
@@ -44,6 +46,12 @@ class InteractiveBrokersOrderService(
                 throw e
             }
         }
+    }
+
+    //===========================================================//
+
+    suspend fun getAll(userId: UUID): List<InteractiveBrokersOrder>{
+        return orderRepository.getAll(userId).getOrThrow()
     }
 
     //===========================================================//

@@ -6,5 +6,5 @@ export interface UserResponse {
 }
 
 export function getCurrentUser(): Promise<UserResponse> {
-    return apiGet<UserResponse>("/api/users");
+    return apiGet<UserResponse>("/api/users/");
 }

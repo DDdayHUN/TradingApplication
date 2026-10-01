@@ -2,6 +2,7 @@ package api.controller
 
 import api.dto.PortfolioResponse
 import api.dto.toResponse
+import application.service.auth.IAuthenticationService
 import application.service.portfolio.IPortfolioService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,35 +13,22 @@ import java.util.*
 //===========================================================//
 
 @RestController
-@RequestMapping("/api/portfolio")
+@RequestMapping("/api/portfolio/")
 class PortfolioController(
     private val portfolioService: IPortfolioService,
+    private val authService: IAuthenticationService
 ) {
     //===========================================================//
     //===========================================================//
     // GET
 
-    @GetMapping
-    suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
-        val response = portfolioService.getAllPortfolio().map { portfolio ->
-            val summary = portfolioService.getPortfolioAccountSummary(portfolio.id)
-            portfolio.toResponse(
-                availableCapital = summary.availableCapital,
-                liquidation = summary.netLiquidation
-            )
-        }
-
-        return ResponseEntity.ok(
-            response
-        )
-    }
-
     //===========================================================//
 
-    @GetMapping("/{portfolioId}")
-    suspend fun getPortfolioById(@PathVariable portfolioId: UUID): ResponseEntity<PortfolioResponse> {
-        val summary = portfolioService.getPortfolioAccountSummary(portfolioId)
-        val response = portfolioService.getPortfolio(portfolioId).toResponse(
+    @GetMapping
+    suspend fun getPortfolio(): ResponseEntity<PortfolioResponse> {
+        val userId = authService.currentUser().id
+        val summary = portfolioService.getPortfolioAccountSummary(userId)
+        val response = portfolioService.getPortfolioByUserId(userId).toResponse(
             availableCapital = summary.availableCapital,
             liquidation = summary.netLiquidation
         )
@@ -54,8 +42,9 @@ class PortfolioController(
 
     @PostMapping
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
-        val portfolio = portfolioService.createPortfolio()
-        val summary = portfolioService.getPortfolioAccountSummary(portfolio.id)
+        val userId = authService.currentUser().id
+        val portfolio = portfolioService.createPortfolio(userId)
+        val summary = portfolioService.getPortfolioAccountSummary(userId)
         val response = portfolio.toResponse(
             availableCapital = summary.availableCapital,
             liquidation = summary.netLiquidation

@@ -14,16 +14,17 @@ import java.util.*
 //===========================================================//
 
 @RestController
-@RequestMapping("/api/portfolio/{portfolioId}/traders")
+@RequestMapping("/api/portfolio/traders/")
 class TraderController(
-    private val traderService: ITraderService
+    private val traderService: ITraderService,
+    private val authService: IAuthenticationService
 ) {
     //===========================================================//
     //===========================================================//
     // GET
     @GetMapping
-    suspend fun getAllTraders(@PathVariable portfolioId: UUID): ResponseEntity<List<TraderResponse>> {
-        val response = traderService.getAllByPortfolioId(portfolioId).map { trader ->
+    suspend fun getAllTraders(): ResponseEntity<List<TraderResponse>> {
+        val response = traderService.getAll(authService.currentUser().id).map { trader ->
             trader.toResponse()
         }
         return ResponseEntity.ok(response)
@@ -31,8 +32,8 @@ class TraderController(
 
     //===========================================================//
 
-    @GetMapping("/{traderId}")
-    suspend fun getTraderById(@PathVariable traderId: UUID, @PathVariable portfolioId: UUID): ResponseEntity<TraderResponse> {
+    @GetMapping("{traderId}")
+    suspend fun getTraderById(@PathVariable traderId: UUID): ResponseEntity<TraderResponse> {
         val response = traderService.getById(traderId).toResponse()
 
         return ResponseEntity.ok(response)
@@ -42,9 +43,9 @@ class TraderController(
     //===========================================================//
     // POST
     @PostMapping
-    suspend fun createTrader(@PathVariable portfolioId: UUID, @RequestBody request: CreateTraderRequest): ResponseEntity<TraderResponse> {
+    suspend fun createTrade(@RequestBody request: CreateTraderRequest): ResponseEntity<TraderResponse> {
 
-        val response = traderService.createTrader(portfolioId, request).toResponse()
+        val response = traderService.createTrader(authService.currentUser().id, request).toResponse()
 
         return ResponseEntity.ok(response)
     }

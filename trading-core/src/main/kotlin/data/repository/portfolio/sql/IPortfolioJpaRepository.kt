@@ -6,7 +6,7 @@ import java.util.*
 
 interface IPortfolioJpaRepository : JpaRepository<PortfolioEntity, UUID>{
     @EntityGraph(attributePaths = ["traders", "traders.holdings"])
-    fun findAllByUserId(userId : UUID) : List<PortfolioEntity>
+    fun findByUserId(userId : UUID) : PortfolioEntity
 
     @EntityGraph(attributePaths = ["traders", "traders.holdings"])
     fun findByUserIdAndId(userId: UUID, id: UUID): PortfolioEntity?

@@ -13,9 +13,9 @@ function App() {
         <main className="flex-1 h-screen overflow-y-auto">
             <Routes>
                 <Route path="/" element={<PortfolioPage />} />
-                <Route path="/portfolio" element={<PortfolioPage />} />
-                <Route path="/portfolio/:portfolioId/traders" element={<TraderPage/>} />
-                <Route path="/backtest" element={<BacktestPage />} />
+                <Route path="/portfolio/" element={<PortfolioPage />} />
+                <Route path="/portfolio/traders/" element={<TraderPage/>} />
+                <Route path="/backtest/" element={<BacktestPage />} />
             </Routes>
         </main>
     </div>

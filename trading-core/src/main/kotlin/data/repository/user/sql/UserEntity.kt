@@ -14,8 +14,8 @@ class UserEntity (
     @Column(name = "user_name", nullable = false)
     var userName: String
 ) {
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var portfolios: MutableSet<PortfolioEntity> = mutableSetOf()
+    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var portfolio: PortfolioEntity?= null
 }
 
 fun User.toEntity(): UserEntity {
