@@ -10,6 +10,7 @@ import infrastructure.broker.IbkrEvent
 import jakarta.transaction.Transactional
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class InteractiveBrokersOrderService(
@@ -44,6 +45,12 @@ class InteractiveBrokersOrderService(
                 throw e
             }
         }
+    }
+
+    //===========================================================//
+
+    suspend fun getAllByPortfolioId(portfolioId: UUID): List<InteractiveBrokersOrder>{
+        return orderRepository.getAllByPortfolioId(portfolioId).getOrThrow()
     }
 
     //===========================================================//

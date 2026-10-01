@@ -2,6 +2,7 @@ package data.repository.order.sql
 
 import data.repository.portfolio.sql.IPortfolioJpaRepository
 import application.model.InteractiveBrokersOrder
+import exception.api.PortfolioNotFoundException
 import exception.api.TraderNotFoundException
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -44,6 +45,15 @@ class InteractiveBrokersOrderRepository(
     suspend fun clearOrderAllocation(orderId: UUID): Result<Unit> {
         return runCatching {
             orderRepository.deleteSellAllocationsByOrderId(orderId)
+        }
+    }
+
+    @Transactional(readOnly = true)
+    suspend fun getAllByPortfolioId(portfolioId: UUID): Result<List<InteractiveBrokersOrder>>{
+        return runCatching{
+            orderRepository.findAllByTraderPortfolioId(portfolioId).map {
+                order -> order.toInteractiveBrokersOrder()
+            }
         }
     }
 }

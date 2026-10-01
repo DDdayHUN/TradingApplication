@@ -1,24 +1,17 @@
-import {type ReactElement, useEffect, useState} from "react";
+import {type ReactElement} from "react";
 import ListLayout from "../../../layouts/ListLayout.tsx";
 import type Portfolio from "../../../models/Portfolio.ts";
-import {getPortfolios} from "../../../api/portfolioApi.ts";
 import PortfolioElement from "../basic/PortfolioElement.tsx";
 
-export default function PortfolioList(): ReactElement {
+interface PortfolioListProps {
+    portfolios: Portfolio[];
+}
 
-    const [portfolios, setPortfolios] = useState<Portfolio[]> ([])
-
-
-    useEffect(() => {
-        getPortfolios()
-            .then(setPortfolios)
-            .catch(console.error)
-
-    },[])
+export default function PortfolioList(props: PortfolioListProps): ReactElement {
 
     return(
         <ListLayout
-            elements={portfolios}
+            elements={props.portfolios}
             RowComponent={PortfolioElement}
             flexDirection={"flex-row"}
         />
