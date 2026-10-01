@@ -16,14 +16,15 @@ import java.util.*
 @RestController
 @RequestMapping("/api/portfolio/traders/")
 class TraderController(
-    private val traderService: ITraderService
+    private val traderService: ITraderService,
+    private val authService: IAuthenticationService
 ) {
     //===========================================================//
     //===========================================================//
     // GET
     @GetMapping
     suspend fun getAllTraders(): ResponseEntity<List<TraderResponse>> {
-        val response = traderService.getAll().map { trader ->
+        val response = traderService.getAll(authService.currentUser().id).map { trader ->
             trader.toResponse()
         }
         return ResponseEntity.ok(response)
@@ -42,9 +43,9 @@ class TraderController(
     //===========================================================//
     // POST
     @PostMapping
-    suspend fun createTrader(@RequestBody request: CreateTraderRequest): ResponseEntity<TraderResponse> {
+    suspend fun createTrade(@RequestBody request: CreateTraderRequest): ResponseEntity<TraderResponse> {
 
-        val response = traderService.createTrader(request).toResponse()
+        val response = traderService.createTrader(authService.currentUser().id, request).toResponse()
 
         return ResponseEntity.ok(response)
     }

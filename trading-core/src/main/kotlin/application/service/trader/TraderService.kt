@@ -4,6 +4,7 @@ import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import application.logging.logger
 import application.provider.MarketDataProvider
+import application.service.auth.IAuthenticationService
 import application.service.portfolio.IPortfolioService
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.trader.ITraderRepository
@@ -40,9 +41,9 @@ class TraderService(
     // Public Method(s)
 
     @Transactional
-    override suspend fun createTrader(request: CreateTraderRequest): Trader {
-        val portfolio = portfolioService.getPortfolio()
-        val availableCapital = portfolioService.getPortfolioAccountSummary().availableCapital
+    override suspend fun createTrader(userId: UUID, request: CreateTraderRequest): Trader {
+        val portfolio = portfolioService.getPortfolioByUserId(userId)
+        val availableCapital = portfolioService.getPortfolioAccountSummary(userId).availableCapital
 
         require(request.capital <= availableCapital){
             "Insufficient available capital to create new trader"
@@ -77,8 +78,8 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAll(): Set<Trader> {
-       return portfolioService.getPortfolio().traders
+    override suspend fun getAll(userId: UUID): Set<Trader> {
+       return portfolioService.getPortfolioByUserId(userId).traders
     }
 
     //===========================================================//
@@ -186,12 +187,12 @@ class TraderService(
     }
 
     @Transactional
-    override suspend fun deleteTrader(traderId: UUID) {
-        val portfolio = portfolioService.getPortfolio()
+    override suspend fun deleteTrader(userId: UUID, traderId: UUID) {
+        val portfolio = portfolioService.getPortfolioByUserId(userId)
 
-        val trader = portfolio.traders.find { trader ->
+        val trader = portfolio.traders.find {trader ->
             trader.id == traderId
-        }?: throw TraderNotFoundException(traderId)
+        } ?: throw TraderNotFoundException(traderId)
 
         portfolio.removeTrader(trader)
 

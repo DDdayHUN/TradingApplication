@@ -2,6 +2,7 @@ package api.controller
 
 import api.dto.PortfolioResponse
 import api.dto.toResponse
+import application.service.auth.IAuthenticationService
 import application.service.portfolio.IPortfolioService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -15,6 +16,7 @@ import java.util.*
 @RequestMapping("/api/portfolio/")
 class PortfolioController(
     private val portfolioService: IPortfolioService,
+    private val authService: IAuthenticationService
 ) {
     //===========================================================//
     //===========================================================//
@@ -24,8 +26,9 @@ class PortfolioController(
 
     @GetMapping
     suspend fun getPortfolio(): ResponseEntity<PortfolioResponse> {
-        val summary = portfolioService.getPortfolioAccountSummary()
-        val response = portfolioService.getPortfolio().toResponse(
+        val userId = authService.currentUser().id
+        val summary = portfolioService.getPortfolioAccountSummary(userId)
+        val response = portfolioService.getPortfolioByUserId(userId).toResponse(
             availableCapital = summary.availableCapital,
             liquidation = summary.netLiquidation
         )
@@ -39,8 +42,9 @@ class PortfolioController(
 
     @PostMapping
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
-        val portfolio = portfolioService.createPortfolio()
-        val summary = portfolioService.getPortfolioAccountSummary()
+        val userId = authService.currentUser().id
+        val portfolio = portfolioService.createPortfolio(userId)
+        val summary = portfolioService.getPortfolioAccountSummary(userId)
         val response = portfolio.toResponse(
             availableCapital = summary.availableCapital,
             liquidation = summary.netLiquidation

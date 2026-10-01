@@ -49,9 +49,9 @@ class InteractiveBrokersOrderRepository(
     }
 
     @Transactional(readOnly = true)
-    suspend fun getAll(): Result<List<InteractiveBrokersOrder>>{
+    suspend fun getAll(userId: UUID): Result<List<InteractiveBrokersOrder>>{
         return runCatching{
-            orderRepository.findAll().map {
+            orderRepository.findAllByTraderPortfolioUserId(userId).map {
                 order -> order.toInteractiveBrokersOrder()
             }
         }

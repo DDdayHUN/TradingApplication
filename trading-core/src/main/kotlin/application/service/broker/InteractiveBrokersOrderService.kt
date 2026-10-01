@@ -3,6 +3,7 @@ package application.service.broker
 import application.logging.logger
 import application.model.InteractiveBrokersOrder
 import application.model.toInteractiveBrokersOrder
+import application.service.auth.IAuthenticationService
 import application.service.trader.ITraderService
 import data.repository.order.sql.InteractiveBrokersOrderRepository
 import domain.trader.TradingOrder
@@ -16,7 +17,7 @@ import java.util.UUID
 class InteractiveBrokersOrderService(
     private val brokerService: InteractiveBrokersService,
     private val traderService: ITraderService,
-    private val orderRepository: InteractiveBrokersOrderRepository,
+    private val orderRepository: InteractiveBrokersOrderRepository
 ) {
     //===========================================================//
     //===========================================================//
@@ -49,8 +50,8 @@ class InteractiveBrokersOrderService(
 
     //===========================================================//
 
-    suspend fun getAll(): List<InteractiveBrokersOrder>{
-        return orderRepository.getAll().getOrThrow()
+    suspend fun getAll(userId: UUID): List<InteractiveBrokersOrder>{
+        return orderRepository.getAll(userId).getOrThrow()
     }
 
     //===========================================================//

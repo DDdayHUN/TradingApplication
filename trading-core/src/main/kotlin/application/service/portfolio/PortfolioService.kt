@@ -12,7 +12,6 @@ import java.util.*
 
 @Service
 class PortfolioService(
-    private val authService: IAuthenticationService,
     private val accountSummaryProvider: AccountSummaryProvider,
     private val portfolioRepository: IPortfolioRepository,
 ) : IPortfolioService {
@@ -28,8 +27,7 @@ class PortfolioService(
     //===========================================================//
 
     @Transactional
-    override suspend fun createPortfolio(): Portfolio {
-        val userId = authService.currentUser().id
+    override suspend fun createPortfolio(userId: UUID): Portfolio {
         val portfolio = Portfolio()
         return portfolioRepository.create(userId, portfolio).getOrThrow()
     }
@@ -37,22 +35,22 @@ class PortfolioService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getPortfolio(): Portfolio {
-        return portfolioRepository.getByUserId(authService.currentUser().id).getOrThrow()
+    override suspend fun getPortfolioByUserId(userId: UUID): Portfolio {
+        return portfolioRepository.getByUserId(userId).getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun deletePortfolio(): Boolean {
+    override suspend fun deletePortfolio(userId: UUID): Boolean {
         TODO("Not yet implemented")
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getPortfolioAccountSummary(): PortfolioAccountSummary {
-        val portfolio = portfolioRepository.getByUserId(authService.currentUser().id).getOrThrow()
+    override suspend fun getPortfolioAccountSummary(userId: UUID): PortfolioAccountSummary {
+        val portfolio = portfolioRepository.getByUserId(userId).getOrThrow()
 
         val summary = accountSummaryProvider.get(AccountSummaryProvider.Type.Ibkr).getAccountSummary()
         val traderCapital = portfolio.traders.sumOf{trader-> trader.capital }

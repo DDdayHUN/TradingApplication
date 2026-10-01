@@ -8,9 +8,9 @@ import domain.trader.TradingOrder
 import java.util.UUID
 
 interface ITraderService {
-    suspend fun createTrader(request: CreateTraderRequest): Trader
-    suspend fun deleteTrader(traderId: UUID)
-    suspend fun getAll(): Set<Trader>
+    suspend fun createTrader(userId: UUID, request: CreateTraderRequest): Trader
+    suspend fun deleteTrader(userId: UUID, traderId: UUID)
+    suspend fun getAll(userId: UUID): Set<Trader>
     suspend fun getById(traderId: UUID): Trader
     suspend fun changeAlgorithm(traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader
     suspend fun executeTrader(traderId: UUID): TradingOrder?

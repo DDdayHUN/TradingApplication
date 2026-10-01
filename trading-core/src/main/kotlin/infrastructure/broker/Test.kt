@@ -17,6 +17,7 @@ import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import java.util.UUID
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
@@ -38,15 +39,16 @@ class Test(
     private val endDate = Instant.parse("2026-01-01T00:00:00Z")
     private val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
 
+    private val userId = UUID.fromString("f0792158-24a0-427f-999d-6cf8fa3a0cf3")
+
     @Scheduled(
-        cron = "0 32 15 * * *",
+        cron = "0 32 20 * * *",
         zone = "Europe/Budapest"
     )
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-                val portfolio = portfolioService.getPortfolio()
-
+                val portfolio = portfolioService.getPortfolioByUserId(userId)
                 val orders = coroutineScope {
                     portfolio.traders.map { trader ->
                         async {
@@ -108,12 +110,12 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 22 18 * * *",
+        cron = "0 22 23 * * *",
         zone = "Europe/Budapest"
     )
     fun sellAllHolding() {
         scope.launch {
-            val portfolio = portfolioService.getPortfolio()
+            val portfolio = portfolioService.getPortfolioByUserId(userId)
 
             portfolio.traders.forEach { trader ->
 
@@ -131,13 +133,13 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 06 18 * * *",
+        cron = "0 06 23 * * *",
         zone = "Europe/Budapest"
     )
     fun buyHolding(){
         scope.launch {
             try {
-                val portfolio = portfolioService.getPortfolio()
+                val portfolio = portfolioService.getPortfolioByUserId(userId)
 
                 portfolio.traders.forEach { trader ->
                         val order = TradingOrder(
@@ -154,13 +156,13 @@ class Test(
         }
     }
     @Scheduled(
-        cron = "0 03 18 * * *",
+        cron = "0 03 23 * * *",
         zone = "Europe/Budapest"
     )
     fun createTraders() {
         scope.launch {
             var securityList = provider.getAllSecurityIdentifiers().getOrThrow()
-            val traders = traderService.getAll()
+            val traders = traderService.getAll(userId)
             val traderSecurities = traders.map {
                 trader-> trader.securityIdentifier
             }
@@ -170,6 +172,7 @@ class Test(
 
             securityList.forEach { security ->
                 traderService.createTrader(
+                    userId = userId,
                     request = CreateTraderRequest(
                         securityIdentifier = SecurityIdentifierRequest(
                             isin = security.isin,
@@ -185,21 +188,21 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 25 18 * * *",
+        cron = "0 43 18 * * *",
         zone = "Europe/Budapest"
     )
     fun deleteTraders() {
         scope.launch {
             sellAllHolding()
-            val portfolio = portfolioService.getPortfolio()
+            val portfolio = portfolioService.getPortfolioByUserId(userId)
             portfolio.traders.forEach { trader ->
-                traderService.deleteTrader(trader.id)
+                traderService.deleteTrader(userId, trader.id)
             }
         }
     }
 
     @Scheduled(
-        cron = "0 30 12 * * *",
+        cron = "0 29 20 * * *",
         zone = "Europe/Budapest"
     )
     fun createTradersByEvalOutput() {
@@ -212,9 +215,9 @@ class Test(
                 evaluationStartYear = startDate,
                 evaluationEndYear = endDate,
                 windowStepYears = evaluationWindowStepYears
-            ).runEvaluationOnAll().getBestList(6)
+            ).runEvaluationOnAll().getBestList(10)
 
-            val traders = traderService.getAll()
+            val traders = traderService.getAll(userId)
             val traderSecurities = traders.map {
                     trader-> trader.securityIdentifier
             }
@@ -224,6 +227,7 @@ class Test(
 
             evalOutput.forEach { security ->
                 traderService.createTrader(
+                    userId = userId,
                     request = CreateTraderRequest(
                         securityIdentifier = SecurityIdentifierRequest(
                             isin = security.isin,
