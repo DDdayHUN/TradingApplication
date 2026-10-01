@@ -1,6 +1,6 @@
 package data.repository.user
 
-import domain.User
+import application.model.User
 import java.util.UUID
 
 interface IUserRepository {

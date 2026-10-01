@@ -22,12 +22,8 @@ class PortfolioController(
 
     @GetMapping
     suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
-        val response = portfolioService.getAllPortfolio().map { portfolio ->
-            val summary = portfolioService.getPortfolioAccountSummary(portfolio.id)
-            portfolio.toResponse(
-                availableCapital = summary.availableCapital,
-                liquidation = summary.netLiquidation
-            )
+        val response = portfolioService.getAll().map { portfolio ->
+            portfolio.toResponse()
         }
 
         return ResponseEntity.ok(
@@ -39,13 +35,13 @@ class PortfolioController(
 
     @GetMapping("/{portfolioId}")
     suspend fun getPortfolioById(@PathVariable portfolioId: UUID): ResponseEntity<PortfolioResponse> {
-        val summary = portfolioService.getPortfolioAccountSummary(portfolioId)
-        val response = portfolioService.getPortfolio(portfolioId).toResponse(
-            availableCapital = summary.availableCapital,
-            liquidation = summary.netLiquidation
-        )
+        val portfolio = portfolioService.getById(portfolioId)
 
-        return ResponseEntity.ok(response)
+        val response = portfolio.toResponse()
+
+        return ResponseEntity.ok(
+            response
+        )
     }
 
     //===========================================================//
@@ -54,12 +50,8 @@ class PortfolioController(
 
     @PostMapping
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
-        val portfolio = portfolioService.createPortfolio()
-        val summary = portfolioService.getPortfolioAccountSummary(portfolio.id)
-        val response = portfolio.toResponse(
-            availableCapital = summary.availableCapital,
-            liquidation = summary.netLiquidation
-        )
+        val portfolio = portfolioService.create()
+        val response = portfolio.toResponse()
 
         return ResponseEntity
             .status(HttpStatus.CREATED)

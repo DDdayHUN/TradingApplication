@@ -2,7 +2,7 @@ package application.service.auth
 
 import application.logging.logger
 import data.repository.user.IUserRepository
-import domain.User
+import application.model.User
 import exception.api.AuthenticationException
 import exception.api.UserAlreadyExistsException
 import org.springframework.security.core.context.SecurityContextHolder
@@ -32,8 +32,6 @@ class AuthenticationService(
                 logger.warn("Current user requested without authentication")
                 throw AuthenticationException("No authentication present")
             }
-
-
 
         val uuid: UUID =
             try { UUID.fromString(auth.name) }
@@ -66,7 +64,6 @@ class AuthenticationService(
                 logger.warn("Authentication contained invalid user UUID: {}", auth)
                 throw AuthenticationException("Invalid UUID", e)
             }
-
 
         val jwtAuth = auth as? JwtAuthenticationToken
             ?: run {

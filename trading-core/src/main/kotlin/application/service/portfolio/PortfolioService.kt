@@ -1,11 +1,8 @@
 package application.service.portfolio
 
-import application.provider.AccountSummaryProvider
 import application.service.auth.IAuthenticationService
-import application.service.broker.InteractiveBrokersService
 import data.repository.portfolio.IPortfolioRepository
 import domain.Portfolio
-import domain.Portfolio.PortfolioAccountSummary
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -13,7 +10,6 @@ import java.util.*
 @Service
 class PortfolioService(
     private val authService: IAuthenticationService,
-    private val accountSummaryProvider: AccountSummaryProvider,
     private val portfolioRepository: IPortfolioRepository,
 ) : IPortfolioService {
     //===========================================================//
@@ -28,7 +24,7 @@ class PortfolioService(
     //===========================================================//
 
     @Transactional
-    override suspend fun createPortfolio(): Portfolio {
+    override suspend fun create(): Portfolio {
         val userId = authService.currentUser().id
         val portfolio = Portfolio()
         return portfolioRepository.create(userId, portfolio).getOrThrow()
@@ -37,7 +33,7 @@ class PortfolioService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAllPortfolio(): List<Portfolio> {
+    override suspend fun getAll(): List<Portfolio> {
         val userId = authService.currentUser().id
         return portfolioRepository.getAllByUserId(userId).getOrThrow()
     }
@@ -45,29 +41,14 @@ class PortfolioService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getPortfolio(portfolioId: UUID): Portfolio {
+    override suspend fun getById(portfolioId: UUID): Portfolio {
         return portfolioRepository.getById(portfolioId).getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun deletePortfolio(portfolioId: UUID): Boolean {
+    override suspend fun delete(portfolioId: UUID): Boolean {
         TODO("Not yet implemented")
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    override suspend fun getPortfolioAccountSummary(portfolioId: UUID): PortfolioAccountSummary {
-        val portfolio = getPortfolio(portfolioId)
-
-        val summary = accountSummaryProvider.get(AccountSummaryProvider.Type.Ibkr).getAccountSummary()
-        val traderCapital = portfolio.traders.sumOf{trader-> trader.capital }
-
-       return PortfolioAccountSummary(
-           availableCapital = (summary.availableCapital - traderCapital).coerceAtLeast(0.0),
-           netLiquidation = summary.netLiquidation,
-       )
     }
 }

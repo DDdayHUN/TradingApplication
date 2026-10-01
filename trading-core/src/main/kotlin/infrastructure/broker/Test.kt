@@ -7,7 +7,7 @@ import application.service.portfolio.IPortfolioService
 import application.service.trader.ITraderService
 import data.network.ibkr.backtest.BacktestDataService
 import domain.market.security.SecurityIdentifier
-import application.service.broker.InteractiveBrokersOrderService
+import application.service.user.broker.InteractiveBrokersOrderService
 import application.tester.TradingAlgorithmEvaluator
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
@@ -47,7 +47,7 @@ class Test(
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-                val portfolio = portfolioService.getPortfolio(portfolioId)
+                val portfolio = portfolioService.getById(portfolioId)
 
                 val orders = coroutineScope {
                     portfolio.traders.map { trader ->
@@ -115,7 +115,7 @@ class Test(
     )
     fun sellAllHolding() {
         scope.launch {
-            val portfolio = portfolioService.getPortfolio(portfolioId)
+            val portfolio = portfolioService.getById(portfolioId)
 
             portfolio.traders.forEach { trader ->
 
@@ -139,7 +139,7 @@ class Test(
     fun buyHolding(){
         scope.launch {
             try {
-                val portfolio = portfolioService.getPortfolio(portfolioId)
+                val portfolio = portfolioService.getById(portfolioId)
 
                 portfolio.traders.forEach { trader ->
                         val order = TradingOrder(
@@ -171,7 +171,7 @@ class Test(
             }
 
             securityList.forEach { security ->
-                traderService.createTrader(
+                traderService.create(
                     portfolioId = portfolioId,
                     request = CreateTraderRequest(
                         securityIdentifier = SecurityIdentifierRequest(
@@ -194,9 +194,9 @@ class Test(
     fun deleteTraders() {
         scope.launch {
             sellAllHolding()
-            val portfolio = portfolioService.getPortfolio(portfolioId)
+            val portfolio = portfolioService.getById(portfolioId)
             portfolio.traders.forEach { trader ->
-                traderService.deleteTrader(portfolio.id,trader.id)
+                traderService.delete(portfolio.id,trader.id)
             }
         }
     }
@@ -226,7 +226,7 @@ class Test(
             }
 
             evalOutput.forEach { security ->
-                traderService.createTrader(
+                traderService.create(
                     portfolioId = portfolioId,
                     request = CreateTraderRequest(
                         securityIdentifier = SecurityIdentifierRequest(

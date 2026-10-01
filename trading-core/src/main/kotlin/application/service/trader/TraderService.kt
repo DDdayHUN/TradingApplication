@@ -4,6 +4,7 @@ import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import application.logging.logger
 import application.provider.MarketDataProvider
+import application.service.auth.IAuthenticationService
 import application.service.portfolio.IPortfolioService
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.trader.ITraderRepository
@@ -21,9 +22,9 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
+@Deprecated("Ezt nagyon átkell írni meg az egész authentication cuccos-t mert ez így nem léesz jó")
 class TraderService(
-    @param:Qualifier("yahoo")
-    private val historiacalProvider: IHistoricalMarketDataProvider,
+    @param:Qualifier("yahoo") private val historicalMarketDataProvider: IHistoricalMarketDataProvider,
     private val marketDataProvider: MarketDataProvider,
     private val portfolioService: IPortfolioService,
     private val traderRepository: ITraderRepository
@@ -40,13 +41,8 @@ class TraderService(
     // Public Method(s)
 
     @Transactional
-    override suspend fun createTrader(portfolioId: UUID, request: CreateTraderRequest): Trader {
-        val portfolio = portfolioService.getPortfolio(portfolioId)
-        val availableCapital = portfolioService.getPortfolioAccountSummary(portfolioId).availableCapital
-
-        require(request.capital <= availableCapital){
-            "Insufficient available capital to create new trader"
-        }
+    override suspend fun create(portfolioId: UUID, request: CreateTraderRequest): Trader {
+        val portfolio = portfolioService.getById(portfolioId)
 
         val securityIdentifier = SecurityIdentifier(
             isin = request.securityIdentifier.isin,
@@ -55,7 +51,7 @@ class TraderService(
         )
         val algorithmType = parseAlgorithmType(request.algorithmType)
         val algorithm = TradingAlgorithm.create(
-            provider = historiacalProvider,
+            provider = historicalMarketDataProvider,
             type = algorithmType,
             securityIdentifier = securityIdentifier
         )
@@ -77,16 +73,15 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAllByPortfolioId(portfolioId: UUID): Set<Trader> {
-       return portfolioService.getPortfolio(portfolioId).traders
+    override suspend fun getAllByPortfolioId(portfolioId: UUID): List<Trader> {
+       return portfolioService.getById(portfolioId).traders.toList()
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
     override suspend fun getById(traderId: UUID): Trader {
-        val trader = traderRepository.getById(traderId)
-        return trader.getOrThrow()
+
     }
 
     //===========================================================//
@@ -98,7 +93,7 @@ class TraderService(
         val algorithmType = parseAlgorithmType(request.algorithmType)
 
         val algorithm = TradingAlgorithm.create(
-            provider = historiacalProvider,
+            provider = historicalMarketDataProvider,
             type = algorithmType,
             securityIdentifier = trader.securityIdentifier,
         )
@@ -186,8 +181,8 @@ class TraderService(
     }
 
     @Transactional
-    override suspend fun deleteTrader(portfolioId: UUID, traderId: UUID) {
-        val portfolio = portfolioService.getPortfolio(portfolioId)
+    override suspend fun delete(portfolioId: UUID, traderId: UUID) {
+        val portfolio = portfolioService.getById(portfolioId)
 
         val trader = portfolio.traders.find { trader ->
             trader.id == traderId

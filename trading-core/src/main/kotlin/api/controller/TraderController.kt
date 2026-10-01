@@ -3,9 +3,7 @@ package api.controller
 import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
 import api.dto.toResponse
-import application.service.auth.IAuthenticationService
 import application.service.trader.ITraderService
-import exception.api.TraderNotFoundException
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -32,7 +30,7 @@ class TraderController(
     //===========================================================//
 
     @GetMapping("/{traderId}")
-    suspend fun getTraderById(@PathVariable traderId: UUID, @PathVariable portfolioId: UUID): ResponseEntity<TraderResponse> {
+    suspend fun getTraderById(@PathVariable traderId: UUID): ResponseEntity<TraderResponse> {
         val response = traderService.getById(traderId).toResponse()
 
         return ResponseEntity.ok(response)
@@ -44,7 +42,7 @@ class TraderController(
     @PostMapping
     suspend fun createTrader(@PathVariable portfolioId: UUID, @RequestBody request: CreateTraderRequest): ResponseEntity<TraderResponse> {
 
-        val response = traderService.createTrader(portfolioId, request).toResponse()
+        val response = traderService.create(portfolioId, request).toResponse()
 
         return ResponseEntity.ok(response)
     }

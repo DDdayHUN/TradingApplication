@@ -25,7 +25,12 @@ class Trader {
     val id: UUID
     val securityIdentifier: SecurityIdentifier
 
-    val capital: Double get() = m_Capital
+    val availableCapital: Double get() = m_Capital
+    val allocatedCapital: Double get() =
+        m_Capital + m_Holdings.sumOf { holding ->
+            holding.purchasePrice + holding.amount
+        }
+
     val holdings: Set<SecurityHolding> get() = m_Holdings.toSet()
     var algorithm: ITradingAlgorithm
 
@@ -42,7 +47,7 @@ class Trader {
 
     fun createOrder(quote: Quote): TradingOrder {
         val currentPrice = quote.currentPrice
-        val output = algorithm.run(holdings, capital, currentPrice)
+        val output = algorithm.run(holdings, availableCapital, currentPrice)
 
         return TradingOrder(
             traderId = id,
@@ -81,20 +86,6 @@ class Trader {
     fun changeCapital(capital: Double) {
         if(capital < 0.0) require(m_Capital + capital >= 0.0) { "Capital must be greater or equal to 0 after change" }
         m_Capital += capital
-    }
-
-    //===========================================================//
-
-    fun equity(currentPrice: Double): Double {
-        return m_Capital + m_Holdings.sumOf { it.amount * currentPrice }
-    }
-
-    //===========================================================//
-
-    fun allocatedValue(): Double {
-        return m_Capital + m_Holdings.sumOf { holding ->
-            holding.purchasePrice + holding.amount
-        }
     }
 
     //===========================================================//

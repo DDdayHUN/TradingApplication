@@ -13,7 +13,10 @@ class Portfolio {
     // Public Field(s)
 
     val id: UUID
+
     val traders: Set<Trader> get() = m_Traders.toSet()
+    val availableCapital: Double get() = traders.sumOf { it.availableCapital }
+    val allocatedCapital: Double get() = traders.sumOf { it.allocatedCapital }
 
     //===========================================================//
     //===========================================================//
@@ -32,20 +35,9 @@ class Portfolio {
     //===========================================================//
 
     fun removeTrader(trader: Trader) {
-        if(trader.holdings.isNotEmpty()){
-            throw TraderHoldingsNotEmptyException(trader.id)
-        }
+        if(trader.holdings.isNotEmpty()) throw TraderHoldingsNotEmptyException(trader.id)
         m_Traders.remove(trader)
     }
-
-    //===========================================================//
-
-    fun allocatedCapital(): Double {
-        return m_Traders.sumOf {trader ->
-            trader.allocatedValue()
-        }
-    }
-
 
     //===========================================================//
     //===========================================================//
@@ -55,13 +47,4 @@ class Portfolio {
         this.id = id
         this.m_Traders = traders
     }
-
-    //===========================================================//
-    //===========================================================//
-    // Nested classes
-
-    data class PortfolioAccountSummary(
-        val availableCapital: Double,
-        val netLiquidation: Double
-    )
 }

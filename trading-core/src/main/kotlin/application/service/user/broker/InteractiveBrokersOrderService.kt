@@ -1,4 +1,4 @@
-package application.service.broker
+package application.service.user.broker
 
 import application.logging.logger
 import application.model.InteractiveBrokersOrder
@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service
 @Service
 class InteractiveBrokersOrderService(
     private val brokerService: InteractiveBrokersService,
-    private val traderService: ITraderService,
     private val orderRepository: InteractiveBrokersOrderRepository,
+    private val traderService: ITraderService
 ) {
     //===========================================================//
     //===========================================================//

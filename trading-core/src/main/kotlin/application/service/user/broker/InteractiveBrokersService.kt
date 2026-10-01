@@ -1,4 +1,4 @@
-package application.service.broker
+package application.service.user.broker
 
 import application.logging.logger
 import application.model.InteractiveBrokersOrder
@@ -42,7 +42,7 @@ class InteractiveBrokersService(
     }
     //===========================================================//
 
-    suspend fun getAccountSummary(): IbkrPortfolioAccountSummary{
+    suspend fun getAccountSummary(): IbkrPortfolioAccountSummary {
         val client = session.getClient()
         return client.getAccountSummary()
     }

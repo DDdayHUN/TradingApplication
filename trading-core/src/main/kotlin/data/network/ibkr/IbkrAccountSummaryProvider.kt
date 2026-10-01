@@ -1,6 +1,6 @@
 package data.network.ibkr
 
-import application.service.broker.InteractiveBrokersService
+import application.service.user.broker.InteractiveBrokersService
 import data.network.IAccountSummaryProvider
 import domain.Portfolio.PortfolioAccountSummary
 import org.springframework.stereotype.Component

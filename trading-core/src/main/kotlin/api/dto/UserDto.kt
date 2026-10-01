@@ -1,6 +1,6 @@
 package api.dto
 
-import domain.User
+import application.model.User
 import java.util.*
 
 //===========================================================//

@@ -1,7 +1,7 @@
 package data.repository.user.sql
 
 import data.repository.portfolio.sql.PortfolioEntity
-import domain.User
+import application.model.User
 import jakarta.persistence.*
 import java.util.*
 
@@ -14,7 +14,7 @@ class UserEntity (
     @Column(name = "user_name", nullable = false)
     var userName: String
 ) {
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "auth", cascade = [CascadeType.ALL], orphanRemoval = true)
     var portfolios: MutableSet<PortfolioEntity> = mutableSetOf()
 }
 
