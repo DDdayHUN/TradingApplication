@@ -5,8 +5,7 @@ import java.util.*
 
 interface IPortfolioService {
     suspend fun save(portfolio: Portfolio): Portfolio
-    suspend fun create(): Portfolio
-    suspend fun getAll(): List<Portfolio>
-    suspend fun getById(portfolioId: UUID): Portfolio
-    suspend fun delete(portfolioId: UUID): Boolean
+    suspend fun createPortfolio(userId: UUID): Portfolio
+    suspend fun getPortfolioByUserId(userId: UUID): Portfolio
+    suspend fun deletePortfolio(userId: UUID): Boolean
 }

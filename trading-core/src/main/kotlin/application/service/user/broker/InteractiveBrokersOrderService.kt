@@ -7,15 +7,15 @@ import application.service.trader.ITraderService
 import data.repository.order.sql.InteractiveBrokersOrderRepository
 import domain.trader.TradingOrder
 import infrastructure.broker.IbkrEvent
-import jakarta.transaction.Transactional
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class InteractiveBrokersOrderService(
     private val brokerService: InteractiveBrokersService,
-    private val orderRepository: InteractiveBrokersOrderRepository,
-    private val traderService: ITraderService
+    private val traderService: ITraderService,
+    private val orderRepository: InteractiveBrokersOrderRepository
 ) {
     //===========================================================//
     //===========================================================//
@@ -48,7 +48,12 @@ class InteractiveBrokersOrderService(
 
     //===========================================================//
 
-    @Transactional
+    suspend fun getAll(userId: UUID): List<InteractiveBrokersOrder>{
+        return orderRepository.getAll(userId).getOrThrow()
+    }
+
+    //===========================================================//
+
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
@@ -58,7 +63,6 @@ class InteractiveBrokersOrderService(
 
     //===========================================================//
 
-    @Transactional
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderCancelledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
@@ -69,7 +73,6 @@ class InteractiveBrokersOrderService(
 
     //===========================================================//
 
-    @Transactional
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderFilledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()

@@ -24,31 +24,23 @@ class PortfolioService(
     //===========================================================//
 
     @Transactional
-    override suspend fun create(): Portfolio {
-        val userId = authService.currentUser().id
+    override suspend fun createPortfolio(userId: UUID): Portfolio {
+        val user = authService.currentUser()
         val portfolio = Portfolio()
-        return portfolioRepository.create(userId, portfolio).getOrThrow()
+        return portfolioRepository.create(user.id, portfolio).getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAll(): List<Portfolio> {
-        val userId = authService.currentUser().id
-        return portfolioRepository.getAllByUserId(userId).getOrThrow()
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    override suspend fun getById(portfolioId: UUID): Portfolio {
-        return portfolioRepository.getById(portfolioId).getOrThrow()
+    override suspend fun getPortfolioByUserId(userId: UUID): Portfolio {
+        return portfolioRepository.getByUserId(userId).getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun delete(portfolioId: UUID): Boolean {
+    override suspend fun deletePortfolio(userId: UUID): Boolean {
         TODO("Not yet implemented")
     }
 }

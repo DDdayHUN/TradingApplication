@@ -26,4 +26,7 @@ interface IInteractiveBrokersOrderJpaRepository : JpaRepository<InteractiveBroke
     fun deleteSellAllocationsByOrderId(
         @Param("orderId") orderId: UUID
     ): Int
+
+    @EntityGraph(attributePaths = ["sellAllocations"])
+    fun findAllByTraderPortfolioUserId(userId: UUID): List<InteractiveBrokersOrderEntity>
 }

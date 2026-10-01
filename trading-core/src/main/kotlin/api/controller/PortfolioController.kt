@@ -2,46 +2,31 @@ package api.controller
 
 import api.dto.PortfolioResponse
 import api.dto.toResponse
+import application.service.auth.IAuthenticationService
 import application.service.portfolio.IPortfolioService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 //===========================================================//
 //===========================================================//
 
 @RestController
-@RequestMapping("/api/portfolio")
+@RequestMapping("/api/portfolio/")
 class PortfolioController(
-    private val portfolioService: IPortfolioService,
+    private val authService: IAuthenticationService,
+    private val portfolioService: IPortfolioService
 ) {
     //===========================================================//
     //===========================================================//
     // GET
 
     @GetMapping
-    suspend fun getAllPortfolio(): ResponseEntity<List<PortfolioResponse>> {
-        val response = portfolioService.getAll().map { portfolio ->
-            portfolio.toResponse()
-        }
+    suspend fun getPortfolio(): ResponseEntity<PortfolioResponse> {
+        val user = authService.currentUser()
+        val response = portfolioService.getPortfolioByUserId(user.id).toResponse()
 
-        return ResponseEntity.ok(
-            response
-        )
-    }
-
-    //===========================================================//
-
-    @GetMapping("/{portfolioId}")
-    suspend fun getPortfolioById(@PathVariable portfolioId: UUID): ResponseEntity<PortfolioResponse> {
-        val portfolio = portfolioService.getById(portfolioId)
-
-        val response = portfolio.toResponse()
-
-        return ResponseEntity.ok(
-            response
-        )
+        return ResponseEntity.ok(response)
     }
 
     //===========================================================//
@@ -50,7 +35,8 @@ class PortfolioController(
 
     @PostMapping
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
-        val portfolio = portfolioService.create()
+        val user = authService.currentUser()
+        val portfolio = portfolioService.createPortfolio(user.id)
         val response = portfolio.toResponse()
 
         return ResponseEntity
