@@ -15,8 +15,7 @@ class PortfolioEntity(
     @Id
     var id: UUID,
 ) {
-    // TODO : Ezt majd átbeszélni, hogyan lehetne szebben, cuz scalingbe ez szar XD
-    @OneToOne(mappedBy = "portfolio", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "portfolio")
     var user: UserEntity? = null
 
     @OneToMany(mappedBy = "portfolio", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])

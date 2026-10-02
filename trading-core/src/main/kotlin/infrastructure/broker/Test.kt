@@ -1,14 +1,16 @@
 package infrastructure.broker
-/*
+
 import api.dto.CreateTraderRequest
 import api.dto.SecurityIdentifierRequest
 import application.logging.logger
 import api.service.portfolio.IPortfolioService
-import application.service.trader.ITraderService
+import api.service.trader.ITraderService
 import application.service.broker.InteractiveBrokersOrderService
 import application.tester.TradingAlgorithmEvaluator
 import data.network.ibkr.backtest.BacktestDataService
 import data.repository.historical_data.IHistoricalMarketDataProvider
+import data.repository.user.IUserRepository
+import data.repository.user.sql.toDomain
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
@@ -30,7 +32,8 @@ class Test(
     private val portfolioService: IPortfolioService,
     private val backtestDataService: BacktestDataService,
     @param:Qualifier("yahoo")
-    private val provider: IHistoricalMarketDataProvider
+    private val provider: IHistoricalMarketDataProvider,
+    private val userRepository: IUserRepository,
 ) {
     private val logger = logger<Test>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -38,7 +41,6 @@ class Test(
     private val startDate = Instant.parse("2021-01-01T00:00:00Z")
     private val endDate = Instant.parse("2026-01-01T00:00:00Z")
     private val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
-
     private val userId = UUID.fromString("f0792158-24a0-427f-999d-6cf8fa3a0cf3")
 
     @Scheduled(
@@ -48,7 +50,8 @@ class Test(
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-                val portfolio = portfolioService.getPortfolioByUserId(userId)
+                val user = userRepository.getById(userId).getOrThrow().toDomain()
+                val portfolio = user.portfolios.elementAt(0)
                 val orders = coroutineScope {
                     portfolio.traders.map { trader ->
                         async {
@@ -115,7 +118,8 @@ class Test(
     )
     fun sellAllHolding() {
         scope.launch {
-            val portfolio = portfolioService.getPortfolioByUserId(userId)
+            val user = userRepository.getById(userId).getOrThrow().toDomain()
+            val portfolio = user.portfolios.elementAt(0)
 
             portfolio.traders.forEach { trader ->
 
@@ -139,7 +143,8 @@ class Test(
     fun buyHolding(){
         scope.launch {
             try {
-                val portfolio = portfolioService.getPortfolioByUserId(userId)
+                val user = userRepository.getById(userId).getOrThrow().toDomain()
+                val portfolio = user.portfolios.elementAt(0)
 
                 portfolio.traders.forEach { trader ->
                         val order = TradingOrder(
@@ -162,7 +167,9 @@ class Test(
     fun createTraders() {
         scope.launch {
             var securityList = provider.getAllSecurityIdentifiers().getOrThrow()
-            val traders = traderService.getAll(userId)
+
+            val user = userRepository.getById(userId).getOrThrow().toDomain()
+            val traders = user.portfolios.elementAt(0).traders
             val traderSecurities = traders.map {
                 trader-> trader.securityIdentifier
             }
@@ -241,4 +248,4 @@ class Test(
             }
         }
     }
-}*/
+}

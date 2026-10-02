@@ -19,7 +19,7 @@ class Portfolio {
     val netLiquidation: Double get() = m_AvailableCapital +
             traders.sumOf { it.availableCapital } +
             traders.sumOf { trader -> trader.holdings.sumOf { it.purchasePrice * it.amount } }
-    // TODO : Net liquidation is not calculated from past price but rather from the current price no?
+    // NOTE : Net liquidation is not calculated from past price but rather from the current price no?
 
     //===========================================================//
     //===========================================================//
