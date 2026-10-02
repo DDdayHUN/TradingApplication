@@ -1,8 +1,8 @@
 package data.network
 
-import domain.Portfolio.PortfolioAccountSummary
+import application.model.User
 import java.util.UUID
 
 interface IAccountSummaryProvider {
-    suspend fun getAccountSummary(userId: UUID): PortfolioAccountSummary
+    suspend fun getAccountSummary(userId: UUID): User.AccountSummary
 }

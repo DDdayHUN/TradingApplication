@@ -1,6 +1,7 @@
 package domain.trader
 
 import domain.algorithm.ITradingAlgorithm
+import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
@@ -24,10 +25,9 @@ class Trader {
 
     val id: UUID
     val securityIdentifier: SecurityIdentifier
-
-    val capital: Double get() = m_Capital
+    val availableCapital: Double get() = m_Capital
     val holdings: Set<SecurityHolding> get() = m_Holdings.toSet()
-    var algorithm: ITradingAlgorithm
+    val algorithm: ITradingAlgorithm get() = m_Algorithm // TODO : Remove this ezt nem szabad így expose-olnunk!!!, de egyelőre marad.
 
     //===========================================================//
     //===========================================================//
@@ -35,6 +35,7 @@ class Trader {
 
     private var m_Capital: Double
     private val m_Holdings: MutableSet<SecurityHolding>
+    private var m_Algorithm: ITradingAlgorithm
 
     //===========================================================//
     //===========================================================//
@@ -42,7 +43,7 @@ class Trader {
 
     fun createOrder(quote: Quote): TradingOrder {
         val currentPrice = quote.currentPrice
-        val output = algorithm.run(holdings, capital, currentPrice)
+        val output = m_Algorithm.run(holdings, availableCapital, currentPrice)
 
         return TradingOrder(
             traderId = id,
@@ -85,22 +86,8 @@ class Trader {
 
     //===========================================================//
 
-    fun equity(currentPrice: Double): Double {
-        return m_Capital + m_Holdings.sumOf { it.amount * currentPrice }
-    }
-
-    //===========================================================//
-
-    fun allocatedValue(): Double {
-        return m_Capital + m_Holdings.sumOf { holding ->
-            holding.purchasePrice + holding.amount
-        }
-    }
-
-    //===========================================================//
-
     fun changeAlgorithm(algorithm: ITradingAlgorithm) {
-        this.algorithm = algorithm
+        this.m_Algorithm = algorithm
     }
 
     //===========================================================//
@@ -153,6 +140,6 @@ class Trader {
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings
         m_Capital = allocatedCapital
-        this.algorithm = algorithm
+        this.m_Algorithm = algorithm
     }
 }

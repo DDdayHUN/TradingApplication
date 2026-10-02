@@ -86,7 +86,7 @@ fun Trader.toEntity(portfolio: PortfolioEntity, gson: Gson = Gson()): TraderEnti
         id = id,
         securityIdentifier = securityIdentifier.toEntity(),
         portfolio = portfolio,
-        capital = capital,
+        capital = availableCapital,
         algorithmType = ITradingAlgorithm.typeTagOf(algorithm),
         algorithmState =  gson.toJson(
             algorithm,
@@ -123,7 +123,7 @@ fun TraderEntity.toDomain(gson: Gson = Gson()): Trader {
 
 fun TraderEntity.updateFrom(trader: Trader, gson: Gson = Gson()) {
     securityIdentifier = trader.securityIdentifier.toEntity()
-    capital = trader.capital
+    capital = trader.availableCapital
 
     algorithmType = ITradingAlgorithm.typeTagOf(trader.algorithm)
     algorithmState = gson.toJson(

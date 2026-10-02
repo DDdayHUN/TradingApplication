@@ -1,7 +1,7 @@
 package data.repository.user.sql
 
 import data.repository.user.IUserRepository
-import domain.User
+import application.model.User
 import exception.api.UserNotFoundException
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -10,27 +10,48 @@ import java.util.*
 class UserRepository(
     private val repository: IUserJpaRepository
 ) : IUserRepository {
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
 
-    override suspend fun getAll(): Result<List<User>> {
+    override suspend fun save(user: UserEntity): Result<UserEntity> {
         return runCatching {
-            repository.findAll().map{ user ->
-                user.toDomain()
-            }
+            repository.save(user)
         }
     }
 
-    override suspend fun getById(id: UUID): Result<User> {
-        return runCatching {
-            val entity = repository.findById(id)
-                .orElseThrow { UserNotFoundException(id) }
+    //===========================================================//
 
-            entity.toDomain()
+    override suspend fun getById(userId: UUID): Result<UserEntity> {
+        return runCatching {
+            val entity = repository.findById(userId)
+                .orElseThrow { UserNotFoundException(userId) }
+
+            entity
         }
     }
 
-    override suspend fun save(user: User): Result<User> {
+    //===========================================================//
+
+    override suspend fun getAll(): Result<List<UserEntity>> {
         return runCatching {
-            repository.save(user.toEntity()).toDomain()
+            repository.findAll()
+        }
+    }
+
+    //===========================================================//
+
+    override suspend fun deleteById(userId: UUID): Result<Unit> {
+        return runCatching {
+            repository.deleteById(userId)
+        }
+    }
+
+    //===========================================================//
+
+    override suspend fun deleteAll(): Result<Unit> {
+        return runCatching {
+            repository.deleteAll()
         }
     }
 }

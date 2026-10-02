@@ -7,7 +7,6 @@ import com.ib.client.Decimal
 import com.ib.client.Order
 import domain.market.security.SecurityIdentifier
 import infrastructure.broker.IbkrHistoricalBar
-import infrastructure.broker.InteractiveBrokersSession
 import infrastructure.broker.IbkrPortfolioAccountSummary
 import infrastructure.broker.InteractiveBrokerSessionManager
 import kotlinx.coroutines.delay

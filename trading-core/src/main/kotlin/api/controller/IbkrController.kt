@@ -1,7 +1,7 @@
 package api.controller
 
 import api.dto.ConnectIbkrRequest
-import application.service.auth.IAuthenticationService
+import api.service.auth.IAuthenticationService
 import infrastructure.broker.InteractiveBrokerSessionManager
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

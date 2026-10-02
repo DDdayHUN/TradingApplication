@@ -3,12 +3,10 @@ package application.service.broker
 import application.logging.logger
 import application.model.InteractiveBrokersOrder
 import application.model.toInteractiveBrokersOrder
-import application.service.auth.IAuthenticationService
 import application.service.trader.ITraderService
 import data.repository.order.sql.InteractiveBrokersOrderRepository
 import domain.trader.TradingOrder
 import infrastructure.broker.IbkrEvent
-import jakarta.transaction.Transactional
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -56,7 +54,6 @@ class InteractiveBrokersOrderService(
 
     //===========================================================//
 
-    @Transactional
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
@@ -66,7 +63,6 @@ class InteractiveBrokersOrderService(
 
     //===========================================================//
 
-    @Transactional
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderCancelledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
@@ -77,7 +73,6 @@ class InteractiveBrokersOrderService(
 
     //===========================================================//
 
-    @Transactional
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderFilledEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()

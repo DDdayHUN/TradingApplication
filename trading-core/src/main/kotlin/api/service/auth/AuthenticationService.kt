@@ -1,8 +1,11 @@
-package application.service.auth
+package api.service.auth
 
 import application.logging.logger
 import data.repository.user.IUserRepository
-import domain.User
+import application.model.User
+import data.repository.user.sql.toDomain
+import data.repository.user.sql.toEntity
+import domain.Portfolio
 import exception.api.AuthenticationException
 import exception.api.UserAlreadyExistsException
 import org.springframework.security.core.context.SecurityContextHolder
@@ -13,7 +16,7 @@ import java.util.UUID
 
 @Service
 class AuthenticationService(
-    private val userRepository: IUserRepository,
+    private val userRepository: IUserRepository
 ) : IAuthenticationService {
     //===========================================================//
     //===========================================================//
@@ -33,8 +36,6 @@ class AuthenticationService(
                 throw AuthenticationException("No authentication present")
             }
 
-
-
         val uuid: UUID =
             try { UUID.fromString(auth.name) }
             catch (e: IllegalArgumentException) {
@@ -47,7 +48,7 @@ class AuthenticationService(
         return userRepository.getById(uuid).getOrElse { exception ->
             logger.warn("Authenticated user not found id={}", uuid)
             throw exception
-        }
+        }.toDomain()
     }
 
     //===========================================================//
@@ -66,7 +67,6 @@ class AuthenticationService(
                 logger.warn("Authentication contained invalid user UUID: {}", auth)
                 throw AuthenticationException("Invalid UUID", e)
             }
-
 
         val jwtAuth = auth as? JwtAuthenticationToken
             ?: run {
@@ -87,20 +87,27 @@ class AuthenticationService(
             throw UserAlreadyExistsException(query.getOrThrow().id)
         }
         else {
-            val user = User(
+            val newUser = User(
                 id = uuid,
-                userName = username
+                userName = username,
+                portfolio = Portfolio()
             )
-            return userRepository.save(user).onSuccess { user ->
-                logger.info(
-                    "User created successfully id={} username={}", user.id, user.userName
-                )
-            }.onFailure { user ->
+
+            return userRepository.save(newUser.toEntity())
+                .onSuccess { user ->
+                    logger.info(
+                        "User created successfully id={} username={}",
+                        user.id,
+                        user.userName
+                    )
+                }.onFailure { user ->
                   logger.error(
                       "Failed to create user id={}",
                       uuid, user
                   )
-            }.getOrThrow()
+                }
+                .getOrThrow()
+                .toDomain()
         }
     }
 }

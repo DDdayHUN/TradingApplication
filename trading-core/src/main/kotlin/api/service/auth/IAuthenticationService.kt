@@ -1,6 +1,6 @@
-package application.service.auth
+package api.service.auth
 
-import domain.User
+import application.model.User
 
 interface IAuthenticationService {
     suspend fun currentUser(): User

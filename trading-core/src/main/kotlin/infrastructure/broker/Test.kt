@@ -3,12 +3,14 @@ package infrastructure.broker
 import api.dto.CreateTraderRequest
 import api.dto.SecurityIdentifierRequest
 import application.logging.logger
-import application.service.broker.InteractiveBrokersOrderService
-import application.service.portfolio.IPortfolioService
+import api.service.portfolio.IPortfolioService
 import application.service.trader.ITraderService
+import application.service.broker.InteractiveBrokersOrderService
 import application.tester.TradingAlgorithmEvaluator
 import data.network.ibkr.backtest.BacktestDataService
 import data.repository.historical_data.IHistoricalMarketDataProvider
+import data.repository.user.IUserRepository
+import data.repository.user.sql.toDomain
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
@@ -27,10 +29,10 @@ import kotlin.time.Instant
 class Test(
     private val orderService: InteractiveBrokersOrderService,
     private val traderService: ITraderService,
-    private val portfolioService: IPortfolioService,
     private val backtestDataService: BacktestDataService,
     @param:Qualifier("yahoo")
-    private val provider: IHistoricalMarketDataProvider
+    private val provider: IHistoricalMarketDataProvider,
+    private val userRepository: IUserRepository,
 ) {
     private val logger = logger<Test>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -38,7 +40,6 @@ class Test(
     private val startDate = Instant.parse("2021-01-01T00:00:00Z")
     private val endDate = Instant.parse("2026-01-01T00:00:00Z")
     private val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
-
     private val userId = UUID.fromString("f0792158-24a0-427f-999d-6cf8fa3a0cf3")
 
     @Scheduled(
@@ -48,7 +49,8 @@ class Test(
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-                val portfolio = portfolioService.getPortfolioByUserId(userId)
+                val user = userRepository.getById(userId).getOrThrow().toDomain()
+                val portfolio = user.portfolio
                 val orders = coroutineScope {
                     portfolio.traders.map { trader ->
                         async {
@@ -115,7 +117,8 @@ class Test(
     )
     fun sellAllHolding() {
         scope.launch {
-            val portfolio = portfolioService.getPortfolioByUserId(userId)
+            val user = userRepository.getById(userId).getOrThrow().toDomain()
+            val portfolio = user.portfolio
 
             portfolio.traders.forEach { trader ->
 
@@ -140,7 +143,8 @@ class Test(
     fun buyHolding(){
         scope.launch {
             try {
-                val portfolio = portfolioService.getPortfolioByUserId(userId)
+                val user = userRepository.getById(userId).getOrThrow().toDomain()
+                val portfolio = user.portfolio
 
                 portfolio.traders.forEach { trader ->
                         val order = TradingOrder(
@@ -163,7 +167,9 @@ class Test(
     fun createTraders() {
         scope.launch {
             var securityList = provider.getAllSecurityIdentifiers().getOrThrow()
-            val traders = traderService.getAll(userId)
+
+            val user = userRepository.getById(userId).getOrThrow().toDomain()
+            val traders = user.portfolio.traders
             val traderSecurities = traders.map {
                 trader-> trader.securityIdentifier
             }
@@ -173,7 +179,7 @@ class Test(
 
             securityList.forEach { security ->
                 traderService.createTrader(
-                    userId = userId,
+                    user = user,
                     request = CreateTraderRequest(
                         securityIdentifier = SecurityIdentifierRequest(
                             isin = security.isin,
@@ -195,9 +201,10 @@ class Test(
     fun deleteTraders() {
         scope.launch {
             sellAllHolding()
-            val portfolio = portfolioService.getPortfolioByUserId(userId)
+            val user = userRepository.getById(userId).getOrThrow().toDomain()
+            val portfolio = user.portfolio
             portfolio.traders.forEach { trader ->
-                traderService.deleteTrader(userId, trader.id)
+                traderService.deleteTrader(user, trader.id)
             }
         }
     }
@@ -218,7 +225,8 @@ class Test(
                 windowStepYears = evaluationWindowStepYears
             ).runEvaluationOnAll().getBestList(10)
 
-            val traders = traderService.getAll(userId)
+            val user = userRepository.getById(userId).getOrThrow().toDomain()
+            val traders = user.portfolio.traders
             val traderSecurities = traders.map {
                     trader-> trader.securityIdentifier
             }
@@ -228,7 +236,7 @@ class Test(
 
             evalOutput.forEach { security ->
                 traderService.createTrader(
-                    userId = userId,
+                    user = user,
                     request = CreateTraderRequest(
                         securityIdentifier = SecurityIdentifierRequest(
                             isin = security.isin,

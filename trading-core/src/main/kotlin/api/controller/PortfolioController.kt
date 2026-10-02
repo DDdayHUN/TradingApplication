@@ -2,12 +2,11 @@ package api.controller
 
 import api.dto.PortfolioResponse
 import api.dto.toResponse
-import application.service.auth.IAuthenticationService
-import application.service.portfolio.IPortfolioService
+import api.service.auth.IAuthenticationService
+import api.service.portfolio.IPortfolioService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 //===========================================================//
 //===========================================================//
@@ -15,23 +14,17 @@ import java.util.*
 @RestController
 @RequestMapping("/api/portfolio/")
 class PortfolioController(
-    private val portfolioService: IPortfolioService,
-    private val authService: IAuthenticationService
+    private val authService: IAuthenticationService,
+    private val portfolioService: IPortfolioService
 ) {
     //===========================================================//
     //===========================================================//
     // GET
 
-    //===========================================================//
-
     @GetMapping
     suspend fun getPortfolio(): ResponseEntity<PortfolioResponse> {
-        val userId = authService.currentUser().id
-        val summary = portfolioService.getPortfolioAccountSummary(userId)
-        val response = portfolioService.getPortfolioByUserId(userId).toResponse(
-            availableCapital = summary.availableCapital,
-            liquidation = summary.netLiquidation
-        )
+        val user = authService.currentUser()
+        val response = user.portfolio?.toResponse()
 
         return ResponseEntity.ok(response)
     }
@@ -42,13 +35,8 @@ class PortfolioController(
 
     @PostMapping
     suspend fun createPortfolio(): ResponseEntity<PortfolioResponse> {
-        val userId = authService.currentUser().id
-        val portfolio = portfolioService.createPortfolio(userId)
-        val summary = portfolioService.getPortfolioAccountSummary(userId)
-        val response = portfolio.toResponse(
-            availableCapital = summary.availableCapital,
-            liquidation = summary.netLiquidation
-        )
+        val portfolio = portfolioService.createNewPortfolio()
+        val response = portfolio.toResponse()
 
         return ResponseEntity
             .status(HttpStatus.CREATED)

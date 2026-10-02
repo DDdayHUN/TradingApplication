@@ -11,6 +11,10 @@ import java.util.UUID
 class TraderRepository(
     private val traderRepository: ITraderJpaRepository
 ) : ITraderRepository {
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
+
     override suspend fun getById(traderId: UUID): Result<Trader> {
         return runCatching {
             traderRepository.findByIdWithHoldings(traderId)
@@ -19,6 +23,8 @@ class TraderRepository(
             trader.toDomain()
         }
     }
+
+    //===========================================================//
 
     override suspend fun save(trader: Trader): Result<Trader> {
         return runCatching {
@@ -31,7 +37,9 @@ class TraderRepository(
         }
     }
 
-    override suspend fun delete(traderId: UUID): Result<Unit> {
+    //===========================================================//
+
+    override suspend fun deleteById(traderId: UUID): Result<Unit> {
         return runCatching {
             val entity = traderRepository.findByIdWithHoldings(traderId)
                 ?: throw TraderNotFoundException(traderId)
@@ -40,5 +48,4 @@ class TraderRepository(
             traderRepository.deleteById(entity.id)
         }
     }
-
 }
