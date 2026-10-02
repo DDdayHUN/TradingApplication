@@ -27,8 +27,8 @@ class InteractiveBrokersOrderService(
     //===========================================================//
     // Public Method(s)
 
-    suspend fun submit(order: TradingOrder) {
-        val persistedOrders = order.toInteractiveBrokersOrder(brokerService)
+    suspend fun submit(userId: UUID, order: TradingOrder) {
+        val persistedOrders = order.toInteractiveBrokersOrder(userId,brokerService)
 
         persistedOrders.forEach { order ->
             orderRepository.save(order).getOrThrow()
@@ -36,7 +36,7 @@ class InteractiveBrokersOrderService(
 
         persistedOrders.forEach { order ->
             try {
-                brokerService.placeOrder(order)
+                brokerService.placeOrder(userId,order)
             } catch(e: Exception){
                 orderRepository.save(order.copy(
                     status = InteractiveBrokersOrder.Status.CANCELLED

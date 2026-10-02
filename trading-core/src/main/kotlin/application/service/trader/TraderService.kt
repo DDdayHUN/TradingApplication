@@ -34,10 +34,10 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun executeTrader(traderId: UUID): TradingOrder {
+    override suspend fun executeTrader(userId: UUID, traderId: UUID): TradingOrder {
         val trader = traderRepository.getById(traderId).getOrThrow()
 
-        val quote = getCurrentPrice(trader.securityIdentifier)
+        val quote = getCurrentPrice(userId, trader.securityIdentifier)
         //val quote = Quote(540.0)
         val order = trader.createOrder(quote)
 
@@ -75,7 +75,7 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun forceSellHolding(traderId: UUID, securityHoldingId: UUID): TradingOrder {
+    override suspend fun forceSellHolding(userId: UUID, traderId: UUID, securityHoldingId: UUID): TradingOrder {
        val trader = traderRepository.getById(traderId).getOrThrow()
 
         val holding = trader.holdings
@@ -85,7 +85,7 @@ class TraderService(
         return TradingOrder(
             traderId = trader.id,
             signal = TradingAlgorithm.Output(null, TradingAlgorithm.Output.Sell(setOf(Pair(holding, holding.amount)))),
-            atPrice = getCurrentPrice(trader.securityIdentifier).currentPrice,
+            atPrice = getCurrentPrice(userId, trader.securityIdentifier).currentPrice,
             securityIdentifier = trader.securityIdentifier
         )
     }
@@ -93,13 +93,13 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun forceSellAllHolding(traderId: UUID): List<TradingOrder> {
+    override suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): List<TradingOrder> {
         val trader = traderRepository.getById(traderId).getOrThrow()
 
         val orderList = mutableListOf<TradingOrder>()
 
         trader.holdings.forEach { holding ->
-            val order = forceSellHolding(traderId, holding.id)
+            val order = forceSellHolding(userId, traderId, holding.id)
             orderList.add(order)
         }
 
@@ -108,12 +108,12 @@ class TraderService(
 
     //===========================================================//
 
-    private suspend fun getCurrentPrice(securityIdentifier: SecurityIdentifier): Quote {
-        var quote = marketDataProvider.get(MarketDataProvider.Type.Finnhub).getQuote(securityIdentifier)
+    private suspend fun getCurrentPrice(userId: UUID, securityIdentifier: SecurityIdentifier): Quote {
+        var quote = marketDataProvider.get(MarketDataProvider.Type.Finnhub).getQuote( userId, securityIdentifier)
 
         if(!quote.isSuccess){
             logger.warn("Finnhub quote failed for {}, trying IBKR", securityIdentifier.tickerSymbol)
-            quote = marketDataProvider.get(MarketDataProvider.Type.Ibkr).getQuote(securityIdentifier)
+            quote = marketDataProvider.get(MarketDataProvider.Type.Ibkr).getQuote( userId, securityIdentifier)
         }
 
         return quote.getOrThrow()

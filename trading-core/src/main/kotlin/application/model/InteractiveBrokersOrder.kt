@@ -77,13 +77,13 @@ data class InteractiveBrokersOrder(
     }
 }
 
-suspend fun TradingOrder.toInteractiveBrokersOrder(brokerService: InteractiveBrokersService): Set<InteractiveBrokersOrder> {
+suspend fun TradingOrder.toInteractiveBrokersOrder(userId: UUID, brokerService: InteractiveBrokersService): Set<InteractiveBrokersOrder> {
     val ret = mutableSetOf<InteractiveBrokersOrder>()
 
     if(this.signal.buy != null) {
         ret.add(InteractiveBrokersOrder(
             id = this.orderId,
-            brokerOrderId = brokerService.reserveOrderId(),
+            brokerOrderId = brokerService.reserveOrderId(userId),
             traderId = this.traderId,
             signal = Signal.Buy(signal.buy.amount),
             action = InteractiveBrokersOrder.Action.BUY,
@@ -102,7 +102,7 @@ suspend fun TradingOrder.toInteractiveBrokersOrder(brokerService: InteractiveBro
         }.toSet()
         ret.add(InteractiveBrokersOrder(
             id = this.orderId,
-            brokerOrderId = brokerService.reserveOrderId(),
+            brokerOrderId = brokerService.reserveOrderId(userId),
             traderId = this.traderId,
             signal = Signal.Sell(sell),
             action = InteractiveBrokersOrder.Action.SELL,

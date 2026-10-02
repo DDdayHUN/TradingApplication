@@ -4,6 +4,7 @@ import application.model.User
 import application.service.broker.InteractiveBrokersService
 import data.network.IAccountSummaryProvider
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 class IbkrAccountSummaryProvider(
@@ -13,8 +14,8 @@ class IbkrAccountSummaryProvider(
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun getAccountSummary(): User.AccountSummary {
-        val summary = ibkrService.getAccountSummary()
+    override suspend fun getAccountSummary(userId: UUID): User.AccountSummary {
+        val summary = ibkrService.getAccountSummary(userId)
         return User.AccountSummary(
             availableCapital = summary.availableCapital,
             netLiquidation = summary.netLiquidation,

@@ -2,7 +2,8 @@ package data.network
 
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
+import java.util.UUID
 
 interface IMarketDataProvider {
-    suspend fun getQuote(identifier: SecurityIdentifier): Result<Quote>
+    suspend fun getQuote(userId: UUID, identifier: SecurityIdentifier): Result<Quote>
 }

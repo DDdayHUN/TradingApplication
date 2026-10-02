@@ -7,17 +7,18 @@ import com.ib.client.Decimal
 import com.ib.client.Order
 import domain.market.security.SecurityIdentifier
 import infrastructure.broker.IbkrHistoricalBar
-import infrastructure.broker.InteractiveBrokersSession
 import infrastructure.broker.IbkrPortfolioAccountSummary
+import infrastructure.broker.InteractiveBrokerSessionManager
 import kotlinx.coroutines.delay
 import org.springframework.stereotype.Service
+import java.util.UUID
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 @Service
 class InteractiveBrokersService(
-    private val session: InteractiveBrokersSession,
+    private val session: InteractiveBrokerSessionManager,
 ) {
     //===========================================================//
     //===========================================================//
@@ -29,8 +30,8 @@ class InteractiveBrokersService(
     //===========================================================//
     // Public Method(s)
 
-    suspend fun placeOrder(order: InteractiveBrokersOrder) {
-        val client = session.getClient()
+    suspend fun placeOrder(userId: UUID, order: InteractiveBrokersOrder) {
+        val client = session.getClient(userId)
         val clientContract = createStockContract(order)
         val clientOrder = createMarketOrder(order)
 
@@ -42,19 +43,20 @@ class InteractiveBrokersService(
     }
     //===========================================================//
 
-    suspend fun getAccountSummary(): IbkrPortfolioAccountSummary {
-        val client = session.getClient()
+    suspend fun getAccountSummary(userId: UUID): IbkrPortfolioAccountSummary{
+        val client = session.getClient(userId)
         return client.getAccountSummary()
     }
 
     //===========================================================//
 
     suspend fun getHistoricalData(
+        userId: UUID,
         securityIdentifier: SecurityIdentifier,
         from: Instant,
         to: Instant
     ): List<IbkrHistoricalBar> {
-        val client = session.getClient()
+        val client = session.getClient(userId)
 
         val allBars =
             mutableListOf<IbkrHistoricalBar>()
@@ -97,8 +99,8 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
-    suspend fun reserveOrderId(): Int {
-        val client = session.getClient()
+    suspend fun reserveOrderId(userId: UUID): Int {
+        val client = session.getClient(userId)
         return client.reserveOrderId()
     }
 

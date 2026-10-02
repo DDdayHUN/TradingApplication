@@ -4,23 +4,47 @@ import type Portfolio from "../models/Portfolio.ts";
 import type Order from "../models/Order.ts";
 import OrderList from "../components/elements/lists/OrderList.tsx";
 import PortfolioElement from "../components/elements/basic/PortfolioElement.tsx";
+import {isIbkrConnected} from "../api/IbkrApi.ts";
 
 export default function PortfolioPage(): ReactElement {
 
     const [portfolio, setPortfolio] = useState<Portfolio> ()
     const [orders, setOrders] = useState<Order[]> ([])
+    const [connected, setConnected] = useState<boolean>(false)
 
     useEffect(() => {
-        getPortfolio()
-            .then(async portfolio => {
-                setPortfolio(portfolio)
+        const load = async () => {
+            try {
+                const isConnected = await isIbkrConnected();
 
-                if (portfolio != null || portfolio != undefined) {
-                    const orders = await getOrders()
-                    setOrders(orders)
+                setConnected(isConnected);
+
+                if (!isConnected) return;
+
+                const portfolio = await getPortfolio();
+                setPortfolio(portfolio);
+
+                if (portfolio) {
+                    const orders = await getOrders();
+                    setOrders(orders);
                 }
-            }).catch(console.error)
-    },[])
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        load();
+    }, []);
+
+    if (!connected) {
+        return (
+            <div className="bg-gray-800 min-w-full min-h-full p-10">
+                <p className="text-white">
+                    Connect to IBKR first.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className = "bg-gray-800 min-w-full min-h-full p-10 flex flex-col">
