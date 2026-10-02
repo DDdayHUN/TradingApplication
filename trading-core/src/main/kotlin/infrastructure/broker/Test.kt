@@ -3,7 +3,6 @@ package infrastructure.broker
 import api.dto.CreateTraderRequest
 import api.dto.SecurityIdentifierRequest
 import application.logging.logger
-import api.service.portfolio.IPortfolioService
 import application.service.trader.ITraderService
 import application.service.broker.InteractiveBrokersOrderService
 import application.tester.TradingAlgorithmEvaluator
@@ -42,10 +41,6 @@ class Test(
     private val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
     private val userId = UUID.fromString("f0792158-24a0-427f-999d-6cf8fa3a0cf3")
 
-    @Scheduled(
-        cron = "0 32 20 * * *",
-        zone = "Europe/Budapest"
-    )
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
@@ -92,10 +87,7 @@ class Test(
             }
         }
     }
-    @Scheduled(
-        cron = "0 51  0 * * *",
-        zone = "Europe/Budapest"
-    )
+
     fun getHistoricalData(){
         scope.launch {
             val identifier = SecurityIdentifier(
@@ -111,10 +103,6 @@ class Test(
         }
     }
 
-    @Scheduled(
-        cron = "0 22 23 * * *",
-        zone = "Europe/Budapest"
-    )
     fun sellAllHolding() {
         scope.launch {
             val user = userRepository.getById(userId).getOrThrow().toDomain()
@@ -136,10 +124,6 @@ class Test(
         }
     }
 
-    @Scheduled(
-        cron = "0 06 23 * * *",
-        zone = "Europe/Budapest"
-    )
     fun buyHolding(){
         scope.launch {
             try {
@@ -160,10 +144,8 @@ class Test(
             }
         }
     }
-    @Scheduled(
-        cron = "0 03 23 * * *",
-        zone = "Europe/Budapest"
-    )
+
+
     fun createTraders() {
         scope.launch {
             var securityList = provider.getAllSecurityIdentifiers().getOrThrow()
@@ -179,7 +161,7 @@ class Test(
 
             securityList.forEach { security ->
                 traderService.createTrader(
-                    user = user,
+                    userId = user.id,
                     request = CreateTraderRequest(
                         securityIdentifier = SecurityIdentifierRequest(
                             isin = security.isin,
@@ -194,25 +176,17 @@ class Test(
         }
     }
 
-    @Scheduled(
-        cron = "0 43 18 * * *",
-        zone = "Europe/Budapest"
-    )
     fun deleteTraders() {
         scope.launch {
             sellAllHolding()
             val user = userRepository.getById(userId).getOrThrow().toDomain()
             val portfolio = user.portfolio
             portfolio.traders.forEach { trader ->
-                traderService.deleteTrader(user, trader.id)
+                traderService.deleteTrader(user.id, trader.id)
             }
         }
     }
 
-    @Scheduled(
-        cron = "0 0 19 * * *",
-        zone = "Europe/Budapest"
-    )
     fun createTradersByEvalOutput() {
         scope.launch {
             var evalOutput = TradingAlgorithmEvaluator(
@@ -236,7 +210,7 @@ class Test(
 
             evalOutput.forEach { security ->
                 traderService.createTrader(
-                    user = user,
+                    userId = user.id,
                     request = CreateTraderRequest(
                         securityIdentifier = SecurityIdentifierRequest(
                             isin = security.isin,

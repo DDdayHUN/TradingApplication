@@ -14,7 +14,7 @@ suspend fun main() {
     //===========================================================//
     // Backtest
 
-    val c_RUN_BACKTEST_ON_ONE_SECURITY = false
+    val c_RUN_BACKTEST_ON_ONE_SECURITY = true
     val c_RUN_BACKTEST_ON_N_SECURITY = false
     val c_RUN_BACKTEST_ON_ALL_SECURITY = false
 
