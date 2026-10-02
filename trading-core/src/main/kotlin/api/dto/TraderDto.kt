@@ -24,7 +24,7 @@ data class CreateTraderRequest(
 data class TraderResponse(
     val id: UUID,
     val securityIdentifier: SecurityIdentifierResponse,
-    val capital: Double,
+    val availableCapital: Double,
     val holdings: List<SecurityHoldingResponse>,
     val algorithmType: String
 )
@@ -39,7 +39,7 @@ fun Trader.toResponse(): TraderResponse {
             tickerSymbol = securityIdentifier.tickerSymbol,
             currency = securityIdentifier.currency
         ),
-        capital = capital,
+        availableCapital = availableCapital,
         holdings = holdings.map { holding ->
             SecurityHoldingResponse(
                 id = holding.id,

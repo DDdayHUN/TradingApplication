@@ -1,8 +1,8 @@
 package data.network.ibkr
 
-import application.service.user.broker.InteractiveBrokersService
+import application.model.User
+import application.service.broker.InteractiveBrokersService
 import data.network.IAccountSummaryProvider
-import domain.Portfolio.PortfolioAccountSummary
 import org.springframework.stereotype.Component
 
 @Component
@@ -13,9 +13,9 @@ class IbkrAccountSummaryProvider(
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun getAccountSummary(): PortfolioAccountSummary {
+    override suspend fun getAccountSummary(): User.AccountSummary {
         val summary = ibkrService.getAccountSummary()
-        return PortfolioAccountSummary(
+        return User.AccountSummary(
             availableCapital = summary.availableCapital,
             netLiquidation = summary.netLiquidation,
         )

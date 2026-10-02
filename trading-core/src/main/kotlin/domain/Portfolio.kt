@@ -15,14 +15,18 @@ class Portfolio {
     val id: UUID
 
     val traders: Set<Trader> get() = m_Traders.toSet()
-    val availableCapital: Double get() = traders.sumOf { it.availableCapital }
-    val allocatedCapital: Double get() = traders.sumOf { it.allocatedCapital }
+    val availableCapital: Double get() = m_AvailableCapital
+    val netLiquidation: Double get() = m_AvailableCapital +
+            traders.sumOf { it.availableCapital } +
+            traders.sumOf { trader -> trader.holdings.sumOf { it.purchasePrice * it.amount } }
+    // TODO : Net liquidation is not calculated from past price but rather from the current price no?
 
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
     private val m_Traders: MutableSet<Trader>
+    private var m_AvailableCapital: Double
 
     //===========================================================//
     //===========================================================//
@@ -43,8 +47,9 @@ class Portfolio {
     //===========================================================//
     // Constructor(s)
 
-    constructor(id: UUID = UUID.randomUUID(), traders: MutableSet<Trader> = HashSet()) {
+    constructor(id: UUID = UUID.randomUUID(), traders: MutableSet<Trader> = HashSet(), availableCapital: Double = 0.0) {
         this.id = id
         this.m_Traders = traders
+        this.m_AvailableCapital = availableCapital
     }
 }

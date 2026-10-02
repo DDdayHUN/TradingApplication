@@ -1,4 +1,4 @@
-package application.service.auth
+package api.service.auth
 
 import application.model.User
 

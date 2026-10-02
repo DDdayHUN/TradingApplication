@@ -1,7 +1,7 @@
 package data.network
 
-import domain.Portfolio.PortfolioAccountSummary
+import application.model.User
 
 interface IAccountSummaryProvider {
-    suspend fun getAccountSummary(): PortfolioAccountSummary
+    suspend fun getAccountSummary(): User.AccountSummary
 }
