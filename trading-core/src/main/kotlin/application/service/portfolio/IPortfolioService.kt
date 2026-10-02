@@ -1,7 +1,7 @@
 package application.service.portfolio
 
 import domain.Portfolio
-import java.util.UUID
+import java.util.*
 
 interface IPortfolioService {
     suspend fun update(userId: UUID, portfolio: Portfolio): Portfolio

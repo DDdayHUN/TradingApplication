@@ -2,7 +2,6 @@ package application.service.trader
 
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
-import application.model.User
 import domain.trader.SellHolding
 import domain.trader.Trader
 import domain.trader.TradingOrder

@@ -1,10 +1,9 @@
 package application.service.portfolio
 
+import application.service.user.IUserService
 import data.repository.portfolio.IPortfolioRepository
 import data.repository.portfolio.sql.toDomain
 import data.repository.portfolio.sql.toEntity
-import data.repository.user.IUserRepository
-import data.repository.user.sql.toDomain
 import data.repository.user.sql.toEntity
 import domain.Portfolio
 import org.springframework.stereotype.Service
@@ -14,7 +13,7 @@ import java.util.*
 @Service
 class PortfolioService(
     private val portfolioRepository: IPortfolioRepository,
-    private val userRepository: IUserRepository,
+    private val userService: IUserService,
 ) : IPortfolioService {
     //===========================================================//
     //===========================================================//
@@ -22,7 +21,7 @@ class PortfolioService(
 
     @Transactional
     override suspend fun update(userId: UUID, portfolio: Portfolio): Portfolio {
-        val user = userRepository.getById(userId).getOrThrow().toDomain()
+        val user = userService.getById(userId)
 
         val userEntity = user.toEntity()
         val portfolioEntity = portfolio.toEntity()
@@ -37,7 +36,7 @@ class PortfolioService(
 
     @Transactional
     override suspend fun create(userId: UUID): Portfolio {
-        val user = userRepository.getById(userId).getOrThrow().toDomain()
+        val user = userService.getById(userId)
 
         val portfolio = Portfolio()
 
@@ -52,7 +51,7 @@ class PortfolioService(
 
     @Transactional(readOnly = true)
     override suspend fun get(userId: UUID): Portfolio {
-        val user = userRepository.getById(userId).getOrThrow().toDomain()
+        val user = userService.getById(userId)
         return user.portfolio
     }
 

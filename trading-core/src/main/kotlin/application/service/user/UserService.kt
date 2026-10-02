@@ -4,7 +4,7 @@ import application.model.User
 import data.repository.user.IUserRepository
 import data.repository.user.sql.toDomain
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.util.*
 
 @Service
 class UserService(

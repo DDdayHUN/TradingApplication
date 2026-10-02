@@ -2,15 +2,12 @@ package application.service.trader
 
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
-import api.service.auth.IAuthenticationService
-import application.service.portfolio.IPortfolioService
 import application.logging.logger
-import application.model.User
 import application.provider.MarketDataProvider
+import application.service.portfolio.IPortfolioService
+import application.service.user.IUserService
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.trader.ITraderRepository
-import data.repository.user.IUserRepository
-import data.repository.user.sql.toDomain
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
@@ -18,7 +15,6 @@ import domain.trader.SellHolding
 import domain.trader.Trader
 import domain.trader.TradingOrder
 import exception.api.HoldingNotFoundException
-import exception.api.NoPortfolioExistsForUserException
 import exception.api.TraderNotFoundException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -30,7 +26,7 @@ class TraderService(
     @param:Qualifier("yahoo")
     private val historicalMarketDataProvider: IHistoricalMarketDataProvider,
     private val portfolioService: IPortfolioService,
-    private val userRepository: IUserRepository,
+    private val userService: IUserService,
     private val marketDataProvider: MarketDataProvider,
     private val traderRepository: ITraderRepository
 ) : ITraderService {
@@ -124,7 +120,7 @@ class TraderService(
 
     @Transactional
     override suspend fun createTrader(userId: UUID, request: CreateTraderRequest): Trader {
-        val user = userRepository.getById(userId).getOrThrow().toDomain()
+        val user = userService.getById(userId)
 
         val portfolio = user.portfolio
 
@@ -158,7 +154,7 @@ class TraderService(
 
     @Transactional(readOnly = true)
     override suspend fun getAll(userId: UUID): Set<Trader> {
-        val user = userRepository.getById(userId).getOrThrow().toDomain()
+        val user = userService.getById(userId)
 
         return user.portfolio.traders
     }
@@ -167,7 +163,7 @@ class TraderService(
 
     @Transactional(readOnly = true)
     override suspend fun getById(userId: UUID, traderId: UUID): Trader {
-        val user = userRepository.getById(userId).getOrThrow().toDomain()
+        val user = userService.getById(userId)
         return user.portfolio.traders.find { trader -> trader.id == traderId}
             ?: throw TraderNotFoundException(traderId)
     }
@@ -194,7 +190,7 @@ class TraderService(
 
     @Transactional
     override suspend fun deleteTrader(userId: UUID, traderId: UUID) {
-        val user = userRepository.getById(userId).getOrThrow().toDomain()
+        val user = userService.getById(userId)
         val portfolio = user.portfolio
         val trader = getById(user.id, traderId)
 
