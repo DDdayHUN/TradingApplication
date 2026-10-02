@@ -3,12 +3,14 @@ package application.service.trader
 import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import api.service.auth.IAuthenticationService
-import api.service.portfolio.IPortfolioService
+import application.service.portfolio.IPortfolioService
 import application.logging.logger
 import application.model.User
 import application.provider.MarketDataProvider
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.trader.ITraderRepository
+import data.repository.user.IUserRepository
+import data.repository.user.sql.toDomain
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
@@ -28,7 +30,7 @@ class TraderService(
     @param:Qualifier("yahoo")
     private val historicalMarketDataProvider: IHistoricalMarketDataProvider,
     private val portfolioService: IPortfolioService,
-    private val authService: IAuthenticationService,
+    private val userRepository: IUserRepository,
     private val marketDataProvider: MarketDataProvider,
     private val traderRepository: ITraderRepository
 ) : ITraderService {
@@ -121,7 +123,9 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun createTrader(user: User, request: CreateTraderRequest): Trader {
+    override suspend fun createTrader(userId: UUID, request: CreateTraderRequest): Trader {
+        val user = userRepository.getById(userId).getOrThrow().toDomain()
+
         val portfolio = user.portfolio
 
         val securityIdentifier = SecurityIdentifier(
@@ -145,7 +149,7 @@ class TraderService(
         )
 
         portfolio.addTrader(trader)
-        portfolioService.update(portfolio)
+        portfolioService.update(user.id, portfolio)
 
         return trader
     }
@@ -153,9 +157,8 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAll(): Set<Trader> {
-        val user = authService.currentUser()
-        if(user.portfolio == null) throw NoPortfolioExistsForUserException(user.id)
+    override suspend fun getAll(userId: UUID): Set<Trader> {
+        val user = userRepository.getById(userId).getOrThrow().toDomain()
 
         return user.portfolio.traders
     }
@@ -163,20 +166,17 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getById(traderId: UUID): Trader {
-        return try {
-            getAll().first { it.id == traderId }
-        }
-        catch (ex: NoSuchElementException) {
-            throw TraderNotFoundException(traderId)
-        }
+    override suspend fun getById(userId: UUID, traderId: UUID): Trader {
+        val user = userRepository.getById(userId).getOrThrow().toDomain()
+        return user.portfolio.traders.find { trader -> trader.id == traderId}
+            ?: throw TraderNotFoundException(traderId)
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun changeAlgorithm(traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader {
-        val trader = getById(traderId)
+    override suspend fun changeAlgorithm(userId: UUID, traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader {
+        val trader = getById(userId, traderId)
 
         val algorithm = TradingAlgorithm.create(
             provider = historicalMarketDataProvider,
@@ -193,12 +193,13 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun deleteTrader(user: User, traderId: UUID) {
+    override suspend fun deleteTrader(userId: UUID, traderId: UUID) {
+        val user = userRepository.getById(userId).getOrThrow().toDomain()
         val portfolio = user.portfolio
-        val trader = getById(traderId)
+        val trader = getById(user.id, traderId)
 
         portfolio.removeTrader(trader)
-        portfolioService.update(portfolio)
+        portfolioService.update(user.id, portfolio)
     }
 
     //===========================================================//

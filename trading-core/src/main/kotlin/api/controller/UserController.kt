@@ -3,6 +3,7 @@ package api.controller
 import api.dto.UserResponse
 import api.dto.toResponse
 import api.service.auth.IAuthenticationService
+import application.service.user.IUserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,7 +17,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/users/")
 class UserController(
-    private val auth: IAuthenticationService
+    private val auth: IAuthenticationService,
+    private val userService: IUserService
 ) {
     //===========================================================//
     //===========================================================//
@@ -24,10 +26,8 @@ class UserController(
 
     @GetMapping
     suspend fun getCurrentUser(): ResponseEntity<UserResponse> {
-        val response = auth.currentUser().toResponse()
-
         return ResponseEntity.ok(
-            response
+            userService.getById(auth.currentUser()).toResponse()
         )
     }
 
