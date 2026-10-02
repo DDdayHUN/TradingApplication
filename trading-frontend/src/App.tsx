@@ -2,7 +2,7 @@ import './App.css'
 import {Route, Routes} from "react-router";
 import Sidebar from "./components/sidebar/Sidebar.tsx";
 import PortfolioPage from "./pages/PortfolioPage.tsx";
-import BacktestPage from "./pages/BacktestPage.tsx";
+import IbkrPage from "./pages/IbkrPage.tsx";
 import TraderPage from "./pages/TraderPage.tsx";
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
                 <Route path="/" element={<PortfolioPage />} />
                 <Route path="/portfolio/" element={<PortfolioPage />} />
                 <Route path="/portfolio/traders/" element={<TraderPage/>} />
-                <Route path="/backtest/" element={<BacktestPage />} />
+                <Route path="/ibkr/" element={<IbkrPage />} />
             </Routes>
         </main>
     </div>

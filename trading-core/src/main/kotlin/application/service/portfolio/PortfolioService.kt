@@ -52,7 +52,7 @@ class PortfolioService(
     override suspend fun getPortfolioAccountSummary(userId: UUID): PortfolioAccountSummary {
         val portfolio = portfolioRepository.getByUserId(userId).getOrThrow()
 
-        val summary = accountSummaryProvider.get(AccountSummaryProvider.Type.Ibkr).getAccountSummary()
+        val summary = accountSummaryProvider.get(AccountSummaryProvider.Type.Ibkr).getAccountSummary(userId)
         val traderCapital = portfolio.traders.sumOf{trader-> trader.capital }
 
        return PortfolioAccountSummary(

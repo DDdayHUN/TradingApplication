@@ -4,6 +4,7 @@ import data.network.IMarketDataProvider
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 //===========================================================//
 /**
@@ -18,7 +19,7 @@ class FinnhubMarketDataProvider(
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun getQuote(identifier: SecurityIdentifier): Result<Quote> {
+    override suspend fun getQuote(userId: UUID, identifier: SecurityIdentifier): Result<Quote> {
         try {
             val ret = client.getQuoteAsync(identifier)
                 .getOrThrow()

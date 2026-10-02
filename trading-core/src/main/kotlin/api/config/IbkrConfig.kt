@@ -5,9 +5,7 @@ import org.springframework.context.annotation.Configuration
 
 @ConfigurationProperties(prefix = "ibkr")
 data class IbkrConfig(
-    val host: String,
-    val port: Int,
-    val clientId: Int
+    val host: String
 )
 
 @Configuration

@@ -1,76 +1,50 @@
 package infrastructure.broker
 
-import api.config.IbkrConfig
 import application.logging.logger
 import jakarta.annotation.PreDestroy
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
-import org.springframework.stereotype.Component
+import java.util.*
 
-@Component
 class InteractiveBrokersSession(
+    val userId: UUID,
     private val client: IbkrClient,
-    private val config: IbkrConfig
+    private val host: String,
+    private val port: Int,
+    private val clientId: Int,
 ) {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
     private val logger = logger<InteractiveBrokersSession>()
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
-    suspend fun getClient(): IbkrClient {
-        connect()
-        return client
+     suspend fun connect(){
+        if (client.isConnected()) return
+
+        client.connect(
+            host = host,
+            port = port,
+            clientId = clientId
+        )
     }
 
-    //===========================================================//
-    //===========================================================//
-    // Private Method(s)
+    fun disconnect() {
+        if (!client.isConnected()) return
 
-    @EventListener(ApplicationReadyEvent::class)
-    private fun onApplicationReady(){
-        scope.launch {
-            try{
-                connect()
-            }catch(e:Exception){
-                logger.error("Connecting to IB Gateway failed", e)
-            }
-        }
-    }
-
-    //===========================================================//
-
-    @PreDestroy
-    private fun shutdown(){
-        if(!client.isConnected()) return
+        logger.info("Disconnecting user={} from IBKR", userId)
         client.disconnect()
     }
 
-    //===========================================================//
-
-    private suspend fun connect(){
-        if (client.isConnected()) return
-
-        logger.info(
-            "Connecting to IBKR host={} port={} clientId={}",
-            config.host,
-            config.port,
-            config.clientId
-        )
-
-        client.connect(
-            host = config.host,
-            port = config.port,
-            clientId = config.clientId
-        )
+    fun getClient(): IbkrClient {
+        if (!client.isConnected())  {throw IllegalStateException("IBKR session is not connected") }
+        return client
     }
+
+    fun isConnected(): Boolean = client.isConnected()
 }
