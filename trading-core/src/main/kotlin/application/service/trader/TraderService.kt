@@ -122,7 +122,6 @@ class TraderService(
 
     @Transactional
     override suspend fun createTrader(user: User, request: CreateTraderRequest): Trader {
-
         val portfolio = user.portfolio
 
         val securityIdentifier = SecurityIdentifier(

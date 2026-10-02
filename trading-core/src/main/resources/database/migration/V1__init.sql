@@ -1,16 +1,16 @@
-CREATE TABLE app_user(
-    id UUID PRIMARY KEY,
-    user_name VARCHAR(20) NOT NULL
+CREATE TABLE app_portfolio (
+   id UUID PRIMARY KEY
 );
 
-CREATE TABLE app_portfolio(
-    id UUID PRIMARY KEY,
-    user_id UUID NOT NULL,
+CREATE TABLE app_user (
+  id UUID PRIMARY KEY,
+  user_name VARCHAR(20) NOT NULL,
+  portfolio_id UUID NOT NULL UNIQUE,
 
-    CONSTRAINT fk_app_portfolio_user
-            FOREIGN KEY (user_id)
-            REFERENCES app_user (id)
-            ON DELETE CASCADE
+  CONSTRAINT fk_app_user_portfolio
+      FOREIGN KEY (portfolio_id)
+          REFERENCES app_portfolio (id)
+          ON DELETE CASCADE
 );
 
 CREATE TABLE app_trader(

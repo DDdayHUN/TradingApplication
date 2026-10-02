@@ -28,7 +28,7 @@ class IbkrController(
 
 
     @PostMapping("connect/")
-    suspend fun ibkrConnect(@RequestBody request: ConnectIbkrRequest): ResponseEntity<Unit> {
+    suspend fun ibkrConnect(@RequestBody request: ConnectIbkrRequest): ResponseEntity<Boolean> {
         val user = authService.currentUser()
 
         ibkrSessionManager.connect(
@@ -36,6 +36,18 @@ class IbkrController(
             port = request.port
         )
 
-        return ResponseEntity.ok().build()
+        val response = ibkrSessionManager.isConnected(user.id)
+
+        return ResponseEntity.ok(response)
+    }
+
+    @PostMapping("disconnect/")
+    suspend fun ibkrDisconnect(): ResponseEntity<Boolean>{
+        val user = authService.currentUser()
+
+        ibkrSessionManager.disconnect(user.id)
+
+        val response = ibkrSessionManager.isConnected(user.id)
+        return ResponseEntity.ok(response)
     }
 }
