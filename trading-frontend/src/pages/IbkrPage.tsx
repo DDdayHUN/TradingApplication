@@ -10,11 +10,9 @@ export default function IbkrPage(): ReactElement {
     };
 
     return (
-        <div>
-            <button
-            type = "submit"
-            onClick = {handleConnect}
-            >
+        <div className = "bg-gray-800 min-w-full min-h-full p-10">
+            <button type = "submit" onClick = {handleConnect}
+            className = "hover:cursor-pointer w-20 h-10 bg-green-400">
             connect
             </button>
         </div>
