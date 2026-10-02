@@ -4,8 +4,12 @@ interface ConnectIbkrRequest{
     port: number;
 }
 
-export function connectIbkr(request: ConnectIbkrRequest): Promise<void>{
+export function connect(request: ConnectIbkrRequest): Promise<boolean>{
     return apiPost("/api/ibkr/connect/", request)
+}
+
+export function disconnect(): Promise<boolean>{
+    return apiPost("/api/ibkr/disconnect/", null)
 }
 
 export function isIbkrConnected(): Promise<boolean>{

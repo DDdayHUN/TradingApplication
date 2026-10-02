@@ -210,7 +210,7 @@ class Test(
     }
 
     @Scheduled(
-        cron = "0 29 20 * * *",
+        cron = "0 0 19 * * *",
         zone = "Europe/Budapest"
     )
     fun createTradersByEvalOutput() {
