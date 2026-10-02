@@ -24,7 +24,7 @@ class PortfolioController(
     @GetMapping
     suspend fun getPortfolio(): ResponseEntity<PortfolioResponse> {
         val user = authService.currentUser()
-        val response = user.portfolios.elementAt(0).toResponse()
+        val response = user.portfolio?.toResponse()
 
         return ResponseEntity.ok(response)
     }

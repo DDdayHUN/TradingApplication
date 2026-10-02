@@ -1,12 +1,10 @@
 package api.service.portfolio
 
 import api.service.auth.IAuthenticationService
-import application.model.User
 import data.repository.portfolio.IPortfolioRepository
 import data.repository.portfolio.sql.toDomain
 import data.repository.portfolio.sql.toEntity
 import data.repository.user.IUserRepository
-import data.repository.user.sql.toDomain
 import data.repository.user.sql.toEntity
 import domain.Portfolio
 import exception.api.NoPortfolioExistsForUserException
@@ -29,7 +27,7 @@ class PortfolioService(
     override suspend fun update(portfolio: Portfolio): Portfolio {
         // TODO : Itt a sok transzformáció helyett, hogyha majd esetleg kéne optimalizálni, akkor yeaaah.
         val user = authService.currentUser()
-        if(user.portfolios.isEmpty()) throw NoPortfolioExistsForUserException(user.id)
+        if(user.portfolio == null) throw NoPortfolioExistsForUserException(user.id)
 
         val userEntity = user.toEntity()
         val portfolioEntity = portfolio.toEntity()
@@ -47,7 +45,7 @@ class PortfolioService(
     @Transactional
     override suspend fun createNewPortfolio(): Portfolio {
         val user = authService.currentUser()
-        if(user.portfolios.isNotEmpty()) throw PortfolioAlreadyExistsException(user.portfolios.elementAt(0).id) // Mivel 1 elemű a Set
+        if(user.portfolio != null) throw PortfolioAlreadyExistsException(user.portfolio.id) // Mivel 1 elemű a Set
 
         val portfolio = Portfolio()
 

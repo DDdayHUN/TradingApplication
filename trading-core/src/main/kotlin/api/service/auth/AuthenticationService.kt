@@ -3,9 +3,9 @@ package api.service.auth
 import application.logging.logger
 import data.repository.user.IUserRepository
 import application.model.User
-import data.repository.portfolio.IPortfolioRepository
 import data.repository.user.sql.toDomain
 import data.repository.user.sql.toEntity
+import domain.Portfolio
 import exception.api.AuthenticationException
 import exception.api.UserAlreadyExistsException
 import org.springframework.security.core.context.SecurityContextHolder
@@ -90,7 +90,7 @@ class AuthenticationService(
             val newUser = User(
                 id = uuid,
                 userName = username,
-                portfolios = setOf()
+                portfolio = Portfolio()
             )
 
             return userRepository.save(newUser.toEntity())

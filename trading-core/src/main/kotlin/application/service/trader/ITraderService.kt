@@ -1,13 +1,22 @@
 package application.service.trader
 
+import api.dto.ChangeTraderAlgorithmRequest
+import api.dto.CreateTraderRequest
+import application.model.User
 import domain.trader.SellHolding
+import domain.trader.Trader
 import domain.trader.TradingOrder
 import java.util.UUID
 
 interface ITraderService {
-    suspend fun executeTrader(traderId: UUID): TradingOrder?
+    suspend fun createTrader(user: User, request: CreateTraderRequest): Trader
+    suspend fun deleteTrader(user: User, traderId: UUID)
+    suspend fun getAll(): Set<Trader>
+    suspend fun getById(traderId: UUID): Trader
+    suspend fun changeAlgorithm(traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader
+    suspend fun executeTrader(userId: UUID, traderId: UUID): TradingOrder?
     suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double)
     suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellHolding>, averageFillPrice: Double)
-    suspend fun forceSellHolding(traderId: UUID, securityHoldingId: UUID): TradingOrder
-    suspend fun forceSellAllHolding(traderId: UUID): List<TradingOrder>
+    suspend fun forceSellHolding(userId: UUID, traderId: UUID, securityHoldingId: UUID): TradingOrder
+    suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): List<TradingOrder>
 }

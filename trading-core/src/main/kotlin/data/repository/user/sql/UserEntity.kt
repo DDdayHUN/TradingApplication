@@ -25,7 +25,7 @@ fun User.toEntity(): UserEntity {
     return UserEntity(
         id = id,
         userName = userName,
-        portfolio = portfolios.elementAt(0).toEntity()
+        portfolio = portfolio.toEntity()
     )
 }
 
@@ -33,6 +33,6 @@ fun UserEntity.toDomain(): User {
     return User(
         id = this.id,
         userName = this.userName,
-        portfolios = setOf(portfolio.toDomain())
+        portfolio = portfolio.toDomain()
     )
 }

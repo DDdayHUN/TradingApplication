@@ -4,7 +4,7 @@ import api.dto.CreateTraderRequest
 import api.dto.TraderResponse
 import api.dto.toResponse
 import api.service.auth.IAuthenticationService
-import api.service.trader.ITraderService
+import application.service.trader.ITraderService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -15,6 +15,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/portfolio/traders/")
 class TraderController(
+    private val authService: IAuthenticationService,
     private val traderService: ITraderService
 ) {
     //===========================================================//
@@ -44,7 +45,8 @@ class TraderController(
 
     @PostMapping
     suspend fun createTrade(@RequestBody request: CreateTraderRequest): ResponseEntity<TraderResponse> {
-        val response = traderService.createTrader(request).toResponse()
+        val user = authService.currentUser()
+        val response = traderService.createTrader(user, request).toResponse()
 
         return ResponseEntity.ok(response)
     }

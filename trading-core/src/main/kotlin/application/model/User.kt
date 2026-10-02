@@ -6,7 +6,7 @@ import java.util.UUID
 data class User(
     val id: UUID,
     val userName: String,
-    val portfolios: Set<Portfolio> // Egy elemű a Set jelen pillanatban.
+    val portfolio: Portfolio
 ) {
     data class AccountSummary(
         val availableCapital: Double,
