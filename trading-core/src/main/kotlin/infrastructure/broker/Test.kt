@@ -53,7 +53,7 @@ class Test(
                     portfolio.traders.map { trader ->
                         async {
                             try {
-                                val order = traderService.executeTrader(trader.id)
+                                val order = traderService.executeTrader( userId,trader.id)
 
                                 logger.info(
                                     "Submitting trader={} order={}",
@@ -77,7 +77,7 @@ class Test(
                 orders
                     .filterNotNull()
                     .forEach { order ->
-                        orderService.submit(order)
+                        orderService.submit(userId,order)
                     }
 
                 logger.info("All concurrent trader jobs finished")
@@ -105,7 +105,7 @@ class Test(
             val to = Clock.System.now()
             val from = to - (365.days)
 
-            backtestDataService.download(identifier, from, to)
+            backtestDataService.download(userId,identifier, from, to)
         }
     }
 
@@ -121,11 +121,12 @@ class Test(
 
                 if(trader.holdings.isNotEmpty()){
                     val orders = traderService.forceSellAllHolding(
+                        userId,
                         trader.id
                     )
 
                     orders.forEach { order ->
-                        orderService.submit(order)
+                        orderService.submit(userId, order)
                     }
                 }
             }
@@ -148,7 +149,7 @@ class Test(
                             atPrice = 433.0,
                             securityIdentifier = trader.securityIdentifier,
                         )
-                        orderService.submit(order)
+                        orderService.submit(userId, order)
                 }
             } catch(e: Exception){
                 throw e

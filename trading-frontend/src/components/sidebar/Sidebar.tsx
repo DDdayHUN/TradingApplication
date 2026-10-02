@@ -30,8 +30,8 @@ export default function Sidebar(): ReactElement {
                 </NavLink>
 
                 <div className = "flex-1 h-80 justify-center pt-3">
-                    <NavigationElement text = "Portfolio" icon = {portfolioIcon} iconClassName= "h-5 object-contain" to="/portfolio"/>
-                    <NavigationElement text = "Backtest" icon = {terminalIcon} iconClassName= "h-5 object-contain" to="/backtest" />
+                    <NavigationElement text = "Portfolio" icon = {portfolioIcon} iconClassName= "h-5 object-contain" to="/portfolio/"/>
+                    <NavigationElement text = "Ibkr" icon = {terminalIcon} iconClassName= "h-5 object-contain" to="/ibkr/" />
                 </div>
 
                 <div className ="flex flex-wrap justify-around w-full pb-5 items-center">

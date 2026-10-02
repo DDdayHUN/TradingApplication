@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
-@Component
 class IbkrClient(
     private val event: ApplicationEventPublisher
 ) : EWrapper {
