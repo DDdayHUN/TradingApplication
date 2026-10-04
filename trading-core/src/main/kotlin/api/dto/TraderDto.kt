@@ -47,6 +47,6 @@ fun Trader.toResponse(): TraderResponse {
                 amount = holding.amount
             )
         },
-        algorithmType = ITradingAlgorithm.typeTagOf(algorithm)
+        algorithmType = ITradingAlgorithm.typeTagOf(algorithm).getOrThrow()
     )
 }

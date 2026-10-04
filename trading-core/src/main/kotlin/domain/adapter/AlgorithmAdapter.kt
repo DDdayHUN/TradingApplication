@@ -7,26 +7,25 @@ import java.lang.reflect.Type
 class AlgorithmAdapter : JsonSerializer<ITradingAlgorithm>, JsonDeserializer<ITradingAlgorithm> {
     override fun serialize(src: ITradingAlgorithm, typeOfT: Type, context: JsonSerializationContext): JsonElement {
         val jsonElement = context.serialize(src, src.javaClass).asJsonObject
+        val typeTag = ITradingAlgorithm.typeTagOf(src).getOrElse {
+            throw JsonParseException("Failed to serialize algorithm: unknown implementation class ${src::class.java.simpleName}", it)
+        }
 
-        jsonElement.addProperty("algorithmType", ITradingAlgorithm.typeTagOf(src))
+        jsonElement.addProperty("algorithmType", typeTag)
 
         return jsonElement
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ITradingAlgorithm {
         val jsonObject = json.asJsonObject
-        val typeTag = jsonObject.get("algorithmType")?.asString ?: throw JsonParseException("Missing 'algorithmType' field in algorithm payload")
+        val typeTag = jsonObject.get("algorithmType")?.asString
+            ?: throw JsonParseException("Missing 'algorithmType' field in algorithm payload")
 
-        return when (typeTag) {
-            "TACPP46" -> context.deserialize(jsonObject, TACPP46::class.java)
-            "ALGDES2" -> context.deserialize(jsonObject, ALGDES2::class.java)
-            "ALGDES3" -> context.deserialize(jsonObject, ALGDES3::class.java)
-            "ALGDES31" -> context.deserialize(jsonObject, ALGDES31::class.java)
-            "ALGDES4" -> context.deserialize(jsonObject, ALGDES4::class.java)
-            "BUYANDHOLD" -> context.deserialize(jsonObject, BUYANDHOLD::class.java)
-            "TACPP462" -> context.deserialize(jsonObject, TACPP462::class.java)
-            else -> throw JsonParseException("Unknown algorithm type tag: $typeTag")
+        val targetClass = ITradingAlgorithm.classFromTag(typeTag).getOrElse { exception ->
+            throw JsonParseException("Unknown algorithm type tag: $typeTag", exception)
         }
+
+        return context.deserialize(jsonObject, targetClass)
     }
 }
 

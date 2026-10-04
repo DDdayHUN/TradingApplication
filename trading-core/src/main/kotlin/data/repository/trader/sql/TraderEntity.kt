@@ -1,6 +1,6 @@
 package data.repository.trader.sql
 
-import com.google.gson.Gson
+import data.repository.g_GSON
 import data.repository.portfolio.sql.PortfolioEntity
 import data.repository.security.SecurityHoldingEntity
 import data.repository.security.SecurityIdentifierEntity
@@ -81,14 +81,14 @@ class TraderEntity(
     }
 }
 
-fun Trader.toEntity(portfolio: PortfolioEntity, gson: Gson = Gson()): TraderEntity {
+fun Trader.toEntity(portfolio: PortfolioEntity): TraderEntity {
     val entity = TraderEntity(
         id = id,
         securityIdentifier = securityIdentifier.toEntity(),
         portfolio = portfolio,
         capital = availableCapital,
-        algorithmType = ITradingAlgorithm.typeTagOf(algorithm),
-        algorithmState =  gson.toJson(
+        algorithmType = ITradingAlgorithm.typeTagOf(algorithm).getOrThrow(),
+        algorithmState = g_GSON.toJson(
             algorithm,
             ITradingAlgorithm::class.java
         )
@@ -103,8 +103,8 @@ fun Trader.toEntity(portfolio: PortfolioEntity, gson: Gson = Gson()): TraderEnti
     return entity
 }
 
-fun TraderEntity.toDomain(gson: Gson = Gson()): Trader {
-    val algorithm = gson.fromJson(
+fun TraderEntity.toDomain(): Trader {
+    val algorithm = g_GSON.fromJson(
         algorithmState,
         ITradingAlgorithm::class.java
     )
@@ -121,12 +121,12 @@ fun TraderEntity.toDomain(gson: Gson = Gson()): Trader {
     )
 }
 
-fun TraderEntity.updateFrom(trader: Trader, gson: Gson = Gson()) {
+fun TraderEntity.updateFrom(trader: Trader) {
     securityIdentifier = trader.securityIdentifier.toEntity()
     capital = trader.availableCapital
 
-    algorithmType = ITradingAlgorithm.typeTagOf(trader.algorithm)
-    algorithmState = gson.toJson(
+    algorithmType = ITradingAlgorithm.typeTagOf(trader.algorithm).getOrThrow()
+    algorithmState = g_GSON.toJson(
         trader.algorithm,
         ITradingAlgorithm::class.java
     )
