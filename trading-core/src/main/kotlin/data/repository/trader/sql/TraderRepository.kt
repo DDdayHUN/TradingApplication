@@ -15,25 +15,18 @@ class TraderRepository(
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun getById(traderId: UUID): Result<Trader> {
+    override suspend fun getById(traderId: UUID): Result<TraderEntity> {
         return runCatching {
             traderRepository.findByIdWithHoldings(traderId)
                 ?: throw TraderNotFoundException(traderId)
-        }.map { trader ->
-            trader.toDomain()
         }
     }
 
     //===========================================================//
 
-    override suspend fun save(trader: Trader): Result<Trader> {
+    override suspend fun save(trader: TraderEntity): Result<TraderEntity> {
         return runCatching {
-           val entity = traderRepository.findByIdWithHoldings(trader.id)
-               ?:throw TraderNotFoundException(trader.id)
-
-            entity.updateFrom(trader)
-
-            traderRepository.save(entity).toDomain()
+            traderRepository.save(trader)
         }
     }
 

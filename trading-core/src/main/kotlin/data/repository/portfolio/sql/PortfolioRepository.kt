@@ -16,7 +16,7 @@ class PortfolioRepository(
 
     override suspend fun save(portfolio: PortfolioEntity): Result<PortfolioEntity> {
        return runCatching {
-           return@runCatching portfolioRepository.save(portfolio)
+           portfolioRepository.save(portfolio)
        }
     }
 
@@ -24,10 +24,8 @@ class PortfolioRepository(
 
     override suspend fun getById(portfolioId: UUID): Result<PortfolioEntity> {
         return runCatching {
-            val portfolio = portfolioRepository.findWithRelationsById(portfolioId)
+            portfolioRepository.findWithRelationsById(portfolioId)
                 ?: throw PortfolioNotFoundException(portfolioId)
-
-           return@runCatching portfolio
         }
     }
 }

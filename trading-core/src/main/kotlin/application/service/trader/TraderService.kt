@@ -8,6 +8,9 @@ import application.service.portfolio.IPortfolioService
 import application.service.user.IUserService
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.trader.ITraderRepository
+import data.repository.trader.sql.toDomain
+import data.repository.trader.sql.updateFrom
+import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
@@ -35,23 +38,24 @@ class TraderService(
     //===========================================================//
     // Private Field(s)
 
-    private val logger = logger<TraderService>()
+    private val m_Logger = logger<TraderService>()
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
-    //===========================================================//
-
     @Transactional
+    @Deprecated("This will be superseded by another function")
     override suspend fun executeTrader(userId: UUID, traderId: UUID): TradingOrder {
-        val trader = traderRepository.getById(traderId).getOrThrow()
+        val traderEntity = traderRepository.getById(traderId).getOrThrow()
+        val traderDomain = traderEntity.toDomain()
 
-        val quote = getCurrentPrice(userId, trader.securityIdentifier)
-        //val quote = Quote(540.0)
-        val order = trader.createOrder(quote)
+        val quote = getCurrentPrice(userId, traderDomain.securityIdentifier)
+        val order = traderDomain.createOrder(quote)
 
-        traderRepository.save(trader).getOrThrow()
+        traderEntity.updateFrom(traderDomain)
+
+        traderRepository.save(traderEntity).getOrThrow()
         return order
     }
 
@@ -59,34 +63,41 @@ class TraderService(
 
     @Transactional
     override suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double) {
-       val trader = traderRepository.getById(traderId).getOrThrow()
+        val traderEntity = traderRepository.getById(traderId).getOrThrow()
+        val traderDomain = traderEntity.toDomain()
 
-        trader.applyBuyFill(
+        traderDomain.applyBuyFill(
             price = averageFillPrice,
             amount = filledQuantity
         )
 
-        traderRepository.save(trader).getOrThrow()
+        traderEntity.updateFrom(traderDomain)
+
+        traderRepository.save(traderEntity).getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun applySellFill(
-        traderId: UUID,
-        sellAllocations: Set<SellHolding>,
-        averageFillPrice: Double
-    ) {
-        val trader = traderRepository.getById(traderId).getOrThrow()
-        trader.applySellFill(price = averageFillPrice, holdingsToSell = sellAllocations)
-        traderRepository.save(trader).getOrThrow()
+    override suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellHolding>, averageFillPrice: Double) {
+        val traderEntity = traderRepository.getById(traderId).getOrThrow()
+        val traderDomain = traderEntity.toDomain()
+
+        traderDomain.applySellFill(
+            price = averageFillPrice,
+            holdingsToSell = sellAllocations
+        )
+
+        traderEntity.updateFrom(traderDomain)
+
+        traderRepository.save(traderEntity).getOrThrow()
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
     override suspend fun forceSellHolding(userId: UUID, traderId: UUID, securityHoldingId: UUID): TradingOrder {
-       val trader = traderRepository.getById(traderId).getOrThrow()
+       val trader = traderRepository.getById(traderId).getOrThrow().toDomain()
 
         val holding = trader.holdings
             .find { holding -> holding.id == securityHoldingId }
@@ -104,7 +115,7 @@ class TraderService(
 
     @Transactional(readOnly = true)
     override suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): List<TradingOrder> {
-        val trader = traderRepository.getById(traderId).getOrThrow()
+        val trader = traderRepository.getById(traderId).getOrThrow().toDomain()
 
         val orderList = mutableListOf<TradingOrder>()
 
@@ -130,7 +141,7 @@ class TraderService(
             currency = request.securityIdentifier.currency
         )
 
-        val algorithmType = parseAlgorithmType(request.algorithmType)
+        val algorithmType = ITradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow()
         val algorithm = TradingAlgorithm.create(
             provider = historicalMarketDataProvider,
             type = algorithmType,
@@ -171,19 +182,20 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun changeAlgorithm(userId: UUID, traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader {
-        val trader = getById(userId, traderId)
+    override suspend fun changeAlgorithm(traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader {
+        val traderEntity = traderRepository.getById(traderId).getOrThrow()
+        val traderDomain = traderEntity.toDomain()
 
         val algorithm = TradingAlgorithm.create(
             provider = historicalMarketDataProvider,
-            type = parseAlgorithmType(request.algorithmType),
-            securityIdentifier = trader.securityIdentifier,
+            type = ITradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow(),
+            securityIdentifier = traderDomain.securityIdentifier,
         )
 
-        trader.changeAlgorithm(algorithm)
-        traderRepository.save(trader)
+        traderDomain.changeAlgorithm(algorithm)
+        traderEntity.updateFrom(traderDomain)
 
-        return trader
+        return traderRepository.save(traderEntity).getOrThrow().toDomain()
     }
 
     //===========================================================//
@@ -200,29 +212,11 @@ class TraderService(
 
     //===========================================================//
 
-    private fun parseAlgorithmType(value: String): TradingAlgorithm.Type {
-        return when (value.trim().uppercase()) {
-            "TACPP46" -> TradingAlgorithm.Type.TACPP46
-            "TACPP462" -> TradingAlgorithm.Type.TACPP462
-            "ALGDES2" -> TradingAlgorithm.Type.ALGDES2
-            "ALGDES3" -> TradingAlgorithm.Type.ALGDES3
-            "ALGDES31" -> TradingAlgorithm.Type.ALGDES31
-            "ALGDES4" -> TradingAlgorithm.Type.ALGDES4
-            "BUYANDHOLD" -> TradingAlgorithm.Type.BUYANDHOLD
-
-            else -> throw IllegalArgumentException(
-                "Unsupported algorithm type: $value"
-            )
-        }
-    }
-
-    //===========================================================//
-
     private suspend fun getCurrentPrice(userId: UUID, securityIdentifier: SecurityIdentifier): Quote {
         var quote = marketDataProvider.get(MarketDataProvider.Type.Finnhub).getQuote( userId, securityIdentifier)
 
         if(!quote.isSuccess){
-            logger.warn("Finnhub quote failed for {}, trying IBKR", securityIdentifier.tickerSymbol)
+            m_Logger.warn("Finnhub quote failed for {}, trying IBKR", securityIdentifier.tickerSymbol)
             quote = marketDataProvider.get(MarketDataProvider.Type.Ibkr).getQuote( userId, securityIdentifier)
         }
 
