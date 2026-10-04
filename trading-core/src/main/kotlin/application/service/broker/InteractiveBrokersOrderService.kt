@@ -21,7 +21,7 @@ class InteractiveBrokersOrderService(
     //===========================================================//
     // Private Field(s)
 
-    private val logger = logger<InteractiveBrokersOrderService>()
+    private val m_Logger = logger<InteractiveBrokersOrderService>()
 
     //===========================================================//
     //===========================================================//
@@ -97,7 +97,7 @@ class InteractiveBrokersOrderService(
             }
         }
 
-        logger.info(
+        m_Logger.info(
             "Applying filled order orderId={} quantity={} avgPrice={}",
             event.orderId,
             event.filled,

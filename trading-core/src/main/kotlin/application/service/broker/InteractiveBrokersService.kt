@@ -2,12 +2,12 @@ package application.service.broker
 
 import application.logging.logger
 import application.model.InteractiveBrokersOrder
+import application.model.User
 import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
 import domain.market.security.SecurityIdentifier
 import infrastructure.broker.IbkrHistoricalBar
-import infrastructure.broker.IbkrPortfolioAccountSummary
 import infrastructure.broker.InteractiveBrokerSessionManager
 import kotlinx.coroutines.delay
 import org.springframework.stereotype.Service
@@ -24,7 +24,7 @@ class InteractiveBrokersService(
     //===========================================================//
     // Private Field(s)
 
-    private val logger = logger<InteractiveBrokersService>()
+    private val m_Logger = logger<InteractiveBrokersService>()
 
     //===========================================================//
     //===========================================================//
@@ -43,9 +43,14 @@ class InteractiveBrokersService(
     }
     //===========================================================//
 
-    suspend fun getAccountSummary(userId: UUID): IbkrPortfolioAccountSummary{
+    suspend fun getAccountSummary(userId: UUID): User.AccountSummary {
         val client = session.getClient(userId)
-        return client.getAccountSummary()
+        val ibkrAccSum = client.getAccountSummary()
+
+        return User.AccountSummary(
+            availableCapital = ibkrAccSum.availableCapital,
+            netLiquidation = ibkrAccSum.netLiquidation
+        )
     }
 
     //===========================================================//
@@ -71,7 +76,7 @@ class InteractiveBrokersService(
                     currentEnd - 7.days
                 )
 
-            logger.info(
+            m_Logger.info(
                 "Fetching IBKR historical data ticker={} from={} to={}",
                 securityIdentifier.tickerSymbol,
                 currentStart,
