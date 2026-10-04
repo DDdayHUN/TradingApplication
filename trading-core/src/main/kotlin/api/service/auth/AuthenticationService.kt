@@ -28,27 +28,15 @@ class AuthenticationService(
     //===========================================================//
     // Public Method(s)
 
-    @Transactional(readOnly = true)
-    override suspend fun currentUser(): User {
+    override suspend fun currentUser(): UUID {
         val auth = SecurityContextHolder.getContext().authentication
-            ?: run {
-                logger.warn("Current user requested without authentication")
-                throw AuthenticationException("No authentication present")
-            }
+            ?: throw AuthenticationException("No authentication present")
 
-        val uuid: UUID =
-            try { UUID.fromString(auth.name) }
-            catch (e: IllegalArgumentException) {
-                logger.warn("Authentication contained invalid user UUID: {}", auth)
-                throw AuthenticationException("Invalid UUID", e)
-            }
-
-        logger.debug("Loading current user id={}", uuid)
-
-        return userRepository.getById(uuid).getOrElse { exception ->
-            logger.warn("Authenticated user not found id={}", uuid)
-            throw exception
-        }.toDomain()
+        return try {
+            UUID.fromString(auth.name)
+        } catch (e: IllegalArgumentException) {
+            throw AuthenticationException("Invalid user UUID", e)
+        }
     }
 
     //===========================================================//

@@ -24,19 +24,23 @@ class TraderController(
 
     @GetMapping
     suspend fun getAllTraders(): ResponseEntity<List<TraderResponse>> {
-        val response = traderService.getAll().map { trader ->
-            trader.toResponse()
-        }
-        return ResponseEntity.ok(response)
+        return ResponseEntity.ok(
+            traderService.getAll(
+                userId = authService.currentUser()
+            ). map {trader -> trader.toResponse()}
+        )
     }
 
     //===========================================================//
 
     @GetMapping("{traderId}/")
     suspend fun getTraderById(@PathVariable traderId: UUID): ResponseEntity<TraderResponse> {
-        val response = traderService.getById(traderId).toResponse()
-
-        return ResponseEntity.ok(response)
+        return ResponseEntity.ok(
+            traderService.getById(
+                userId = authService.currentUser(),
+                traderId = traderId
+            ).toResponse()
+        )
     }
 
     //===========================================================//
@@ -45,9 +49,11 @@ class TraderController(
 
     @PostMapping
     suspend fun createTrade(@RequestBody request: CreateTraderRequest): ResponseEntity<TraderResponse> {
-        val user = authService.currentUser()
-        val response = traderService.createTrader(user, request).toResponse()
-
-        return ResponseEntity.ok(response)
+        return ResponseEntity.ok(
+            traderService.createTrader(
+                userId = authService.currentUser(),
+                request = request
+            ).toResponse()
+        )
     }
 }
