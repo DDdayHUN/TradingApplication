@@ -16,7 +16,7 @@ class OrderController(
     private val authService: IAuthenticationService
 ) {
     @GetMapping
-    suspend fun getAll(): ResponseEntity<List<OrderResponse>>{
+    suspend fun getAll(): ResponseEntity<List<OrderResponse>> {
         val response = orderService.getAll(authService.currentUser()).map {
             order -> order.toResponse()
         }

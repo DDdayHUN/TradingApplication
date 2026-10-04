@@ -27,7 +27,7 @@ class TraderController(
         return ResponseEntity.ok(
             traderService.getAll(
                 userId = authService.currentUser()
-            ). map {trader -> trader.toResponse()}
+            ).map { trader -> trader.toResponse() }
         )
     }
 
