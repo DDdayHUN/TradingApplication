@@ -1,6 +1,5 @@
 package data.repository.trader.sql
 
-import com.google.gson.Gson
 import data.repository.g_GSON
 import data.repository.portfolio.sql.PortfolioEntity
 import data.repository.security.SecurityHoldingEntity
@@ -88,7 +87,7 @@ fun Trader.toEntity(portfolio: PortfolioEntity): TraderEntity {
         securityIdentifier = securityIdentifier.toEntity(),
         portfolio = portfolio,
         capital = availableCapital,
-        algorithmType = ITradingAlgorithm.typeTagOf(algorithm),
+        algorithmType = ITradingAlgorithm.typeTagOf(algorithm).getOrThrow(),
         algorithmState = g_GSON.toJson(
             algorithm,
             ITradingAlgorithm::class.java
@@ -126,7 +125,7 @@ fun TraderEntity.updateFrom(trader: Trader) {
     securityIdentifier = trader.securityIdentifier.toEntity()
     capital = trader.availableCapital
 
-    algorithmType = ITradingAlgorithm.typeTagOf(trader.algorithm)
+    algorithmType = ITradingAlgorithm.typeTagOf(trader.algorithm).getOrThrow()
     algorithmState = g_GSON.toJson(
         trader.algorithm,
         ITradingAlgorithm::class.java
