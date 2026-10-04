@@ -1,6 +1,6 @@
 package api.dto
 
-import application.model.User
+import application.service.user.User
 import java.util.*
 
 //===========================================================//

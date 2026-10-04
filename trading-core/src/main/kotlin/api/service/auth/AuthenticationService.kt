@@ -2,7 +2,7 @@ package api.service.auth
 
 import application.logging.logger
 import data.repository.user.IUserRepository
-import application.model.User
+import application.service.user.User
 import data.repository.user.sql.toDomain
 import data.repository.user.sql.toEntity
 import domain.Portfolio

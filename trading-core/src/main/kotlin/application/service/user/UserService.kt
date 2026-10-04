@@ -1,6 +1,5 @@
 package application.service.user
 
-import application.model.User
 import data.repository.user.IUserRepository
 import data.repository.user.sql.toDomain
 import org.springframework.stereotype.Service

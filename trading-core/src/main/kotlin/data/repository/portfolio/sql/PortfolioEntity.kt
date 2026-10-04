@@ -6,7 +6,6 @@ import data.repository.trader.sql.toEntity
 import data.repository.user.sql.UserEntity
 import domain.Portfolio
 import jakarta.persistence.*
-import jdk.internal.util.StaticProperty.userName
 import java.util.*
 
 @Entity

@@ -1,7 +1,6 @@
 package data.repository.user.sql
 
 import data.repository.user.IUserRepository
-import application.model.User
 import exception.api.UserNotFoundException
 import org.springframework.stereotype.Repository
 import java.util.*
