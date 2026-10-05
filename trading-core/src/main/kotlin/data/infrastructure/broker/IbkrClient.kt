@@ -1,4 +1,4 @@
-package infrastructure.broker
+package data.infrastructure.broker
 
 import application.logging.logger
 import com.ib.client.*
@@ -8,7 +8,6 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.stereotype.Component
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap

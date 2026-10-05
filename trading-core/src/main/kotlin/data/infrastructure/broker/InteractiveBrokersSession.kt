@@ -1,10 +1,6 @@
-package infrastructure.broker
+package data.infrastructure.broker
 
 import application.logging.logger
-import jakarta.annotation.PreDestroy
-import kotlinx.coroutines.launch
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import java.util.*
 
 class InteractiveBrokersSession(

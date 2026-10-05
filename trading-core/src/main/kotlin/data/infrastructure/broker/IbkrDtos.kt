@@ -1,4 +1,4 @@
-package infrastructure.broker
+package data.infrastructure.broker
 
 data class IbkrHistoricalBar(
     val timestamp: String,
