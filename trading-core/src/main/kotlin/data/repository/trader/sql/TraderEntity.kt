@@ -106,7 +106,7 @@ fun TraderEntity.toDomain(): Trader {
 }
 
 fun TraderEntity.update(trader: Trader) {
-    require(this.id == trader.id) { "Id mismatch: Entity: ${this.id} Trader: ${trader.id}" }
+    require(this.id == trader.id) { "ID mismatch. ID1 {${this.id}} ID2 {${trader.id}}" }
 
     securityIdentifier = trader.securityIdentifier.toEntity()
     capital = trader.availableCapital

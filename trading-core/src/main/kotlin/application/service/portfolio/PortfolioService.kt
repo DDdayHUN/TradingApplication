@@ -3,6 +3,7 @@ package application.service.portfolio
 import data.repository.portfolio.IPortfolioRepository
 import data.repository.portfolio.sql.toDomain
 import data.repository.portfolio.sql.toEntity
+import data.repository.portfolio.sql.update
 import data.repository.user.IUserRepository
 import data.repository.user.sql.toDomain
 import domain.Portfolio
@@ -22,12 +23,11 @@ class PortfolioService(
     @Transactional
     override suspend fun update(userId: UUID, portfolio: Portfolio): Portfolio {
         val userEntity = userRepository.getById(userId).getOrThrow()
-        val portfolioEntity = portfolio.toEntity()
+        val portfolioEntity = portfolioRepository.getById(portfolio.id).getOrThrow()
 
-        userEntity.portfolio = portfolioEntity
-        portfolioEntity.user = userEntity
+        require(portfolioEntity.id == userEntity.portfolio.id) { "ID mismatch. ID1 {${portfolioEntity.id}} ID2 {${userEntity.portfolio.id}}" }
 
-        userRepository.save(userEntity)
+        portfolioEntity.update(portfolio)
         return portfolioRepository.save(portfolioEntity).getOrThrow().toDomain()
     }
 
