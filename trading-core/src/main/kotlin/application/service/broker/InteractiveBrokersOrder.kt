@@ -1,7 +1,6 @@
-package application.model
+package application.service.broker
 
-import application.model.InteractiveBrokersOrder.Signal
-import application.service.broker.InteractiveBrokersService
+import application.service.broker.InteractiveBrokersOrder.Signal
 import domain.market.security.SecurityIdentifier
 import domain.trader.SellHolding
 import domain.trader.TradingOrder

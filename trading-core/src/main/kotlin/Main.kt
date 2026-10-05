@@ -14,7 +14,7 @@ suspend fun main() {
     //===========================================================//
     // Backtest
 
-    val c_RUN_BACKTEST_ON_ONE_SECURITY = true
+    val c_RUN_BACKTEST_ON_ONE_SECURITY = false
     val c_RUN_BACKTEST_ON_N_SECURITY = false
     val c_RUN_BACKTEST_ON_ALL_SECURITY = false
 
@@ -22,8 +22,8 @@ suspend fun main() {
     //===========================================================//
     // Eval
 
-    val c_RUN_EVAL_ON_ONE_ALGORITHM = false
-    val c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT = true; val percentToGetAfterEval = 0.07
+    val c_RUN_EVAL_ON_ONE_ALGORITHM = true
+    val c_RUN_EVAL_ON_ONE_ALGORITHM_WITH_BEST_OUTPUT = false; val percentToGetAfterEval = 0.07
     val c_RUN_EVAL_ON_ONE_ALGORITHM_N_SECURITY = false
     val c_RUN_EVAL_ON_ALL_ALGORITHM = false
 

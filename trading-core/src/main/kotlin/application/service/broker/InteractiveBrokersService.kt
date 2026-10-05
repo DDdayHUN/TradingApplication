@@ -1,7 +1,6 @@
 package application.service.broker
 
 import application.logging.logger
-import application.model.InteractiveBrokersOrder
 import application.service.user.User
 import com.ib.client.Contract
 import com.ib.client.Decimal

@@ -1,7 +1,7 @@
 package api.dto
 
-import application.model.InteractiveBrokersOrder
-import application.model.InteractiveBrokersOrder.*
+import application.service.broker.InteractiveBrokersOrder
+import application.service.broker.InteractiveBrokersOrder.*
 import java.util.UUID
 
 data class OrderResponse(
