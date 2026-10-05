@@ -1,10 +1,12 @@
 package data.repository.portfolio.sql
 
+import application.service.user.User
 import data.repository.trader.sql.TraderEntity
 import data.repository.trader.sql.toDomain
 import data.repository.trader.sql.toEntity
 import data.repository.trader.sql.update
 import data.repository.user.sql.UserEntity
+import data.repository.user.sql.toDomain
 import domain.Portfolio
 import jakarta.persistence.*
 import java.util.*
