@@ -18,22 +18,25 @@ class TraderEntityUpdateTest {
     //===========================================================//
     //===========================================================//
 
-    private val provider = HistoricalMarketDataProvider.get(
+    private val m_Provider = HistoricalMarketDataProvider.get(
         HistoricalMarketDataProvider.Type.YahooHistoricalMarketDataRepository
     )
 
-    private val traderId = UUID.randomUUID()
-    private val portfolio = PortfolioEntity(id = UUID.randomUUID())
-    private val securityIdentifierEntity = SecurityIdentifierEntity("US0378331005", "AAPL", "USD")
+    private val m_SecurityIdentifierEntity = SecurityIdentifierEntity("US0378331005", "AAPL", "USD")
 
     //===========================================================//
     //===========================================================//
 
-    private fun createTraderEntity(id: UUID = traderId, capital: Double = 10_000.0, holdings: MutableSet<SecurityHoldingEntity> = mutableSetOf()): TraderEntity {
+    private fun createTraderEntity(
+        id: UUID = UUID.randomUUID(),
+        capital: Double = 10_000.0,
+        holdings: MutableSet<SecurityHoldingEntity> = mutableSetOf(),
+        portfolioEntity: PortfolioEntity = PortfolioEntity(id = UUID.randomUUID())
+    ): TraderEntity {
         return TraderEntity(
             id = id,
-            securityIdentifier = securityIdentifierEntity,
-            portfolio = portfolio,
+            securityIdentifier = m_SecurityIdentifierEntity,
+            portfolio = portfolioEntity,
             capital = capital,
             algorithmType = "BUYANDHOLD",
             algorithmState = "{algorithmType: BUYANDHOLD}"
@@ -42,8 +45,8 @@ class TraderEntityUpdateTest {
 
     //===========================================================//
 
-    private fun createDomainTrader(id: UUID = traderId, capital: Double = 10_000.0, holdings: MutableSet<SecurityHolding> = mutableSetOf()): Trader {
-        val securityIdentifier = securityIdentifierEntity.toDomain()
+    private fun createDomainTrader(id: UUID = UUID.randomUUID(), capital: Double = 10_000.0, holdings: MutableSet<SecurityHolding> = mutableSetOf()): Trader {
+        val securityIdentifier = m_SecurityIdentifierEntity.toDomain()
 
         return Trader(
             id = id,
@@ -51,7 +54,7 @@ class TraderEntityUpdateTest {
             holdings = holdings,
             allocatedCapital = capital,
             algorithm = TradingAlgorithm.create(
-                provider,
+                m_Provider,
                 TradingAlgorithm.Type.BUYANDHOLD,
                 securityIdentifier
             )
@@ -75,8 +78,10 @@ class TraderEntityUpdateTest {
 
     @Test
     fun `update copies scalar fields correctly`() {
-        val entity = createTraderEntity(capital = 5_000.0)
-        val domain = createDomainTrader(capital = 12_500.0)
+        val traderId = UUID.randomUUID()
+
+        val entity = createTraderEntity(id = traderId, capital = 5_000.0)
+        val domain = createDomainTrader(id = traderId, capital = 12_500.0)
 
         entity.update(domain)
 
@@ -88,13 +93,16 @@ class TraderEntityUpdateTest {
 
     @Test
     fun `update removes holdings that are no longer present`() {
+        val traderId = UUID.randomUUID()
+
         val holdingId1 = UUID.randomUUID()
         val holdingId2 = UUID.randomUUID()
         val timestamp1 = Instant.now()
         val timestamp2 = Instant.now()
 
-        val entity = createTraderEntity()
-
+        val entity = createTraderEntity(
+            id = traderId
+        )
         entity.holdings.addAll(
             listOf(
                 SecurityHoldingEntity(id = holdingId1, entryPrice = 100.0, amount = 10, timestamp = timestamp1, trader = entity),
@@ -103,6 +111,7 @@ class TraderEntityUpdateTest {
         )
 
         val domain = createDomainTrader(
+            id = traderId,
             holdings = mutableSetOf(
                 SecurityHolding(
                     id = holdingId1,
@@ -124,16 +133,21 @@ class TraderEntityUpdateTest {
 
     @Test
     fun `update modifies existing holdings`() {
+        val traderId = UUID.randomUUID()
+
         val holdingId = UUID.randomUUID()
         val oldTimestamp = Instant.now().minusSeconds(3600)
         val newTimestamp = Instant.now()
 
-        val entity = createTraderEntity()
+        val entity = createTraderEntity(
+            id = traderId
+        )
         entity.holdings.add(
             SecurityHoldingEntity(id = holdingId, entryPrice = 100.0, amount= 10, timestamp = oldTimestamp, trader = entity)
         )
 
         val domain = createDomainTrader(
+            id = traderId,
             holdings = mutableSetOf(
                 SecurityHolding(
                     id = holdingId,
@@ -156,16 +170,21 @@ class TraderEntityUpdateTest {
 
     @Test
     fun `update adds new holdings`() {
+        val traderId = UUID.randomUUID()
+
         val existingId = UUID.randomUUID()
         val newId = UUID.randomUUID()
         val timestamp = Instant.now()
 
-        val entity = createTraderEntity()
+        val entity = createTraderEntity(
+            id = traderId
+        )
         entity.holdings.add(
             SecurityHoldingEntity(id= existingId, entryPrice = 100.0, amount = 10, timestamp = timestamp, trader = entity)
         )
 
         val domain = createDomainTrader(
+            id = traderId,
             holdings = mutableSetOf(
                 SecurityHolding(
                     id = existingId,
@@ -196,12 +215,11 @@ class TraderEntityUpdateTest {
 
     @Test
     fun `toDomain converts entity to domain correctly`() {
-        val id = UUID.randomUUID()
         val capital = 15_000.0
         val timestamp = Instant.now()
         val holdingId = UUID.randomUUID()
 
-        val entity = createTraderEntity(id = id, capital = capital, mutableSetOf())
+        val entity = createTraderEntity(capital = capital)
         entity.holdings.add(
             SecurityHoldingEntity(
                 id = holdingId,
@@ -214,9 +232,10 @@ class TraderEntityUpdateTest {
 
         val domain = entity.toDomain()
 
-        assertEquals(id, domain.id)
-        assertEquals(capital, domain.availableCapital)
-        assertEquals(securityIdentifierEntity.toDomain(), domain.securityIdentifier)
+        assertEquals(entity.id, domain.id)
+        assertEquals(entity.capital, domain.availableCapital)
+        assertEquals(entity.securityIdentifier.toDomain(), domain.securityIdentifier)
+        assertEquals(entity.holdings.size, domain.holdings.size)
         assertEquals(1, domain.holdings.size)
 
         val domainHolding = domain.holdings.first()
@@ -254,7 +273,7 @@ class TraderEntityUpdateTest {
         assertEquals(id, entity.id)
         assertEquals(capital, entity.capital)
         assertEquals(portfolio, entity.portfolio)
-        assertEquals(securityIdentifierEntity.isin, entity.securityIdentifier.isin)
+        assertEquals(m_SecurityIdentifierEntity.isin, entity.securityIdentifier.isin)
         assertEquals(1, entity.holdings.size)
 
         val entityHolding = entity.holdings.first()
