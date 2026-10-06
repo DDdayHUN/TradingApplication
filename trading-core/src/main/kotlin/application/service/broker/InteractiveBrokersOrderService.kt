@@ -1,12 +1,10 @@
 package application.service.broker
 
 import application.logging.logger
-import application.model.InteractiveBrokersOrder
-import application.model.toInteractiveBrokersOrder
 import application.service.trader.ITraderService
 import data.repository.order.sql.InteractiveBrokersOrderRepository
 import domain.trader.TradingOrder
-import infrastructure.broker.IbkrEvent
+import data.infrastructure.broker.IbkrEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import java.util.*

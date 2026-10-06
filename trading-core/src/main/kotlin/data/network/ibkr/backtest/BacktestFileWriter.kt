@@ -2,7 +2,7 @@ package data.network.ibkr.backtest
 
 import application.logging.logger
 import com.google.gson.GsonBuilder
-import infrastructure.broker.IbkrHistoricalBar
+import data.infrastructure.broker.IbkrHistoricalBar
 import org.springframework.stereotype.Component
 import java.nio.file.*
 

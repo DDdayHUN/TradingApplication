@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
         "api",
         "application",
         "data",
-        "infrastructure"
+        "data/infrastructure"
     ]
 )
 @EnableAsync
@@ -25,7 +25,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
         "api",
         "application",
         "data",
-        "infrastructure"
+        "data/infrastructure"
     ]
 )
 class SpringMain

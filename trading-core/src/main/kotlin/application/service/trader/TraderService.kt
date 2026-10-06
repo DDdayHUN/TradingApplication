@@ -9,7 +9,7 @@ import application.service.user.IUserService
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.trader.ITraderRepository
 import data.repository.trader.sql.toDomain
-import data.repository.trader.sql.updateFrom
+import data.repository.trader.sql.update
 import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
@@ -53,9 +53,9 @@ class TraderService(
         val quote = getCurrentPrice(userId, traderDomain.securityIdentifier)
         val order = traderDomain.createOrder(quote)
 
-        traderEntity.updateFrom(traderDomain)
-
+        traderEntity.update(traderDomain)
         traderRepository.save(traderEntity).getOrThrow()
+
         return order
     }
 
@@ -71,8 +71,7 @@ class TraderService(
             amount = filledQuantity
         )
 
-        traderEntity.updateFrom(traderDomain)
-
+        traderEntity.update(traderDomain)
         traderRepository.save(traderEntity).getOrThrow()
     }
 
@@ -88,8 +87,7 @@ class TraderService(
             holdingsToSell = sellAllocations
         )
 
-        traderEntity.updateFrom(traderDomain)
-
+        traderEntity.update(traderDomain)
         traderRepository.save(traderEntity).getOrThrow()
     }
 
@@ -193,7 +191,7 @@ class TraderService(
         )
 
         traderDomain.changeAlgorithm(algorithm)
-        traderEntity.updateFrom(traderDomain)
+        traderEntity.update(traderDomain)
 
         return traderRepository.save(traderEntity).getOrThrow().toDomain()
     }

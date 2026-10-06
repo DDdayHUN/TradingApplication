@@ -13,8 +13,8 @@ class Portfolio {
     // Public Field(s)
 
     val id: UUID
-
     val traders: Set<Trader> get() = m_Traders.toSet()
+
     val availableCapital: Double get() = m_AvailableCapital
     val netLiquidation: Double get() = m_AvailableCapital +
             traders.sumOf { it.availableCapital } +

@@ -4,6 +4,8 @@ import application.service.user.IUserService
 import data.repository.portfolio.IPortfolioRepository
 import data.repository.portfolio.sql.toDomain
 import data.repository.portfolio.sql.toEntity
+import data.repository.portfolio.sql.update
+import data.repository.user.sql.toDomain
 import data.repository.user.sql.toEntity
 import domain.Portfolio
 import org.springframework.stereotype.Service
@@ -22,13 +24,11 @@ class PortfolioService(
     @Transactional
     override suspend fun update(userId: UUID, portfolio: Portfolio): Portfolio {
         val user = userService.getById(userId)
+        val portfolioEntity = portfolioRepository.getById(portfolio.id).getOrThrow()
 
-        val userEntity = user.toEntity()
-        val portfolioEntity = portfolio.toEntity()
+        require(portfolioEntity.id == user.portfolio.id) { "ID mismatch. ID1 {${portfolioEntity.id}} ID2 {${user.portfolio.id}}" }
 
-        userEntity.portfolio = portfolioEntity
-        portfolioEntity.user = userEntity
-
+        portfolioEntity.update(portfolio)
         return portfolioRepository.save(portfolioEntity).getOrThrow().toDomain()
     }
 
@@ -37,32 +37,23 @@ class PortfolioService(
     @Transactional
     override suspend fun create(userId: UUID): Portfolio {
         val user = userService.getById(userId)
+        val userEntity = user.toEntity()
 
         val portfolio = Portfolio()
-
-        val userEntity = user.toEntity()
         val portfolioEntity = portfolio.toEntity()
 
         userEntity.portfolio = portfolioEntity
         portfolioEntity.user = userEntity
 
+        userService.update(userEntity.toDomain())
         return portfolioRepository.save(portfolioEntity).getOrThrow().toDomain()
     }
+
+    //===========================================================//
 
     @Transactional(readOnly = true)
     override suspend fun get(userId: UUID): Portfolio {
         val user = userService.getById(userId)
         return user.portfolio
     }
-
-    //===========================================================//
-
-    /*
-    @Transactional
-    override suspend fun deletePortfolio(user: User) {
-        if(user.portfolios.isEmpty()) throw NoPortfolioExistsForUserException(user.id)
-
-        TODO("Not yet implemented")
-    }
-    */
 }

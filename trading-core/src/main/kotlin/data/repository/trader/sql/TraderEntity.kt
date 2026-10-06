@@ -63,22 +63,8 @@ class TraderEntity(
     @ColumnTransformer(read = "cast(algorithm_state as text)", write = "cast(? as jsonb)")
     var algorithmState: String
 ) {
-
     @OneToMany(mappedBy = "trader", fetch = FetchType.LAZY, orphanRemoval = true, cascade = [CascadeType.ALL])
     var holdings: MutableSet<SecurityHoldingEntity> = mutableSetOf()
-
-    //===========================================================//
-    //===========================================================//
-    // Public Method(s)
-
-    fun addHolding(holding: SecurityHoldingEntity){
-        holding.trader = this
-        holdings.add(holding)
-    }
-
-    fun removeHolding(holding: SecurityHoldingEntity){
-        holdings.remove(holding)
-    }
 }
 
 fun Trader.toEntity(portfolio: PortfolioEntity): TraderEntity {
@@ -94,11 +80,9 @@ fun Trader.toEntity(portfolio: PortfolioEntity): TraderEntity {
         )
     )
 
-    holdings.forEach { holding ->
-        entity.addHolding(
-            holding.toEntity(entity)
-        )
-    }
+    entity.holdings.addAll(holdings.map { holding ->
+        holding.toEntity(entity)
+    })
 
     return entity
 }
@@ -121,7 +105,9 @@ fun TraderEntity.toDomain(): Trader {
     )
 }
 
-fun TraderEntity.updateFrom(trader: Trader) {
+fun TraderEntity.update(trader: Trader) {
+    require(this.id == trader.id) { "ID mismatch. ID1 {${this.id}} ID2 {${trader.id}}" }
+
     securityIdentifier = trader.securityIdentifier.toEntity()
     capital = trader.availableCapital
 
@@ -133,17 +119,19 @@ fun TraderEntity.updateFrom(trader: Trader) {
 
     val domainHoldings = trader.holdings.associateBy { holding -> holding.id }
 
-    holdings.removeIf {holding->
-        holding.id !in domainHoldings
-    }
+    // remove
+    holdings.removeIf { holding -> holding.id !in domainHoldings }
 
+    // update
     holdings.forEach { holding ->
-        val domainHolding = domainHoldings[holding.id] ?: return@forEach
-        holding.entryPrice = domainHolding.purchasePrice
-        holding.amount = domainHolding.amount
-        holding.timestamp = domainHolding.timestamp
+        domainHoldings[holding.id]?.let { domainHolding ->
+            holding.entryPrice = domainHolding.purchasePrice
+            holding.amount = domainHolding.amount
+            holding.timestamp = domainHolding.timestamp
+        }
     }
 
+    // add new
     val existingHoldingIds = holdings
         .map { it.id }
         .toSet()
@@ -151,8 +139,6 @@ fun TraderEntity.updateFrom(trader: Trader) {
     trader.holdings
         .filter { it.id !in existingHoldingIds }
         .forEach { holding ->
-            addHolding(
-                holding.toEntity(this)
-            )
+            holdings.add(holding.toEntity(this))
         }
 }

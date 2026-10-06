@@ -1,8 +1,7 @@
 package data.repository.order.sql
 
 import data.repository.portfolio.sql.IPortfolioJpaRepository
-import application.model.InteractiveBrokersOrder
-import exception.api.PortfolioNotFoundException
+import application.service.broker.InteractiveBrokersOrder
 import exception.api.TraderNotFoundException
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

@@ -1,14 +1,13 @@
 package application.service.broker
 
 import application.logging.logger
-import application.model.InteractiveBrokersOrder
-import application.model.User
+import application.service.user.User
 import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
 import domain.market.security.SecurityIdentifier
-import infrastructure.broker.IbkrHistoricalBar
-import infrastructure.broker.InteractiveBrokerSessionManager
+import data.infrastructure.broker.IbkrHistoricalBar
+import data.infrastructure.broker.InteractiveBrokerSessionManager
 import kotlinx.coroutines.delay
 import org.springframework.stereotype.Service
 import java.util.*

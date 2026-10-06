@@ -1,4 +1,4 @@
-package infrastructure.broker
+package data.infrastructure.broker
 
 sealed interface IbkrEvent {
     val orderId: Int

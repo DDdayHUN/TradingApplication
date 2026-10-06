@@ -1,4 +1,4 @@
-package application.model
+package application.service.user
 
 import domain.Portfolio
 import java.util.UUID
