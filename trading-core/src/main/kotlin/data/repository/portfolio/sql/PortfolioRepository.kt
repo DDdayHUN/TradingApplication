@@ -1,8 +1,7 @@
 package data.repository.portfolio.sql
 
 import data.repository.portfolio.IPortfolioRepository
-import domain.Portfolio
-import exception.api.PortfolioNotFoundException
+import exception.PortfolioNotFoundException
 import org.springframework.stereotype.Repository
 import java.util.*
 

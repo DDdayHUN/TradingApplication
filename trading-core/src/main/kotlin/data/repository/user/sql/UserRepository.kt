@@ -1,7 +1,7 @@
 package data.repository.user.sql
 
 import data.repository.user.IUserRepository
-import exception.api.UserNotFoundException
+import exception.UserNotFoundException
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -21,6 +21,14 @@ class UserRepository(
 
     //===========================================================//
 
+    override suspend fun saveAll(users: Iterable<UserEntity>): Result<List<UserEntity>> {
+        return runCatching {
+            repository.saveAll(users)
+        }
+    }
+
+    //===========================================================//
+
     override suspend fun getById(userId: UUID): Result<UserEntity> {
         return runCatching {
             val entity = repository.findById(userId)
@@ -32,9 +40,9 @@ class UserRepository(
 
     //===========================================================//
 
-    override suspend fun getAll(): Result<List<UserEntity>> {
+    override suspend fun getAllById(userIds: Iterable<UUID>): Result<List<UserEntity>> {
         return runCatching {
-            repository.findAll()
+            repository.findAllById(userIds)
         }
     }
 
@@ -43,6 +51,14 @@ class UserRepository(
     override suspend fun deleteById(userId: UUID): Result<Unit> {
         return runCatching {
             repository.deleteById(userId)
+        }
+    }
+
+    //===========================================================//
+
+    override suspend fun deleteAllById(userIds: Iterable<UUID>): Result<Unit> {
+        return runCatching {
+            repository.deleteAllById(userIds)
         }
     }
 

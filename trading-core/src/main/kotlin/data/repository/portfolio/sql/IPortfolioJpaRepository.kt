@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
-interface IPortfolioJpaRepository : JpaRepository<PortfolioEntity, UUID>{
+interface IPortfolioJpaRepository : JpaRepository<PortfolioEntity, UUID> {
     @EntityGraph(attributePaths = ["traders", "traders.holdings"])
     fun findByTradersId(traderId: UUID): PortfolioEntity?
 

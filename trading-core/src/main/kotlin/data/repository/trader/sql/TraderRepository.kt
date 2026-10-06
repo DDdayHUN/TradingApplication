@@ -1,9 +1,8 @@
 package data.repository.trader.sql
 
 import data.repository.trader.ITraderRepository
-import domain.trader.Trader
-import exception.api.TraderHoldingsNotEmptyException
-import exception.api.TraderNotFoundException
+import exception.TraderHoldingsNotEmptyException
+import exception.TraderNotFoundException
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
@@ -15,6 +14,22 @@ class TraderRepository(
     //===========================================================//
     // Public Method(s)
 
+    override suspend fun save(trader: TraderEntity): Result<TraderEntity> {
+        return runCatching {
+            traderRepository.save(trader)
+        }
+    }
+
+    //===========================================================//
+
+    override suspend fun saveAll(traders: Iterable<TraderEntity>): Result<List<TraderEntity>> {
+        return runCatching {
+            traderRepository.saveAll(traders)
+        }
+    }
+
+    //===========================================================//
+
     override suspend fun getById(traderId: UUID): Result<TraderEntity> {
         return runCatching {
             traderRepository.findByIdWithHoldings(traderId)
@@ -24,9 +39,13 @@ class TraderRepository(
 
     //===========================================================//
 
-    override suspend fun save(trader: TraderEntity): Result<TraderEntity> {
+    override suspend fun getAllById(traderIds: Iterable<UUID>): Result<List<TraderEntity>> {
         return runCatching {
-            traderRepository.save(trader)
+            val ids = traderIds.toList()
+            val entities = traderRepository.findAllByIdWithHoldings(ids)
+            if (entities.size != ids.size) throw TraderNotFoundException(ids)
+
+            entities
         }
     }
 
@@ -34,11 +53,34 @@ class TraderRepository(
 
     override suspend fun deleteById(traderId: UUID): Result<Unit> {
         return runCatching {
-            val entity = traderRepository.findByIdWithHoldings(traderId)
-                ?: throw TraderNotFoundException(traderId)
-
+            val entity = getById(traderId).getOrThrow()
             if (entity.holdings.isNotEmpty()) throw TraderHoldingsNotEmptyException(traderId)
+
             traderRepository.deleteById(entity.id)
+        }
+    }
+
+    //===========================================================//
+
+    override suspend fun deleteAllById(traderIds: Iterable<UUID>): Result<Unit> {
+        return runCatching {
+            val entities = getAllById(traderIds).getOrThrow()
+
+            val traderIdsWithHoldings = entities
+                .filter { it.holdings.isNotEmpty() }
+                .map { it.id }
+
+            if(traderIdsWithHoldings.isNotEmpty()) throw TraderHoldingsNotEmptyException(traderIdsWithHoldings)
+
+            traderRepository.deleteAllById(traderIds)
+        }
+    }
+
+    //===========================================================//
+
+    override suspend fun deleteAll(): Result<Unit> {
+        return runCatching {
+            traderRepository.deleteAll()
         }
     }
 }

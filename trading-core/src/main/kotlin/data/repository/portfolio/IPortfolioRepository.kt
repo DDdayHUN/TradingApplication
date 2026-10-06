@@ -1,6 +1,7 @@
 package data.repository.portfolio
 
 import data.repository.portfolio.sql.PortfolioEntity
+import data.repository.trader.sql.TraderEntity
 import domain.Portfolio
 import java.util.UUID
 

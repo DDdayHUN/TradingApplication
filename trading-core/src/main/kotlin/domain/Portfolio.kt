@@ -1,7 +1,7 @@
 package domain
 
 import domain.trader.Trader
-import exception.api.TraderHoldingsNotEmptyException
+import exception.TraderHoldingsNotEmptyException
 import java.util.*
 
 //===========================================================//
