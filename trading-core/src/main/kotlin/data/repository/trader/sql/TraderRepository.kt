@@ -1,8 +1,8 @@
 package data.repository.trader.sql
 
 import data.repository.trader.ITraderRepository
-import exception.api.TraderHoldingsNotEmptyException
-import exception.api.TraderNotFoundException
+import exception.TraderHoldingsNotEmptyException
+import exception.TraderNotFoundException
 import org.springframework.stereotype.Repository
 import java.util.UUID
 

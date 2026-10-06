@@ -1,4 +1,4 @@
-package exception.api;
+package exception;
 
 public class AuthenticationException extends RuntimeException {
     public AuthenticationException() {

@@ -6,8 +6,8 @@ import application.service.user.User
 import data.repository.user.sql.toDomain
 import data.repository.user.sql.toEntity
 import domain.Portfolio
-import exception.api.AuthenticationException
-import exception.api.UserAlreadyExistsException
+import exception.AuthenticationException
+import exception.UserAlreadyExistsException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service

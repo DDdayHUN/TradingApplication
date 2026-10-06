@@ -17,8 +17,8 @@ import domain.market.security.SecurityIdentifier
 import domain.trader.SellHolding
 import domain.trader.Trader
 import domain.trader.TradingOrder
-import exception.api.HoldingNotFoundException
-import exception.api.TraderNotFoundException
+import exception.HoldingNotFoundException
+import exception.TraderNotFoundException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
