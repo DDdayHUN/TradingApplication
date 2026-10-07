@@ -42,7 +42,7 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
                 .filter { it.date in from..to }
                 .sortedBy { it.date }
                 .map { SecurityHistory(it.price, it.date) }
-                .toMutableList()
+                .toList()
         }
     }
 
@@ -63,6 +63,7 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
     //===========================================================//
     // Private Method(es)
 
+    @Suppress("DuplicatedCode")
     private suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto = withContext(Dispatchers.IO) {
         val targetFile = s_RootDir.walkTopDown()
             .filter { it.isFile }
@@ -77,6 +78,7 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
 
     //===========================================================//
 
+    @Suppress("DuplicatedCode")
     private suspend fun getAll(): List<HistoricalMarketDataDto> = withContext(Dispatchers.IO) {
         val files = s_RootDir
             .walkTopDown()
