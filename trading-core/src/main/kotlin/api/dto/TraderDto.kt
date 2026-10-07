@@ -1,6 +1,6 @@
 package api.dto
 
-import domain.algorithm.ITradingAlgorithm
+import domain.algorithm.TradingAlgorithm
 import domain.trader.Trader
 import java.util.*
 
@@ -47,6 +47,6 @@ fun Trader.toResponse(): TraderResponse {
                 amount = holding.amount
             )
         },
-        algorithmType = ITradingAlgorithm.typeTagOf(algorithm).getOrThrow()
+        algorithmType = TradingAlgorithm.typeTagOf(algorithm).getOrThrow()
     )
 }

@@ -1,6 +1,5 @@
 package data.repository.historical_data.json.yahoo
 
-import com.google.gson.GsonBuilder
 import data.repository.historical_data.HistoricalMarketDataDto
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.loadFromFile
@@ -42,15 +41,19 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
     //===========================================================//
     // Public Method(es)
 
-    override suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Result<List<SecurityHistory>> {
+    override suspend fun getBySecurityIdentifier(
+        securityIdentifier: SecurityIdentifier,
+        from: Instant,
+        to: Instant
+    ): Result<List<SecurityHistory>> {
         return runCatching {
-            val securityData = requireNotNull(s_Data[securityIdentifier.isin]){"There is no file with identifier ${securityIdentifier}"}
+            val securityData = requireNotNull(s_Data[securityIdentifier.isin]){"There is no file with identifier $securityIdentifier"}
 
             securityData.history
                 .asSequence()
                 .filter { security -> security.date in from..to}
                 .sortedBy { security -> security.date }
-                .map { security -> SecurityHistory(security.price) }
+                .map { security -> SecurityHistory(security.price, security.date) }
                 .toList()
         }
     }

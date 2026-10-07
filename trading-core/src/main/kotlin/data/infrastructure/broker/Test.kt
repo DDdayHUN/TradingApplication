@@ -16,7 +16,6 @@ import domain.tax.Taxation
 import domain.trader.TradingOrder
 import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.UUID
 import kotlin.time.Clock

@@ -9,7 +9,7 @@ import java.util.*
  * AI Generalt ez is soooo, we will seee.
  * Nem is rossz, kellett egy sok tweaking, de nem is rossz.
  */
-internal class ALGDES2 : ITradingAlgorithm {
+internal class ALGDES2 : TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Private Field(s)

@@ -35,19 +35,14 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
         from: Instant,
         to: Instant
     ): Result<List<SecurityHistory>> {
-        try {
+        return runCatching {
             val data = getBySecurityIdentifier(securityIdentifier)
 
-            val ret = data.history
+            data.history
                 .filter { it.date in from..to }
                 .sortedBy { it.date }
-                .map { SecurityHistory(it.price) }
+                .map { SecurityHistory(it.price, it.date) }
                 .toMutableList()
-
-            return Result.success(ret)
-        }
-        catch (e: Exception) {
-            return Result.failure(e)
         }
     }
 
@@ -56,16 +51,11 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
     @Deprecated("We need to redo this, because this is too expensive")
     @Suppress("DuplicatedCode")
     override suspend fun getAllSecurityIdentifiers(): Result<List<SecurityIdentifier>> {
-        try {
+        return runCatching {
             val data = getAll()
-            val ret = data
-                .map {
-                    SecurityIdentifier(it.meta.isin, it.meta.tickerSymbol, it.meta.currency)
-                }
-            return Result.success(ret)
-        }
-        catch (e: Exception) {
-            return Result.failure(e)
+            data.map {
+                SecurityIdentifier(it.meta.isin, it.meta.tickerSymbol, it.meta.currency)
+            }
         }
     }
 

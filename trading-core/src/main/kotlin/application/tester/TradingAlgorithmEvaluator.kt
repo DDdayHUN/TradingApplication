@@ -134,8 +134,10 @@ class TradingAlgorithmEvaluator {
     ): List<TradingAlgorithmBackTesterOutputConverted> = coroutineScope {
         val outputs = listOfSecurityIdentifiers.map { securityIdentifier ->
             async(m_BacktestDispatcher) {
+                val securityHistory = m_Provider.getBySecurityIdentifier(securityIdentifier).getOrThrow()
+
                 val out = TradingAlgorithmBackTester(
-                    provider = m_Provider,
+                    history = securityHistory,
                     type = m_TradingAlgorithmType,
                     securityIdentifier = securityIdentifier,
                     startingCapital = m_StartingCapital,

@@ -6,7 +6,6 @@ import data.repository.security.SecurityIdentifierEntity
 import data.repository.security.toDomain
 import data.repository.trader.sql.TraderEntity
 import domain.Portfolio
-import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityHolding
 import domain.trader.Trader
 import org.junit.jupiter.api.Assertions.*

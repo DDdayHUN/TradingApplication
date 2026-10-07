@@ -84,6 +84,8 @@ suspend fun main() {
     val ibkrHistoricalMarketDataProvider =
         HistoricalMarketDataProvider.get(HistoricalMarketDataProvider.Type.IbkrHistoricalMarketDataRepository)
 
+    val securityHistory = yahooHistoricalMarketDataProvider.getBySecurityIdentifier(identifier).getOrThrow()
+
     //===========================================================//
     //===========================================================//
     // Config Checks
@@ -112,7 +114,7 @@ suspend fun main() {
     if(c_RUN_BACKTEST_ON_ONE_SECURITY) {
         run{
             TradingAlgorithmBackTester(
-                provider = yahooHistoricalMarketDataProvider,
+                history = securityHistory,
                 type = algorithm,
                 securityIdentifier = identifier,
                 startingCapital = startCapital,
@@ -133,7 +135,7 @@ suspend fun main() {
                     .getOrThrow().map {
                         async {
                             TradingAlgorithmBackTester(
-                                provider = yahooHistoricalMarketDataProvider,
+                                history = securityHistory,
                                 type = algorithm,
                                 securityIdentifier = it,
                                 startingCapital = startCapital,
@@ -218,11 +220,11 @@ suspend fun main() {
     if(c_RUN_EVAL_ON_ALL_ALGORITHM) {
         run {
             coroutineScope {
-                val listOfOutput = TradingAlgorithm.Type.entries.map {
+                val listOfOutput = TradingAlgorithm.REGISTRY.map {
                     async {
                         TradingAlgorithmEvaluator(
                             yahooHistoricalMarketDataProvider,
-                            it,
+                            it.type,
                             startCapital,
                             taxation,
                             startDate,

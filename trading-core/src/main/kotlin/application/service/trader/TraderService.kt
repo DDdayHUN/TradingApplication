@@ -10,7 +10,6 @@ import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.trader.ITraderRepository
 import data.repository.trader.sql.toDomain
 import data.repository.trader.sql.update
-import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
@@ -56,7 +55,7 @@ class TraderService(
             currency = request.securityIdentifier.currency
         )
 
-        val algorithmType = ITradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow()
+        val algorithmType = TradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow()
         val algorithm = TradingAlgorithm.create(
             provider = historicalMarketDataProvider,
             type = algorithmType,
@@ -198,7 +197,7 @@ class TraderService(
 
         val algorithm = TradingAlgorithm.create(
             provider = historicalMarketDataProvider,
-            type = ITradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow(),
+            type = TradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow(),
             securityIdentifier = traderDomain.securityIdentifier,
         )
 

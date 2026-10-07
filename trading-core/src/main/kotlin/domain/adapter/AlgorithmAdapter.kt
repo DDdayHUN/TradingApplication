@@ -4,10 +4,10 @@ import com.google.gson.*
 import domain.algorithm.*
 import java.lang.reflect.Type
 
-class AlgorithmAdapter : JsonSerializer<ITradingAlgorithm>, JsonDeserializer<ITradingAlgorithm> {
-    override fun serialize(src: ITradingAlgorithm, typeOfT: Type, context: JsonSerializationContext): JsonElement {
+class AlgorithmAdapter : JsonSerializer<TradingAlgorithm>, JsonDeserializer<TradingAlgorithm> {
+    override fun serialize(src: TradingAlgorithm, typeOfT: Type, context: JsonSerializationContext): JsonElement {
         val jsonElement = context.serialize(src, src.javaClass).asJsonObject
-        val typeTag = ITradingAlgorithm.typeTagOf(src).getOrElse {
+        val typeTag = TradingAlgorithm.typeTagOf(src).getOrElse {
             throw JsonParseException("Failed to serialize algorithm: unknown implementation class ${src::class.java.simpleName}", it)
         }
 
@@ -16,12 +16,12 @@ class AlgorithmAdapter : JsonSerializer<ITradingAlgorithm>, JsonDeserializer<ITr
         return jsonElement
     }
 
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ITradingAlgorithm {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): TradingAlgorithm {
         val jsonObject = json.asJsonObject
         val typeTag = jsonObject.get("algorithmType")?.asString
             ?: throw JsonParseException("Missing 'algorithmType' field in algorithm payload")
 
-        val targetClass = ITradingAlgorithm.classFromTag(typeTag).getOrElse { exception ->
+        val targetClass = TradingAlgorithm.classFromTag(typeTag).getOrElse { exception ->
             throw JsonParseException("Unknown algorithm type tag: $typeTag", exception)
         }
 

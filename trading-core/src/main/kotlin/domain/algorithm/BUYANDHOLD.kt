@@ -8,7 +8,7 @@ import domain.market.security.SecurityHolding
  */
 //===========================================================//
 
-internal class BUYANDHOLD: ITradingAlgorithm {
+internal class BUYANDHOLD: TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Public Method(es)
