@@ -8,11 +8,25 @@ import java.util.UUID
 
 interface ITraderJpaRepository : JpaRepository<TraderEntity, UUID> {
     @EntityGraph(attributePaths = ["holdings"])
+    @Query(
+        """
+        SELECT t
+        FROM TraderEntity t
+        WHERE t.id = :id
+        """
+    )
     fun findByIdWithHoldings(
         @Param("id") id: UUID
     ): TraderEntity?
 
     @EntityGraph(attributePaths = ["holdings"])
+    @Query(
+        """
+        SELECT t
+        FROM TraderEntity t
+        WHERE t.id IN :ids
+        """
+    )
     fun findAllByIdWithHoldings(
         @Param("ids") ids: Iterable<UUID>
     ): List<TraderEntity>

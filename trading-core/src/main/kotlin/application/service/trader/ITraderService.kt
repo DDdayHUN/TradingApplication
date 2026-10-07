@@ -12,6 +12,7 @@ interface ITraderService {
     suspend fun deleteTrader(userId: UUID, traderId: UUID)
     suspend fun getAll(userId: UUID): Set<Trader>
     suspend fun getById(userId: UUID, traderId: UUID): Trader
+
     suspend fun changeAlgorithm(traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader
     suspend fun executeTrader(userId: UUID, traderId: UUID): TradingOrder?
     suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double)
