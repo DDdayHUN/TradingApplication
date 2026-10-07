@@ -47,12 +47,6 @@ class TradingAlgorithmEvaluator {
     private val m_EvaluationEndDate: Instant
     private val m_WindowStepYears: Int
 
-    @Deprecated("This might be redundant")
-    private val m_BacktestDispatcher =
-        Dispatchers.Default.limitedParallelism(
-            Runtime.getRuntime().availableProcessors()
-        )
-
     //===========================================================//
     //===========================================================//
     // Public Method(es)
@@ -72,19 +66,18 @@ class TradingAlgorithmEvaluator {
             TimePeriod.Year1
         )
 
-        val results = timePeriods.map {
-            async {
-                years(it, securityIdentifiers)
-            }
-        }.awaitAll().filterNotNull()
+        val results = timePeriods
+            .mapNotNull { years(it, securityIdentifiers) }
+            .map { Pair(calculateStatistics(it.first), it.second) }
 
-        return@coroutineScope Output(results.map { Pair(calculateStatistics(it.first), it.second) })
+        return@coroutineScope Output(results)
     }
 
     //===========================================================//
     //===========================================================//
     // Private Method(es)
 
+    @Deprecated("We currently still have the issues of the last calculations falling off ie.: Having less SecurityHistory elemnts than previous windows")
     private suspend fun years(
         cycle: TimePeriod,
         listOfSecurityIdentifiers: List<SecurityIdentifier>
@@ -113,7 +106,7 @@ class TradingAlgorithmEvaluator {
                             val startDate = Instant.parse("${year}-01-01T00:00:00Z")
                             val endDate = Instant.parse("${year + windowSizeYears}-01-01T00:00:00Z")
 
-                            runBackTesters(
+                            runBackTester(
                                 securityHistory
                                     .filter { security -> security.timestamp in startDate..endDate }
                                     .sortedBy { security -> security.timestamp },
@@ -136,7 +129,7 @@ class TradingAlgorithmEvaluator {
 
     //===========================================================//
 
-    private fun runBackTesters(
+    private fun runBackTester(
         securityHistory: List<SecurityHistory>,
         securityIdentifier: SecurityIdentifier,
         startDate: Instant,
