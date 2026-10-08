@@ -45,30 +45,14 @@ class Test(
             try {
                 val user = userRepository.getById(userId).getOrThrow().toDomain()
                 val portfolio = user.portfolio
-                val orders = coroutineScope {
-                    portfolio.traders.map { trader ->
-                        async {
-                            try {
-                                val order = traderService.executeTrader( userId,trader.id)
-
-                                logger.info(
-                                    "Submitting trader={} order={}",
-                                    trader.securityIdentifier.tickerSymbol,
-                                    order.toString()
-                                )
-
-                                order
-                            } catch (e: Exception) {
-                                logger.error(
-                                    "Failed trader={}",
-                                    trader.id,
-                                    e
-                                )
-                                null
-                            }
-                        }
+                val orders = portfolio.traders.map { trader ->
+                    try {
+                        traderService.executeTrader(userId, trader.id)
+                    } catch (e: Exception) {
+                        logger.error("Failed trader={}", trader.id, e)
+                        null
                     }
-                }.awaitAll()
+                }
 
                 orders
                     .filterNotNull()
