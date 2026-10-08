@@ -1,8 +1,10 @@
 package api.dto
 
 import application.service.broker.InteractiveBrokersOrder
-import application.service.broker.InteractiveBrokersOrder.*
-import java.util.UUID
+import application.service.broker.InteractiveBrokersOrder.Action
+import application.service.broker.InteractiveBrokersOrder.Status
+import java.util.*
+import java.time.Instant
 
 data class OrderResponse(
     val id: UUID,
@@ -11,6 +13,7 @@ data class OrderResponse(
     val status: Status,
     val signalPrice: Double,
     val filledPrice: Double?,
+    val timestamp: Instant
 )
 
 fun InteractiveBrokersOrder.toResponse(): OrderResponse {
@@ -24,6 +27,7 @@ fun InteractiveBrokersOrder.toResponse(): OrderResponse {
         action = action,
         status = status,
         signalPrice = signalPrice,
-        filledPrice = averageFillPrice
+        filledPrice = averageFillPrice,
+        timestamp = createdAt
     )
 }

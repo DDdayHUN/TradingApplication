@@ -16,6 +16,7 @@ import domain.tax.Taxation
 import domain.trader.TradingOrder
 import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.UUID
 import kotlin.time.Clock
@@ -40,6 +41,11 @@ class Test(
     private val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
     private val userId = UUID.fromString("f0792158-24a0-427f-999d-6cf8fa3a0cf3")
 
+
+    @Scheduled(
+        cron = "0 18 21 * * *",
+        zone = "Europe/Budapest"
+    )
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {

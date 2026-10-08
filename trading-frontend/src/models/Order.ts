@@ -7,4 +7,5 @@ export default interface Order {
     status: string;
     signalPrice: number;
     filledPrice?: number;
+    timestamp: string;
 }
