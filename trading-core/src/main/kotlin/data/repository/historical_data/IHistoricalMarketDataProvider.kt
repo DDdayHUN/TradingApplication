@@ -15,7 +15,7 @@ interface IHistoricalMarketDataProvider {
      * @param to the end date from which we don't want to include historical data (inclusive).
      * @return the list of historical data entries sorted by date.
      */
-    suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Result<List<SecurityHistory>>
+    suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier, from: Instant = Instant.DISTANT_PAST, to: Instant = Instant.DISTANT_FUTURE): Result<List<SecurityHistory>>
 
     //===========================================================//
     /**

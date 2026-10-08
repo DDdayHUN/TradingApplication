@@ -5,7 +5,7 @@ import domain.market.security.SecurityHolding
 import domain.utils.Math.stdDev
 import java.util.*
 
-internal class ALGDES3 : ITradingAlgorithm {
+internal class ALGDES3 : TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Private Field(s)

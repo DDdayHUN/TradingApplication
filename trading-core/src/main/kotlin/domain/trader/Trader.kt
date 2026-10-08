@@ -1,6 +1,5 @@
 package domain.trader
 
-import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityHolding
@@ -27,7 +26,7 @@ class Trader {
     val securityIdentifier: SecurityIdentifier
     val availableCapital: Double get() = m_Capital
     val holdings: Set<SecurityHolding> get() = m_Holdings.toSet()
-    val algorithm: ITradingAlgorithm get() = m_Algorithm // TODO : Remove this ezt nem szabad így expose-olnunk!!!, de egyelőre marad.
+    val algorithm: TradingAlgorithm get() = m_Algorithm // TODO : Remove this ezt nem szabad így expose-olnunk!!!, de egyelőre marad.
 
     //===========================================================//
     //===========================================================//
@@ -35,7 +34,7 @@ class Trader {
 
     private var m_Capital: Double
     private val m_Holdings: MutableSet<SecurityHolding>
-    private var m_Algorithm: ITradingAlgorithm
+    private var m_Algorithm: TradingAlgorithm
 
     //===========================================================//
     //===========================================================//
@@ -86,7 +85,7 @@ class Trader {
 
     //===========================================================//
 
-    fun changeAlgorithm(algorithm: ITradingAlgorithm) {
+    fun changeAlgorithm(algorithm: TradingAlgorithm) {
         this.m_Algorithm = algorithm
     }
 
@@ -135,7 +134,7 @@ class Trader {
      * @param allocatedCapital the capital currently allocated to the trader.
      * @param algorithm the algorithm instance with which we create trades.
      */
-    constructor(id: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableSet<SecurityHolding> = mutableSetOf(), allocatedCapital: Double = 0.0, algorithm: ITradingAlgorithm) {
+    constructor(id: UUID = UUID.randomUUID(), securityIdentifier: SecurityIdentifier, holdings: MutableSet<SecurityHolding> = mutableSetOf(), allocatedCapital: Double = 0.0, algorithm: TradingAlgorithm) {
         this.id = id
         this.securityIdentifier = securityIdentifier
         m_Holdings = holdings

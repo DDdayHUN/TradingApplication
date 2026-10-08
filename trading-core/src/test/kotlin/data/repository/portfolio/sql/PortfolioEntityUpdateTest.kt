@@ -15,7 +15,7 @@ import org.junit.jupiter.api.assertThrows
 import java.time.Instant
 import java.util.UUID
 
-class PortfolioEntityUpdateTest {
+internal class PortfolioEntityUpdateTest {
     //===========================================================//
     //===========================================================//
 

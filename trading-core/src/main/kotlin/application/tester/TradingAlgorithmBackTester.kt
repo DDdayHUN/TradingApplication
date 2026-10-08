@@ -1,7 +1,6 @@
 package application.tester
 
 import data.repository.historical_data.IHistoricalMarketDataProvider
-import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
@@ -50,9 +49,9 @@ class TradingAlgorithmBackTester {
     private val m_TaxationType: Taxation.Type?
     private var m_Taxation: ITaxation?
 
-    private val m_Provider: IHistoricalMarketDataProvider
+    private val m_History: List<SecurityHistory>
     private val m_TradingAlgorithmType: TradingAlgorithm.Type
-    private var m_TradingAlgorithm: ITradingAlgorithm
+    private var m_TradingAlgorithm: TradingAlgorithm
     private var m_HistoryWeRunAgainst: List<SecurityHistory>
 
     private val m_Holdings: MutableSet<SecurityHolding>
@@ -81,7 +80,7 @@ class TradingAlgorithmBackTester {
     // Private Method(es)
 
     private fun reset() {
-        val pair = TradingAlgorithm.create(m_Provider, m_TradingAlgorithmType, m_SecurityIdentifier, m_From, m_To)
+        val pair = TradingAlgorithm.create(m_History, m_TradingAlgorithmType, m_From, m_To)
 
         if(m_TaxationType != null) m_Taxation = Taxation.create(m_TaxationType)
 
@@ -242,7 +241,7 @@ class TradingAlgorithmBackTester {
     // Constructor(s)
 
     constructor(
-        provider: IHistoricalMarketDataProvider,
+        history: List<SecurityHistory>,
         type: TradingAlgorithm.Type,
         securityIdentifier: SecurityIdentifier,
         startingCapital: Double,
@@ -260,9 +259,9 @@ class TradingAlgorithmBackTester {
         m_TaxationType = taxation
         m_Taxation = if(m_TaxationType != null) Taxation.create(m_TaxationType) else null
 
-        m_Provider = provider
+        m_History = history
         m_TradingAlgorithmType = type
-        val pair = TradingAlgorithm.create(m_Provider, m_TradingAlgorithmType, securityIdentifier, m_From, m_To)
+        val pair = TradingAlgorithm.create(m_History, m_TradingAlgorithmType, m_From, m_To)
         m_TradingAlgorithm = pair.second
         m_HistoryWeRunAgainst = pair.first
 

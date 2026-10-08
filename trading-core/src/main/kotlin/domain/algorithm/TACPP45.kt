@@ -12,19 +12,17 @@ import java.util.*
  */
 //===========================================================//
 
-internal class TACPP46: TradingAlgorithm {
+internal class TACPP45 : TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private val m_SlidingWindow = 21
+    private val m_SlidingWindow = 28
 
     private val m_EmaHistory: Deque<Double>
 
     private val m_TrailingHigh: MutableMap<UUID, Double>
     private val m_MarkedForSelling: MutableMap<UUID, Int>
-
-    private val m_LastInputArr: Deque<Double>
 
     //===========================================================//
     //===========================================================//
@@ -35,81 +33,52 @@ internal class TACPP46: TradingAlgorithm {
         var sell: TradingAlgorithm.Output.Sell? = null
 
         val ema: List<Double> = ArrayList(m_EmaHistory)
-        val std: Double = ema.stdDev()
-        val rsi: Double = ema.rsi()
-        val ma: Double = ema.average()
+        val std = ema.stdDev()
+        val rsi = ema.rsi()
+        val ma = ema.average()
 
-        val lowerBand = ma - 4.0 * std * ma
+        val lower_band = ma - 8.0 * std * ma
 
         // Buy
-        if (rsi <= 30.0 && currentPrice <= lowerBand) {
-            if (m_LastInputArr.isEmpty()) {
-                m_LastInputArr.add(currentPrice)
-            } else if (ArrayList(m_LastInputArr).average() <= currentPrice) {
-                val confidence = Math.clamp(
-                    ((1.0 - std * 100.0) + (100.0 - rsi) / 100.0) / 2.0,
-                    0.0,
-                    0.3
-                ) // changing confidence has a massive effect on returns
-                val amount = (allocatedCapital * confidence / currentPrice).toInt()
+        if (rsi <= 40 && currentPrice <= lower_band) {
+            val confidence = (((1 - std * 100) + (100.0f - rsi) / 100.0f) / 2.0f).coerceIn(0.0, 0.5)
+            val amount = (allocatedCapital * confidence / currentPrice).toInt()
 
-                if (amount != 0) buy = TradingAlgorithm.Output.Buy(amount)
-            } else {
-                m_LastInputArr.add(currentPrice)
-                if (m_LastInputArr.size > 5) m_LastInputArr.poll()
-            }
-        } else {
-            m_LastInputArr.clear()
+            if(amount > 0) buy = TradingAlgorithm.Output.Buy(amount)
         }
 
-        val risk: Double = Math.clamp(std * 100.0, 0.05, 0.2) // to put it into percentages
+        val risk = (std * 100).coerceIn(0.05, 0.2)
 
         // Sell
         val toBeSold: MutableSet<Pair<SecurityHolding, Int>> = HashSet()
-
-        // Trailing-profit logic
         for (item in holdings) {
+            // Activate trailing if gained >30%
             var isMarked = m_MarkedForSelling.contains(item.id)
 
-            // Activate trailing if gained > risk
-            if (!isMarked && currentPrice > item.purchasePrice * (1.0 + risk)) {
+            if (!isMarked && currentPrice > item.purchasePrice * 1.3f) {
                 m_MarkedForSelling[item.id] = item.amount
                 m_TrailingHigh[item.id] = currentPrice
                 isMarked = true
             }
 
+            // Update trailing high if still rising
             if (isMarked) {
                 var high = m_TrailingHigh.getOrDefault(item.id, currentPrice)
 
-                // Update trailing high if still rising
-                if (currentPrice > high) {
-                    high = currentPrice
-                    m_TrailingHigh[item.id] = high
-                }
+                if (currentPrice > high) m_TrailingHigh[item.id] = high
 
-                // Sell if price falls more than risk from peak
-                if (currentPrice < high * (1.0 - risk)) {
-                    toBeSold.add(Pair(item, item.amount))
-
-                    // cleanup
-                    m_MarkedForSelling.remove(item.id)
-                    m_TrailingHigh.remove(item.id)
-                }
+                // Sell if price falls more than 10 from peak
+                if (currentPrice < high * (1.0f - risk)) toBeSold.add(Pair(item, item.amount))
             }
         }
 
-        // Stop-loss
+        // Stop loss
         for (item in holdings) {
-            if (currentPrice < item.purchasePrice * (1.0 - risk * 2.0)) {
+            if (currentPrice < item.purchasePrice * (1.0f - risk * 2.0f)) {
                 toBeSold.add(Pair(item, item.amount))
-
-                // cleanup
-                m_MarkedForSelling.remove(item.id)
-                m_TrailingHigh.remove(item.id)
             }
         }
 
-        // Update State
         run {
             val alpha = 2.0 / (m_EmaHistory.size + 1.0)
             val last = m_EmaHistory.peekLast()
@@ -160,7 +129,5 @@ internal class TACPP46: TradingAlgorithm {
 
         m_TrailingHigh = HashMap()
         m_MarkedForSelling = HashMap()
-
-        m_LastInputArr = ArrayDeque()
     }
 }

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import kotlin.test.*
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @DisplayName("TACPP46 trading algorithm")
 internal class TACPP46Test {
@@ -257,7 +259,8 @@ internal class TACPP46Test {
     ): List<SecurityHistory>{
         return List(count){
             SecurityHistory(
-                closingPrice = price
+                closingPrice = price,
+                timestamp = Clock.System.now()
             )
         }
     }
@@ -287,7 +290,8 @@ internal class TACPP46Test {
     ): List<SecurityHistory> {
         return List(count) { index ->
             SecurityHistory(
-                closingPrice = firstPrice + (index * increasePerEntry)
+                closingPrice = firstPrice + (index * increasePerEntry),
+                timestamp = Clock.System.now()
             )
         }
     }
@@ -299,7 +303,8 @@ internal class TACPP46Test {
     ): List<SecurityHistory> {
         return List(count) { index ->
             SecurityHistory(
-                closingPrice = (firstPrice - (index * decreasePerEntry)).coerceAtLeast(0.01)
+                closingPrice = (firstPrice - (index * decreasePerEntry)).coerceAtLeast(0.01),
+                timestamp = Clock.System.now()
             )
         }
     }

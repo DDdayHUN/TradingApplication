@@ -6,7 +6,7 @@ import data.repository.security.SecurityHoldingEntity
 import data.repository.security.SecurityIdentifierEntity
 import data.repository.security.toDomain
 import data.repository.security.toEntity
-import domain.algorithm.ITradingAlgorithm
+import domain.algorithm.TradingAlgorithm
 import domain.trader.Trader
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnTransformer
@@ -73,10 +73,10 @@ fun Trader.toEntity(portfolio: PortfolioEntity): TraderEntity {
         securityIdentifier = securityIdentifier.toEntity(),
         portfolio = portfolio,
         capital = availableCapital,
-        algorithmType = ITradingAlgorithm.typeTagOf(algorithm).getOrThrow(),
+        algorithmType = TradingAlgorithm.typeTagOf(algorithm).getOrThrow(),
         algorithmState = g_GSON.toJson(
             algorithm,
-            ITradingAlgorithm::class.java
+            TradingAlgorithm::class.java
         )
     )
 
@@ -90,7 +90,7 @@ fun Trader.toEntity(portfolio: PortfolioEntity): TraderEntity {
 fun TraderEntity.toDomain(): Trader {
     val algorithm = g_GSON.fromJson(
         algorithmState,
-        ITradingAlgorithm::class.java
+        TradingAlgorithm::class.java
     )
 
     return Trader(
@@ -111,10 +111,10 @@ fun TraderEntity.update(trader: Trader) {
     securityIdentifier = trader.securityIdentifier.toEntity()
     capital = trader.availableCapital
 
-    algorithmType = ITradingAlgorithm.typeTagOf(trader.algorithm).getOrThrow()
+    algorithmType = TradingAlgorithm.typeTagOf(trader.algorithm).getOrThrow()
     algorithmState = g_GSON.toJson(
         trader.algorithm,
-        ITradingAlgorithm::class.java
+        TradingAlgorithm::class.java
     )
 
     val domainHoldings = trader.holdings.associateBy { holding -> holding.id }

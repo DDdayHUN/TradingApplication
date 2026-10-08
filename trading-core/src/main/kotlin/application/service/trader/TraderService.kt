@@ -10,7 +10,6 @@ import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.trader.ITraderRepository
 import data.repository.trader.sql.toDomain
 import data.repository.trader.sql.update
-import domain.algorithm.ITradingAlgorithm
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
@@ -28,9 +27,9 @@ import java.util.*
 class TraderService(
     @param:Qualifier("yahoo")
     private val historicalMarketDataProvider: IHistoricalMarketDataProvider,
+    private val marketDataProvider: MarketDataProvider,
     private val portfolioService: IPortfolioService,
     private val userService: IUserService,
-    private val marketDataProvider: MarketDataProvider,
     private val traderRepository: ITraderRepository
 ) : ITraderService {
 
@@ -43,6 +42,70 @@ class TraderService(
     //===========================================================//
     //===========================================================//
     // Public Method(s)
+
+    @Transactional
+    override suspend fun createTrader(userId: UUID, request: CreateTraderRequest): Trader {
+        val user = userService.getById(userId)
+
+        val portfolio = user.portfolio
+
+        val securityIdentifier = SecurityIdentifier(
+            isin = request.securityIdentifier.isin,
+            tickerSymbol = request.securityIdentifier.tickerSymbol,
+            currency = request.securityIdentifier.currency
+        )
+
+        val algorithmType = TradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow()
+        val algorithm = TradingAlgorithm.create(
+            provider = historicalMarketDataProvider,
+            type = algorithmType,
+            securityIdentifier = securityIdentifier
+        )
+
+        val trader = Trader(
+            securityIdentifier = securityIdentifier,
+            holdings = mutableSetOf(),
+            allocatedCapital = request.capital,
+            algorithm = algorithm
+        )
+
+        portfolio.addTrader(trader)
+        portfolioService.update(user.id, portfolio)
+
+        return trader
+    }
+
+    //===========================================================//
+
+    @Transactional
+    override suspend fun deleteTrader(userId: UUID, traderId: UUID) {
+        val user = userService.getById(userId)
+        val portfolio = user.portfolio
+        val trader = getById(user.id, traderId)
+
+        portfolio.removeTrader(trader)
+        portfolioService.update(user.id, portfolio)
+    }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    override suspend fun getAll(userId: UUID): Set<Trader> {
+        val user = userService.getById(userId)
+
+        return user.portfolio.traders
+    }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    override suspend fun getById(userId: UUID, traderId: UUID): Trader {
+        val user = userService.getById(userId)
+        return user.portfolio.traders.find { trader -> trader.id == traderId}
+            ?: throw TraderNotFoundException(traderId)
+    }
+
+    //===========================================================//
 
     @Transactional
     @Deprecated("This will be superseded by another function")
@@ -128,65 +191,13 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun createTrader(userId: UUID, request: CreateTraderRequest): Trader {
-        val user = userService.getById(userId)
-
-        val portfolio = user.portfolio
-
-        val securityIdentifier = SecurityIdentifier(
-            isin = request.securityIdentifier.isin,
-            tickerSymbol = request.securityIdentifier.tickerSymbol,
-            currency = request.securityIdentifier.currency
-        )
-
-        val algorithmType = ITradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow()
-        val algorithm = TradingAlgorithm.create(
-            provider = historicalMarketDataProvider,
-            type = algorithmType,
-            securityIdentifier = securityIdentifier
-        )
-
-        val trader = Trader(
-            securityIdentifier = securityIdentifier,
-            holdings = mutableSetOf(),
-            allocatedCapital = request.capital,
-            algorithm = algorithm
-        )
-
-        portfolio.addTrader(trader)
-        portfolioService.update(user.id, portfolio)
-
-        return trader
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    override suspend fun getAll(userId: UUID): Set<Trader> {
-        val user = userService.getById(userId)
-
-        return user.portfolio.traders
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    override suspend fun getById(userId: UUID, traderId: UUID): Trader {
-        val user = userService.getById(userId)
-        return user.portfolio.traders.find { trader -> trader.id == traderId}
-            ?: throw TraderNotFoundException(traderId)
-    }
-
-    //===========================================================//
-
-    @Transactional
     override suspend fun changeAlgorithm(traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader {
         val traderEntity = traderRepository.getById(traderId).getOrThrow()
         val traderDomain = traderEntity.toDomain()
 
         val algorithm = TradingAlgorithm.create(
             provider = historicalMarketDataProvider,
-            type = ITradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow(),
+            type = TradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow(),
             securityIdentifier = traderDomain.securityIdentifier,
         )
 
@@ -198,22 +209,10 @@ class TraderService(
 
     //===========================================================//
 
-    @Transactional
-    override suspend fun deleteTrader(userId: UUID, traderId: UUID) {
-        val user = userService.getById(userId)
-        val portfolio = user.portfolio
-        val trader = getById(user.id, traderId)
-
-        portfolio.removeTrader(trader)
-        portfolioService.update(user.id, portfolio)
-    }
-
-    //===========================================================//
-
     private suspend fun getCurrentPrice(userId: UUID, securityIdentifier: SecurityIdentifier): Quote {
-        var quote = marketDataProvider.get(MarketDataProvider.Type.Finnhub).getQuote( userId, securityIdentifier)
+        var quote = marketDataProvider.get(MarketDataProvider.Type.Finnhub).getQuote(userId, securityIdentifier)
 
-        if(!quote.isSuccess){
+        if(!quote.isSuccess) {
             m_Logger.warn("Finnhub quote failed for {}, trying IBKR", securityIdentifier.tickerSymbol)
             quote = marketDataProvider.get(MarketDataProvider.Type.Ibkr).getQuote( userId, securityIdentifier)
         }
