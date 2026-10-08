@@ -19,8 +19,10 @@ import java.time.Duration
 import java.time.ZoneOffset
 import kotlin.collections.component1
 import kotlin.collections.component2
+import kotlin.collections.flatten
 import kotlin.collections.mapValues
 import kotlin.math.pow
+import kotlin.sequences.filter
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 
@@ -45,12 +47,6 @@ class TradingAlgorithmEvaluator {
     private val m_EvaluationEndDate: Instant
     private val m_WindowStepYears: Int
 
-    @Deprecated("This might be redundant")
-    private val m_BacktestDispatcher =
-        Dispatchers.Default.limitedParallelism(
-            Runtime.getRuntime().availableProcessors()
-        )
-
     //===========================================================//
     //===========================================================//
     // Public Method(es)
@@ -70,19 +66,18 @@ class TradingAlgorithmEvaluator {
             TimePeriod.Year1
         )
 
-        val results = timePeriods.map {
-            async {
-                years(it, securityIdentifiers)
-            }
-        }.awaitAll().filterNotNull()
+        val results = timePeriods
+            .mapNotNull { years(it, securityIdentifiers) }
+            .map { Pair(calculateStatistics(it.first), it.second) }
 
-        return@coroutineScope Output(results.map { Pair(calculateStatistics(it.first), it.second) })
+        return@coroutineScope Output(results)
     }
 
     //===========================================================//
     //===========================================================//
     // Private Method(es)
 
+    @Deprecated("We currently still have the issues of the last calculations falling off ie.: Having less SecurityHistory elemnts than previous windows")
     private suspend fun years(
         cycle: TimePeriod,
         listOfSecurityIdentifiers: List<SecurityIdentifier>
@@ -102,21 +97,28 @@ class TradingAlgorithmEvaluator {
 
         if ((endYear - windowSizeYears) < startYear) return@coroutineScope null
 
-        val out = (startYear..endYear - windowSizeYears step m_WindowStepYears)
-            .map { year ->
-                async {
-                    val startDate = Instant.parse("${year}-01-01T00:00:00Z")
-                    val endDate = Instant.parse("${year + windowSizeYears}-01-01T00:00:00Z")
+        val out = listOfSecurityIdentifiers
+            .flatMap { securityIdentifier ->
+                val securityHistory = m_Provider.getBySecurityIdentifier(securityIdentifier).getOrThrow()
+                (startYear..endYear - windowSizeYears step m_WindowStepYears)
+                    .map { year ->
+                        async {
+                            val startDate = Instant.parse("${year}-01-01T00:00:00Z")
+                            val endDate = Instant.parse("${year + windowSizeYears}-01-01T00:00:00Z")
 
-                    runBackTesters(
-                        listOfSecurityIdentifiers,
-                        startDate,
-                        endDate
-                    )
-                }
+                            runBackTester(
+                                securityHistory
+                                    .filter { security -> security.timestamp in startDate..endDate }
+                                    .sortedBy { security -> security.timestamp },
+                                securityIdentifier,
+                                startDate,
+                                endDate
+                            )
+                        }
+                    }
+                    .awaitAll()
+                    .filterNotNull()
             }
-            .awaitAll()
-            .flatten()
 
         if (out.isEmpty()) return@coroutineScope null // TODO : Nem tudom hogy kell-e ez.
 
@@ -127,28 +129,23 @@ class TradingAlgorithmEvaluator {
 
     //===========================================================//
 
-    private suspend fun runBackTesters(
-        listOfSecurityIdentifiers: List<SecurityIdentifier>,
+    private fun runBackTester(
+        securityHistory: List<SecurityHistory>,
+        securityIdentifier: SecurityIdentifier,
         startDate: Instant,
         endDate: Instant
-    ): List<TradingAlgorithmBackTesterOutputConverted> = coroutineScope {
-        val outputs = listOfSecurityIdentifiers.map { securityIdentifier ->
-            async(m_BacktestDispatcher) {
-                val out = TradingAlgorithmBackTester(
-                    provider = m_Provider,
-                    type = m_TradingAlgorithmType,
-                    securityIdentifier = securityIdentifier,
-                    startingCapital = m_StartingCapital,
-                    taxation = m_TaxationType,
-                    from = startDate,
-                    to = endDate
-                ).runBackTest()
+    ): TradingAlgorithmBackTesterOutputConverted? {
+        val out = TradingAlgorithmBackTester(
+            history = securityHistory,
+            type = m_TradingAlgorithmType,
+            securityIdentifier = securityIdentifier,
+            startingCapital = m_StartingCapital,
+            taxation = m_TaxationType,
+            from = startDate,
+            to = endDate
+        ).runBackTest()
 
-                return@async if (out.tradeWinrate.isNaN() || out.sharpeRatio.isNaN()) null else out
-            }
-        }.awaitAll()
-
-        return@coroutineScope outputs.filterNotNull().map { it.toConvertedOutput() }
+        return if (out.tradeWinrate.isNaN() || out.sharpeRatio.isNaN()) null else out.toConvertedOutput()
     }
 
     //===========================================================//

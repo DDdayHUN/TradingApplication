@@ -12,7 +12,7 @@ import java.util.*
  */
 //===========================================================//
 
-internal class TACPP462: ITradingAlgorithm {
+internal class TACPP462: TradingAlgorithm {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -145,7 +145,7 @@ internal class TACPP462: ITradingAlgorithm {
             m_EmaHistory.add(ema)
         }
 
-        check(m_EmaHistory.size == 21) { "EMA" }
+        check(m_EmaHistory.size == m_SlidingWindow) { "EMA" }
     }
 
     //===========================================================//

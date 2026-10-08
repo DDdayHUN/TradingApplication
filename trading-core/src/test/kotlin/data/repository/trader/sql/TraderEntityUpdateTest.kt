@@ -9,12 +9,13 @@ import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityHolding
 import domain.trader.Trader
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.Instant
 import java.util.UUID
 
-class TraderEntityUpdateTest {
+internal class TraderEntityUpdateTest {
     //===========================================================//
     //===========================================================//
 
