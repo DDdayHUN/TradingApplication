@@ -2,7 +2,9 @@ import type {Trader} from "./Trader.ts";
 
 export default interface Portfolio {
     id: string;
+    ibkrAvailableFunds: number;
+    ibkrNetLiquidation: number;
     availableCapital: number;
-    accountLiquidation: number;
+    netLiquidation: number;
     traders: Trader[];
 }

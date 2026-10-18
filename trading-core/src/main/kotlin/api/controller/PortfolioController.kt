@@ -3,6 +3,7 @@ package api.controller
 import api.dto.PortfolioResponse
 import api.dto.toResponse
 import api.service.auth.IAuthenticationService
+import application.service.broker.InteractiveBrokersService
 import application.service.portfolio.IPortfolioService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/portfolio/")
 class PortfolioController(
     private val authService: IAuthenticationService,
-    private val portfolioService: IPortfolioService
+    private val portfolioService: IPortfolioService,
+    private val brokerService: InteractiveBrokersService
 ) {
     //===========================================================//
     //===========================================================//
@@ -28,7 +30,9 @@ class PortfolioController(
     suspend fun getPortfolio(): ResponseEntity<PortfolioResponse> {
         val userId = authService.currentUser()
         val portfolio = portfolioService.get(userId)
-        val response = portfolio.toResponse()
+        val accSum = brokerService.getAccountSummary(userId)
+
+        val response = portfolio.toResponse(accSum.availableCapital, ibkrNetLiquidation = accSum.netLiquidation)
 
         return ResponseEntity.ok(
             response

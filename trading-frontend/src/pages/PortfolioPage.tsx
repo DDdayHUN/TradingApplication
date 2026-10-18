@@ -52,9 +52,10 @@ export default function PortfolioPage(): ReactElement {
              item = {portfolio}
             />
             <p className ="text-white m-1">Orders:</p>
-            <div className="bg-gray-600 flex-1">
+            <div className="flex-1">
                 <OrderList
                     orders = {orders}
+                    nElement={15}
                 />
             </div>
         </div>

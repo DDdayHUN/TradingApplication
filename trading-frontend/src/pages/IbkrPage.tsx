@@ -1,5 +1,5 @@
-import {type ReactElement, useState} from "react";
-import {connect, disconnect} from "../api/IbkrApi.ts";
+import {type ReactElement, useEffect, useState} from "react";
+import {connect, disconnect, isIbkrConnected} from "../api/IbkrApi.ts";
 
 export default function IbkrPage(): ReactElement {
 
@@ -11,6 +11,19 @@ export default function IbkrPage(): ReactElement {
     const handleDisconnect = async () => {
         setConnected(await disconnect());
     }
+
+    useEffect(() =>{
+        const checkConnection = async () => {
+            try {
+                const isConnected = await isIbkrConnected();
+                setConnected(isConnected);
+            } catch (error){
+                console.error(error);
+                setConnected(false);
+            }
+        };
+        void checkConnection();
+    }, [])
 
 
 

@@ -19,7 +19,7 @@ class OrderController(
     suspend fun getAll(): ResponseEntity<List<OrderResponse>> {
         val response = orderService.getAll(authService.currentUser()).map {
             order -> order.toResponse()
-        }
+        }.sortedByDescending {order -> order.timestamp}
         return ResponseEntity.ok(response)
     }
 }

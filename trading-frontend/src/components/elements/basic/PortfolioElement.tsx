@@ -15,8 +15,10 @@ export default function PortfolioElement({item}: PortfolioElementProps): ReactEl
             <div className ="w-150 h-40 flex m-1">
                 <div className ="bg-gray-500 flex flex-col w-full h-full justify-center items-center">
                     <p>{item.id}</p>
-                    <p>Available capital: {item.availableCapital}</p>
-                    <p>Liquidation: {item.accountLiquidation}</p>
+                    <p>ibkrAvailable capital: {item.ibkrAvailableFunds}</p>
+                    <p>IbkrLiquidation: {item.ibkrNetLiquidation}</p>
+                    <p>DomainAvailableFunds: {item.availableCapital}</p>
+                    <p>DomainLiquidation: {item.netLiquidation.toFixed(1)}</p>
                     <p>Active traders: {activeTraders}</p>
                 </div>
             </div>
