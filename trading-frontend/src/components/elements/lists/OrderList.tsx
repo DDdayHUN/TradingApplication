@@ -5,6 +5,7 @@ import OrderElement from "../basic/OrderElement.tsx";
 
 interface OrderListProps {
     orders: Order[];
+    nElement: number;
 }
 
 export default function OrderList(props: OrderListProps): ReactElement{
@@ -13,6 +14,7 @@ export default function OrderList(props: OrderListProps): ReactElement{
             elements={props.orders}
             RowComponent={OrderElement}
             flexDirection={"flex-col"}
+            maxLength={props.nElement}
         />
     )
 }

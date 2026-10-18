@@ -55,6 +55,7 @@ export default function PortfolioPage(): ReactElement {
             <div className="flex-1">
                 <OrderList
                     orders = {orders}
+                    nElement={15}
                 />
             </div>
         </div>
