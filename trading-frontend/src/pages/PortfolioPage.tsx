@@ -11,6 +11,7 @@ export default function PortfolioPage(): ReactElement {
     const [portfolio, setPortfolio] = useState<Portfolio> ()
     const [orders, setOrders] = useState<Order[]> ([])
     const [connected, setConnected] = useState<boolean>(false)
+    const [orderListNumber, setOrderListNumber] = useState<number>(20)
 
     useEffect(() => {
         const load = async () => {
@@ -52,10 +53,20 @@ export default function PortfolioPage(): ReactElement {
              item = {portfolio}
             />
             <p className ="text-white m-1">Orders:</p>
+            <p>
+                <input
+                    className = "bg-white m-1"
+                    type = "number"
+                    onChange = {(e) => {
+                        setOrderListNumber(e.target.valueAsNumber)
+                    }}
+                    value = {orderListNumber}
+                />
+            </p>
             <div className="flex-1">
                 <OrderList
                     orders = {orders}
-                    nElement={15}
+                    nElement={orderListNumber}
                 />
             </div>
         </div>

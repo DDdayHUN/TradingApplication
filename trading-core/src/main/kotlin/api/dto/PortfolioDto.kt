@@ -18,7 +18,7 @@ data class PortfolioResponse(
 
 //===========================================================//
 
-fun Portfolio.toResponse(ibkrAvailableFunds: Double ?=null, ibkrNetLiquidation: Double?=null): PortfolioResponse {
+fun Portfolio.toResponse(ibkrAvailableFunds: Double? = null, ibkrNetLiquidation: Double? = null): PortfolioResponse {
     return PortfolioResponse(
         id = id,
         availableCapital = availableCapital,
