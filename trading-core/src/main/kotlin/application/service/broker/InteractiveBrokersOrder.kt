@@ -69,10 +69,13 @@ data class InteractiveBrokersOrder(
     enum class Status {
         PENDING,
         SUBMITTED,
+        PRE_SUBMITTED,
         PARTIALLY_FILLED,
         FILLED,
         CANCELLED,
-        REJECTED
+        REJECTED,
+        INACTIVE,
+        PENDING_CANCEL
     }
 }
 

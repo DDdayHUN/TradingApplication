@@ -55,7 +55,10 @@ class InteractiveBrokersOrderService(
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status != InteractiveBrokersOrder.Status.PENDING) return
+        if (order.status == InteractiveBrokersOrder.Status.FILLED ||
+            order.status == InteractiveBrokersOrder.Status.CANCELLED ||
+            order.status == InteractiveBrokersOrder.Status.SUBMITTED
+        ) return
         orderRepository.save(order.submit().getOrThrow()).getOrThrow()
     }
 
@@ -114,5 +117,69 @@ class InteractiveBrokersOrderService(
                 .clearOrderAllocation(filledOrder.id)
                 .getOrThrow()
         }
+    }
+
+    //===========================================================//
+
+    @EventListener
+    suspend fun handle(event: IbkrEvent.OrderPreSubmittedEvent){
+        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
+        if(order.status != InteractiveBrokersOrder.Status.PENDING) return
+
+        orderRepository.save(
+            order.copy(
+                status = InteractiveBrokersOrder.Status.PRE_SUBMITTED
+            )
+        ).getOrThrow()
+
+        m_Logger.info("IBKR order pre-submitted orderId=${event.orderId}")
+    }
+
+    //===========================================================//
+
+    @EventListener
+    suspend fun handle(event: IbkrEvent.OrderPendingEvent){
+        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
+        if(order.status != InteractiveBrokersOrder.Status.PENDING) return
+
+        m_Logger.info("IBKR order pending orderId=${event.orderId}")
+    }
+
+    //===========================================================//
+
+    @EventListener
+    suspend fun handle(event: IbkrEvent.OrderPendingCancelEvent){
+        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
+        if (order.status == InteractiveBrokersOrder.Status.FILLED ||
+            order.status == InteractiveBrokersOrder.Status.CANCELLED ||
+            order.status == InteractiveBrokersOrder.Status.PENDING_CANCEL
+        ) return
+
+        orderRepository.save(
+            order.copy(
+                status = InteractiveBrokersOrder.Status.PENDING_CANCEL
+            )
+        ).getOrThrow()
+
+        m_Logger.info("IBKR order pending cancellation orderId=${event.orderId}")
+    }
+
+    //===========================================================//
+
+    @EventListener
+    suspend fun handle(event: IbkrEvent.OrderInactiveEvent){
+        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
+        if (order.status == InteractiveBrokersOrder.Status.FILLED ||
+            order.status == InteractiveBrokersOrder.Status.CANCELLED ||
+            order.status == InteractiveBrokersOrder.Status.INACTIVE
+        ) return
+
+        orderRepository.save(
+            order.copy(
+                status = InteractiveBrokersOrder.Status.INACTIVE
+            )
+        ).getOrThrow()
+
+        m_Logger.warn("IBKR order inactive orderId=${event.orderId}")
     }
 }

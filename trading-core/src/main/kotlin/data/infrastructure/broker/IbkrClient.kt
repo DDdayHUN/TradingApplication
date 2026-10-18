@@ -456,14 +456,26 @@ class IbkrClient(
         }
 
         when(message.status){
+            "ApiPending", "PendingSubmit" -> {
+                event.publishEvent(IbkrEvent.OrderPendingEvent(message.orderId))
+            }
+            "PreSubmitted" -> {
+                event.publishEvent(IbkrEvent.OrderPreSubmittedEvent(message.orderId))
+            }
             "Submitted" -> {
                 event.publishEvent(IbkrEvent.OrderSubmittedEvent(message.orderId))
+            }
+            "PendingCancel" -> {
+                event.publishEvent(IbkrEvent.OrderPendingCancelEvent(message.orderId))
             }
             "Filled" -> {
                 event.publishEvent(IbkrEvent.OrderFilledEvent(message.orderId, message.filled, message.avgFillPrice))
             }
-            "Cancelled" -> {
+            "ApiCancelled", "Cancelled" -> {
                 event.publishEvent(IbkrEvent.OrderCancelledEvent(message.orderId))
+            }
+            "Inactive" -> {
+                event.publishEvent(IbkrEvent.OrderInactiveEvent(message.orderId))
             }
         }
     }
