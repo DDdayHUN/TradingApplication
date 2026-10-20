@@ -13,8 +13,8 @@ import kotlin.time.Instant
 
 //===========================================================//
 /**
- * Abstract base class for all trading algorithms.
- * Defines the required interface and provides factory methods for initializing algorithms in different modes.
+ * Sealed interface for all trading algorithms.
+ * Defines the required interface and provides factory methods for initializing trading algorithms.
  */
 //===========================================================//
 
@@ -168,44 +168,28 @@ sealed interface TradingAlgorithm {
             check(history.size == type.initSize) { "Size" }
 
             return when (type) {
-                is Type.TACPP46 -> {
-                    TACPP46(history)
-                }
-                is Type.ALGDES2 -> {
-                    ALGDES2(history)
-                }
-                is Type.ALGDES3 -> {
-                    ALGDES3(history)
-                }
-                is Type.ALGDES31 -> {
-                    ALGDES31(history)
-                }
-                is Type.ALGDES4 -> {
-                    ALGDES4(history)
-                }
-                is Type.BUYANDHOLD -> {
-                    BUYANDHOLD()
-                }
-                is Type.TACPP462 -> {
-                    TACPP462(history)
-                }
-                is Type.TACPP45 -> {
-                    TACPP45(history)
-                }
+                is Type.TACPP46 -> TACPP46(history)
+                is Type.ALGDES2 -> ALGDES2(history)
+                is Type.ALGDES3 -> ALGDES3(history)
+                is Type.ALGDES31 -> ALGDES31(history)
+                is Type.ALGDES4 -> ALGDES4(history)
+                is Type.BUYANDHOLD -> BUYANDHOLD()
+                is Type.TACPP462 ->TACPP462(history)
+                is Type.TACPP45 -> TACPP45(history)
             }
         }
 
         //===========================================================//
 
         val REGISTRY = listOf(
-            AlgorithmRegistryEntry("TACPP46",       Type.TACPP46,      TACPP46::class.java),
-            AlgorithmRegistryEntry("ALGDES2",       Type.ALGDES2,      ALGDES2::class.java),
-            AlgorithmRegistryEntry("ALGDES3",       Type.ALGDES3,      ALGDES3::class.java),
-            AlgorithmRegistryEntry("ALGDES31",      Type.ALGDES31,     ALGDES31::class.java),
-            AlgorithmRegistryEntry("ALGDES4",       Type.ALGDES4,      ALGDES4::class.java),
-            AlgorithmRegistryEntry("BUYANDHOLD",    Type.BUYANDHOLD,   BUYANDHOLD::class.java),
-            AlgorithmRegistryEntry("TACPP462",      Type.TACPP462,     TACPP462::class.java),
-            AlgorithmRegistryEntry("TACPP45",       Type.TACPP45,      TACPP45::class.java),
+            RegistryEntry("TACPP46",       Type.TACPP46,      TACPP46::class.java),
+            RegistryEntry("ALGDES2",       Type.ALGDES2,      ALGDES2::class.java),
+            RegistryEntry("ALGDES3",       Type.ALGDES3,      ALGDES3::class.java),
+            RegistryEntry("ALGDES31",      Type.ALGDES31,     ALGDES31::class.java),
+            RegistryEntry("ALGDES4",       Type.ALGDES4,      ALGDES4::class.java),
+            RegistryEntry("BUYANDHOLD",    Type.BUYANDHOLD,   BUYANDHOLD::class.java),
+            RegistryEntry("TACPP462",      Type.TACPP462,     TACPP462::class.java),
+            RegistryEntry("TACPP45",       Type.TACPP45,      TACPP45::class.java),
         )
 
         private val sp_TagToType  = REGISTRY.associate { it.tag to it.type }
@@ -278,7 +262,7 @@ sealed interface TradingAlgorithm {
 
     //===========================================================//
 
-    data class AlgorithmRegistryEntry(
+    data class RegistryEntry(
         val tag: String,
         val type: Type,
         val clazz: Class<out TradingAlgorithm>
