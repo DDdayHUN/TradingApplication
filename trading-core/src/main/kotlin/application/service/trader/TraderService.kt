@@ -170,11 +170,45 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): List<TradingOrder> {
+    override suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): TradingOrder {
         val trader = traderRepository.getById(traderId).getOrThrow().toDomain()
 
-        return trader.holdings
-            .map { holding -> forceSellHolding(userId, traderId, holding.id) }
+        val set = trader.holdings
+            .map { holding -> holding to holding.amount }
+            .toSet()
+
+        return TradingOrder(
+            traderId = trader.id,
+            signal = TradingAlgorithm.Output(
+                null,
+                TradingAlgorithm.Output.Sell(set)
+            ),
+            atPrice = getCurrentPrice(userId, trader.securityIdentifier).currentPrice,
+            securityIdentifier = trader.securityIdentifier
+        )
+    }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    override suspend fun forceSellAllHolding(userId: UUID): List<TradingOrder> {
+        val user = userService.getById(userId)
+
+        return user.portfolio.traders.map { trader ->
+            val set = trader.holdings
+                .map { holding -> holding to holding.amount }
+                .toSet()
+
+            TradingOrder(
+                traderId = trader.id,
+                signal = TradingAlgorithm.Output(
+                    null,
+                    TradingAlgorithm.Output.Sell(set)
+                ),
+                atPrice = getCurrentPrice(userId, trader.securityIdentifier).currentPrice,
+                securityIdentifier = trader.securityIdentifier
+            )
+        }
     }
 
     //===========================================================//

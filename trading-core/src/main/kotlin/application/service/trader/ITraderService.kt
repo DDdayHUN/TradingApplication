@@ -18,5 +18,6 @@ interface ITraderService {
     suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double)
     suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellHolding>, averageFillPrice: Double)
     suspend fun forceSellHolding(userId: UUID, traderId: UUID, securityHoldingId: UUID): TradingOrder
-    suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): List<TradingOrder>
+    suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): TradingOrder
+    suspend fun forceSellAllHolding(userId: UUID): List<TradingOrder>
 }
