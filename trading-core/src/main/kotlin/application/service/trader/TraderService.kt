@@ -1,6 +1,5 @@
 package application.service.trader
 
-import api.dto.ChangeTraderAlgorithmRequest
 import api.dto.CreateTraderRequest
 import application.logging.logger
 import application.provider.MarketDataProvider
@@ -27,7 +26,7 @@ import java.util.*
 class TraderService(
     @param:Qualifier("yahoo")
     private val historicalMarketDataProvider: IHistoricalMarketDataProvider,
-    private val marketDataProvider: MarketDataProvider,
+    private val currentMarketDataProvider: MarketDataProvider,
     private val portfolioService: IPortfolioService,
     private val userService: IUserService,
     private val traderRepository: ITraderRepository
@@ -57,9 +56,8 @@ class TraderService(
 
         val algorithmType = TradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow()
         val algorithm = TradingAlgorithm.create(
-            provider = historicalMarketDataProvider,
             type = algorithmType,
-            securityIdentifier = securityIdentifier
+            history = historicalMarketDataProvider.getBySecurityIdentifier(securityIdentifier).getOrThrow()
         )
 
         val trader = Trader(
@@ -108,18 +106,17 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    @Deprecated("This will be superseded by another function")
-    override suspend fun executeTrader(userId: UUID, traderId: UUID): TradingOrder {
-        val traderEntity = traderRepository.getById(traderId).getOrThrow()
-        val traderDomain = traderEntity.toDomain()
+    override suspend fun executeAllTrader(userId: UUID): List<TradingOrder> {
+        val user = userService.getById(userId)
+        val traders = user.portfolio.traders
 
-        val quote = getCurrentPrice(userId, traderDomain.securityIdentifier)
-        val order = traderDomain.createOrder(quote)
+        val orders = traders.map { trader ->
+            trader.runAlgorithm(getCurrentPrice(user.id, trader.securityIdentifier))
+        }
 
-        traderEntity.update(traderDomain)
-        traderRepository.save(traderEntity).getOrThrow()
+        userService.update(user)
 
-        return order
+        return orders
     }
 
     //===========================================================//
@@ -135,7 +132,6 @@ class TraderService(
         )
 
         traderEntity.update(traderDomain)
-        traderRepository.save(traderEntity).getOrThrow()
     }
 
     //===========================================================//
@@ -151,7 +147,6 @@ class TraderService(
         )
 
         traderEntity.update(traderDomain)
-        traderRepository.save(traderEntity).getOrThrow()
     }
 
     //===========================================================//
@@ -178,43 +173,37 @@ class TraderService(
     override suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): List<TradingOrder> {
         val trader = traderRepository.getById(traderId).getOrThrow().toDomain()
 
-        val orderList = mutableListOf<TradingOrder>()
-
-        trader.holdings.forEach { holding ->
-            val order = forceSellHolding(userId, traderId, holding.id)
-            orderList.add(order)
-        }
-
-        return orderList
+        return trader.holdings
+            .map { holding -> forceSellHolding(userId, traderId, holding.id) }
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun changeAlgorithm(traderId: UUID, request: ChangeTraderAlgorithmRequest): Trader {
+    override suspend fun changeAlgorithm(traderId: UUID, algorithmType: TradingAlgorithm.Type): Trader {
         val traderEntity = traderRepository.getById(traderId).getOrThrow()
         val traderDomain = traderEntity.toDomain()
 
         val algorithm = TradingAlgorithm.create(
-            provider = historicalMarketDataProvider,
-            type = TradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow(),
-            securityIdentifier = traderDomain.securityIdentifier,
+            type = algorithmType,
+            history = historicalMarketDataProvider.getBySecurityIdentifier(traderDomain.securityIdentifier).getOrThrow(),
         )
 
         traderDomain.changeAlgorithm(algorithm)
         traderEntity.update(traderDomain)
 
-        return traderRepository.save(traderEntity).getOrThrow().toDomain()
+        return traderEntity.toDomain()
     }
 
     //===========================================================//
 
+    @Deprecated("This will be superseded by another function")
     private suspend fun getCurrentPrice(userId: UUID, securityIdentifier: SecurityIdentifier): Quote {
-        var quote = marketDataProvider.get(MarketDataProvider.Type.Finnhub).getQuote(userId, securityIdentifier)
+        var quote = currentMarketDataProvider.get(MarketDataProvider.Type.Finnhub).getQuote(userId, securityIdentifier)
 
         if(!quote.isSuccess) {
             m_Logger.warn("Finnhub quote failed for {}, trying IBKR", securityIdentifier.tickerSymbol)
-            quote = marketDataProvider.get(MarketDataProvider.Type.Ibkr).getQuote( userId, securityIdentifier)
+            quote = currentMarketDataProvider.get(MarketDataProvider.Type.Ibkr).getQuote( userId, securityIdentifier)
         }
 
         return quote.getOrThrow()
