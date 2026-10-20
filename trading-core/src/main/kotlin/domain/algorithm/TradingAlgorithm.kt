@@ -1,13 +1,9 @@
 package domain.algorithm
 
 import com.google.gson.annotations.JsonAdapter
-import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.adapter.AlgorithmAdapter
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
-import domain.market.security.SecurityIdentifier
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import kotlin.collections.filter
 import kotlin.time.Instant
 
@@ -46,32 +42,13 @@ sealed interface TradingAlgorithm {
         /**
          * Creates and initializes an algorithm instance configured for backtesting.
          *
-         * @param provider the provider which provides the historical market data.
          * @param type the type of algorithm to initialize.
-         * @param securityIdentifier the identifier identifies a security.
-         * @param from the start date (inclusive).
-         * @param to the end date (inclusive).
-         * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
-         */
-        fun create(provider: IHistoricalMarketDataProvider, type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            val history = getHistory(provider, securityIdentifier, from, to)
-            val backtest = forBackTest(type, history)
-            val algorithm = createAlgorithm(type, backtest.first)
-            return Pair(backtest.second, algorithm)
-        }
-
-        //===========================================================//
-        /**
-         * Creates and initializes an algorithm instance configured for backtesting.
-         *
          * @param history a list of by date sorted SecurityHistory on which we will initialize the algorithm.
-         * @param type the type of algorithm to initialize.
          * @param from the start date (inclusive).
          * @param to the end date (inclusive).
          * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
          */
-        // TODO : Maybe do a sort here on history just in case?
-        fun create(history: List<SecurityHistory>, type: Type, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
+        fun create(type: Type, history: List<SecurityHistory>, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
             val filteredHistory = history
                 .filter { it.timestamp in from..to }
                 .sortedBy { it.timestamp }
@@ -85,15 +62,15 @@ sealed interface TradingAlgorithm {
         /**
          * Creates and initializes an algorithm instance configured for trading.
          *
-         * @param provider the provider which provides the historical market data.
          * @param type the type of algorithm to initialize.
-         * @param securityIdentifier the identifier identifies a security.
+         * @param history a list of by date sorted SecurityHistory on which we will initialize the algorithm.
          * @return the configured algorithm instance.
          */
-        // TODO : Maybe make it so that we give a list instead?
-        fun create(provider: IHistoricalMarketDataProvider, type: Type, securityIdentifier: SecurityIdentifier): TradingAlgorithm {
-            val history = getHistory(provider, securityIdentifier)
-            val trading = forTrading(type, history)
+        fun create(type: Type, history: List<SecurityHistory>): TradingAlgorithm {
+            val filteredHistory = history
+                .sortedBy { it.timestamp }
+
+            val trading = forTrading(type, filteredHistory)
             val algorithm = createAlgorithm( type, trading)
             return algorithm
         }
@@ -102,29 +79,6 @@ sealed interface TradingAlgorithm {
         //===========================================================//
         // Private Method(es)
 
-        /**
-         * Fetches market history for a given security between specified timestamps.
-         *
-         * @param provider the market data provider instance.
-         * @param securityIdentifier the identifier of the security to query.
-         * @param from the start instant of the historical range.
-         * @param to the end instant of the historical range.
-         * @return the list of historical market entries.
-         */
-        private fun getHistory(
-            provider: IHistoricalMarketDataProvider,
-            securityIdentifier: SecurityIdentifier,
-            from: Instant = Instant.DISTANT_PAST,
-            to: Instant = Instant.DISTANT_FUTURE
-        ): List<SecurityHistory> {
-            return runBlocking {
-                async {
-                    provider.getBySecurityIdentifier(securityIdentifier, from, to).getOrThrow()
-                }.await()
-            }
-        }
-
-        //===========================================================//
         /**
          * Splits the historical data for backtesting into initial and remaining subsets.
          *
