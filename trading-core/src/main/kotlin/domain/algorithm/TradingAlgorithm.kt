@@ -48,14 +48,17 @@ sealed interface TradingAlgorithm {
          * @param to the end date (inclusive).
          * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
          */
-        fun create(type: Type, history: List<SecurityHistory>, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            val filteredHistory = history
-                .filter { it.timestamp in from..to }
-                .sortedBy { it.timestamp }
+        fun create(type: Type, history: List<SecurityHistory>, from: Instant, to: Instant): Result<Pair<List<SecurityHistory>, TradingAlgorithm>> {
+            return runCatching {
+                val filteredHistory = history
+                    .filter { it.timestamp in from..to }
+                    .sortedBy { it.timestamp }
 
-            val backtest = forBackTest(type, filteredHistory)
-            val algorithm = createAlgorithm(type, backtest.first)
-            return Pair(backtest.second, algorithm)
+                val backtest = forBackTest(type, filteredHistory)
+                val algorithm = createAlgorithm(type, backtest.first)
+
+                Pair(backtest.second, algorithm)
+            }
         }
 
         //===========================================================//
@@ -66,13 +69,15 @@ sealed interface TradingAlgorithm {
          * @param history a list of by date sorted SecurityHistory on which we will initialize the algorithm.
          * @return the configured algorithm instance.
          */
-        fun create(type: Type, history: List<SecurityHistory>): TradingAlgorithm {
-            val filteredHistory = history
-                .sortedBy { it.timestamp }
+        fun create(type: Type, history: List<SecurityHistory>): Result<TradingAlgorithm> {
+            return runCatching {
+                val filteredHistory = history
+                    .sortedBy { it.timestamp }
 
-            val trading = forTrading(type, filteredHistory)
-            val algorithm = createAlgorithm( type, trading)
-            return algorithm
+                val trading = forTrading(type, filteredHistory)
+                val algorithm = createAlgorithm( type, trading)
+                algorithm
+            }
         }
 
         //===========================================================//

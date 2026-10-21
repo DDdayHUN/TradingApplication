@@ -58,7 +58,7 @@ class TraderService(
         val algorithm = TradingAlgorithm.create(
             type = algorithmType,
             history = historicalMarketDataProvider.getBySecurityIdentifier(securityIdentifier).getOrThrow()
-        )
+        ).getOrThrow()
 
         val trader = Trader(
             securityIdentifier = securityIdentifier,
@@ -88,6 +88,25 @@ class TraderService(
         portfolioService.update(user.id, portfolio)
 
         m_Logger.info("Deleted trader with ID:{${trader.id}} for user with ID:{$userId}")
+    }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    @Deprecated("This operation is deprecated and may be removed in a future release.")
+    override suspend fun getTraderById(userId: UUID, traderId: UUID): Trader {
+        val user = userService.getById(userId)
+        return user.portfolio.traders.find { trader -> trader.id == traderId }
+            ?: throw TraderNotFoundException(traderId)
+    }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    @Deprecated("This operation is deprecated and may be removed in a future release.")
+    override suspend fun getAllTrader(userId: UUID): List<Trader> {
+        val user = userService.getById(userId)
+        return user.portfolio.traders.toList()
     }
 
     //===========================================================//
@@ -205,7 +224,7 @@ class TraderService(
         val algorithm = TradingAlgorithm.create(
             type = algorithmType,
             history = historicalMarketDataProvider.getBySecurityIdentifier(traderDomain.securityIdentifier).getOrThrow()
-        )
+        ).getOrThrow()
 
         traderDomain.changeAlgorithm(algorithm)
         traderEntity.update(traderDomain)

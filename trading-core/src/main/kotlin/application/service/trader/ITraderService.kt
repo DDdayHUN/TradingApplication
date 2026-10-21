@@ -10,6 +10,8 @@ import java.util.*
 interface ITraderService {
     suspend fun createTrader(userId: UUID, request: CreateTraderRequest): Trader
     suspend fun deleteTrader(userId: UUID, traderId: UUID)
+    suspend fun getTraderById(userId: UUID, traderId: UUID): Trader
+    suspend fun getAllTrader(userId: UUID): List<Trader>
 
     suspend fun changeAlgorithm(traderId: UUID, algorithmType: TradingAlgorithm.Type): Trader
     suspend fun executeAllTrader(userId: UUID): List<TradingOrder>
