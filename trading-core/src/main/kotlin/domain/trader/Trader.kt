@@ -40,7 +40,7 @@ class Trader {
     //===========================================================//
     // Public Method(es)
 
-    fun createOrder(quote: Quote): TradingOrder {
+    fun runAlgorithm(quote: Quote): TradingOrder {
         val currentPrice = quote.currentPrice
         val output = m_Algorithm.run(holdings, availableCapital, currentPrice)
 

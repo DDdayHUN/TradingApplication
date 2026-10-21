@@ -49,19 +49,9 @@ class Test(
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-                val user = userRepository.getById(userId).getOrThrow().toDomain()
-                val portfolio = user.portfolio
-                val orders = portfolio.traders.map { trader ->
-                    try {
-                        traderService.executeTrader(userId, trader.id)
-                    } catch (e: Exception) {
-                        logger.error("Failed trader={}", trader.id, e)
-                        null
-                    }
-                }
+                val orders = traderService.executeAllTrader(userId)
 
                 orders
-                    .filterNotNull()
                     .forEach { order ->
                         orderService.submit(userId,order)
                     }
@@ -94,21 +84,9 @@ class Test(
 
     fun sellAllHolding() {
         scope.launch {
-            val user = userRepository.getById(userId).getOrThrow().toDomain()
-            val portfolio = user.portfolio
-
-            portfolio.traders.forEach { trader ->
-
-                if(trader.holdings.isNotEmpty()){
-                    val orders = traderService.forceSellAllHolding(
-                        userId,
-                        trader.id
-                    )
-
-                    orders.forEach { order ->
-                        orderService.submit(userId, order)
-                    }
-                }
+            val orders = traderService.forceSellAllHolding(userId)
+            orders.forEach { order ->
+                orderService.submit(userId, order)
             }
         }
     }
