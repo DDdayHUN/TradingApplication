@@ -1,4 +1,4 @@
-package data.infrastructure.broker
+package data.infrastructure.broker.ibkr
 
 import application.logging.logger
 import java.util.*
@@ -30,6 +30,8 @@ class InteractiveBrokersSession(
         )
     }
 
+    //===========================================================//
+
     fun disconnect() {
         if (!client.isConnected()) return
 
@@ -37,10 +39,14 @@ class InteractiveBrokersSession(
         client.disconnect()
     }
 
+    //===========================================================//
+
     fun getClient(): IbkrClient {
-        if (!client.isConnected())  {throw IllegalStateException("IBKR session is not connected") }
+        if (!client.isConnected())  { throw IllegalStateException("IBKR session is not connected") }
         return client
     }
+
+    //===========================================================//
 
     fun isConnected(): Boolean = client.isConnected()
 }

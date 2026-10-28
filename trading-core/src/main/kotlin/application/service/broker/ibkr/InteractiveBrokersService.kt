@@ -1,32 +1,44 @@
-package application.service.broker
+package application.service.broker.ibkr
 
 import application.logging.logger
+import application.service.broker.IBrokerService
 import application.service.trader.ITraderService
+import application.service.user.User
+import com.ib.client.Contract
+import com.ib.client.Decimal
+import com.ib.client.Order
 import data.repository.order.sql.InteractiveBrokersOrderRepository
 import domain.trader.TradingOrder
-import data.infrastructure.broker.IbkrEvent
+import data.infrastructure.broker.ibkr.IbkrEvent
+import data.infrastructure.broker.ibkr.IbkrHistoricalBar
+import data.infrastructure.broker.ibkr.InteractiveBrokerSessionManager
+import domain.market.security.SecurityIdentifier
+import kotlinx.coroutines.delay
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import java.util.*
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Instant
 
 @Service
-class InteractiveBrokersOrderService(
-    private val brokerService: InteractiveBrokersService,
+class InteractiveBrokersService(
+    private val session: InteractiveBrokerSessionManager,
     private val traderService: ITraderService,
     private val orderRepository: InteractiveBrokersOrderRepository
-) {
+) : IBrokerService {
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private val m_Logger = logger<InteractiveBrokersOrderService>()
+    private val m_Logger = logger<InteractiveBrokersService>()
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
-    suspend fun submit(userId: UUID, order: TradingOrder) {
-        val persistedOrders = order.toInteractiveBrokersOrder(userId,brokerService)
+    override suspend fun submitOrder(userId: UUID, order: TradingOrder) {
+        val persistedOrders = order.toInteractiveBrokersOrder(reserveOrderId(userId))
 
         persistedOrders.forEach { order ->
             orderRepository.save(order).getOrThrow()
@@ -34,8 +46,8 @@ class InteractiveBrokersOrderService(
 
         persistedOrders.forEach { order ->
             try {
-                brokerService.placeOrder(userId,order)
-            } catch(e: Exception){
+                placeOrder(userId,order)
+            } catch(e: Exception) {
                 orderRepository.save(order.copy(
                     status = InteractiveBrokersOrder.Status.CANCELLED
                 )).getOrThrow()
@@ -46,11 +58,69 @@ class InteractiveBrokersOrderService(
 
     //===========================================================//
 
-    suspend fun getAll(userId: UUID): List<InteractiveBrokersOrder>{
-        return orderRepository.getAll(userId).getOrThrow()
+    override suspend fun getAllOrder(userId: UUID): List<TradingOrder> {
+        return orderRepository.getAll(userId).getOrThrow().map { order -> order.toDomain() }
     }
 
     //===========================================================//
+
+    override fun getAccountSummary(userId: UUID): User.AccountSummary {
+        val client = session.getClient(userId)
+        val ibkrAccSum = client.getAccountSummary()
+
+        return User.AccountSummary(
+            availableCapital = ibkrAccSum.availableCapital,
+            netLiquidation = ibkrAccSum.netLiquidation
+        )
+    }
+
+    //===========================================================//
+
+
+    suspend fun getHistoricalData(userId: UUID, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar> {
+        val client = session.getClient(userId)
+
+        val allBars = mutableListOf<IbkrHistoricalBar>()
+
+        var currentEnd = to
+
+        while (currentEnd > from) {
+
+            val currentStart =
+                maxOf(
+                    from,
+                    currentEnd - 7.days
+                )
+
+            m_Logger.info(
+                "Fetching IBKR historical data ticker={} from={} to={}",
+                securityIdentifier.tickerSymbol,
+                currentStart,
+                currentEnd
+            )
+
+            val bars =
+                client.getHistoricalData(
+                    identifier = securityIdentifier,
+                    from = currentStart,
+                    to = currentEnd
+                )
+
+            allBars.addAll(bars)
+
+            currentEnd = currentStart
+
+            delay(500.milliseconds)
+        }
+
+        return allBars
+            .distinctBy { it.timestamp }
+            .sortedBy { it.timestamp }
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Event Listener(s)
 
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
@@ -122,7 +192,7 @@ class InteractiveBrokersOrderService(
     //===========================================================//
 
     @EventListener
-    suspend fun handle(event: IbkrEvent.OrderPreSubmittedEvent){
+    suspend fun handle(event: IbkrEvent.OrderPreSubmittedEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
         if(order.status != InteractiveBrokersOrder.Status.PENDING) return
 
@@ -138,7 +208,7 @@ class InteractiveBrokersOrderService(
     //===========================================================//
 
     @EventListener
-    suspend fun handle(event: IbkrEvent.OrderPendingEvent){
+    suspend fun handle(event: IbkrEvent.OrderPendingEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
         if(order.status != InteractiveBrokersOrder.Status.PENDING) return
 
@@ -148,7 +218,7 @@ class InteractiveBrokersOrderService(
     //===========================================================//
 
     @EventListener
-    suspend fun handle(event: IbkrEvent.OrderPendingCancelEvent){
+    suspend fun handle(event: IbkrEvent.OrderPendingCancelEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
         if (order.status == InteractiveBrokersOrder.Status.FILLED ||
             order.status == InteractiveBrokersOrder.Status.CANCELLED ||
@@ -167,7 +237,7 @@ class InteractiveBrokersOrderService(
     //===========================================================//
 
     @EventListener
-    suspend fun handle(event: IbkrEvent.OrderInactiveEvent){
+    suspend fun handle(event: IbkrEvent.OrderInactiveEvent) {
         val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
         if (order.status == InteractiveBrokersOrder.Status.FILLED ||
             order.status == InteractiveBrokersOrder.Status.CANCELLED ||
@@ -181,5 +251,50 @@ class InteractiveBrokersOrderService(
         ).getOrThrow()
 
         m_Logger.warn("IBKR order inactive orderId=${event.orderId}")
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Private Method(s)
+
+    private fun placeOrder(userId: UUID, order: InteractiveBrokersOrder) {
+        val client = session.getClient(userId)
+        val clientContract = createStockContract(order)
+        val clientOrder = createMarketOrder(order)
+
+        client.placeOrder(
+            orderId = order.brokerOrderId,
+            contract = clientContract,
+            order = clientOrder
+        )
+    }
+
+    //===========================================================//
+
+    private fun createStockContract(order: InteractiveBrokersOrder): Contract {
+        return Contract().apply {
+            symbol(order.securityIdentifier.tickerSymbol)
+            secType("STK")
+            exchange("SMART")
+            currency(order.securityIdentifier.currency)
+        }
+    }
+
+    //===========================================================//
+
+    private fun createMarketOrder(order: InteractiveBrokersOrder): Order {
+        return Order().apply {
+            action(order.action.name)
+            orderType("MKT")
+            totalQuantity(Decimal.get(order.quantity))
+            tif("DAY")
+        }
+    }
+
+    //===========================================================//
+
+    private fun reserveOrderId(userId: UUID): Int {
+        val client = session.getClient(userId)
+        return client.reserveOrderId()
     }
 }

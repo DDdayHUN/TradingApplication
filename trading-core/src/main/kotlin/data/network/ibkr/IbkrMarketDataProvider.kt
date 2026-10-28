@@ -3,7 +3,7 @@ package data.network.ibkr
 import data.network.IMarketDataProvider
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
-import data.infrastructure.broker.InteractiveBrokerSessionManager
+import data.infrastructure.broker.ibkr.InteractiveBrokerSessionManager
 import org.springframework.stereotype.Component
 import java.util.UUID
 

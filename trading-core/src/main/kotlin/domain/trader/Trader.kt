@@ -4,6 +4,7 @@ import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
+import java.time.Instant
 import java.util.*
 
 //===========================================================//
@@ -50,7 +51,7 @@ class Trader {
             traderId = id,
             signal = output,
             atPrice = currentPrice,
-            securityIdentifier = securityIdentifier,
+            securityIdentifier = securityIdentifier
         )
     }
 

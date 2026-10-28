@@ -19,6 +19,7 @@ import exception.TraderNotFoundException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 import java.util.*
 
 @Service
@@ -135,13 +136,15 @@ class TraderService(
             .toSet()
 
         val order = TradingOrder(
+            orderId = UUID.randomUUID(),
             traderId = trader.id,
             signal = TradingAlgorithm.Output(
                 null,
                 TradingAlgorithm.Output.Sell(set)
             ),
             atPrice = getCurrentPrice(userId, trader.securityIdentifier).currentPrice,
-            securityIdentifier = trader.securityIdentifier
+            securityIdentifier = trader.securityIdentifier,
+            createdAt = Instant.now(),
         )
 
         m_Logger.info("Force Sell of all holdings for user with ID:{$userId} was applied to trader with ID:{$traderId}")
@@ -161,13 +164,15 @@ class TraderService(
                 .toSet()
 
             TradingOrder(
+                orderId = UUID.randomUUID(),
                 traderId = trader.id,
                 signal = TradingAlgorithm.Output(
                     null,
                     TradingAlgorithm.Output.Sell(set)
                 ),
                 atPrice = getCurrentPrice(userId, trader.securityIdentifier).currentPrice,
-                securityIdentifier = trader.securityIdentifier
+                securityIdentifier = trader.securityIdentifier,
+                createdAt = Instant.now(),
             )
         }
 

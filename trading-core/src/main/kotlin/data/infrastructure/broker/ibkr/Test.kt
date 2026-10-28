@@ -1,10 +1,10 @@
-package data.infrastructure.broker
+package data.infrastructure.broker.ibkr
 
 import api.dto.CreateTraderRequest
 import api.dto.SecurityIdentifierRequest
 import application.logging.logger
 import application.service.trader.ITraderService
-import application.service.broker.InteractiveBrokersOrderService
+import application.service.broker.ibkr.InteractiveBrokersService
 import application.tester.TradingAlgorithmEvaluator
 import data.network.ibkr.backtest.BacktestDataService
 import data.repository.historical_data.IHistoricalMarketDataProvider
@@ -31,7 +31,7 @@ import kotlin.time.Instant
 
 @Component
 class Test(
-    private val orderService: InteractiveBrokersOrderService,
+    private val orderService: InteractiveBrokersService,
     private val traderService: ITraderService,
     private val backtestDataService: BacktestDataService,
     @param:Qualifier("yahoo")
@@ -58,7 +58,7 @@ class Test(
 
                 orders
                     .forEach { order ->
-                        orderService.submit(userId,order)
+                        orderService.submitOrder(userId,order)
                     }
 
                 logger.info("All concurrent trader jobs finished")
@@ -91,7 +91,7 @@ class Test(
         scope.launch {
             val orders = traderService.forceSellAllHolding(userId)
             orders.forEach { order ->
-                orderService.submit(userId, order)
+                orderService.submitOrder(userId, order)
             }
         }
     }
@@ -109,7 +109,7 @@ class Test(
                             atPrice = 433.0,
                             securityIdentifier = trader.securityIdentifier,
                         )
-                        orderService.submit(userId, order)
+                        orderService.submitOrder(userId, order)
                 }
             } catch(e: Exception){
                 throw e
