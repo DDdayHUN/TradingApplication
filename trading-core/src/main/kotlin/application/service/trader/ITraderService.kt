@@ -13,10 +13,11 @@ interface ITraderService {
     suspend fun getTraderById(userId: UUID, traderId: UUID): Trader
     suspend fun getAllTrader(userId: UUID): List<Trader>
 
-    suspend fun changeAlgorithm(traderId: UUID, algorithmType: TradingAlgorithm.Type): Trader
     suspend fun executeAllTrader(userId: UUID): List<TradingOrder>
-    suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double)
-    suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellHolding>, averageFillPrice: Double)
     suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): TradingOrder
     suspend fun forceSellAllHolding(userId: UUID): List<TradingOrder>
+
+    suspend fun changeAlgorithm(traderId: UUID, algorithmType: TradingAlgorithm.Type): Trader
+    suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double)
+    suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellHolding>, averageFillPrice: Double)
 }

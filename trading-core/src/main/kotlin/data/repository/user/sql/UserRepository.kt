@@ -48,6 +48,14 @@ class UserRepository(
 
     //===========================================================//
 
+    override suspend fun getAll(): Result<List<UserEntity>> {
+        return runCatching {
+            repository.findAll()
+        }
+    }
+
+    //===========================================================//
+
     override suspend fun deleteById(userId: UUID): Result<Unit> {
         return runCatching {
             repository.deleteById(userId)

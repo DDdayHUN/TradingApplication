@@ -112,6 +112,7 @@ class TraderService(
     //===========================================================//
 
     @Transactional
+    @Deprecated("This operation is deprecated and may be removed in a future release.")
     override suspend fun executeAllTrader(userId: UUID): List<TradingOrder> {
         val user = userService.getById(userId)
         val traders = user.portfolio.traders
@@ -125,40 +126,6 @@ class TraderService(
         m_Logger.info("All traders were executed for user with ID:{$userId}")
 
         return orders
-    }
-
-    //===========================================================//
-
-    @Transactional
-    override suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double) {
-        val traderEntity = traderRepository.getById(traderId).getOrThrow()
-        val traderDomain = traderEntity.toDomain()
-
-        traderDomain.applyBuyFill(
-            price = averageFillPrice,
-            amount = filledQuantity
-        )
-
-        traderEntity.update(traderDomain)
-
-        m_Logger.info("Buy Fill was applied for trader with ID:{$traderId}")
-    }
-
-    //===========================================================//
-
-    @Transactional
-    override suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellHolding>, averageFillPrice: Double) {
-        val traderEntity = traderRepository.getById(traderId).getOrThrow()
-        val traderDomain = traderEntity.toDomain()
-
-        traderDomain.applySellFill(
-            price = averageFillPrice,
-            holdingsToSell = sellAllocations
-        )
-
-        traderEntity.update(traderDomain)
-
-        m_Logger.info("Sell Fill was applied for trader with ID:{$traderId}")
     }
 
     //===========================================================//
@@ -230,6 +197,40 @@ class TraderService(
         traderEntity.update(traderDomain)
 
         return traderEntity.toDomain()
+    }
+
+    //===========================================================//
+
+    @Transactional
+    override suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double) {
+        val traderEntity = traderRepository.getById(traderId).getOrThrow()
+        val traderDomain = traderEntity.toDomain()
+
+        traderDomain.applyBuyFill(
+            price = averageFillPrice,
+            amount = filledQuantity
+        )
+
+        traderEntity.update(traderDomain)
+
+        m_Logger.info("Buy Fill was applied for trader with ID:{$traderId}")
+    }
+
+    //===========================================================//
+
+    @Transactional
+    override suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellHolding>, averageFillPrice: Double) {
+        val traderEntity = traderRepository.getById(traderId).getOrThrow()
+        val traderDomain = traderEntity.toDomain()
+
+        traderDomain.applySellFill(
+            price = averageFillPrice,
+            holdingsToSell = sellAllocations
+        )
+
+        traderEntity.update(traderDomain)
+
+        m_Logger.info("Sell Fill was applied for trader with ID:{$traderId}")
     }
 
     //===========================================================//
