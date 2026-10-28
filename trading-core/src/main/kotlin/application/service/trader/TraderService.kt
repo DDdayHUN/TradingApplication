@@ -15,7 +15,6 @@ import domain.market.security.SecurityIdentifier
 import domain.trader.SellHolding
 import domain.trader.Trader
 import domain.trader.TradingOrder
-import exception.HoldingNotFoundException
 import exception.TraderNotFoundException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -93,7 +92,6 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    @Deprecated("This operation is deprecated and may be removed in a future release.")
     override suspend fun getTraderById(userId: UUID, traderId: UUID): Trader {
         val user = userService.getById(userId)
         return user.portfolio.traders.find { trader -> trader.id == traderId }
@@ -103,7 +101,6 @@ class TraderService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    @Deprecated("This operation is deprecated and may be removed in a future release.")
     override suspend fun getAllTrader(userId: UUID): List<Trader> {
         val user = userService.getById(userId)
         return user.portfolio.traders.toList()
@@ -112,7 +109,6 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    @Deprecated("This operation is deprecated and may be removed in a future release.")
     override suspend fun executeAllTrader(userId: UUID): List<TradingOrder> {
         val user = userService.getById(userId)
         val traders = user.portfolio.traders
@@ -183,7 +179,6 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    @Deprecated("This will be superseded by another function")
     override suspend fun changeAlgorithm(traderId: UUID, algorithmType: TradingAlgorithm.Type): Trader {
         val traderEntity = traderRepository.getById(traderId).getOrThrow()
         val traderDomain = traderEntity.toDomain()

@@ -9,6 +9,7 @@ interface IUserRepository {
 
     suspend fun getById(userId: UUID): Result<UserEntity>
     suspend fun getAllById(userIds: Iterable<UUID>): Result<List<UserEntity>>
+    // TODO [v2.0]: "This must be replaced in future releases, cuz this doesn't support large amounts of users"
     suspend fun getAll(): Result<List<UserEntity>>
 
     suspend fun deleteById(userId: UUID): Result<Unit>

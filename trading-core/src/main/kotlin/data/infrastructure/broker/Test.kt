@@ -23,7 +23,12 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
-@Deprecated("ONLY TESTING")
+//===========================================================//
+/**
+ * This is only for testing purposes.
+ */
+//===========================================================//
+
 @Component
 class Test(
     private val orderService: InteractiveBrokersOrderService,

@@ -7,9 +7,8 @@ interface IUserService {
     suspend fun update(user: User): User
     suspend fun getById(userId: UUID): User
 
-    @Deprecated("This will be replaced in future releases, cuz this doesn't support large amounts of users")
+    // TODO [v2.0]: "This must be replaced in future releases, cuz this doesn't support large amounts of users"
     suspend fun getAll(): List<User>
-
-    @Deprecated("CODE : 1 :: This will be replaced in future iterations, cuz this doesn't support large amounts of users")
+    // TODO [v2.0]: "This must be replaced in future releases, cuz this doesn't support large amounts of users"
     suspend fun executeTradeForAll(): List<TradingOrder>
 }

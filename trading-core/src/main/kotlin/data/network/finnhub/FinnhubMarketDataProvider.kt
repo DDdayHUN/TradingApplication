@@ -19,7 +19,7 @@ class FinnhubMarketDataProvider(
     //===========================================================//
     // Public Method(s)
 
-    // TODO : Itt nincsen használva a UserId?
+    // NOTE : Itt nincsen használva a UserId?
     override suspend fun getQuote(userId: UUID, identifier: SecurityIdentifier): Result<Quote> {
         try {
             val ret = client.getQuoteAsync(identifier)

@@ -77,7 +77,7 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Private Method(es)
 
-    @Deprecated("We currently still have the issues of the last calculations falling off ie.: Having less SecurityHistory elemnts than previous windows")
+    // TODO : We currently still have the issues of the last calculations falling off ie.: Having less SecurityHistory elemnts than previous windows.
     private suspend fun years(
         cycle: TimePeriod,
         listOfSecurityIdentifiers: List<SecurityIdentifier>
@@ -120,7 +120,8 @@ class TradingAlgorithmEvaluator {
                     .filterNotNull()
             }
 
-        if (out.isEmpty()) return@coroutineScope null // TODO : Nem tudom hogy kell-e ez.
+        // NOTE : Nem tudom hogy kell-e ez.
+        if (out.isEmpty()) return@coroutineScope null
 
         val ret = out.groupBy { it.securityIdentifier }
 

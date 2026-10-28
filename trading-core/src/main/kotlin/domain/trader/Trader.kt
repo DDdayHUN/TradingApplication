@@ -26,7 +26,9 @@ class Trader {
     val securityIdentifier: SecurityIdentifier
     val availableCapital: Double get() = m_Capital
     val holdings: Set<SecurityHolding> get() = m_Holdings.toSet()
-    val algorithm: TradingAlgorithm get() = m_Algorithm // TODO : Remove this ezt nem szabad így expose-olnunk!!!, de egyelőre marad.
+
+    // TODO [v1.0]: Remove this ezt nem szabad így expose-olnunk.
+    val algorithm: TradingAlgorithm get() = m_Algorithm
 
     //===========================================================//
     //===========================================================//

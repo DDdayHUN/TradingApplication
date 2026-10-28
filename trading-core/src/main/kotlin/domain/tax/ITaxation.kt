@@ -6,8 +6,6 @@ package domain.tax
  * 
  * Taxation instances are singleton-style objects representing specific tax systems.
  * All taxation rules are exposed as static constants.
- *
- * NOTE : Márkoé never touch this.
  */
 //===========================================================//
 
