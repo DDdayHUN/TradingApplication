@@ -127,6 +127,15 @@ class TraderService(
 
     //===========================================================//
 
+    @Transactional
+    override suspend fun executeAllTrader(): List<TradingOrder> {
+        val userIds = userService.getAllUserId()
+        val orders = userIds.flatMap { userId -> executeAllTrader(userId) }
+        return orders
+    }
+
+    //===========================================================//
+
     @Transactional(readOnly = true)
     override suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): TradingOrder {
         val trader = traderRepository.getById(traderId).getOrThrow().toDomain()

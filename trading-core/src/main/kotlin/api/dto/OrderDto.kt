@@ -4,12 +4,17 @@ import domain.trader.TradingOrder
 import java.util.*
 import java.time.Instant
 
+//===========================================================//
+//===========================================================//
+
 data class OrderResponse(
     val id: UUID,
     val securityIdentifier: SecurityIdentifierResponse,
     val signalPrice: Double,
     val timestamp: Instant
 )
+
+//===========================================================//
 
 fun TradingOrder.toResponse(): OrderResponse {
     return OrderResponse(

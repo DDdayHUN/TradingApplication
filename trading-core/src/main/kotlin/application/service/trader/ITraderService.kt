@@ -14,6 +14,8 @@ interface ITraderService {
     suspend fun getAllTrader(userId: UUID): List<Trader>
 
     suspend fun executeAllTrader(userId: UUID): List<TradingOrder>
+    // TODO [v2.0]: "This must be replaced in future releases, cuz this doesn't support large amounts of users"
+    suspend fun executeAllTrader(): List<TradingOrder>
     suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): TradingOrder
     suspend fun forceSellAllHolding(userId: UUID): List<TradingOrder>
 
