@@ -1,4 +1,4 @@
-package data.infrastructure.broker
+package data.infrastructure.broker.ibkr
 
 import api.config.IbkrConfig
 import jakarta.annotation.PreDestroy

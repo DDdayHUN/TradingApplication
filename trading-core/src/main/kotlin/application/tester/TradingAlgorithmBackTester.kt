@@ -80,7 +80,7 @@ class TradingAlgorithmBackTester {
     // Private Method(es)
 
     private fun reset() {
-        val pair = TradingAlgorithm.create(m_History, m_TradingAlgorithmType, m_From, m_To)
+        val pair = TradingAlgorithm.create(m_TradingAlgorithmType, m_History, m_From, m_To).getOrThrow()
 
         if(m_TaxationType != null) m_Taxation = Taxation.create(m_TaxationType)
 
@@ -261,7 +261,7 @@ class TradingAlgorithmBackTester {
 
         m_History = history
         m_TradingAlgorithmType = type
-        val pair = TradingAlgorithm.create(m_History, m_TradingAlgorithmType, m_From, m_To)
+        val pair = TradingAlgorithm.create(m_TradingAlgorithmType, m_History, m_From, m_To).getOrThrow()
         m_TradingAlgorithm = pair.second
         m_HistoryWeRunAgainst = pair.first
 

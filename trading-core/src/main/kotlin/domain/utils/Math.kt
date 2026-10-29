@@ -183,7 +183,7 @@ object Math {
         }
 
         val meanReturn = returns.average() // average of daily returns
-        val stdDev = capitalHistory.stdDev() // standard deviation of daily returns TODO: Ehelyett nem retruns.stdDev() kéne???
+        val stdDev = capitalHistory.stdDev() // standard deviation of daily returns NOTE: Ehelyett nem retruns.stdDev() kéne???
 
         if (stdDev == 0.0) return Double.NaN
 

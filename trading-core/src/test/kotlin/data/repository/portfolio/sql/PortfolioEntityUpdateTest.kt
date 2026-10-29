@@ -9,6 +9,7 @@ import domain.Portfolio
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityHolding
 import domain.trader.Trader
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -68,10 +69,9 @@ internal class PortfolioEntityUpdateTest {
             holdings = holdings,
             allocatedCapital = capital,
             algorithm = TradingAlgorithm.create(
-                provider,
-                TradingAlgorithm.Type.BUYANDHOLD,
-                securityIdentifier
-            )
+                type = TradingAlgorithm.Type.BUYANDHOLD,
+                history = runBlocking { provider.getBySecurityIdentifier(securityIdentifier).getOrThrow() }
+            ).getOrThrow()
         )
     }
 

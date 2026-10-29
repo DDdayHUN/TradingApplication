@@ -29,7 +29,6 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
     //===========================================================//
     // Public Method(es)
 
-    @Suppress("DuplicatedCode")
     override suspend fun getBySecurityIdentifier(
         securityIdentifier: SecurityIdentifier,
         from: Instant,
@@ -48,8 +47,7 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
 
     //===========================================================//
 
-    @Deprecated("We need to redo this, because this is too expensive")
-    @Suppress("DuplicatedCode")
+    // TODO : Redo this, cuz its expensive
     override suspend fun getAllSecurityIdentifiers(): Result<List<SecurityIdentifier>> {
         return runCatching {
             val data = getAll()
@@ -63,7 +61,6 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
     //===========================================================//
     // Private Method(es)
 
-    @Suppress("DuplicatedCode")
     private suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto = withContext(Dispatchers.IO) {
         val targetFile = s_RootDir.walkTopDown()
             .filter { it.isFile }
@@ -78,7 +75,6 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
 
     //===========================================================//
 
-    @Suppress("DuplicatedCode")
     private suspend fun getAll(): List<HistoricalMarketDataDto> = withContext(Dispatchers.IO) {
         val files = s_RootDir
             .walkTopDown()

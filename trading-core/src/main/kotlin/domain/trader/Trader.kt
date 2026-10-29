@@ -4,6 +4,7 @@ import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
+import java.time.Instant
 import java.util.*
 
 //===========================================================//
@@ -26,7 +27,9 @@ class Trader {
     val securityIdentifier: SecurityIdentifier
     val availableCapital: Double get() = m_Capital
     val holdings: Set<SecurityHolding> get() = m_Holdings.toSet()
-    val algorithm: TradingAlgorithm get() = m_Algorithm // TODO : Remove this ezt nem szabad így expose-olnunk!!!, de egyelőre marad.
+
+    // TODO [v1.0]: Remove this ezt nem szabad így expose-olnunk.
+    val algorithm: TradingAlgorithm get() = m_Algorithm
 
     //===========================================================//
     //===========================================================//
@@ -40,7 +43,7 @@ class Trader {
     //===========================================================//
     // Public Method(es)
 
-    fun createOrder(quote: Quote): TradingOrder {
+    fun runAlgorithm(quote: Quote): TradingOrder {
         val currentPrice = quote.currentPrice
         val output = m_Algorithm.run(holdings, availableCapital, currentPrice)
 
@@ -48,7 +51,7 @@ class Trader {
             traderId = id,
             signal = output,
             atPrice = currentPrice,
-            securityIdentifier = securityIdentifier,
+            securityIdentifier = securityIdentifier
         )
     }
 

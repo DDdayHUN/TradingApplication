@@ -1,20 +1,16 @@
 package domain.algorithm
 
 import com.google.gson.annotations.JsonAdapter
-import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.adapter.AlgorithmAdapter
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
-import domain.market.security.SecurityIdentifier
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import kotlin.collections.filter
 import kotlin.time.Instant
 
 //===========================================================//
 /**
- * Abstract base class for all trading algorithms.
- * Defines the required interface and provides factory methods for initializing algorithms in different modes.
+ * Sealed interface for all trading algorithms.
+ * Defines the required interface and provides factory methods for initializing trading algorithms.
  */
 //===========================================================//
 
@@ -46,85 +42,48 @@ sealed interface TradingAlgorithm {
         /**
          * Creates and initializes an algorithm instance configured for backtesting.
          *
-         * @param provider the provider which provides the historical market data.
          * @param type the type of algorithm to initialize.
-         * @param securityIdentifier the identifier identifies a security.
-         * @param from the start date (inclusive).
-         * @param to the end date (inclusive).
-         * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
-         */
-        fun create(provider: IHistoricalMarketDataProvider, type: Type, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            val history = getHistory(provider, securityIdentifier, from, to)
-            val backtest = forBackTest(type, history)
-            val algorithm = createAlgorithm(type, backtest.first)
-            return Pair(backtest.second, algorithm)
-        }
-
-        //===========================================================//
-        /**
-         * Creates and initializes an algorithm instance configured for backtesting.
-         *
          * @param history a list of by date sorted SecurityHistory on which we will initialize the algorithm.
-         * @param type the type of algorithm to initialize.
          * @param from the start date (inclusive).
          * @param to the end date (inclusive).
          * @return a pair containing the list of history that was not used up for initialization and the algorithm instance.
          */
-        // TODO : Maybe do a sort here on history just in case?
-        fun create(history: List<SecurityHistory>, type: Type, from: Instant, to: Instant): Pair<List<SecurityHistory>, TradingAlgorithm> {
-            val filteredHistory = history
-                .filter { it.timestamp in from..to }
-                .sortedBy { it.timestamp }
+        fun create(type: Type, history: List<SecurityHistory>, from: Instant, to: Instant): Result<Pair<List<SecurityHistory>, TradingAlgorithm>> {
+            return runCatching {
+                val filteredHistory = history
+                    .filter { it.timestamp in from..to }
+                    .sortedBy { it.timestamp }
 
-            val backtest = forBackTest(type, filteredHistory)
-            val algorithm = createAlgorithm(type, backtest.first)
-            return Pair(backtest.second, algorithm)
+                val backtest = forBackTest(type, filteredHistory)
+                val algorithm = createAlgorithm(type, backtest.first)
+
+                Pair(backtest.second, algorithm)
+            }
         }
 
         //===========================================================//
         /**
          * Creates and initializes an algorithm instance configured for trading.
          *
-         * @param provider the provider which provides the historical market data.
          * @param type the type of algorithm to initialize.
-         * @param securityIdentifier the identifier identifies a security.
+         * @param history a list of by date sorted SecurityHistory on which we will initialize the algorithm.
          * @return the configured algorithm instance.
          */
-        // TODO : Maybe make it so that we give a list instead?
-        fun create(provider: IHistoricalMarketDataProvider, type: Type, securityIdentifier: SecurityIdentifier): TradingAlgorithm {
-            val history = getHistory(provider, securityIdentifier)
-            val trading = forTrading(type, history)
-            val algorithm = createAlgorithm( type, trading)
-            return algorithm
+        fun create(type: Type, history: List<SecurityHistory>): Result<TradingAlgorithm> {
+            return runCatching {
+                val filteredHistory = history
+                    .sortedBy { it.timestamp }
+
+                val trading = forTrading(type, filteredHistory)
+                val algorithm = createAlgorithm( type, trading)
+                algorithm
+            }
         }
 
         //===========================================================//
         //===========================================================//
         // Private Method(es)
 
-        /**
-         * Fetches market history for a given security between specified timestamps.
-         *
-         * @param provider the market data provider instance.
-         * @param securityIdentifier the identifier of the security to query.
-         * @param from the start instant of the historical range.
-         * @param to the end instant of the historical range.
-         * @return the list of historical market entries.
-         */
-        private fun getHistory(
-            provider: IHistoricalMarketDataProvider,
-            securityIdentifier: SecurityIdentifier,
-            from: Instant = Instant.DISTANT_PAST,
-            to: Instant = Instant.DISTANT_FUTURE
-        ): List<SecurityHistory> {
-            return runBlocking {
-                async {
-                    provider.getBySecurityIdentifier(securityIdentifier, from, to).getOrThrow()
-                }.await()
-            }
-        }
-
-        //===========================================================//
         /**
          * Splits the historical data for backtesting into initial and remaining subsets.
          *
@@ -168,44 +127,28 @@ sealed interface TradingAlgorithm {
             check(history.size == type.initSize) { "Size" }
 
             return when (type) {
-                is Type.TACPP46 -> {
-                    TACPP46(history)
-                }
-                is Type.ALGDES2 -> {
-                    ALGDES2(history)
-                }
-                is Type.ALGDES3 -> {
-                    ALGDES3(history)
-                }
-                is Type.ALGDES31 -> {
-                    ALGDES31(history)
-                }
-                is Type.ALGDES4 -> {
-                    ALGDES4(history)
-                }
-                is Type.BUYANDHOLD -> {
-                    BUYANDHOLD()
-                }
-                is Type.TACPP462 -> {
-                    TACPP462(history)
-                }
-                is Type.TACPP45 -> {
-                    TACPP45(history)
-                }
+                is Type.TACPP46 -> TACPP46(history)
+                is Type.ALGDES2 -> ALGDES2(history)
+                is Type.ALGDES3 -> ALGDES3(history)
+                is Type.ALGDES31 -> ALGDES31(history)
+                is Type.ALGDES4 -> ALGDES4(history)
+                is Type.BUYANDHOLD -> BUYANDHOLD()
+                is Type.TACPP462 ->TACPP462(history)
+                is Type.TACPP45 -> TACPP45(history)
             }
         }
 
         //===========================================================//
 
         val REGISTRY = listOf(
-            AlgorithmRegistryEntry("TACPP46",       Type.TACPP46,      TACPP46::class.java),
-            AlgorithmRegistryEntry("ALGDES2",       Type.ALGDES2,      ALGDES2::class.java),
-            AlgorithmRegistryEntry("ALGDES3",       Type.ALGDES3,      ALGDES3::class.java),
-            AlgorithmRegistryEntry("ALGDES31",      Type.ALGDES31,     ALGDES31::class.java),
-            AlgorithmRegistryEntry("ALGDES4",       Type.ALGDES4,      ALGDES4::class.java),
-            AlgorithmRegistryEntry("BUYANDHOLD",    Type.BUYANDHOLD,   BUYANDHOLD::class.java),
-            AlgorithmRegistryEntry("TACPP462",      Type.TACPP462,     TACPP462::class.java),
-            AlgorithmRegistryEntry("TACPP45",       Type.TACPP45,      TACPP45::class.java),
+            RegistryEntry("TACPP46",       Type.TACPP46,      TACPP46::class.java),
+            RegistryEntry("ALGDES2",       Type.ALGDES2,      ALGDES2::class.java),
+            RegistryEntry("ALGDES3",       Type.ALGDES3,      ALGDES3::class.java),
+            RegistryEntry("ALGDES31",      Type.ALGDES31,     ALGDES31::class.java),
+            RegistryEntry("ALGDES4",       Type.ALGDES4,      ALGDES4::class.java),
+            RegistryEntry("BUYANDHOLD",    Type.BUYANDHOLD,   BUYANDHOLD::class.java),
+            RegistryEntry("TACPP462",      Type.TACPP462,     TACPP462::class.java),
+            RegistryEntry("TACPP45",       Type.TACPP45,      TACPP45::class.java),
         )
 
         private val sp_TagToType  = REGISTRY.associate { it.tag to it.type }
@@ -278,7 +221,7 @@ sealed interface TradingAlgorithm {
 
     //===========================================================//
 
-    data class AlgorithmRegistryEntry(
+    data class RegistryEntry(
         val tag: String,
         val type: Type,
         val clazz: Class<out TradingAlgorithm>

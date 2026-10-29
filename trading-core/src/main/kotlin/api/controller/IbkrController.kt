@@ -2,7 +2,7 @@ package api.controller
 
 import api.dto.ConnectIbkrRequest
 import api.service.auth.IAuthenticationService
-import data.infrastructure.broker.InteractiveBrokerSessionManager
+import data.infrastructure.broker.ibkr.InteractiveBrokerSessionManager
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -21,7 +21,6 @@ class IbkrController(
             ibkrSessionManager.isConnected(userId)
         )
     }
-
 
     @PostMapping("connect/")
     suspend fun ibkrConnect(@RequestBody request: ConnectIbkrRequest): ResponseEntity<Boolean> {

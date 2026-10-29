@@ -1,9 +1,9 @@
 package data.repository.order.sql
 
 import data.repository.trader.sql.TraderEntity
-import application.service.broker.InteractiveBrokersOrder
-import application.service.broker.InteractiveBrokersOrder.Action
-import application.service.broker.InteractiveBrokersOrder.Status
+import application.service.broker.ibkr.InteractiveBrokersOrder
+import application.service.broker.ibkr.InteractiveBrokersOrder.Action
+import application.service.broker.ibkr.InteractiveBrokersOrder.Status
 import data.repository.security.SecurityIdentifierEntity
 import data.repository.security.toDomain
 import data.repository.security.toEntity
