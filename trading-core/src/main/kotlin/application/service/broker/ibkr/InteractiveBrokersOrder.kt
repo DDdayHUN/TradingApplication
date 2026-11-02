@@ -1,6 +1,7 @@
-package application.service.broker
+package application.service.broker.ibkr
 
-import application.service.broker.InteractiveBrokersOrder.Signal
+import domain.algorithm.TradingAlgorithm
+import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
 import domain.trader.SellHolding
 import domain.trader.TradingOrder
@@ -79,19 +80,20 @@ data class InteractiveBrokersOrder(
     }
 }
 
-suspend fun TradingOrder.toInteractiveBrokersOrder(userId: UUID, brokerService: InteractiveBrokersService): Set<InteractiveBrokersOrder> {
+fun TradingOrder.toInteractiveBrokersOrder(ibkrOrderId: Int): Set<InteractiveBrokersOrder> {
     val ret = mutableSetOf<InteractiveBrokersOrder>()
 
     if(this.signal.buy != null) {
         ret.add(InteractiveBrokersOrder(
             id = this.orderId,
-            brokerOrderId = brokerService.reserveOrderId(userId),
+            brokerOrderId = ibkrOrderId,
             traderId = this.traderId,
-            signal = Signal.Buy(signal.buy.amount),
+            signal = InteractiveBrokersOrder.Signal.Buy(signal.buy.amount),
             action = InteractiveBrokersOrder.Action.BUY,
             signalPrice = this.atPrice,
             status = InteractiveBrokersOrder.Status.PENDING,
-            securityIdentifier = this.securityIdentifier
+            securityIdentifier = this.securityIdentifier,
+            createdAt = this.createdAt
         ))
     }
 
@@ -104,15 +106,54 @@ suspend fun TradingOrder.toInteractiveBrokersOrder(userId: UUID, brokerService: 
         }.toSet()
         ret.add(InteractiveBrokersOrder(
             id = this.orderId,
-            brokerOrderId = brokerService.reserveOrderId(userId),
+            brokerOrderId = ibkrOrderId,
             traderId = this.traderId,
-            signal = Signal.Sell(sell),
+            signal = InteractiveBrokersOrder.Signal.Sell(sell),
             action = InteractiveBrokersOrder.Action.SELL,
             signalPrice = this.atPrice,
             status = InteractiveBrokersOrder.Status.PENDING,
-            securityIdentifier = this.securityIdentifier
+            securityIdentifier = this.securityIdentifier,
+            createdAt = this.createdAt
         ))
     }
 
     return ret
+}
+
+fun InteractiveBrokersOrder.toDomain(): TradingOrder {
+    val algorithmOutput = when (val sig = this.signal) {
+        is InteractiveBrokersOrder.Signal.Buy -> {
+            TradingAlgorithm.Output(
+                buy = TradingAlgorithm.Output.Buy(amount = sig.amount),
+                sell = null
+            )
+        }
+        is InteractiveBrokersOrder.Signal.Sell -> {
+            val batches = sig.allocations.map { sellHolding ->
+                Pair(
+                    SecurityHolding(
+                        id = sellHolding.id,
+                        timestamp = createdAt,
+                        purchasePrice = signalPrice,
+                        amount = sellHolding.amount,
+                    ),
+                    sellHolding.amount
+                )
+            }.toSet()
+
+            TradingAlgorithm.Output(
+                buy = null,
+                sell = TradingAlgorithm.Output.Sell(batches = batches)
+            )
+        }
+    }
+
+    return TradingOrder(
+        orderId = id,
+        traderId = traderId,
+        securityIdentifier = securityIdentifier,
+        signal = algorithmOutput,
+        atPrice = signalPrice,
+        createdAt = createdAt
+    )
 }

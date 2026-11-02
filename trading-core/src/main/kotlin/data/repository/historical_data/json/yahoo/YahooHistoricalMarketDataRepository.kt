@@ -29,7 +29,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
         File(resource.toURI())
     }
 
-    @Deprecated("Ez is eléggé veszélyes, hogyha nagy a file állományunk!")
+    // TODO [v1.0]: This needs to be changed for release build.
     private val s_Data: Map<String, HistoricalMarketDataDto> by lazy {
         s_RootDir
             .walkTopDown()

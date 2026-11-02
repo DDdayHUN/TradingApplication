@@ -1,10 +1,10 @@
-package data.infrastructure.broker
+package data.infrastructure.broker.ibkr
 
 import api.dto.CreateTraderRequest
 import api.dto.SecurityIdentifierRequest
 import application.logging.logger
 import application.service.trader.ITraderService
-import application.service.broker.InteractiveBrokersOrderService
+import application.service.broker.ibkr.InteractiveBrokersService
 import application.tester.TradingAlgorithmEvaluator
 import data.network.ibkr.backtest.BacktestDataService
 import data.repository.historical_data.IHistoricalMarketDataProvider
@@ -23,10 +23,15 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
-@Deprecated("ONLY TESTING")
+//===========================================================//
+/**
+ * This is only for testing purposes.
+ */
+//===========================================================//
+
 @Component
 class Test(
-    private val orderService: InteractiveBrokersOrderService,
+    private val orderService: InteractiveBrokersService,
     private val traderService: ITraderService,
     private val backtestDataService: BacktestDataService,
     @param:Qualifier("yahoo")
@@ -49,21 +54,11 @@ class Test(
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
-                val user = userRepository.getById(userId).getOrThrow().toDomain()
-                val portfolio = user.portfolio
-                val orders = portfolio.traders.map { trader ->
-                    try {
-                        traderService.executeTrader(userId, trader.id)
-                    } catch (e: Exception) {
-                        logger.error("Failed trader={}", trader.id, e)
-                        null
-                    }
-                }
+                val orders = traderService.executeAllTrader(userId)
 
                 orders
-                    .filterNotNull()
                     .forEach { order ->
-                        orderService.submit(userId,order)
+                        orderService.submitOrder(userId,order)
                     }
 
                 logger.info("All concurrent trader jobs finished")
@@ -94,21 +89,9 @@ class Test(
 
     fun sellAllHolding() {
         scope.launch {
-            val user = userRepository.getById(userId).getOrThrow().toDomain()
-            val portfolio = user.portfolio
-
-            portfolio.traders.forEach { trader ->
-
-                if(trader.holdings.isNotEmpty()){
-                    val orders = traderService.forceSellAllHolding(
-                        userId,
-                        trader.id
-                    )
-
-                    orders.forEach { order ->
-                        orderService.submit(userId, order)
-                    }
-                }
+            val orders = traderService.forceSellAllHolding(userId)
+            orders.forEach { order ->
+                orderService.submitOrder(userId, order)
             }
         }
     }
@@ -126,7 +109,7 @@ class Test(
                             atPrice = 433.0,
                             securityIdentifier = trader.securityIdentifier,
                         )
-                        orderService.submit(userId, order)
+                        orderService.submitOrder(userId, order)
                 }
             } catch(e: Exception){
                 throw e

@@ -4,6 +4,7 @@ import data.repository.user.IUserRepository
 import data.repository.user.sql.toDomain
 import data.repository.user.sql.update
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -14,16 +15,25 @@ class UserService(
     //===========================================================//
     // Public Method(s)
 
+    @Transactional
     override suspend fun update(user: User): User {
         val userEntity = userRepository.getById(user.id).getOrThrow()
 
         userEntity.update(user)
-        return userRepository.save(userEntity).getOrThrow().toDomain()
+        return userEntity.toDomain()
     }
 
     //===========================================================//
 
+    @Transactional(readOnly = true)
     override suspend fun getById(userId: UUID): User {
         return userRepository.getById(userId).getOrThrow().toDomain()
+    }
+
+    //===========================================================//
+
+    @Transactional(readOnly = true)
+    override suspend fun getAllUserId(): List<UUID> {
+        return userRepository.getAllUserId().getOrThrow()
     }
 }

@@ -8,8 +8,8 @@ import data.repository.security.toDomain
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityHolding
 import domain.trader.Trader
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.Instant
@@ -55,10 +55,9 @@ internal class TraderEntityUpdateTest {
             holdings = holdings,
             allocatedCapital = capital,
             algorithm = TradingAlgorithm.create(
-                m_Provider,
-                TradingAlgorithm.Type.BUYANDHOLD,
-                securityIdentifier
-            )
+                type = TradingAlgorithm.Type.BUYANDHOLD,
+                history = runBlocking {  m_Provider.getBySecurityIdentifier(securityIdentifier).getOrThrow() }
+            ).getOrThrow()
         )
     }
 
@@ -285,5 +284,5 @@ internal class TraderEntityUpdateTest {
         assertEquals(entity, entityHolding.trader)   // back-reference
     }
 
-    // TODO : Add so what happens if the algorithm changes.
+    // TODO : Add test so we know what happens if the algorithm changes.
 }

@@ -3,7 +3,7 @@ package api.controller
 import api.dto.PortfolioResponse
 import api.dto.toResponse
 import api.service.auth.IAuthenticationService
-import application.service.broker.InteractiveBrokersService
+import application.service.broker.IBrokerService
 import application.service.portfolio.IPortfolioService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 class PortfolioController(
     private val authService: IAuthenticationService,
     private val portfolioService: IPortfolioService,
-    private val brokerService: InteractiveBrokersService
+    private val brokerService: IBrokerService
 ) {
     //===========================================================//
     //===========================================================//

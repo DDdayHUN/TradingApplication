@@ -1,6 +1,6 @@
 package data.network.ibkr.backtest
 
-import application.service.broker.InteractiveBrokersService
+import application.service.broker.ibkr.InteractiveBrokersService
 import domain.market.security.SecurityIdentifier
 import org.springframework.stereotype.Service
 import java.util.UUID

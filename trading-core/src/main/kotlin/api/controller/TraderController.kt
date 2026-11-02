@@ -25,7 +25,7 @@ class TraderController(
     @GetMapping
     suspend fun getAllTraders(): ResponseEntity<List<TraderResponse>> {
         return ResponseEntity.ok(
-            traderService.getAll(
+            traderService.getAllTrader(
                 userId = authService.currentUser()
             ).map { trader -> trader.toResponse() }
         )
@@ -36,7 +36,7 @@ class TraderController(
     @GetMapping("{traderId}/")
     suspend fun getTraderById(@PathVariable traderId: UUID): ResponseEntity<TraderResponse> {
         return ResponseEntity.ok(
-            traderService.getById(
+            traderService.getTraderById(
                 userId = authService.currentUser(),
                 traderId = traderId
             ).toResponse()

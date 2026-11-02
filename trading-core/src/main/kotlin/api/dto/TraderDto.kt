@@ -7,12 +7,6 @@ import java.util.*
 //===========================================================//
 //===========================================================//
 
-data class ChangeTraderAlgorithmRequest(
-    val algorithmType: String
-)
-
-//===========================================================//
-
 data class CreateTraderRequest(
     val securityIdentifier: SecurityIdentifierRequest,
     val capital: Double,

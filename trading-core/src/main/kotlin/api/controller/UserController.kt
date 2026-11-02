@@ -37,10 +37,10 @@ class UserController(
 
     @PostMapping
     suspend fun create(): ResponseEntity<UserResponse> {
-        val response = auth.createUser().toResponse()
+        val userId = auth.createUser()
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(response)
+            .body(userService.getById(userId).toResponse())
     }
 }

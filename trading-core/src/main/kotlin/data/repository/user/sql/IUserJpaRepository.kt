@@ -2,12 +2,20 @@ package data.repository.user.sql
 
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import java.util.*
 
-interface IUserJpaRepository : JpaRepository<UserEntity, UUID>{
+interface IUserJpaRepository : JpaRepository<UserEntity, UUID> {
     @EntityGraph(attributePaths = ["portfolio", "portfolio.traders", "portfolio.traders.holdings"])
     override fun findById(id: UUID): Optional<UserEntity>
 
     @EntityGraph(attributePaths = ["portfolio", "portfolio.traders", "portfolio.traders.holdings"])
     override fun findAllById(ids: Iterable<UUID>): List<UserEntity>
+
+    @EntityGraph(attributePaths = ["portfolio", "portfolio.traders", "portfolio.traders.holdings"])
+    override fun findAll(): List<UserEntity>
+
+    // TODO [v2.0]: This needs to be refactored, cuz this causes OOM.
+    @Query("SELECT u.id FROM UserEntity u")
+    fun findAllUserId(): List<UUID>
 }

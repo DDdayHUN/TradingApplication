@@ -22,7 +22,7 @@ class AuthenticationService(
     //===========================================================//
     // Private Field(s)
 
-    private val logger = logger<AuthenticationService>()
+    private val m_Logger = logger<AuthenticationService>()
 
     //===========================================================//
     //===========================================================//
@@ -42,36 +42,36 @@ class AuthenticationService(
     //===========================================================//
 
     @Transactional
-    override suspend fun createUser(): User {
+    override suspend fun createUser(): UUID {
         val auth = SecurityContextHolder.getContext().authentication
-            ?: run{
-                logger.warn("User creation attempted without authentication")
+            ?: run {
+                m_Logger.warn("User creation attempted without authentication")
                 throw AuthenticationException("No authentication present")
             }
 
         val uuid: UUID =
             try { UUID.fromString(auth.name) }
             catch (e: IllegalArgumentException) {
-                logger.warn("Authentication contained invalid user UUID: {}", auth)
+                m_Logger.warn("Authentication contained invalid user UUID: {}", auth)
                 throw AuthenticationException("Invalid UUID", e)
             }
 
         val jwtAuth = auth as? JwtAuthenticationToken
             ?: run {
-                logger.warn("User creation attempted without authentication type")
+                m_Logger.warn("User creation attempted without authentication type")
                 throw AuthenticationException("Invalid JWT token")
             }
 
         val username = jwtAuth.token.getClaimAsString("preferred_username")
             ?: run {
-                logger.warn("JWT token missing preferred_username claim for user id={}", uuid)
+                m_Logger.warn("JWT token missing preferred_username claim for user id={}", uuid)
                 throw AuthenticationException("Username missing from token")
             }
 
         val query = userRepository.getById(uuid)
 
         if(query.isSuccess) {
-            logger.warn("User Already exists id={}", uuid)
+            m_Logger.warn("User Already exists id={}", uuid)
             throw UserAlreadyExistsException(query.getOrThrow().id)
         }
         else {
@@ -83,19 +83,20 @@ class AuthenticationService(
 
             return userRepository.save(newUser.toEntity())
                 .onSuccess { user ->
-                    logger.info(
+                    m_Logger.info(
                         "User created successfully id={} username={}",
                         user.id,
                         user.userName
                     )
                 }.onFailure { user ->
-                  logger.error(
+                  m_Logger.error(
                       "Failed to create user id={}",
                       uuid, user
                   )
                 }
                 .getOrThrow()
                 .toDomain()
+                .id
         }
     }
 }
