@@ -177,7 +177,9 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Helper Class(es)
 
-    data class Output(val list: List<Pair<TimePeriod, EvaluationStatistics>>) {
+    data class Output(
+        val list: List<Pair<TimePeriod, EvaluationStatistics>>
+    ) {
         private val availablePeriods = TimePeriod.entries.filter { period -> list.any { it.first == period } }
 
         fun display() {
