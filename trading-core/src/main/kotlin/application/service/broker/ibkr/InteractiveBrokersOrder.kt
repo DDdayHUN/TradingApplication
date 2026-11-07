@@ -28,32 +28,65 @@ data class InteractiveBrokersOrder(
         }
 
     fun submit(): Result<InteractiveBrokersOrder> {
-        try {
-            check(status == Status.PENDING) { "Status must be PENDING" }
-            return Result.success(copy(status = Status.SUBMITTED))
-        }
-        catch(e: Exception) {
-            return Result.failure(e)
+        return when (status) {
+            Status.PENDING -> {
+                Result.success(copy(status = Status.SUBMITTED))
+            }
+
+            Status.SUBMITTED, Status.FILLED -> {
+                Result.success(this)
+            }
+
+            else -> {
+                Result.failure(
+                    IllegalStateException("Cannot submit order with status $status")
+                )
+            }
         }
     }
 
-    fun fill(filledQuantity: String, averageFillPrice: Double): Result<InteractiveBrokersOrder> {
-        try {
-            check(status != Status.FILLED && status != Status.CANCELLED) { "Status must be PENDING" }
-            return Result.success(copy(status = Status.FILLED, filledQuantity = filledQuantity, averageFillPrice = averageFillPrice))
-        }
-        catch(e: Exception) {
-            return Result.failure(e)
+    fun fill(
+        filledQuantity: String,
+        averageFillPrice: Double
+    ): Result<InteractiveBrokersOrder> {
+        return when (status) {
+            Status.PENDING, Status.SUBMITTED -> {
+                Result.success(
+                    copy(
+                        status = Status.FILLED,
+                        filledQuantity = filledQuantity,
+                        averageFillPrice = averageFillPrice
+                    )
+                )
+            }
+
+            Status.FILLED -> {
+                Result.success(this)
+            }
+
+            else -> {
+                Result.failure(
+                    IllegalStateException("Cannot fill order with status $status")
+                )
+            }
         }
     }
 
     fun cancel(): Result<InteractiveBrokersOrder> {
-        try {
-            check(status != Status.FILLED) { "Status is already FILLED" }
-            return Result.success(copy(status = Status.CANCELLED))
-        }
-        catch(e: Exception) {
-            return Result.failure(e)
+        return when (status) {
+            Status.PENDING, Status.SUBMITTED -> {
+                Result.success(copy(status = Status.CANCELLED))
+            }
+
+            Status.CANCELLED -> {
+                Result.success(this)
+            }
+
+            else -> {
+                Result.failure(
+                    IllegalStateException("Cannot cancel order with status $status")
+                )
+            }
         }
     }
 
@@ -71,10 +104,8 @@ data class InteractiveBrokersOrder(
         PENDING,
         SUBMITTED,
         PRE_SUBMITTED,
-        PARTIALLY_FILLED,
         FILLED,
         CANCELLED,
-        REJECTED,
         INACTIVE,
         PENDING_CANCEL
     }
