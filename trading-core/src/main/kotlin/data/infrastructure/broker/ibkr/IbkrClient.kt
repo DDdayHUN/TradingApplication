@@ -301,6 +301,9 @@ class IbkrClient(
 
     override fun connectionClosed() = logger.info("IBKR connection closed")
     override fun connectAck() = logger.info("IBKR connection acknowledged")
+
+    //===========================================================//
+
     override fun orderStatusProtoBuf(message: OrderStatusProto.OrderStatus?) {
         if(message == null) {
             logger.warn("Received null IBKR orderStatus protobuf message")
