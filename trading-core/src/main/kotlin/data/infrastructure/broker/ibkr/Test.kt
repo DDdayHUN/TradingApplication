@@ -3,9 +3,11 @@ package data.infrastructure.broker.ibkr
 import api.dto.CreateTraderRequest
 import api.dto.SecurityIdentifierRequest
 import application.logging.logger
+import application.provider.MarketDataProvider
 import application.service.trader.ITraderService
 import application.service.broker.ibkr.InteractiveBrokersService
 import application.tester.TradingAlgorithmEvaluator
+import data.network.IMarketDataProvider
 import data.network.ibkr.backtest.BacktestDataService
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.user.IUserRepository
@@ -37,6 +39,7 @@ class Test(
     @param:Qualifier("yahoo")
     private val provider: IHistoricalMarketDataProvider,
     private val userRepository: IUserRepository,
+    private val marketDataProvider: MarketDataProvider,
 ) {
     private val logger = logger<Test>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -48,9 +51,25 @@ class Test(
 
 
     @Scheduled(
-        cron = "0 18 21 * * *",
+        cron = "0 33 17 * * *",
         zone = "Europe/Budapest"
     )
+    fun getFinnhubMarketData(){
+        scope.launch{
+            try {
+                val identifier = SecurityIdentifier(
+                    isin = "US4370761029",
+                    tickerSymbol = "HD",
+                    currency = "USD"
+                )
+               val quote = marketDataProvider.get(MarketDataProvider.Type.Finnhub).getQuote(userId, identifier).getOrThrow()
+                logger.info("Current Price for identifier: $quote")
+            } catch(e: Exception){
+                throw e
+            }
+        }
+    }
+
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
