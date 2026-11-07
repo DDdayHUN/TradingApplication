@@ -98,7 +98,7 @@ class TradingAlgorithmEvaluator {
 
         val source = listOfSecurityIdentifiers
             .map { securityIdentifier ->
-                async(Dispatchers.IO) {
+                async {
                     val securityHistory = m_Provider.getBySecurityIdentifier(securityIdentifier).getOrThrow()
                         .sortedBy { security -> security.timestamp }
 
