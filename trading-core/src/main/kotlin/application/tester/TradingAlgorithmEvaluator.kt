@@ -197,11 +197,31 @@ class TradingAlgorithmEvaluator {
             println("Best20 = Average of best 20%, Worst20 = Average of worst 20%")
             println()
 
-            metricDisplay(title = "Total Capital",  metricSelector = { it.totalCapital },   formatter = { it.format(2) })
-            metricDisplay(title = "CAGR",           metricSelector = { it.cagr },           formatter = { "${(it * 100).format(2)}%" })
-            metricDisplay(title = "Max Drawdown",   metricSelector = { it.maxDrawdown },    formatter = { "${(it * 100).format(2)}%" })
-            metricDisplay(title = "Sharpe",         metricSelector = { it.sharpe },         formatter = { it.format(2) })
-            metricDisplay(title = "Calmar",         metricSelector = { it.calmar },         formatter = { it.format(2) })
+            metricDisplay(
+                title = "Total Capital",
+                metricSelector = { it.totalCapital },
+                formatter = { it.format(2) }
+            )
+            metricDisplay(
+                title = "CAGR",
+                metricSelector = { it.cagr },
+                formatter = { "${(it * 100).format(2)}%" }
+            )
+            metricDisplay(title = "Max Drawdown",
+                metricSelector = { it.maxDrawdown },
+                formatter = { "${(it * 100).format(2)}%" },
+                lowerIsBetter = true
+            )
+            metricDisplay(
+                title = "Sharpe",
+                metricSelector = { it.sharpe },
+                formatter = { it.format(2) }
+            )
+            metricDisplay(
+                title = "Calmar",
+                metricSelector = { it.calmar },
+                formatter = { it.format(2) }
+            )
         }
 
         //===========================================================//
@@ -209,14 +229,41 @@ class TradingAlgorithmEvaluator {
         private fun metricDisplay(
             title: String,
             metricSelector: (EvaluationStatistics.Source) -> Double,
-            formatter: (Double) -> String
+            formatter: (Double) -> String,
+            lowerIsBetter: Boolean = false
         ) {
             header(title)
-            row(label = "M",        value = { it.calculateMetric(metricSelector).mean },        formatter = formatter)
-            row(label = "TM",       value = { it.calculateMetric(metricSelector).trimmedMean }, formatter = formatter)
-            row(label = "Md",       value = { it.calculateMetric(metricSelector).median },      formatter = formatter)
-            row(label = "Best20",   value = { it.calculateMetric(metricSelector).t20 },         formatter = formatter)
-            row(label = "Worst20",  value = { it.calculateMetric(metricSelector).b20 },         formatter = formatter)
+            row(
+                label = "M",
+                value = { it.calculateMetric(metricSelector).mean },
+                formatter = formatter
+            )
+            row(
+                label = "TM",
+                value = { it.calculateMetric(metricSelector).trimmedMean },
+                formatter = formatter
+            )
+            row(
+                label = "Md",
+                value = { it.calculateMetric(metricSelector).median },
+                formatter = formatter
+            )
+            row(
+                label = "Best20",
+                value = {
+                    val metric = it.calculateMetric(metricSelector)
+                    if(lowerIsBetter) metric.b20 else metric.t20
+                },
+                formatter = formatter
+            )
+            row(
+                label = "Worst20",
+                value = {
+                    val metric = it.calculateMetric(metricSelector)
+                    if(lowerIsBetter) metric.t20 else metric.b20
+                },
+                formatter = formatter
+            )
             println("-".repeat(14 + availablePeriods.size * 13))
             println()
         }
