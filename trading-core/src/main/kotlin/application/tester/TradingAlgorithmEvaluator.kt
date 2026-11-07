@@ -498,11 +498,8 @@ class TradingAlgorithmEvaluator {
         val years = Duration.between(from.toJavaInstant(), to.toJavaInstant()).toDays().toDouble() / 365.2425
         val cagr = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0)
         val calmar =
-            if (maxDrawdown == 0.0) {
-                if (cagr > 0.0) Double.POSITIVE_INFINITY else 0.0
-            } else {
-                cagr / abs(maxDrawdown)
-            }
+            if (maxDrawdown == 0.0) if (cagr > 0.0) Double.POSITIVE_INFINITY else 0.0
+            else cagr / abs(maxDrawdown)
 
         return EvaluationStatistics.Source(
             from,
