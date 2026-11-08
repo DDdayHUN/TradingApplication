@@ -11,7 +11,6 @@ import domain.utils.Math.median
 import domain.utils.Math.top
 import domain.utils.Math.trim
 import format
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -21,8 +20,8 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.flatten
 import kotlin.collections.mapValues
+import kotlin.math.abs
 import kotlin.math.pow
-import kotlin.sequences.filter
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 
@@ -68,7 +67,6 @@ class TradingAlgorithmEvaluator {
 
         val results = timePeriods
             .mapNotNull { years(it, securityIdentifiers) }
-            .map { Pair(calculateStatistics(it.first), it.second) }
 
         return@coroutineScope Output(results)
     }
@@ -81,7 +79,7 @@ class TradingAlgorithmEvaluator {
     private suspend fun years(
         cycle: TimePeriod,
         listOfSecurityIdentifiers: List<SecurityIdentifier>
-    ): Pair<Map<SecurityIdentifier, List<TradingAlgorithmBackTesterOutputConverted>>, TimePeriod>? = coroutineScope {
+    ): Pair<TimePeriod, EvaluationStatistics>? = coroutineScope {
         val zone = ZoneOffset.UTC
         val windowSizeYears = cycle.toInt()
 
@@ -97,35 +95,39 @@ class TradingAlgorithmEvaluator {
 
         if ((endYear - windowSizeYears) < startYear) return@coroutineScope null
 
-        val out = listOfSecurityIdentifiers
-            .flatMap { securityIdentifier ->
-                val securityHistory = m_Provider.getBySecurityIdentifier(securityIdentifier).getOrThrow()
-                (startYear..endYear - windowSizeYears step m_WindowStepYears)
-                    .map { year ->
-                        async {
+        val source = listOfSecurityIdentifiers
+            .map { securityIdentifier ->
+                async {
+                    val securityHistory = m_Provider.getBySecurityIdentifier(securityIdentifier).getOrThrow()
+                        .sortedBy { security -> security.timestamp }
+
+                    val sourcesForASecurity = (startYear..endYear - windowSizeYears step m_WindowStepYears)
+                        .mapNotNull { year ->
                             val startDate = Instant.parse("${year}-01-01T00:00:00Z")
                             val endDate = Instant.parse("${year + windowSizeYears}-01-01T00:00:00Z")
 
                             runBackTester(
-                                securityHistory
-                                    .filter { security -> security.timestamp in startDate..endDate }
-                                    .sortedBy { security -> security.timestamp },
+                                securityHistory.filter { security -> security.timestamp in startDate..endDate },
                                 securityIdentifier,
                                 startDate,
                                 endDate
                             )
                         }
-                    }
-                    .awaitAll()
-                    .filterNotNull()
+
+                    Pair(securityIdentifier, sourcesForASecurity)
+                }
             }
+            .awaitAll()
+            .toMap()
 
-        // NOTE : Nem tudom hogy kell-e ez.
-        if (out.isEmpty()) return@coroutineScope null
+        val evaluationStatistic = EvaluationStatistics(
+            tradingAlgorithmType = m_TradingAlgorithmType,
+            taxation = m_TaxationType,
+            startingCapital = m_StartingCapital,
+            source = source,
+        )
 
-        val ret = out.groupBy { it.securityIdentifier }
-
-        return@coroutineScope Pair(ret, cycle)
+        return@coroutineScope Pair(cycle, evaluationStatistic)
     }
 
     //===========================================================//
@@ -135,7 +137,7 @@ class TradingAlgorithmEvaluator {
         securityIdentifier: SecurityIdentifier,
         startDate: Instant,
         endDate: Instant
-    ): TradingAlgorithmBackTesterOutputConverted? {
+    ): EvaluationStatistics.Source? {
         val out = TradingAlgorithmBackTester(
             history = securityHistory,
             type = m_TradingAlgorithmType,
@@ -146,83 +148,7 @@ class TradingAlgorithmEvaluator {
             to = endDate
         ).runBackTest()
 
-        return if (out.tradeWinrate.isNaN() || out.sharpeRatio.isNaN()) null else out.toConvertedOutput()
-    }
-
-    //===========================================================//
-
-    private fun calculateStatistics(
-        map: Map<SecurityIdentifier, List<TradingAlgorithmBackTesterOutputConverted>>
-    ): EvaluationStatistics {
-        val trim = 0.2
-
-        // Statistics gathered and mapped to Map<SecurityIdentifier, VALUE>
-        val capitals = map.mapValues { (_, converted) -> converted.map { it.totalCapital } }
-        val cagrs = map.mapValues { (_, converted) -> converted.map { it.cagr } }
-        val sharpes = map.mapValues { (_, converted) -> converted.map { it.sharpeRatio } }
-        val drawdowns = map.mapValues { (_, converted) -> converted.map { it.maxDrawdown } }
-        val calmar = map.mapValues { (_, converted) ->
-            converted
-                .filter { it.maxDrawdown != 0.0 }
-                .map { it.cagr / it.maxDrawdown }
-        }
-
-        return EvaluationStatistics(
-            tradingAlgorithmType = m_TradingAlgorithmType,
-            taxation = m_TaxationType,
-            startingCapital = m_StartingCapital,
-            source = map,
-
-            totalCapitalMean = capitals.values.flatten().average(),
-            totalCapitalTrimmedMean = capitals.values.flatten().trim(trim).average(),
-            totalCapitalMedian = capitals.values.flatten().median(),
-            totalCapitalT20 = capitals
-                .map { (_, list) -> list.average() }
-                .top(trim).average(),
-            totalCapitalB20 = capitals
-                .map { (_, list) -> list.average() }
-                .bottom(trim).average(),
-
-            cagrMean = cagrs.values.flatten().average(),
-            cagrTrimmedMean = cagrs.values.flatten().trim(trim).average(),
-            cagrMedian = cagrs.values.flatten().median(),
-            cagrT20 = cagrs
-                .map { (_, list) -> list.average() }
-                .top(trim).average(),
-            cagrB20 = cagrs
-                .map { (_, list) -> list.average() }
-                .bottom(trim).average(),
-
-            sharpeMean = sharpes.values.flatten().average(),
-            sharpeTrimmedMean = sharpes.values.flatten().trim(trim).average(),
-            sharpeMedian = sharpes.values.flatten().median(),
-            sharpeT20 = sharpes
-                .map { (_, list) -> list.average() }
-                .top(trim).average(),
-            sharpeB20 = sharpes
-                .map { (_, list) -> list.average() }
-                .bottom(trim).average(),
-
-            maxDrawdownMean = drawdowns.values.flatten().average(),
-            maxDrawdownTrimmedMean = drawdowns.values.flatten().trim(trim).average(),
-            maxDrawdownMedian = drawdowns.values.flatten().median(),
-            maxDrawdownT20 = drawdowns
-                .map { (_, list) -> list.average() }
-                .bottom(trim).average(),
-            maxDrawdownB20 = drawdowns
-                .map { (_, list) -> list.average() }
-                .top(trim).average(),
-
-            calmarMean = calmar.values.flatten().average(),
-            calmarTrimmedMean = calmar.values.flatten().trim(trim).average(),
-            calmarMedian = calmar.values.flatten().median(),
-            calmarT20 = calmar
-                .map { (_, list) -> list.average() }
-                .top(trim).average(),
-            calmarB20 = calmar
-                .map { (_, list) -> list.average() }
-                .bottom(trim).average(),
-        )
+        return if (out.tradeWinrate.isNaN() || out.sharpeRatio.isNaN()) null else out.toSource()
     }
 
     //===========================================================//
@@ -251,38 +177,15 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Helper Class(es)
 
-    data class Output(val list: List<Pair<EvaluationStatistics, TimePeriod>>) {
-        private val availablePeriods: List<TimePeriod> get() = TimePeriod.entries.filter { period -> list.any { it.second == period } }
-
-        fun getBestList(
-            size: Int = 0,
-            metric: Metric = Metric.TOTAL_CAPITAL
-        ): List<SecurityIdentifier> {
-
-            val statistics = list
-                .firstOrNull()
-                ?.first
-                ?: return emptyList()
-
-            val values = when (metric) {
-                Metric.TOTAL_CAPITAL -> statistics.source.mapValues { (_, converted) -> converted.map { it.totalCapital } }.bestList()
-                Metric.CAGR -> statistics.source.mapValues { (_, converted) -> converted.map { it.cagr } }.bestList()
-            }
-
-            if(size == 0) return values.map{it.first}
-            return values.take(size).map { it.first }
-        }
-
-        enum class Metric {
-            TOTAL_CAPITAL,
-            CAGR
-        }
+    data class Output(
+        val list: List<Pair<TimePeriod, EvaluationStatistics>>
+    ) {
+        private val availablePeriods = TimePeriod.entries.filter { period -> list.any { it.first == period } }
 
         fun display() {
-
             require(list.isNotEmpty()) { "No evaluation results available." }
 
-            val first = list.first().first
+            val first = list.first().second
             val tax = if (first.taxation == null) "Without" else "With"
 
             println("#===============================================================#")
@@ -295,53 +198,73 @@ class TradingAlgorithmEvaluator {
             println("Best20 = Average of best 20%, Worst20 = Average of worst 20%")
             println()
 
-            // Total Capital
-            header("Total Capital")
-            row("M",     { it.totalCapitalMean },        { it.format(2) })
-            row("TM",    { it.totalCapitalTrimmedMean }, { it.format(2) })
-            row("Md",    { it.totalCapitalMedian },      { it.format(2) })
-            row("Best20", { it.totalCapitalT20 },         { it.format(2) })
-            row("Worst20", { it.totalCapitalB20 },         { it.format(2) })
-            println("-".repeat(14 + availablePeriods.size * 13))
-            println()
+            metricDisplay(
+                title = "Total Capital",
+                metricSelector = { it.totalCapital },
+                formatter = { it.format(2) }
+            )
+            metricDisplay(
+                title = "CAGR",
+                metricSelector = { it.cagr },
+                formatter = { "${(it * 100).format(2)}%" }
+            )
+            metricDisplay(title = "Max Drawdown",
+                metricSelector = { it.maxDrawdown },
+                formatter = { "${(it * 100).format(2)}%" },
+                lowerIsBetter = true
+            )
+            metricDisplay(
+                title = "Sharpe",
+                metricSelector = { it.sharpe },
+                formatter = { it.format(2) }
+            )
+            metricDisplay(
+                title = "Calmar",
+                metricSelector = { it.calmar },
+                formatter = { it.format(2) }
+            )
+        }
 
-            // CAGR
-            header("CAGR")
-            row("M",     { it.cagrMean },        { "${(it * 100).format(2)}%" })
-            row("TM",    { it.cagrTrimmedMean }, { "${(it * 100).format(2)}%" })
-            row("Md",    { it.cagrMedian },      { "${(it * 100).format(2)}%" })
-            row("Best20", { it.cagrT20 },         { "${(it * 100).format(2)}%" })
-            row("Worst20", { it.cagrB20 },         { "${(it * 100).format(2)}%" })
-            println("-".repeat(14 + availablePeriods.size * 13))
-            println()
+        //===========================================================//
 
-            // Max Drawdown
-            header("Max Drawdown")
-            row("M",     { it.maxDrawdownMean },        { "${(it * 100).format(2)}%" })
-            row("TM",    { it.maxDrawdownTrimmedMean }, { "${(it * 100).format(2)}%" })
-            row("Md",    { it.maxDrawdownMedian },      { "${(it * 100).format(2)}%" })
-            row("Best20", { it.maxDrawdownT20 },         { "${(it * 100).format(2)}%" })
-            row("Worst20", { it.maxDrawdownB20 },         { "${(it * 100).format(2)}%" })
-            println("-".repeat(14 + availablePeriods.size * 13))
-            println()
-
-            // Sharpe
-            header("Sharpe")
-            row("M",     { it.sharpeMean },        { it.format(2) })
-            row("TM",    { it.sharpeTrimmedMean }, { it.format(2) })
-            row("Md",    { it.sharpeMedian },      { it.format(2) })
-            row("Best20", { it.sharpeT20 },         { it.format(2) })
-            row("Worst20", { it.sharpeB20 },         { it.format(2) })
-            println("-".repeat(14 + availablePeriods.size * 13))
-            println()
-
-            // Calmar
-            header("Calmar")
-            row("M",     { it.calmarMean },        { it.format(2) })
-            row("TM",    { it.calmarTrimmedMean }, { it.format(2) })
-            row("Md",    { it.calmarMedian },      { it.format(2) })
-            row("Best20", { it.calmarT20 },         { it.format(2) })
-            row("Worst20", { it.calmarB20 },         { it.format(2) })
+        private fun metricDisplay(
+            title: String,
+            metricSelector: (EvaluationStatistics.Source) -> Double,
+            formatter: (Double) -> String,
+            lowerIsBetter: Boolean = false
+        ) {
+            header(title)
+            row(
+                label = "M",
+                value = { it.calculateMetric(metricSelector).mean },
+                formatter = formatter
+            )
+            row(
+                label = "TM",
+                value = { it.calculateMetric(metricSelector).trimmedMean },
+                formatter = formatter
+            )
+            row(
+                label = "Md",
+                value = { it.calculateMetric(metricSelector).median },
+                formatter = formatter
+            )
+            row(
+                label = "Best20",
+                value = {
+                    val metric = it.calculateMetric(metricSelector)
+                    if(lowerIsBetter) metric.b20 else metric.t20
+                },
+                formatter = formatter
+            )
+            row(
+                label = "Worst20",
+                value = {
+                    val metric = it.calculateMetric(metricSelector)
+                    if(lowerIsBetter) metric.t20 else metric.b20
+                },
+                formatter = formatter
+            )
             println("-".repeat(14 + availablePeriods.size * 13))
             println()
         }
@@ -366,7 +289,7 @@ class TradingAlgorithmEvaluator {
             value: (EvaluationStatistics) -> Double,
             formatter: (Double) -> String
         ) {
-            val byPeriod = list.associate { it.second to it.first }
+            val byPeriod = list.associate { it.first to it.second }
 
             val values = availablePeriods.joinToString(" ") { period ->
                 "| ${
@@ -386,7 +309,7 @@ class TradingAlgorithmEvaluator {
             values: (EvaluationStatistics) -> List<Pair<SecurityIdentifier, Double>>,
             formatter: (Double) -> String
         ) {
-            val byPeriod = list.associate { it.second to it.first }
+            val byPeriod = list.associate { it.first to it.second }
 
             availablePeriods.forEach { period ->
                 val statistics = byPeriod[period] ?: return@forEach
@@ -441,6 +364,34 @@ class TradingAlgorithmEvaluator {
                 }
             }
         }
+
+        //===========================================================//
+
+        fun getBestList(
+            size: Int = 0,
+            metric: Metric = Metric.TOTAL_CAPITAL
+        ): List<SecurityIdentifier> {
+
+            val statistics = list
+                .firstOrNull()
+                ?.second
+                ?: return emptyList()
+
+            val values = when (metric) {
+                Metric.TOTAL_CAPITAL -> statistics.source.mapValues { (_, converted) -> converted.map { it.totalCapital } }.bestList()
+                Metric.CAGR -> statistics.source.mapValues { (_, converted) -> converted.map { it.cagr } }.bestList()
+            }
+
+            if(size == 0) return values.map{ it.first }
+            return values.take(size).map { it.first }
+        }
+
+        //===========================================================//
+
+        enum class Metric {
+            TOTAL_CAPITAL,
+            CAGR
+        }
     }
 
     //===========================================================//
@@ -449,64 +400,60 @@ class TradingAlgorithmEvaluator {
         val tradingAlgorithmType: TradingAlgorithm.Type,
         val taxation: Taxation.Type?,
         val startingCapital: Double,
-        val source: Map<SecurityIdentifier, List<TradingAlgorithmBackTesterOutputConverted>>,
+        val source: Map<SecurityIdentifier, List<Source>>,
+    ) {
+        fun calculateMetric(
+            selector: (Source) -> Double
+        ): Metric {
+            val trim = 0.2
+            val selected = source.mapValues { (_, converted) -> converted.map(selector) }
 
-        val totalCapitalMean: Double,
-        val totalCapitalTrimmedMean: Double,
-        val totalCapitalMedian: Double,
-        val totalCapitalT20: Double,
-        val totalCapitalB20: Double,
+            return Metric(
+                mean = selected.values.flatten().average(),
+                trimmedMean = selected.values.flatten().trim(trim).average(),
+                median = selected.values.flatten().median(),
+                t20 = selected.map { (_, list) -> list.average() }.top(trim).average(),
+                b20 = selected.map { (_, list) -> list.average() }.bottom(trim).average()
+            )
+        }
 
-        val cagrMean: Double,
-        val cagrTrimmedMean: Double,
-        val cagrMedian: Double,
-        val cagrT20: Double,
-        val cagrB20: Double,
+        //===========================================================//
+        //===========================================================//
+        // Helper Class(es)
 
-        val sharpeMean: Double,
-        val sharpeTrimmedMean: Double,
-        val sharpeMedian: Double,
-        val sharpeT20: Double,
-        val sharpeB20: Double,
+        data class Metric(
+            val mean: Double,
+            val trimmedMean: Double,
+            val median: Double,
+            val t20: Double,
+            val b20: Double
+        )
 
-        val maxDrawdownMean: Double,
-        val maxDrawdownTrimmedMean: Double,
-        val maxDrawdownMedian: Double,
-        val maxDrawdownT20: Double,
-        val maxDrawdownB20: Double,
+        //===========================================================//
 
-        val calmarMean: Double,
-        val calmarTrimmedMean: Double,
-        val calmarMedian: Double,
-        val calmarT20: Double,
-        val calmarB20: Double
-    )
+        data class Source(
+            val from: Instant,
+            val to: Instant,
+            val startingCapital: Double,
 
-    //===========================================================//
+            val totalCapital: Double,
+            val cagr: Double,
+            val maxDrawdown: Double,
+            val sharpe: Double,
+            val calmar: Double,
 
-    data class TradingAlgorithmBackTesterOutputConverted(
-        val tradingAlgorithmType: TradingAlgorithm.Type,
-        val taxation: Taxation.Type?,
-        val securityIdentifier: SecurityIdentifier,
-        val duration: Duration,
-        val startingCapital: Double,
-        val totalCapital: Double,
+            val totalBuysMade: Double,
+            val totalSellsMade: Double,
+            val forceClosedTrades: Double,
+            val tradeWinrate: Double,
 
-        val cagr: Double,
+            val averageWin: Double,
+            val averageLoss: Double,
 
-        val totalBuysMade: Double,
-        val totalSellsMade: Double,
-        val forceClosedTrades: Double,
-        val tradeWinrate: Double,
-        val maxDrawdown: Double,
-        val sharpeRatio: Double,
-
-        val averageWin: Double,
-        val averageLoss: Double,
-
-        val stockHistory: List<SecurityHistory>,
-        val tradingOrders: List<TradingOrder>
-    )
+            val stockHistory: List<SecurityHistory>,
+            val tradingOrders: List<TradingOrder>,
+        )
+    }
 
     //===========================================================//
 
@@ -549,29 +496,33 @@ class TradingAlgorithmEvaluator {
     //===========================================================//
     // Extension(s)
 
-    private fun TradingAlgorithmBackTester.Output.toConvertedOutput(): TradingAlgorithmBackTesterOutputConverted {
+    private fun TradingAlgorithmBackTester.Output.toSource(): EvaluationStatistics.Source {
         val years = Duration.between(from.toJavaInstant(), to.toJavaInstant()).toDays().toDouble() / 365.2425
         val cagr = ((totalCapital / startingCapital).pow(1.0 / years) - 1.0)
-        val duration = Duration.between(from.toJavaInstant(), to.toJavaInstant())!!
+        val calmar =
+            if (maxDrawdown == 0.0) if (cagr > 0.0) Double.POSITIVE_INFINITY else 0.0
+            else cagr / abs(maxDrawdown)
 
-        return TradingAlgorithmBackTesterOutputConverted(
-            tradingAlgorithmType,
-            taxation,
-            securityIdentifier,
-            duration,
+        return EvaluationStatistics.Source(
+            from,
+            to,
             startingCapital,
+
             totalCapital,
             cagr,
+            maxDrawdown,
+            sharpeRatio,
+            calmar,
+
             totalBuysMade.toDouble(),
             totalSellsMade.toDouble(),
             forceClosedTrades.toDouble(),
             tradeWinrate,
-            maxDrawdown,
-            sharpeRatio,
+
             averageWin,
             averageLoss,
             stockHistory,
-            tradingOrders
+            tradingOrders,
         )
     }
 }
