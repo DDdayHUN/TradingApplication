@@ -7,11 +7,14 @@ import application.service.user.User
 import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
-import data.repository.order.sql.InteractiveBrokersOrderRepository
+import data.infrastructure.broker.ibkr.order.sql.InteractiveBrokersOrderRepository
 import domain.trader.TradingOrder
 import data.infrastructure.broker.ibkr.IbkrEvent
 import data.infrastructure.broker.ibkr.IbkrHistoricalBar
 import data.infrastructure.broker.ibkr.InteractiveBrokerSessionManager
+import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
+import data.infrastructure.broker.ibkr.toDomain
+import data.infrastructure.broker.ibkr.toInteractiveBrokersOrder
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.delay
 import org.springframework.context.event.EventListener

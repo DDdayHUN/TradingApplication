@@ -43,15 +43,41 @@ class Trader {
     //===========================================================//
     // Public Method(es)
 
-    fun runAlgorithm(quote: Quote): TradingOrder {
+    fun runAlgorithm(quote: Quote): Set<TradingOrder> {
         val currentPrice = quote.currentPrice
+        val currentTime = Instant.now()
+
         val output = m_Algorithm.run(holdings, availableCapital, currentPrice)
 
-        return TradingOrder(
-            traderId = id,
-            signal = output,
-            atPrice = currentPrice
-        )
+        val ret = mutableSetOf<TradingOrder>()
+        if(output.buy != null) {
+            ret.add(
+                TradingOrder(
+                    traderId = id,
+                    securityIdentifier = securityIdentifier,
+                    signal = TradingOrder.Signal.Buy(output.buy.amount),
+                    atPrice = currentPrice,
+                    createdAt = currentTime
+                )
+            )
+        }
+        if(output.sell != null) {
+            val sellHoldings = output.sell.batches
+                .map { SellSecurityHolding(it.first, it.second) }
+                .toSet()
+
+            ret.add(
+                TradingOrder(
+                    traderId = id,
+                    securityIdentifier = securityIdentifier,
+                    signal = TradingOrder.Signal.Sell(sellHoldings),
+                    atPrice = currentPrice,
+                    createdAt = currentTime
+                )
+            )
+        }
+
+        return ret
     }
 
     //===========================================================//
@@ -65,7 +91,7 @@ class Trader {
 
     //===========================================================//
 
-    fun applySellFill(price: Double, holdingsToSell: Set<SellHolding>) {
+    fun applySellFill(price: Double, holdingsToSell: Set<SellSecurityHolding>) {
         holdingsToSell.forEach { item ->
             val holding = m_Holdings.find { it.id == item.securityHolding.id }
                 ?: throw IllegalStateException("Holding ${item.securityHolding.id} not found")

@@ -4,7 +4,8 @@ import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
 import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Action
 import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Status
 import data.repository.order.sql.TradingOrderEntity
-import domain.trader.SellHolding
+import data.repository.security.SellSecurityHoldingEntity
+import domain.trader.SellSecurityHolding
 import jakarta.persistence.*
 import java.time.Instant
 import java.util.*
@@ -42,7 +43,7 @@ class InteractiveBrokersOrderEntity(
     var averageFillPrice: Double? = null,
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var sellAllocations: MutableSet<SellHoldingEntity> = mutableSetOf(),
+    var sellAllocations: MutableSet<SellSecurityHoldingEntity> = mutableSetOf(),
 
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: Instant = Instant.now(),
@@ -67,7 +68,7 @@ fun InteractiveBrokersOrder.toEntity(): InteractiveBrokersOrderEntity {
     if(signal is InteractiveBrokersOrder.Signal.Sell){
         entity.sellAllocations =
             signal.allocations.map { (holding, amount) ->
-                SellHoldingEntity(
+                SellSecurityHoldingEntity(
                     order = entity,
                     holdingId = holding,
                     amount = amount
@@ -85,7 +86,7 @@ fun InteractiveBrokersOrderEntity.toInteractiveBrokersOrder(): InteractiveBroker
         Action.SELL -> {
             InteractiveBrokersOrder.Signal.Sell(
                 allocations = sellAllocations.map {
-                    SellHolding(
+                    SellSecurityHolding(
                         id = it.holdingId,
                         amount = it.amount
                     )

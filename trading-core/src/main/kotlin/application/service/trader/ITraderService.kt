@@ -2,7 +2,7 @@ package application.service.trader
 
 import api.dto.CreateTraderRequest
 import domain.algorithm.TradingAlgorithm
-import domain.trader.SellHolding
+import domain.trader.SellSecurityHolding
 import domain.trader.Trader
 import domain.trader.TradingOrder
 import java.util.*
@@ -21,5 +21,5 @@ interface ITraderService {
 
     suspend fun changeAlgorithm(traderId: UUID, algorithmType: TradingAlgorithm.Type): Trader
     suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double)
-    suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellHolding>, averageFillPrice: Double)
+    suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellSecurityHolding>, averageFillPrice: Double)
 }

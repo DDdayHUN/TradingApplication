@@ -19,7 +19,7 @@ interface IInteractiveBrokersOrderJpaRepository : JpaRepository<InteractiveBroke
     @Transactional
     @Query(
         """
-        DELETE FROM SellHoldingEntity s
+        DELETE FROM SellSecurityHoldingEntity s
         WHERE s.order.id = :orderId
         """
     )

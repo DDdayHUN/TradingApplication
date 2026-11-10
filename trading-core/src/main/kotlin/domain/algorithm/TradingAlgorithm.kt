@@ -4,6 +4,7 @@ import com.google.gson.annotations.JsonAdapter
 import domain.adapter.TradingAlgorithmAdapter
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
+import domain.trader.SellSecurityHolding
 import kotlin.collections.filter
 import kotlin.time.Instant
 
@@ -203,18 +204,19 @@ sealed interface TradingAlgorithm {
 
     //===========================================================//
 
+    // NOTE : Maybe consolidate the TradingOrder Signal class and this one.
     data class Output(
         val buy: Buy?,
         val sell: Sell?
     ) {
         data class Buy(val amount: Int) {
             init {
-                require(amount > 0) { "Amount must be greater than 0" }
+                require(amount > 0)
             }
         }
         data class Sell(val batches: Set<Pair<SecurityHolding, Int>>) {
             init {
-                require(batches.isNotEmpty()) { "Batches must be non empty" }
+                require(batches.isNotEmpty())
             }
         }
     }

@@ -1,9 +1,6 @@
-package application.service.broker.ibkr
+package data.infrastructure.broker.ibkr
 
-import domain.algorithm.TradingAlgorithm
-import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
-import domain.trader.SellHolding
 import domain.trader.TradingOrder
 import java.time.Instant
 import java.util.UUID
@@ -12,7 +9,8 @@ data class InteractiveBrokersOrder(
     val id: UUID,
     val traderId: UUID,
     val brokerOrderId: Int,
-    val signal: Signal,
+    val securityIdentifier: SecurityIdentifier,
+    val signal: TradingOrder.Signal,
     val action: Action,
     val signalPrice: Double,
     val status: Status = Status.PENDING,
@@ -22,8 +20,8 @@ data class InteractiveBrokersOrder(
 ) {
     val quantity: Double
         get() = when (signal) {
-            is Signal.Buy -> signal.amount.toDouble()
-            is Signal.Sell -> signal.allocations.sumOf { (_, amount) -> amount }.toDouble()
+            is TradingOrder.Signal.Buy -> signal.amount.toDouble()
+            is TradingOrder.Signal.Sell -> signal.sellHoldings.sumOf { (_, amount) -> amount }.toDouble()
         }
 
     fun submit(): Result<InteractiveBrokersOrder> {
@@ -89,11 +87,6 @@ data class InteractiveBrokersOrder(
         }
     }
 
-    sealed interface Signal {
-        data class Buy(val amount: Int): Signal
-        data class Sell(val allocations: Set<SellHolding>): Signal
-    }
-
     enum class Action {
         BUY,
         SELL
@@ -110,76 +103,26 @@ data class InteractiveBrokersOrder(
     }
 }
 
-fun TradingOrder.toInteractiveBrokersOrder(ibkrOrderId: Int): Set<InteractiveBrokersOrder> {
-    val ret = mutableSetOf<InteractiveBrokersOrder>()
-
-    if(signal.buy != null) {
-        ret.add(InteractiveBrokersOrder(
-            id = id,
-            traderId = traderId,
-            brokerOrderId = ibkrOrderId,
-            signal = InteractiveBrokersOrder.Signal.Buy(signal.buy.amount),
-            action = InteractiveBrokersOrder.Action.BUY,
-            signalPrice = atPrice,
-            status = InteractiveBrokersOrder.Status.PENDING,
-            createdAt = createdAt
-        ))
-    }
-
-    if(this.signal.sell != null) {
-        val sell = signal.sell.batches.map { (holding, amount) ->
-            SellHolding(
-                id = holding.id,
-                amount = amount
-            )
-        }.toSet()
-        ret.add(InteractiveBrokersOrder(
-            id = id,
-            brokerOrderId = ibkrOrderId,
-            traderId = traderId,
-            signal = InteractiveBrokersOrder.Signal.Sell(sell),
-            action = InteractiveBrokersOrder.Action.SELL,
-            signalPrice = atPrice,
-            status = InteractiveBrokersOrder.Status.PENDING,
-            createdAt = createdAt
-        ))
-    }
-
-    return ret
+fun TradingOrder.toInteractiveBrokersOrder(ibkrOrderId: Int): InteractiveBrokersOrder {
+    return InteractiveBrokersOrder(
+        id = id,
+        traderId = traderId,
+        brokerOrderId = ibkrOrderId,
+        securityIdentifier = securityIdentifier,
+        signal = signal,
+        action = InteractiveBrokersOrder.Action.BUY,
+        signalPrice = atPrice,
+        status = InteractiveBrokersOrder.Status.PENDING,
+        createdAt = createdAt
+    )
 }
 
 fun InteractiveBrokersOrder.toDomain(): TradingOrder {
-    val algorithmOutput = when (val sig = this.signal) {
-        is InteractiveBrokersOrder.Signal.Buy -> {
-            TradingAlgorithm.Output(
-                buy = TradingAlgorithm.Output.Buy(amount = sig.amount),
-                sell = null
-            )
-        }
-        is InteractiveBrokersOrder.Signal.Sell -> {
-            val batches = sig.allocations.map { sellHolding ->
-                Pair(
-                    SecurityHolding(
-                        id = sellHolding.id,
-                        timestamp = createdAt,
-                        purchasePrice = signalPrice,
-                        amount = sellHolding.amount,
-                    ),
-                    sellHolding.amount
-                )
-            }.toSet()
-
-            TradingAlgorithm.Output(
-                buy = null,
-                sell = TradingAlgorithm.Output.Sell(batches = batches)
-            )
-        }
-    }
-
     return TradingOrder(
         id = id,
         traderId = traderId,
-        signal = algorithmOutput,
+        securityIdentifier = securityIdentifier,
+        signal = signal,
         atPrice = signalPrice,
         createdAt = createdAt
     )

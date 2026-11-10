@@ -12,14 +12,13 @@ import data.repository.trader.sql.update
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
-import domain.trader.SellHolding
+import domain.trader.SellSecurityHolding
 import domain.trader.Trader
 import domain.trader.TradingOrder
 import exception.TraderNotFoundException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
 import java.util.*
 
 @Service
@@ -114,8 +113,8 @@ class TraderService(
         val user = userService.getById(userId)
         val traders = user.portfolio.traders
 
-        val orders = traders.map { trader ->
-            trader.runAlgorithm(getCurrentPrice(user.id, trader.securityIdentifier))
+        val orders = traders.flatMap { trader ->
+            trader.runAlgorithm(getCurrentQuote(user.id, trader.securityIdentifier))
         }
 
         userService.update(user)
@@ -140,17 +139,15 @@ class TraderService(
     override suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): TradingOrder {
         val trader = traderRepository.getById(traderId).getOrThrow().toDomain()
 
-        val set = trader.holdings
-            .map { holding -> holding to holding.amount }
+        val holdingsToBeSold = trader.holdings
+            .map { holding -> SellSecurityHolding(holding, holding.amount) }
             .toSet()
 
         val order = TradingOrder(
             traderId = trader.id,
-            signal = TradingAlgorithm.Output(
-                null,
-                TradingAlgorithm.Output.Sell(set)
-            ),
-            atPrice = getCurrentPrice(userId, trader.securityIdentifier).currentPrice
+            securityIdentifier = trader.securityIdentifier,
+            signal = TradingOrder.Signal.Sell(holdingsToBeSold),
+            atPrice = getCurrentQuote(userId, trader.securityIdentifier).currentPrice
         )
 
         m_Logger.info("Force Sell of all holdings for user with ID:{$userId} was applied to trader with ID:{$traderId}")
@@ -165,17 +162,15 @@ class TraderService(
         val user = userService.getById(userId)
 
         val orders = user.portfolio.traders.map { trader ->
-            val set = trader.holdings
-                .map { holding -> holding to holding.amount }
+            val holdingsToBeSold = trader.holdings
+                .map { holding -> SellSecurityHolding(holding, holding.amount) }
                 .toSet()
 
             TradingOrder(
                 traderId = trader.id,
-                signal = TradingAlgorithm.Output(
-                    null,
-                    TradingAlgorithm.Output.Sell(set)
-                ),
-                atPrice = getCurrentPrice(userId, trader.securityIdentifier).currentPrice,
+                securityIdentifier = trader.securityIdentifier,
+                signal = TradingOrder.Signal.Sell(holdingsToBeSold),
+                atPrice = getCurrentQuote(userId, trader.securityIdentifier).currentPrice
             )
         }
 
@@ -222,7 +217,7 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellHolding>, averageFillPrice: Double) {
+    override suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellSecurityHolding>, averageFillPrice: Double) {
         val traderEntity = traderRepository.getById(traderId).getOrThrow()
         val traderDomain = traderEntity.toDomain()
 
@@ -238,7 +233,7 @@ class TraderService(
 
     //===========================================================//
 
-    private suspend fun getCurrentPrice(userId: UUID, securityIdentifier: SecurityIdentifier): Quote {
+    private suspend fun getCurrentQuote(userId: UUID, securityIdentifier: SecurityIdentifier): Quote {
         var quote = currentMarketDataProvider.get(MarketDataProvider.Type.Finnhub).getQuote(userId, securityIdentifier)
 
         if(!quote.isSuccess) {
