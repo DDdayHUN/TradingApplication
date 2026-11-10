@@ -125,8 +125,7 @@ class Test(
                         val order = TradingOrder(
                             traderId = trader.id,
                             signal = TradingAlgorithm.Output(TradingAlgorithm.Output.Buy(amount = 3), null),
-                            atPrice = 433.0,
-                            securityIdentifier = trader.securityIdentifier,
+                            atPrice = 433.0
                         )
                         orderService.submitOrder(userId, order)
                 }
