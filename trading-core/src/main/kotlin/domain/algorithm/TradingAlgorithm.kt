@@ -1,7 +1,7 @@
 package domain.algorithm
 
 import com.google.gson.annotations.JsonAdapter
-import domain.adapter.AlgorithmAdapter
+import domain.adapter.TradingAlgorithmAdapter
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
 import kotlin.collections.filter
@@ -14,7 +14,7 @@ import kotlin.time.Instant
  */
 //===========================================================//
 
-@JsonAdapter(AlgorithmAdapter::class)
+@JsonAdapter(TradingAlgorithmAdapter::class)
 sealed interface TradingAlgorithm {
     //===========================================================//
     //===========================================================//

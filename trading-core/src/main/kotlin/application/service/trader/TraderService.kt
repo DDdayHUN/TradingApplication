@@ -145,15 +145,12 @@ class TraderService(
             .toSet()
 
         val order = TradingOrder(
-            orderId = UUID.randomUUID(),
             traderId = trader.id,
             signal = TradingAlgorithm.Output(
                 null,
                 TradingAlgorithm.Output.Sell(set)
             ),
-            atPrice = getCurrentPrice(userId, trader.securityIdentifier).currentPrice,
-            securityIdentifier = trader.securityIdentifier,
-            createdAt = Instant.now(),
+            atPrice = getCurrentPrice(userId, trader.securityIdentifier).currentPrice
         )
 
         m_Logger.info("Force Sell of all holdings for user with ID:{$userId} was applied to trader with ID:{$traderId}")
@@ -173,15 +170,12 @@ class TraderService(
                 .toSet()
 
             TradingOrder(
-                orderId = UUID.randomUUID(),
                 traderId = trader.id,
                 signal = TradingAlgorithm.Output(
                     null,
                     TradingAlgorithm.Output.Sell(set)
                 ),
                 atPrice = getCurrentPrice(userId, trader.securityIdentifier).currentPrice,
-                securityIdentifier = trader.securityIdentifier,
-                createdAt = Instant.now(),
             )
         }
 

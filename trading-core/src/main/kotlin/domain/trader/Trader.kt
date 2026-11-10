@@ -50,8 +50,7 @@ class Trader {
         return TradingOrder(
             traderId = id,
             signal = output,
-            atPrice = currentPrice,
-            securityIdentifier = securityIdentifier
+            atPrice = currentPrice
         )
     }
 
@@ -68,8 +67,8 @@ class Trader {
 
     fun applySellFill(price: Double, holdingsToSell: Set<SellHolding>) {
         holdingsToSell.forEach { item ->
-            val holding = m_Holdings.find { it.id == item.id }
-                ?: throw IllegalStateException("Holding ${item.id} not found")
+            val holding = m_Holdings.find { it.id == item.securityHolding.id }
+                ?: throw IllegalStateException("Holding ${item.securityHolding.id} not found")
 
             sell(
                 holding = holding,

@@ -1,7 +1,7 @@
-package data.repository.order.sql
+package data.infrastructure.broker.ibkr.order.sql
 
 import data.repository.portfolio.sql.IPortfolioJpaRepository
-import application.service.broker.ibkr.InteractiveBrokersOrder
+import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
 import exception.TraderNotFoundException
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

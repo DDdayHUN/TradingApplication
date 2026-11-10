@@ -1,12 +1,9 @@
-package data.repository.order.sql
+package data.infrastructure.broker.ibkr.order.sql
 
-import data.repository.trader.sql.TraderEntity
-import application.service.broker.ibkr.InteractiveBrokersOrder
-import application.service.broker.ibkr.InteractiveBrokersOrder.Action
-import application.service.broker.ibkr.InteractiveBrokersOrder.Status
-import data.repository.security.SecurityIdentifierEntity
-import data.repository.security.toDomain
-import data.repository.security.toEntity
+import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
+import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Action
+import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Status
+import data.repository.order.sql.TradingOrderEntity
 import domain.trader.SellHolding
 import jakarta.persistence.*
 import java.time.Instant
@@ -14,44 +11,15 @@ import java.util.*
 import kotlin.collections.map
 
 @Entity
-@Table(name = "app_order")
+@Table(name = "app_infrastructure_ibkr_order")
 class InteractiveBrokersOrderEntity(
     @Id
-    @Column(name ="id", nullable = false, updatable = false)
-    var id: UUID,
-
     @Column(name = "ibkr_order_id", nullable = false, updatable = false)
     var ibkrOrderId: Int,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "trader_id", nullable = false, updatable = false)
-    var trader: TraderEntity,
-
-    @Embedded
-    @AttributeOverrides(
-        AttributeOverride(
-            name = "isin",
-            column = Column(
-                name = "security_isin",
-                nullable = false
-            )
-        ),
-        AttributeOverride(
-            name = "tickerSymbol",
-            column = Column(
-                name = "security_ticker",
-                nullable = false
-            )
-        ),
-        AttributeOverride(
-            name = "currency",
-            column = Column(
-                name = "security_currency",
-                nullable = false
-            )
-        )
-    )
-    var securityIdentifier: SecurityIdentifierEntity,
+    @JoinColumn(name = "trading_order_fk", nullable = false, updatable = false)
+    var tradingOrder: TradingOrderEntity,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false, updatable = false)
@@ -80,7 +48,7 @@ class InteractiveBrokersOrderEntity(
     var createdAt: Instant = Instant.now(),
 )
 
-fun InteractiveBrokersOrder.toEntity(trader: TraderEntity): InteractiveBrokersOrderEntity {
+fun InteractiveBrokersOrder.toEntity(): InteractiveBrokersOrderEntity {
     val action = when (signal){
         is InteractiveBrokersOrder.Signal.Buy -> Action.BUY
         is InteractiveBrokersOrder.Signal.Sell -> Action.SELL
@@ -88,15 +56,13 @@ fun InteractiveBrokersOrder.toEntity(trader: TraderEntity): InteractiveBrokersOr
     val entity = InteractiveBrokersOrderEntity(
         id = id,
         ibkrOrderId = brokerOrderId,
-        trader = trader,
         action = action,
         quantity = quantity,
         signalPrice = signalPrice,
         status = status,
         filledQuantity = filledQuantity,
         averageFillPrice = averageFillPrice,
-        createdAt = createdAt,
-        securityIdentifier = securityIdentifier.toEntity()
+        createdAt = createdAt
     )
     if(signal is InteractiveBrokersOrder.Signal.Sell){
         entity.sellAllocations =
@@ -138,8 +104,7 @@ fun InteractiveBrokersOrderEntity.toInteractiveBrokersOrder(): InteractiveBroker
         status = status,
         filledQuantity = filledQuantity,
         averageFillPrice = averageFillPrice,
-        createdAt = createdAt,
-        securityIdentifier = securityIdentifier.toDomain()
+        createdAt = createdAt
     )
 }
 

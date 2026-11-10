@@ -57,6 +57,7 @@ class TradingAlgorithmBackTester {
     private val m_Holdings: MutableSet<SecurityHolding>
     private val m_CapitalHistory: MutableList<Double>
     private val m_TradingOrders: MutableList<TradingOrder>
+    private val m_TraderId: UUID
 
     private var m_CurrentCapital: Double
     private var m_TotalBuysMade: Int
@@ -161,10 +162,9 @@ class TradingAlgorithmBackTester {
 
         m_TradingOrders.add(
             TradingOrder(
-                traderId = UUID.randomUUID(),
+                traderId = m_TraderId,
                 signal = ret,
-                atPrice = currentPrice,
-                securityIdentifier = m_SecurityIdentifier,
+                atPrice = currentPrice
             )
         )
 
@@ -268,6 +268,7 @@ class TradingAlgorithmBackTester {
         m_Holdings = HashSet()
         m_CapitalHistory = ArrayList()
         m_TradingOrders = ArrayList()
+        m_TraderId = UUID.randomUUID()
 
         m_CurrentCapital = m_StartingCapital
         m_TotalBuysMade = 0

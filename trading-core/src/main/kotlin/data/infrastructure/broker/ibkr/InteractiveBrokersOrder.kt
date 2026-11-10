@@ -9,17 +9,16 @@ import java.time.Instant
 import java.util.UUID
 
 data class InteractiveBrokersOrder(
-    val id: UUID = UUID.randomUUID(),
-    val brokerOrderId: Int,
+    val id: UUID,
     val traderId: UUID,
-    val securityIdentifier: SecurityIdentifier,
+    val brokerOrderId: Int,
     val signal: Signal,
     val action: Action,
     val signalPrice: Double,
     val status: Status = Status.PENDING,
     val filledQuantity: String = "",
     val averageFillPrice: Double? = null,
-    val createdAt: Instant = Instant.now()
+    val createdAt: Instant
 ) {
     val quantity: Double
         get() = when (signal) {
@@ -114,17 +113,16 @@ data class InteractiveBrokersOrder(
 fun TradingOrder.toInteractiveBrokersOrder(ibkrOrderId: Int): Set<InteractiveBrokersOrder> {
     val ret = mutableSetOf<InteractiveBrokersOrder>()
 
-    if(this.signal.buy != null) {
+    if(signal.buy != null) {
         ret.add(InteractiveBrokersOrder(
-            id = this.orderId,
+            id = id,
+            traderId = traderId,
             brokerOrderId = ibkrOrderId,
-            traderId = this.traderId,
             signal = InteractiveBrokersOrder.Signal.Buy(signal.buy.amount),
             action = InteractiveBrokersOrder.Action.BUY,
-            signalPrice = this.atPrice,
+            signalPrice = atPrice,
             status = InteractiveBrokersOrder.Status.PENDING,
-            securityIdentifier = this.securityIdentifier,
-            createdAt = this.createdAt
+            createdAt = createdAt
         ))
     }
 
@@ -136,15 +134,14 @@ fun TradingOrder.toInteractiveBrokersOrder(ibkrOrderId: Int): Set<InteractiveBro
             )
         }.toSet()
         ret.add(InteractiveBrokersOrder(
-            id = this.orderId,
+            id = id,
             brokerOrderId = ibkrOrderId,
-            traderId = this.traderId,
+            traderId = traderId,
             signal = InteractiveBrokersOrder.Signal.Sell(sell),
             action = InteractiveBrokersOrder.Action.SELL,
-            signalPrice = this.atPrice,
+            signalPrice = atPrice,
             status = InteractiveBrokersOrder.Status.PENDING,
-            securityIdentifier = this.securityIdentifier,
-            createdAt = this.createdAt
+            createdAt = createdAt
         ))
     }
 
@@ -180,9 +177,8 @@ fun InteractiveBrokersOrder.toDomain(): TradingOrder {
     }
 
     return TradingOrder(
-        orderId = id,
+        id = id,
         traderId = traderId,
-        securityIdentifier = securityIdentifier,
         signal = algorithmOutput,
         atPrice = signalPrice,
         createdAt = createdAt
