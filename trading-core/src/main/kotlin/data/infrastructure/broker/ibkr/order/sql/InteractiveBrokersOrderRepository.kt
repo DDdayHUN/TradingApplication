@@ -1,58 +1,76 @@
 package data.infrastructure.broker.ibkr.order.sql
 
-import data.repository.portfolio.sql.IPortfolioJpaRepository
-import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
-import exception.TraderNotFoundException
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Repository
 class InteractiveBrokersOrderRepository(
-    private val orderRepository: IInteractiveBrokersOrderJpaRepository,
-    private val portfolioRepository: IPortfolioJpaRepository
-) {
+    private val repository: IInteractiveBrokersOrderJpaRepository,
+) : IInteractiveBrokersOrderRepository {
+    //===========================================================//
+    //===========================================================//
+    // Public Method(s)
 
-    @Transactional
-    suspend fun save(ibkrOrder: InteractiveBrokersOrderEntity): Result<InteractiveBrokersOrderEntity> {
+    override suspend fun save(order: InteractiveBrokersOrderEntity): Result<InteractiveBrokersOrderEntity> {
         return runCatching {
-            val portfolio = portfolioRepository.findByTradersId(ibkrOrder.traderId)
-                ?: throw IllegalArgumentException("Portfolio for trader ${ibkrOrder.traderId} not found")
-
-            val trader = portfolio.traders
-                .firstOrNull { trader ->
-                    trader.id == ibkrOrder.traderId
-                } ?: throw TraderNotFoundException(ibkrOrder.traderId)
-
-            orderRepository
-                .save(ibkrOrder.toEntity(trader))
-                .toInteractiveBrokersOrder()
+            repository.save(order)
         }
     }
 
-    // TODO : Ez nem jo, mivel orderId userhez kotott es nem unique. Torlunk olyan ordert is amit nem kene.
-    @Transactional(readOnly = true)
-    suspend fun getByIbkrOrderId(ibkrOrderId: Int): Result<InteractiveBrokersOrderEntity> {
-        return runCatching {
-            val order = orderRepository.findByIbkrOrderId(ibkrOrderId)
-                ?: throw IllegalArgumentException("Order not found with Ibkr Id: ${ibkrOrderId}")
+    //===========================================================//
 
-            order
+    override suspend fun saveAll(order: Iterable<InteractiveBrokersOrderEntity>): Result<List<InteractiveBrokersOrderEntity>> {
+        return runCatching {
+            repository.saveAll(order)
         }
     }
 
-    // TODO : Ez nem jo, mivel orderId userhez kotott es nem unique. Torlunk olyan ordert is amit nem kene.
-    @Transactional
-    suspend fun clearOrderAllocation(orderId: UUID): Result<Unit> {
+    //===========================================================//
+
+    override suspend fun getById(orderId: UUID): Result<InteractiveBrokersOrderEntity> {
         return runCatching {
-            orderRepository.deleteSellAllocationsByOrderId(orderId)
+            repository.findById(orderId).orElseThrow()
         }
     }
 
-    @Transactional(readOnly = true)
-    suspend fun getAll(userId: UUID): Result<List<InteractiveBrokersOrderEntity>>{
-        return runCatching{
-            orderRepository.findAllByTraderPortfolioUserId(userId)
+    //===========================================================//
+
+    override suspend fun getAllById(orderIds: Iterable<UUID>): Result<List<InteractiveBrokersOrderEntity>> {
+        return runCatching {
+            repository.findAllById(orderIds)
+        }
+    }
+
+    //===========================================================//
+
+    override suspend fun deleteById(orderId: UUID): Result<Unit> {
+        return runCatching {
+            repository.deleteById(orderId)
+        }
+    }
+
+    //===========================================================//
+
+    override suspend fun deleteAllById(orderIds: Iterable<UUID>): Result<Unit> {
+        return runCatching {
+            repository.deleteAllById(orderIds)
+        }
+    }
+
+    //===========================================================//
+
+    override suspend fun deleteAll(): Result<Unit> {
+        return runCatching {
+            repository.deleteAll()
+        }
+    }
+
+    //===========================================================//
+
+    override suspend fun getAllByUserId(userId: UUID): Result<List<InteractiveBrokersOrderEntity>> {
+        return runCatching {
+            repository.findAllForUser(userId)
         }
     }
 }

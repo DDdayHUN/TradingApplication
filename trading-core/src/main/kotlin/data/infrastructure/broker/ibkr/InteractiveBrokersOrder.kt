@@ -88,7 +88,7 @@ fun TradingOrder.toInteractiveBrokersOrder(ibkrOrderId: Int): InteractiveBrokers
     return InteractiveBrokersOrder(
         tradingOrder = this,
         brokerOrderId = ibkrOrderId,
-        status = Status.PENDING
+        status = Status.PENDING,
     )
 }
 

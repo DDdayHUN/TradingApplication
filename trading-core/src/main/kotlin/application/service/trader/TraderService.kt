@@ -5,11 +5,13 @@ import application.provider.MarketDataProvider
 import data.repository.g_GSON
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.portfolio.IPortfolioRepository
+import data.repository.security.toDomain
 import data.repository.security.toEntity
 import data.repository.trader.ITraderRepository
 import data.repository.trader.sql.TraderEntity
 import data.repository.trader.sql.toDomain
 import data.repository.trader.sql.toEntity
+import data.repository.user.IUserRepository
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
@@ -24,9 +26,8 @@ import java.util.*
 
 @Service
 class TraderService(
-    @param:Qualifier("yahoo")
-    private val historicalMarketDataProvider: IHistoricalMarketDataProvider,
     private val currentMarketDataProvider: MarketDataProvider,
+    private val userRepository: IUserRepository,
     private val portfolioRepository: IPortfolioRepository,
     private val traderRepository: ITraderRepository
 ) : ITraderService {
@@ -112,33 +113,19 @@ class TraderService(
 
     //===========================================================//
 
-    @Transactional(readOnly = true)
-    override suspend fun getTraderById(userId: UUID, traderId: UUID): Trader {
-        val user = userService.getById(userId)
-        return user.portfolio.traders.find { trader -> trader.id == traderId }
-            ?: throw TraderNotFoundException(traderId)
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    override suspend fun getAllTrader(userId: UUID): List<Trader> {
-        val user = userService.getById(userId)
-        return user.portfolio.traders.toList()
-    }
-
-    //===========================================================//
-
     @Transactional
     override suspend fun executeAllTrader(userId: UUID): List<TradingOrder> {
-        val user = userService.getById(userId)
-        val traders = user.portfolio.traders
+        val userEntity = userRepository.getById(userId).getOrThrow()
+        val traders = userEntity.portfolio.traders
 
-        val orders = traders.flatMap { trader ->
-            trader.runAlgorithm(getCurrentQuote(user.id, trader.securityIdentifier))
-        }
+        val orders = traders
+            .flatMap { trader ->
+                val domainTrader = trader.toDomain()
+                val orders = domainTrader.runAlgorithm(getCurrentQuote(userId, domainTrader.securityIdentifier))
+                updateTrader(domainTrader)
 
-        userService.update(user)
+                orders
+            }
 
         m_Logger.info("All traders were executed for user with ID:{$userId}")
 
@@ -149,7 +136,7 @@ class TraderService(
 
     @Transactional
     override suspend fun executeAllTrader(): List<TradingOrder> {
-        val userIds = userService.getAllUserId()
+        val userIds = userRepository.getAll().getOrThrow().map { it.id }
         val orders = userIds.flatMap { userId -> executeAllTrader(userId) }
         return orders
     }
@@ -180,9 +167,10 @@ class TraderService(
 
     @Transactional(readOnly = true)
     override suspend fun forceSellAllHolding(userId: UUID): List<TradingOrder> {
-        val user = userService.getById(userId)
+        val userEntity = userRepository.getById(userId).getOrThrow()
 
-        val orders = user.portfolio.traders.map { trader ->
+        val orders = userEntity.portfolio.traders.map {
+            val trader = it.toDomain()
             val holdingsToBeSold = trader.holdings
                 .map { holding -> SellSecurityHolding(holding, holding.amount) }
                 .toSet()
@@ -203,24 +191,7 @@ class TraderService(
     //===========================================================//
 
     @Transactional
-    override suspend fun changeAlgorithm(traderId: UUID, algorithmType: TradingAlgorithm.Type): Trader {
-        val traderEntity = traderRepository.getById(traderId).getOrThrow()
-        val traderDomain = traderEntity.toDomain()
-
-        val algorithm = TradingAlgorithm.create(
-            type = algorithmType,
-            history = historicalMarketDataProvider.getBySecurityIdentifier(traderDomain.securityIdentifier).getOrThrow()
-        ).getOrThrow()
-
-        traderDomain.changeAlgorithm(algorithm)
-        traderEntity.update(traderDomain)
-
-        return traderEntity.toDomain()
-    }
-
-    //===========================================================//
-
-    @Transactional
+    @Deprecated("Will be moved to another service in the future")
     override suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double) {
         val traderEntity = traderRepository.getById(traderId).getOrThrow()
         val traderDomain = traderEntity.toDomain()
@@ -230,7 +201,7 @@ class TraderService(
             amount = filledQuantity
         )
 
-        traderEntity.update(traderDomain)
+        updateTrader(traderDomain)
 
         m_Logger.info("Buy Fill was applied for trader with ID:{$traderId}")
     }
@@ -238,6 +209,7 @@ class TraderService(
     //===========================================================//
 
     @Transactional
+    @Deprecated("Will be moved to another service in the future")
     override suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellSecurityHolding>, averageFillPrice: Double) {
         val traderEntity = traderRepository.getById(traderId).getOrThrow()
         val traderDomain = traderEntity.toDomain()
@@ -247,7 +219,7 @@ class TraderService(
             holdingsToSell = sellAllocations
         )
 
-        traderEntity.update(traderDomain)
+        updateTrader(traderDomain)
 
         m_Logger.info("Sell Fill was applied for trader with ID:{$traderId}")
     }

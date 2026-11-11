@@ -10,7 +10,6 @@ import java.util.*
 interface ITraderService {
     suspend fun createTrader(portfolioId: UUID, trader: Trader): TraderEntity
     suspend fun updateTrader(trader: Trader): TraderEntity
-    suspend fun getTraderById(userId: UUID, traderId: UUID): TraderEntity
     suspend fun deleteTrader(traderId: UUID)
 
     suspend fun executeAllTrader(userId: UUID): List<TradingOrder>
@@ -19,7 +18,9 @@ interface ITraderService {
     suspend fun forceSellAllHolding(userId: UUID, traderId: UUID): TradingOrder
     suspend fun forceSellAllHolding(userId: UUID): List<TradingOrder>
 
-    suspend fun changeAlgorithm(traderId: UUID, algorithmType: TradingAlgorithm.Type): Trader
+    // TODO [v1.0] : Move this into TradingOrderService or a more related service
+    @Deprecated("Will be moved to another service in the future")
     suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double)
+    @Deprecated("Will be moved to another service in the future")
     suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellSecurityHolding>, averageFillPrice: Double)
 }

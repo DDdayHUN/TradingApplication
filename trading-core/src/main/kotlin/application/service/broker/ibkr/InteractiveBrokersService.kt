@@ -6,16 +6,17 @@ import application.service.user.User
 import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
-import data.infrastructure.broker.ibkr.order.sql.InteractiveBrokersOrderRepository
 import domain.trader.TradingOrder
 import data.infrastructure.broker.ibkr.IbkrEvent
 import data.infrastructure.broker.ibkr.IbkrHistoricalBar
 import data.infrastructure.broker.ibkr.InteractiveBrokerSessionManager
 import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
+import data.infrastructure.broker.ibkr.order.sql.IInteractiveBrokersOrderRepository
 import data.infrastructure.broker.ibkr.order.sql.toEntity
 import data.infrastructure.broker.ibkr.toDomain
 import data.infrastructure.broker.ibkr.toInteractiveBrokersOrder
 import data.repository.order.ITradingOrderRepository
+import data.repository.order.sql.toDomain
 import data.repository.order.sql.toEntity
 import data.repository.trader.ITraderRepository
 import data.repository.user.IUserRepository
@@ -35,7 +36,7 @@ class InteractiveBrokersService(
     private val userRepository: IUserRepository,
     private val traderRepository: ITraderRepository,
     private val tradingOrderRepository: ITradingOrderRepository,
-    private val ibkrOrderRepository: InteractiveBrokersOrderRepository
+    private val ibkrOrderRepository: IInteractiveBrokersOrderRepository
 ) : IBrokerService {
     // TODO : This class needs to be frissitve, cuz this is not good currently.
     //===========================================================//
@@ -53,8 +54,9 @@ class InteractiveBrokersService(
         val userEntity = userRepository.getById(userId).getOrThrow()
         val traderEntity = traderRepository.getById(order.traderId).getOrThrow()
 
-        if(userEntity.portfolio.traders.contains())
-
+        if(!userEntity.portfolio.traders.contains(traderEntity)) {
+            throw IllegalArgumentException("Not found trader for user with ID:{${userEntity.id}}")
+        }
 
 
         val orderEntity = order.toEntity()
@@ -75,38 +77,13 @@ class InteractiveBrokersService(
             )).getOrThrow()
             throw e
         }
-
-        fun PortfolioEntity.update(portfolio: Portfolio) {
-            require(this.id == portfolio.id) { "ID mismatch. ID1 {${this.id}} ID2 {${portfolio.id}}" }
-
-            val domainTradersById = portfolio.traders.associateBy { it.id }
-
-            // remove traders that no longer exist
-            traders.removeIf { it.id !in domainTradersById }
-
-            // update existing traders
-            traders.forEach { existing ->
-                domainTradersById[existing.id]?.let { domainTrader ->
-                    existing.update(domainTrader)
-                }
-            }
-
-            // add new traders
-            val existingIds = traders.map { it.id }.toSet()
-
-            portfolio.traders
-                .filter { it.id !in existingIds }
-                .forEach { domainTrader ->
-                    traders.add(domainTrader.toEntity(this))
-                }
-        }
     }
 
     //===========================================================//
 
     @Transactional(readOnly = true)
     override suspend fun getAllOrder(userId: UUID): List<TradingOrder> {
-        return ibkrOrderRepository.getAll(userId).getOrThrow().map { order -> order.toDomain() }
+        return ibkrOrderRepository.getAllByUserId(userId).getOrThrow().map { order -> order.tradingOrder.toDomain() }
     }
 
     //===========================================================//
@@ -122,7 +99,6 @@ class InteractiveBrokersService(
     }
 
     //===========================================================//
-
 
     suspend fun getHistoricalData(userId: UUID, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar> {
         val client = session.getClient(userId)
@@ -169,9 +145,10 @@ class InteractiveBrokersService(
     //===========================================================//
     // Event Listener(s)
 
+    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
-        val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
+        val order = ibkrOrderRepository.getbyId(event.orderId).getOrThrow()
         if (order.status == InteractiveBrokersOrder.Status.FILLED ||
             order.status == InteractiveBrokersOrder.Status.CANCELLED ||
             order.status == InteractiveBrokersOrder.Status.SUBMITTED
@@ -181,6 +158,7 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
+    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderCancelledEvent) {
         val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
@@ -191,6 +169,7 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
+    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderFilledEvent) {
         val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
@@ -238,6 +217,7 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
+    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderPreSubmittedEvent) {
         val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
@@ -254,6 +234,7 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
+    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderPendingEvent) {
         val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
@@ -264,6 +245,7 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
+    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderPendingCancelEvent) {
         val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
@@ -283,9 +265,10 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
+    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
     suspend fun handle(event: IbkrEvent.OrderInactiveEvent) {
-        val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
+        val order = ibkrOrderRepository.getById(event.orderId).getOrThrow()
         if (order.status == InteractiveBrokersOrder.Status.FILLED ||
             order.status == InteractiveBrokersOrder.Status.CANCELLED ||
             order.status == InteractiveBrokersOrder.Status.INACTIVE
@@ -319,21 +302,29 @@ class InteractiveBrokersService(
     //===========================================================//
 
     private fun createStockContract(order: InteractiveBrokersOrder): Contract {
+        val securityIdentifier = order.tradingOrder.securityIdentifier
         return Contract().apply {
-            symbol(order.securityIdentifier.tickerSymbol)
+            symbol(securityIdentifier.tickerSymbol)
             secType("STK")
             exchange("SMART")
-            currency(order.securityIdentifier.currency)
+            currency(securityIdentifier.currency)
         }
     }
 
     //===========================================================//
 
     private fun createMarketOrder(order: InteractiveBrokersOrder): Order {
+        val tradingOrderSignal = order.tradingOrder.signal
+        val action = if(tradingOrderSignal is TradingOrder.Signal.Buy) "BUY" else "SELL"
+        val quantity = when (tradingOrderSignal) {
+            is TradingOrder.Signal.Buy -> tradingOrderSignal.amount.toDouble()
+            is TradingOrder.Signal.Sell -> tradingOrderSignal.sellHoldings.sumOf { (_, amount) -> amount }.toDouble()
+        }
+
         return Order().apply {
-            action(order.action.name)
+            action(action)
             orderType("MKT")
-            totalQuantity(Decimal.get(order.quantity))
+            totalQuantity(Decimal.get(quantity))
             tif("DAY")
         }
     }
