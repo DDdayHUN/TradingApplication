@@ -14,7 +14,7 @@ class InteractiveBrokersOrderRepository(
 ) {
 
     @Transactional
-    suspend fun save(ibkrOrder: InteractiveBrokersOrder): Result<InteractiveBrokersOrder> {
+    suspend fun save(ibkrOrder: InteractiveBrokersOrderEntity): Result<InteractiveBrokersOrderEntity> {
         return runCatching {
             val portfolio = portfolioRepository.findByTradersId(ibkrOrder.traderId)
                 ?: throw IllegalArgumentException("Portfolio for trader ${ibkrOrder.traderId} not found")
@@ -30,16 +30,18 @@ class InteractiveBrokersOrderRepository(
         }
     }
 
+    // TODO : Ez nem jo, mivel orderId userhez kotott es nem unique. Torlunk olyan ordert is amit nem kene.
     @Transactional(readOnly = true)
-    suspend fun getByIbkrOrderId(ibkrOrderId: Int): Result<InteractiveBrokersOrder> {
+    suspend fun getByIbkrOrderId(ibkrOrderId: Int): Result<InteractiveBrokersOrderEntity> {
         return runCatching {
             val order = orderRepository.findByIbkrOrderId(ibkrOrderId)
                 ?: throw IllegalArgumentException("Order not found with Ibkr Id: ${ibkrOrderId}")
 
-            order.toInteractiveBrokersOrder()
+            order
         }
     }
 
+    // TODO : Ez nem jo, mivel orderId userhez kotott es nem unique. Torlunk olyan ordert is amit nem kene.
     @Transactional
     suspend fun clearOrderAllocation(orderId: UUID): Result<Unit> {
         return runCatching {
@@ -48,11 +50,9 @@ class InteractiveBrokersOrderRepository(
     }
 
     @Transactional(readOnly = true)
-    suspend fun getAll(userId: UUID): Result<List<InteractiveBrokersOrder>>{
+    suspend fun getAll(userId: UUID): Result<List<InteractiveBrokersOrderEntity>>{
         return runCatching{
-            orderRepository.findAllByTraderPortfolioUserId(userId).map {
-                order -> order.toInteractiveBrokersOrder()
-            }
+            orderRepository.findAllByTraderPortfolioUserId(userId)
         }
     }
 }

@@ -1,12 +1,16 @@
 package application.service.portfolio
 
+import application.service.trader.ITraderService
 import application.service.user.IUserService
 import data.repository.portfolio.IPortfolioRepository
+import data.repository.portfolio.sql.PortfolioEntity
 import data.repository.portfolio.sql.toDomain
 import data.repository.portfolio.sql.toEntity
+import data.repository.trader.sql.toDomain
 import data.repository.user.sql.toDomain
 import data.repository.user.sql.toEntity
 import domain.Portfolio
+import exception.TraderHoldingsNotEmptyException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -14,45 +18,40 @@ import java.util.*
 @Service
 class PortfolioService(
     private val portfolioRepository: IPortfolioRepository,
-    private val userService: IUserService,
+    private val traderService: ITraderService,
 ) : IPortfolioService {
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
     @Transactional
-    override suspend fun update(userId: UUID, portfolio: Portfolio): Portfolio {
-        val user = userService.getById(userId)
+    override suspend fun updatePortfolio(portfolio: Portfolio): PortfolioEntity {
         val portfolioEntity = portfolioRepository.getById(portfolio.id).getOrThrow()
+        val domainTradersById = portfolio.traders.associateBy { it.id }
+        val entityTradersById = portfolioEntity.traders.associateBy { it.id }
 
-        require(portfolioEntity.id == user.portfolio.id) { "ID mismatch. ID1 {${portfolioEntity.id}} ID2 {${user.portfolio.id}}" }
+        // remove traders that no longer exist
+        portfolioEntity.traders
+            .filter { it.id !in domainTradersById }
+            .forEach { traderEntity ->
+                traderService.deleteTrader( traderEntity.id)
+            }
 
-        portfolioEntity.update(portfolio)
-        return portfolioRepository.save(portfolioEntity).getOrThrow().toDomain()
-    }
+        // add new traders
+        portfolio.traders
+            .filter { it.id !in entityTradersById }
+            .forEach { trader ->
+                traderService.createTrader(portfolioEntity.id, trader)
+            }
 
-    //===========================================================//
+        // update existing traders
+        portfolioEntity.traders
+            .forEach { existing ->
+                domainTradersById[existing.id]?.let { domainTrader ->
+                    traderService.updateTrader(domainTrader)
+                }
+            }
 
-    @Transactional
-    override suspend fun create(userId: UUID): Portfolio {
-        val user = userService.getById(userId)
-        val userEntity = user.toEntity()
-
-        val portfolio = Portfolio()
-        val portfolioEntity = portfolio.toEntity()
-
-        userEntity.portfolio = portfolioEntity
-        portfolioEntity.user = userEntity
-
-        userService.update(userEntity.toDomain())
-        return portfolioRepository.save(portfolioEntity).getOrThrow().toDomain()
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
-    override suspend fun get(userId: UUID): Portfolio {
-        val user = userService.getById(userId)
-        return user.portfolio
+        return portfolioRepository.save(portfolioEntity).getOrThrow()
     }
 }

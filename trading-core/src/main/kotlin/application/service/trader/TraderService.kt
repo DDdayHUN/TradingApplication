@@ -1,13 +1,15 @@
 package application.service.trader
 
-import api.dto.CreateTraderRequest
 import application.logging.logger
 import application.provider.MarketDataProvider
-import application.service.portfolio.IPortfolioService
-import application.service.user.IUserService
+import data.repository.g_GSON
 import data.repository.historical_data.IHistoricalMarketDataProvider
+import data.repository.portfolio.IPortfolioRepository
+import data.repository.security.toEntity
 import data.repository.trader.ITraderRepository
+import data.repository.trader.sql.TraderEntity
 import data.repository.trader.sql.toDomain
+import data.repository.trader.sql.toEntity
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
@@ -25,8 +27,7 @@ class TraderService(
     @param:Qualifier("yahoo")
     private val historicalMarketDataProvider: IHistoricalMarketDataProvider,
     private val currentMarketDataProvider: MarketDataProvider,
-    private val portfolioService: IPortfolioService,
-    private val userService: IUserService,
+    private val portfolioRepository: IPortfolioRepository,
     private val traderRepository: ITraderRepository
 ) : ITraderService {
 
@@ -41,51 +42,72 @@ class TraderService(
     // Public Method(s)
 
     @Transactional
-    override suspend fun createTrader(userId: UUID, request: CreateTraderRequest): Trader {
-        val user = userService.getById(userId)
+    override suspend fun createTrader(portfolioId: UUID, trader: Trader): TraderEntity {
+        val portfolioEntity = portfolioRepository.getById(portfolioId).getOrThrow()
 
-        val portfolio = user.portfolio
+        traderRepository.getById(trader.id)
+            .onSuccess {
+                m_Logger.warn("Trader with ID: {${trader.id}} already exists.")
+                throw IllegalArgumentException("Trader with ID: {${trader.id}} already exists.")
+            }
 
-        val securityIdentifier = SecurityIdentifier(
-            isin = request.securityIdentifier.isin,
-            tickerSymbol = request.securityIdentifier.tickerSymbol,
-            currency = request.securityIdentifier.currency
-        )
+        val traderEntity = traderRepository.save(trader.toEntity(portfolioEntity)).getOrThrow()
+        portfolioEntity.traders.add(traderEntity)
 
-        val algorithmType = TradingAlgorithm.typeFromTag(request.algorithmType).getOrThrow()
-        val algorithm = TradingAlgorithm.create(
-            type = algorithmType,
-            history = historicalMarketDataProvider.getBySecurityIdentifier(securityIdentifier).getOrThrow()
-        ).getOrThrow()
+        m_Logger.info("Created trader with ID:{${trader.id}} for portfolio with ID:{$portfolioId}")
 
-        val trader = Trader(
-            securityIdentifier = securityIdentifier,
-            holdings = mutableSetOf(),
-            allocatedCapital = request.capital,
-            algorithm = algorithm
-        )
-
-        portfolio.addTrader(trader)
-        portfolioService.update(user.id, portfolio)
-
-        m_Logger.info("Created trader with ID:{${trader.id}} for user with ID:{$userId}")
-
-        return trader
+        return traderEntity
     }
 
     //===========================================================//
 
     @Transactional
-    override suspend fun deleteTrader(userId: UUID, traderId: UUID) {
-        val user = userService.getById(userId)
-        val portfolio = user.portfolio
-        val trader = portfolio.traders.find { trader -> trader.id == traderId }
-            ?: throw TraderNotFoundException(traderId)
+    override suspend fun updateTrader(trader: Trader): TraderEntity {
+        val traderEntity = traderRepository.getById(trader.id).getOrThrow()
+        traderEntity.securityIdentifier = trader.securityIdentifier.toEntity()
+        traderEntity.capital = trader.availableCapital
+        traderEntity.algorithmType = TradingAlgorithm.typeTagOf(trader.algorithm).getOrThrow()
+        traderEntity.algorithmState = g_GSON.toJson(
+            trader.algorithm,
+            TradingAlgorithm::class.java
+        )
 
-        portfolio.removeTrader(trader)
-        portfolioService.update(user.id, portfolio)
+        val domainHoldingsById = trader.holdings.associateBy { it.id }
+        val entityHoldingsById = traderEntity.holdings.associateBy { it.id }
 
-        m_Logger.info("Deleted trader with ID:{${trader.id}} for user with ID:{$userId}")
+        // remove holdings that no longer exist
+        traderEntity.holdings.removeIf { it.id !in domainHoldingsById }
+
+        // add new holdings
+        trader.holdings
+            .filter { it.id !in entityHoldingsById }
+            .forEach {
+                traderEntity.holdings.add(it.toEntity(traderEntity))
+            }
+
+        // update existing holdings
+        traderEntity.holdings
+            .forEach { holdingEntity ->
+                domainHoldingsById[holdingEntity.id]?.let { domainHolding ->
+                    holdingEntity.amount = domainHolding.amount
+                }
+            }
+
+
+        return traderRepository.save(traderEntity).getOrThrow()
+    }
+
+    //===========================================================//
+
+    @Transactional
+    override suspend fun deleteTrader(traderId: UUID) {
+        val traderEntity = traderRepository.getById(traderId).getOrThrow()
+
+        if(traderEntity.holdings.isNotEmpty()) throw IllegalStateException("Holdings are not empty for trader with ID: {$traderId}")
+        val portfolioEntity = traderEntity.portfolio
+        portfolioEntity.traders.remove(traderEntity)
+
+        m_Logger.info("Deleted trader with ID:{$traderId}")
     }
 
     //===========================================================//

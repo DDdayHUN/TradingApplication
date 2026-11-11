@@ -48,9 +48,9 @@ class UserRepository(
 
     //===========================================================//
 
-    override suspend fun getAllUserId(): Result<List<UUID>> {
+    override suspend fun getAll(): Result<List<UserEntity>> {
         return runCatching {
-            repository.findAllUserId()
+            repository.findAll()
         }
     }
 

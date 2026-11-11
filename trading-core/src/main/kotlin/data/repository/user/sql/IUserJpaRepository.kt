@@ -14,8 +14,4 @@ interface IUserJpaRepository : JpaRepository<UserEntity, UUID> {
 
     @EntityGraph(attributePaths = ["portfolio", "portfolio.traders", "portfolio.traders.holdings"])
     override fun findAll(): List<UserEntity>
-
-    // TODO [v2.0]: This needs to be refactored, cuz this causes OOM.
-    @Query("SELECT u.id FROM UserEntity u")
-    fun findAllUserId(): List<UUID>
 }

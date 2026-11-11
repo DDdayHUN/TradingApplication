@@ -1,7 +1,6 @@
 package domain
 
 import domain.trader.Trader
-import exception.TraderHoldingsNotEmptyException
 import java.util.*
 
 //===========================================================//
@@ -39,7 +38,7 @@ class Portfolio {
     //===========================================================//
 
     fun removeTrader(trader: Trader) {
-        if(trader.holdings.isNotEmpty()) throw TraderHoldingsNotEmptyException(trader.id)
+        if(trader.holdings.isNotEmpty()) throw IllegalStateException("Holdings are not empty for trader with ID: {${trader.id}}")
         m_Traders.remove(trader)
     }
 

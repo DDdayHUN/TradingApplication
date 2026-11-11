@@ -1,6 +1,6 @@
 package api.service.auth
 
-import java.util.*
+import java.util.UUID
 
 interface IAuthenticationService {
     suspend fun currentUser(): UUID

@@ -1,11 +1,12 @@
 package application.service.user
 
+import data.repository.user.sql.UserEntity
 import java.util.*
 
 interface IUserService {
-    suspend fun update(user: User): User
-    suspend fun getById(userId: UUID): User
+    //suspend fun updateUser(user: User): UserEntity
+    suspend fun getUserById(userId: UUID): UserEntity
 
     // TODO [v2.0]: "This must be replaced in future releases, cuz this doesn't support large amounts of users"
-    suspend fun getAllUserId(): List<UUID>
+    suspend fun getAllUser(): List<UserEntity>
 }
