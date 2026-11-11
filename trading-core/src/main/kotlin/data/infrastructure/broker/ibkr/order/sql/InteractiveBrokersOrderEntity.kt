@@ -1,36 +1,25 @@
 package data.infrastructure.broker.ibkr.order.sql
 
 import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
-import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Action
 import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Status
 import data.repository.order.sql.TradingOrderEntity
-import data.repository.security.SellSecurityHoldingEntity
-import domain.trader.SellSecurityHolding
+import data.repository.order.sql.toDomain
 import jakarta.persistence.*
-import java.time.Instant
 import java.util.*
-import kotlin.collections.map
 
 @Entity
 @Table(name = "app_infrastructure_ibkr_order")
 class InteractiveBrokersOrderEntity(
     @Id
+    @Column(name = "id")
+    var id: UUID,
+
     @Column(name = "ibkr_order_id", nullable = false, updatable = false)
     var ibkrOrderId: Int,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "trading_order_fk", nullable = false, updatable = false)
     var tradingOrder: TradingOrderEntity,
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "action", nullable = false, updatable = false)
-    var action: Action,
-
-    @Column(name = "quantity", nullable = false)
-    var quantity: Double,
-
-    @Column(name = "signal_price", nullable = false)
-    var signalPrice: Double,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -41,71 +30,26 @@ class InteractiveBrokersOrderEntity(
 
     @Column(name = "average_fill_price")
     var averageFillPrice: Double? = null,
-
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-    var sellAllocations: MutableSet<SellSecurityHoldingEntity> = mutableSetOf(),
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    var createdAt: Instant = Instant.now(),
 )
 
-fun InteractiveBrokersOrder.toEntity(): InteractiveBrokersOrderEntity {
-    val action = when (signal){
-        is InteractiveBrokersOrder.Signal.Buy -> Action.BUY
-        is InteractiveBrokersOrder.Signal.Sell -> Action.SELL
-    }
-    val entity = InteractiveBrokersOrderEntity(
-        id = id,
+fun InteractiveBrokersOrder.toEntity(tradingOrder: TradingOrderEntity): InteractiveBrokersOrderEntity {
+    return InteractiveBrokersOrderEntity(
+        id = tradingOrder.id,
         ibkrOrderId = brokerOrderId,
-        action = action,
-        quantity = quantity,
-        signalPrice = signalPrice,
+        tradingOrder = tradingOrder,
         status = status,
         filledQuantity = filledQuantity,
-        averageFillPrice = averageFillPrice,
-        createdAt = createdAt
+        averageFillPrice = averageFillPrice
     )
-    if(signal is InteractiveBrokersOrder.Signal.Sell){
-        entity.sellAllocations =
-            signal.allocations.map { (holding, amount) ->
-                SellSecurityHoldingEntity(
-                    order = entity,
-                    holdingId = holding,
-                    amount = amount
-                )
-            }.toMutableSet()
-    }
-    return entity
 }
 
 fun InteractiveBrokersOrderEntity.toInteractiveBrokersOrder(): InteractiveBrokersOrder {
-    val signal = when (action) {
-        Action.BUY -> {
-            InteractiveBrokersOrder.Signal.Buy(amount = quantity.toInt())
-        }
-        Action.SELL -> {
-            InteractiveBrokersOrder.Signal.Sell(
-                allocations = sellAllocations.map {
-                    SellSecurityHolding(
-                        id = it.holdingId,
-                        amount = it.amount
-                    )
-                }.toSet()
-            )
-        }
-    }
-
     return InteractiveBrokersOrder(
-        id = id,
+        tradingOrder = tradingOrder.toDomain(),
         brokerOrderId = ibkrOrderId,
-        traderId = trader.id,
-        signal = signal,
-        action = action,
-        signalPrice = signalPrice,
         status = status,
         filledQuantity = filledQuantity,
         averageFillPrice = averageFillPrice,
-        createdAt = createdAt
     )
 }
 

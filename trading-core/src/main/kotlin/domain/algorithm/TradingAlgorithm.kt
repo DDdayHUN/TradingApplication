@@ -4,7 +4,6 @@ import com.google.gson.annotations.JsonAdapter
 import domain.adapter.TradingAlgorithmAdapter
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
-import domain.trader.SellSecurityHolding
 import kotlin.collections.filter
 import kotlin.time.Instant
 

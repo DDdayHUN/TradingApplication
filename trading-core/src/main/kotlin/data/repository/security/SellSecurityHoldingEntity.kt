@@ -1,32 +1,42 @@
 package data.repository.security
 
-import data.infrastructure.broker.ibkr.order.sql.InteractiveBrokersOrderEntity
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.Table
-import java.util.UUID
+import data.repository.order.sql.TradingOrderEntity
+import domain.trader.SellSecurityHolding
+import jakarta.persistence.*
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
+import java.util.*
 
 @Entity
 @Table(name = "app_order_sell_holdings")
 class SellSecurityHoldingEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false, updatable = false)
     var id: UUID? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "order_id", nullable = false)
-    var order: InteractiveBrokersOrderEntity,
+    @JoinColumn(name = "order_fk", nullable = false, updatable = false)
+    var order: TradingOrderEntity,
 
-    @Column(name = "holding_id", nullable = false)
-    var holdingId : UUID,
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "holding_fk", nullable = false, updatable = false)
+    var holding : SecurityHoldingEntity,
 
     @Column(name = "amount", nullable = false)
     var amount: Int
 )
 
+fun SellSecurityHolding.toEntity(order: TradingOrderEntity, holding: SecurityHoldingEntity): SellSecurityHoldingEntity {
+    return SellSecurityHoldingEntity(
+        order = order,
+        holding = holding,
+        amount = amount
+    )
+}
+
+fun SellSecurityHoldingEntity.toDomain(): SellSecurityHolding {
+    return SellSecurityHolding(
+        securityHolding = holding.toDomain(),
+        amount = amount
+    )
+}

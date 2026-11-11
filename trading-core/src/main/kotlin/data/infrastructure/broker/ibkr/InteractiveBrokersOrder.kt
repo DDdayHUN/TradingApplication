@@ -1,29 +1,15 @@
 package data.infrastructure.broker.ibkr
 
-import domain.market.security.SecurityIdentifier
+import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Status
 import domain.trader.TradingOrder
-import java.time.Instant
-import java.util.UUID
 
 data class InteractiveBrokersOrder(
-    val id: UUID,
-    val traderId: UUID,
+    val tradingOrder: TradingOrder,
     val brokerOrderId: Int,
-    val securityIdentifier: SecurityIdentifier,
-    val signal: TradingOrder.Signal,
-    val action: Action,
-    val signalPrice: Double,
     val status: Status = Status.PENDING,
     val filledQuantity: String = "",
-    val averageFillPrice: Double? = null,
-    val createdAt: Instant
+    val averageFillPrice: Double? = null
 ) {
-    val quantity: Double
-        get() = when (signal) {
-            is TradingOrder.Signal.Buy -> signal.amount.toDouble()
-            is TradingOrder.Signal.Sell -> signal.sellHoldings.sumOf { (_, amount) -> amount }.toDouble()
-        }
-
     fun submit(): Result<InteractiveBrokersOrder> {
         return when (status) {
             Status.PENDING -> {
@@ -87,11 +73,6 @@ data class InteractiveBrokersOrder(
         }
     }
 
-    enum class Action {
-        BUY,
-        SELL
-    }
-
     enum class Status {
         PENDING,
         SUBMITTED,
@@ -105,25 +86,12 @@ data class InteractiveBrokersOrder(
 
 fun TradingOrder.toInteractiveBrokersOrder(ibkrOrderId: Int): InteractiveBrokersOrder {
     return InteractiveBrokersOrder(
-        id = id,
-        traderId = traderId,
+        tradingOrder = this,
         brokerOrderId = ibkrOrderId,
-        securityIdentifier = securityIdentifier,
-        signal = signal,
-        action = InteractiveBrokersOrder.Action.BUY,
-        signalPrice = atPrice,
-        status = InteractiveBrokersOrder.Status.PENDING,
-        createdAt = createdAt
+        status = Status.PENDING
     )
 }
 
 fun InteractiveBrokersOrder.toDomain(): TradingOrder {
-    return TradingOrder(
-        id = id,
-        traderId = traderId,
-        securityIdentifier = securityIdentifier,
-        signal = signal,
-        atPrice = signalPrice,
-        createdAt = createdAt
-    )
+    return tradingOrder
 }

@@ -19,6 +19,7 @@ import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.delay
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
@@ -30,6 +31,7 @@ class InteractiveBrokersService(
     private val traderService: ITraderService,
     private val orderRepository: InteractiveBrokersOrderRepository
 ) : IBrokerService {
+    // TODO : This class needs to be frissitve, cuz this is not good currently.
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -40,27 +42,26 @@ class InteractiveBrokersService(
     //===========================================================//
     // Public Method(s)
 
+    @Transactional
     override suspend fun submitOrder(userId: UUID, order: TradingOrder) {
-        val persistedOrders = order.toInteractiveBrokersOrder(reserveOrderId(userId))
 
-        persistedOrders.forEach { order ->
-            orderRepository.save(order).getOrThrow()
+        val ibkrOrder = order.toInteractiveBrokersOrder(reserveOrderId(userId))
+        orderRepository.save(ibkrOrder).getOrThrow()
+
+        try {
+            placeOrder(userId,ibkrOrder)
         }
-
-        persistedOrders.forEach { order ->
-            try {
-                placeOrder(userId,order)
-            } catch(e: Exception) {
-                orderRepository.save(order.copy(
-                    status = InteractiveBrokersOrder.Status.CANCELLED
-                )).getOrThrow()
-                throw e
-            }
+        catch(e: Exception) {
+            orderRepository.save(ibkrOrder.copy(
+                status = InteractiveBrokersOrder.Status.CANCELLED
+            )).getOrThrow()
+            throw e
         }
     }
 
     //===========================================================//
 
+    @Transactional(readOnly = true)
     override suspend fun getAllOrder(userId: UUID): List<TradingOrder> {
         return orderRepository.getAll(userId).getOrThrow().map { order -> order.toDomain() }
     }
