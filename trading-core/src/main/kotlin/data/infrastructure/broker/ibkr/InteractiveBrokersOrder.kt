@@ -10,24 +10,6 @@ data class InteractiveBrokersOrder(
     val filledQuantity: String = "",
     val averageFillPrice: Double? = null
 ) {
-    fun submit(): Result<InteractiveBrokersOrder> {
-        return when (status) {
-            Status.PENDING -> {
-                Result.success(copy(status = Status.SUBMITTED))
-            }
-
-            Status.SUBMITTED, Status.FILLED -> {
-                Result.success(this)
-            }
-
-            else -> {
-                Result.failure(
-                    IllegalStateException("Cannot submit order with status $status")
-                )
-            }
-        }
-    }
-
     fun fill(
         filledQuantity: String,
         averageFillPrice: Double
@@ -50,24 +32,6 @@ data class InteractiveBrokersOrder(
             else -> {
                 Result.failure(
                     IllegalStateException("Cannot fill order with status $status")
-                )
-            }
-        }
-    }
-
-    fun cancel(): Result<InteractiveBrokersOrder> {
-        return when (status) {
-            Status.PENDING, Status.SUBMITTED -> {
-                Result.success(copy(status = Status.CANCELLED))
-            }
-
-            Status.CANCELLED -> {
-                Result.success(this)
-            }
-
-            else -> {
-                Result.failure(
-                    IllegalStateException("Cannot cancel order with status $status")
                 )
             }
         }

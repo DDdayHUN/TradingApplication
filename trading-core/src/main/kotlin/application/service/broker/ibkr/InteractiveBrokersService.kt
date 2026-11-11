@@ -11,9 +11,9 @@ import data.infrastructure.broker.ibkr.IbkrEvent
 import data.infrastructure.broker.ibkr.IbkrHistoricalBar
 import data.infrastructure.broker.ibkr.InteractiveBrokerSessionManager
 import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
+import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Status
 import data.infrastructure.broker.ibkr.order.sql.IInteractiveBrokersOrderRepository
 import data.infrastructure.broker.ibkr.order.sql.toEntity
-import data.infrastructure.broker.ibkr.toDomain
 import data.infrastructure.broker.ibkr.toInteractiveBrokersOrder
 import data.repository.order.ITradingOrderRepository
 import data.repository.order.sql.toDomain
@@ -50,7 +50,7 @@ class InteractiveBrokersService(
     // Public Method(s)
 
     @Transactional
-    override suspend fun submitOrder(userId: UUID, order: TradingOrder) {
+    override suspend fun submitOrderForUser(userId: UUID, order: TradingOrder) {
         val userEntity = userRepository.getById(userId).getOrThrow()
         val traderEntity = traderRepository.getById(order.traderId).getOrThrow()
 
@@ -82,7 +82,7 @@ class InteractiveBrokersService(
     //===========================================================//
 
     @Transactional(readOnly = true)
-    override suspend fun getAllOrder(userId: UUID): List<TradingOrder> {
+    override suspend fun getAllOrderForUser(userId: UUID): List<TradingOrder> {
         return ibkrOrderRepository.getAllByUserId(userId).getOrThrow().map { order -> order.tradingOrder.toDomain() }
     }
 
@@ -145,35 +145,44 @@ class InteractiveBrokersService(
     //===========================================================//
     // Event Listener(s)
 
-    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
-        val order = ibkrOrderRepository.getbyId(event.orderId).getOrThrow()
-        if (order.status == InteractiveBrokersOrder.Status.FILLED ||
-            order.status == InteractiveBrokersOrder.Status.CANCELLED ||
-            order.status == InteractiveBrokersOrder.Status.SUBMITTED
+        val order = ibkrOrderRepository.getById(event.orderId).getOrThrow()
+
+        if (order.status == Status.FILLED       ||
+            order.status == Status.CANCELLED    ||
+            order.status == Status.SUBMITTED
         ) return
-        ibkrOrderRepository.save(order.submit().getOrThrow()).getOrThrow()
+
+        order.status = Status.SUBMITTED
+        ibkrOrderRepository.save(order).getOrThrow()
+
+        m_Logger.info("IBKR order submitted with ID:{${order.id}}")
     }
 
     //===========================================================//
 
-    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderCancelledEvent) {
-        val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status == InteractiveBrokersOrder.Status.FILLED) return
+        val order = ibkrOrderRepository.getById(event.orderId).getOrThrow()
 
-        ibkrOrderRepository.save(order.cancel().getOrThrow()).getOrThrow()
+        if(order.status == Status.FILLED) return
+
+        order.status = Status.CANCELLED
+        ibkrOrderRepository.save(order).getOrThrow()
+
+        m_Logger.info("IBKR order cancelled with ID:{${order.id}}")
     }
 
     //===========================================================//
 
-    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderFilledEvent) {
-        val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status == InteractiveBrokersOrder.Status.FILLED) return
+        val order = ibkrOrderRepository.getById(event.orderId).getOrThrow()
+        if(order.status == Status.FILLED) return
 
         when (val signal = order.signal) {
 
@@ -217,70 +226,67 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
-    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderPreSubmittedEvent) {
-        val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status != InteractiveBrokersOrder.Status.PENDING) return
+        val order = ibkrOrderRepository.getById(event.orderId).getOrThrow()
 
-        ibkrOrderRepository.save(
-            order.copy(
-                status = InteractiveBrokersOrder.Status.PRE_SUBMITTED
-            )
-        ).getOrThrow()
+        if(order.status != Status.PENDING) return
 
-        m_Logger.info("IBKR order pre-submitted orderId=${event.orderId}")
+        order.status = Status.PRE_SUBMITTED
+        ibkrOrderRepository.save(order).getOrThrow()
+
+        m_Logger.info("IBKR order pre-submitted with ID:{${order.id}}")
     }
 
     //===========================================================//
 
-    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
+    @Transactional(readOnly = true)
     suspend fun handle(event: IbkrEvent.OrderPendingEvent) {
-        val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status != InteractiveBrokersOrder.Status.PENDING) return
+        val order = ibkrOrderRepository.getById(event.orderId).getOrThrow()
 
-        m_Logger.info("IBKR order pending orderId=${event.orderId}")
+        if(order.status != Status.PENDING) return
+
+        m_Logger.info("IBKR order pending with ID:{${order.id}}")
     }
 
     //===========================================================//
 
-    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderPendingCancelEvent) {
-        val order = ibkrOrderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if (order.status == InteractiveBrokersOrder.Status.FILLED ||
-            order.status == InteractiveBrokersOrder.Status.CANCELLED ||
-            order.status == InteractiveBrokersOrder.Status.PENDING_CANCEL
+        val order = ibkrOrderRepository.getById(event.orderId).getOrThrow()
+
+        if (order.status == Status.FILLED           ||
+            order.status == Status.CANCELLED        ||
+            order.status == Status.PENDING_CANCEL
         ) return
 
-        ibkrOrderRepository.save(
-            order.copy(
-                status = InteractiveBrokersOrder.Status.PENDING_CANCEL
-            )
-        ).getOrThrow()
+        order.status = Status.PENDING_CANCEL
 
-        m_Logger.info("IBKR order pending cancellation orderId=${event.orderId}")
+        ibkrOrderRepository.save(order).getOrThrow()
+
+        m_Logger.info("IBKR order pending cancellation with ID:{${order.id}}")
     }
 
     //===========================================================//
 
-    // TODO : Redo this shet, cuz the orderId is not unique!!!
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderInactiveEvent) {
         val order = ibkrOrderRepository.getById(event.orderId).getOrThrow()
-        if (order.status == InteractiveBrokersOrder.Status.FILLED ||
-            order.status == InteractiveBrokersOrder.Status.CANCELLED ||
-            order.status == InteractiveBrokersOrder.Status.INACTIVE
+
+        if (order.status == Status.FILLED       ||
+            order.status == Status.CANCELLED    ||
+            order.status == Status.INACTIVE
         ) return
 
-        ibkrOrderRepository.save(
-            order.copy(
-                status = InteractiveBrokersOrder.Status.INACTIVE
-            )
-        ).getOrThrow()
+        order.status = Status.INACTIVE
 
-        m_Logger.warn("IBKR order inactive orderId=${event.orderId}")
+        ibkrOrderRepository.save(order).getOrThrow()
+
+        m_Logger.warn("IBKR order inactive with ID:{${order.id}}")
     }
 
     //===========================================================//

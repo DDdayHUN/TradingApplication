@@ -18,7 +18,7 @@ data class OrderResponse(
 
 fun TradingOrder.toResponse(): OrderResponse {
     return OrderResponse(
-        id = orderId,
+        id = id,
         securityIdentifier = SecurityIdentifierResponse(
             isin = securityIdentifier.isin,
             tickerSymbol = securityIdentifier.tickerSymbol,

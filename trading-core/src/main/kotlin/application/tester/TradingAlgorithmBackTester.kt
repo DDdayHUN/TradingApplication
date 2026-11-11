@@ -7,6 +7,7 @@ import domain.market.security.SecurityHolding
 import domain.market.security.SecurityIdentifier
 import domain.tax.ITaxation
 import domain.tax.Taxation
+import domain.trader.SellSecurityHolding
 import domain.trader.TradingOrder
 import domain.utils.Math
 import format
@@ -158,29 +159,46 @@ class TradingAlgorithmBackTester {
     //===========================================================//
 
     private fun runOneIteration(currentPrice: Double) {
-        val ret = m_TradingAlgorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
+        val output = m_TradingAlgorithm.run(m_Holdings, m_CurrentCapital, currentPrice)
 
-        m_TradingOrders.add(
-            TradingOrder(
-                traderId = m_TraderId,
-                signal = ret,
-                atPrice = currentPrice
+        if(output.buy != null) {
+            m_TradingOrders.add(
+                TradingOrder(
+                    traderId = m_TraderId,
+                    securityIdentifier = m_SecurityIdentifier,
+                    signal = TradingOrder.Signal.Buy(output.buy.amount),
+                    atPrice = currentPrice
+                )
             )
-        )
+        }
+        if(output.sell != null) {
+            val sellHoldings = output.sell.batches
+                .map { SellSecurityHolding(it.first, it.second) }
+                .toSet()
 
-        if (ret.buy != null) {
-            m_CurrentCapital -= ret.buy.amount * currentPrice
+            m_TradingOrders.add(
+                TradingOrder(
+                    traderId = m_TraderId,
+                    securityIdentifier = m_SecurityIdentifier,
+                    signal = TradingOrder.Signal.Sell(sellHoldings),
+                    atPrice = currentPrice
+                )
+            )
+        }
+
+        if (output.buy != null) {
+            m_CurrentCapital -= output.buy.amount * currentPrice
             check(m_CurrentCapital > 0.0) { "Capital" }
 
             m_Holdings.add(SecurityHolding(
                 purchasePrice = currentPrice,
-                amount = ret.buy.amount
+                amount = output.buy.amount
             ))
             m_TotalBuysMade++
         }
 
-        if (ret.sell != null) {
-            for (item in ret.sell.batches) {
+        if (output.sell != null) {
+            for (item in output.sell.batches) {
                 val bought = item.first
                 val amount = item.second
 

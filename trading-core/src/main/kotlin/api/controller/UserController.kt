@@ -4,6 +4,7 @@ import api.dto.UserResponse
 import api.dto.toResponse
 import api.service.auth.IAuthenticationService
 import application.service.user.IUserService
+import data.repository.user.sql.toDomain
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,7 +28,7 @@ class UserController(
     @GetMapping
     suspend fun getCurrentUser(): ResponseEntity<UserResponse> {
         return ResponseEntity.ok(
-            userService.getById(auth.currentUser()).toResponse()
+            userService.getUserById(auth.currentUser()).toDomain().toResponse()
         )
     }
 
@@ -41,6 +42,6 @@ class UserController(
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.getById(userId).toResponse())
+            .body(userService.getUserById(userId).toDomain().toResponse())
     }
 }

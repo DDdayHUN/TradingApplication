@@ -15,6 +15,7 @@ import data.repository.user.sql.toDomain
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityIdentifier
 import domain.tax.Taxation
+import domain.trader.Trader
 import domain.trader.TradingOrder
 import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Qualifier
@@ -41,6 +42,9 @@ class Test(
     private val userRepository: IUserRepository,
     private val marketDataProvider: MarketDataProvider,
 ) {
+    //===========================================================//
+    //===========================================================//
+
     private val logger = logger<Test>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val startCapital = 10_000.0
@@ -49,6 +53,8 @@ class Test(
     private val evaluationWindowStepYears = 1 // default: 1 - for accurate results.
     private val userId = UUID.fromString("f0792158-24a0-427f-999d-6cf8fa3a0cf3")
 
+    //===========================================================//
+    //===========================================================//
 
     @Scheduled(
         cron = "0 33 17 * * *",
@@ -70,6 +76,8 @@ class Test(
         }
     }
 
+    //===========================================================//
+
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
@@ -77,7 +85,7 @@ class Test(
 
                 orders
                     .forEach { order ->
-                        orderService.submitOrder(userId,order)
+                        orderService.submitOrderForUser(userId, order)
                     }
 
                 logger.info("All concurrent trader jobs finished")
@@ -90,6 +98,8 @@ class Test(
             }
         }
     }
+
+    //===========================================================//
 
     fun getHistoricalData(){
         scope.launch {
@@ -106,14 +116,18 @@ class Test(
         }
     }
 
+    //===========================================================//
+
     fun sellAllHolding() {
         scope.launch {
             val orders = traderService.forceSellAllHolding(userId)
             orders.forEach { order ->
-                orderService.submitOrder(userId, order)
+                orderService.submitOrderForUser(userId, order)
             }
         }
     }
+
+    //===========================================================//
 
     fun buyHolding(){
         scope.launch {
@@ -124,10 +138,11 @@ class Test(
                 portfolio.traders.forEach { trader ->
                         val order = TradingOrder(
                             traderId = trader.id,
-                            signal = TradingAlgorithm.Output(TradingAlgorithm.Output.Buy(amount = 3), null),
+                            securityIdentifier = trader.securityIdentifier,
+                            signal = TradingOrder.Signal.Buy(amount = 3),
                             atPrice = 433.0
                         )
-                        orderService.submitOrder(userId, order)
+                        orderService.submitOrderForUser(userId, order)
                 }
             } catch(e: Exception){
                 throw e
@@ -135,36 +150,34 @@ class Test(
         }
     }
 
+    //===========================================================//
 
     fun createTraders() {
         scope.launch {
-            var securityList = provider.getAllSecurityIdentifiers().getOrThrow()
-
             val user = userRepository.getById(userId).getOrThrow().toDomain()
-            val traders = user.portfolio.traders
-            val traderSecurities = traders.map {
-                trader-> trader.securityIdentifier
-            }
-            securityList = securityList.filter { security ->
-                security !in traderSecurities
-            }
+            val portfolio = user.portfolio
+            val traders = portfolio.traders
+            val traderSecurities = traders.map { trader-> trader.securityIdentifier }
+            val securityList = provider.getAllSecurityIdentifiers().getOrThrow().filter { security -> security !in traderSecurities }
 
             securityList.forEach { security ->
+                val trader = Trader(
+                    securityIdentifier = security,
+                    allocatedCapital = 20000.0,
+                    algorithm = TradingAlgorithm.create(
+                        type = TradingAlgorithm.Type.TACPP46,
+                        history = provider.getBySecurityIdentifier(security).getOrThrow()
+                    ).getOrThrow()
+                )
                 traderService.createTrader(
-                    userId = user.id,
-                    request = CreateTraderRequest(
-                        securityIdentifier = SecurityIdentifierRequest(
-                            isin = security.isin,
-                            tickerSymbol = security.tickerSymbol,
-                            currency = security.currency,
-                        ),
-                        capital = 20000.0,
-                        algorithmType = "TACPP46"
-                    )
+                    portfolioId = portfolio.id,
+                    trader = trader
                 )
             }
         }
     }
+
+    //===========================================================//
 
     fun deleteTraders() {
         scope.launch {
@@ -172,14 +185,16 @@ class Test(
             val user = userRepository.getById(userId).getOrThrow().toDomain()
             val portfolio = user.portfolio
             portfolio.traders.forEach { trader ->
-                traderService.deleteTrader(user.id, trader.id)
+                traderService.deleteTrader(trader.id)
             }
         }
     }
 
+    //===========================================================//
+
     fun createTradersByEvalOutput() {
         scope.launch {
-            var evalOutput = TradingAlgorithmEvaluator(
+            val evalOutput = TradingAlgorithmEvaluator(
                 provider = provider,
                 tradingAlgorithmType = TradingAlgorithm.Type.TACPP46,
                 capital = startCapital,
@@ -190,26 +205,23 @@ class Test(
             ).runEvaluationOnAll().getBestList(10)
 
             val user = userRepository.getById(userId).getOrThrow().toDomain()
-            val traders = user.portfolio.traders
-            val traderSecurities = traders.map {
-                    trader-> trader.securityIdentifier
-            }
-            evalOutput = evalOutput.filter { security ->
-                security !in traderSecurities
-            }
+            val portfolio = user.portfolio
+            val traders = portfolio.traders
+            val traderSecurities = traders.map { trader-> trader.securityIdentifier }
+            val notTradedGoodSecurities = evalOutput.filter { security -> security !in traderSecurities }
 
-            evalOutput.forEach { security ->
+            notTradedGoodSecurities.forEach { security ->
+                val trader = Trader(
+                    securityIdentifier = security,
+                    allocatedCapital = 20000.0,
+                    algorithm = TradingAlgorithm.create(
+                        type = TradingAlgorithm.Type.TACPP46,
+                        history = provider.getBySecurityIdentifier(security).getOrThrow()
+                    ).getOrThrow()
+                )
                 traderService.createTrader(
-                    userId = user.id,
-                    request = CreateTraderRequest(
-                        securityIdentifier = SecurityIdentifierRequest(
-                            isin = security.isin,
-                            tickerSymbol = security.tickerSymbol,
-                            currency = security.currency,
-                        ),
-                        capital = 20_000.0,
-                        algorithmType = "TACPP46"
-                    )
+                    portfolioId = portfolio.id,
+                    trader = trader
                 )
             }
         }
