@@ -17,7 +17,7 @@ class InteractiveBrokersOrderEntity(
     @Column(name = "ibkr_order_id", nullable = false, updatable = false)
     var ibkrOrderId: Int,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "trading_order_fk", nullable = false, updatable = false)
     var tradingOrder: TradingOrderEntity,
 
