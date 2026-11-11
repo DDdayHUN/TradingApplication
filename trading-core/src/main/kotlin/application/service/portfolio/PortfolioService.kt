@@ -4,7 +4,6 @@ import application.service.user.IUserService
 import data.repository.portfolio.IPortfolioRepository
 import data.repository.portfolio.sql.toDomain
 import data.repository.portfolio.sql.toEntity
-import data.repository.portfolio.sql.update
 import data.repository.user.sql.toDomain
 import data.repository.user.sql.toEntity
 import domain.Portfolio

@@ -8,7 +8,6 @@ import application.service.user.IUserService
 import data.repository.historical_data.IHistoricalMarketDataProvider
 import data.repository.trader.ITraderRepository
 import data.repository.trader.sql.toDomain
-import data.repository.trader.sql.update
 import domain.algorithm.TradingAlgorithm
 import domain.market.Quote
 import domain.market.security.SecurityIdentifier
