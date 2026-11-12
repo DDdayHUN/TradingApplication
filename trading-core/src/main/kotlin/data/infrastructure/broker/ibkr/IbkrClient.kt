@@ -42,7 +42,7 @@ class IbkrClient(
     private val historicalDataRequestId = AtomicInteger(3_000)
     private val pendingHistoricalData = ConcurrentHashMap<Int, HistoricalDataRequest>()
 
-    private val historicalEndDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss 'UTC'").withZone(ZoneOffset.UTC)
+    private val historicalEndDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss 'UTC'").withZone(ZoneOffset.UTC)!!
 
     //===========================================================//
 
@@ -130,6 +130,7 @@ class IbkrClient(
 
         client.eDisconnect()
 
+        readerThread?.
         readerThread?.interrupt()
         readerThread = null
         reader = null

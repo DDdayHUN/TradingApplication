@@ -32,7 +32,7 @@ import kotlin.time.Instant
 
 @Service
 class InteractiveBrokersService(
-    private val session: InteractiveBrokerSessionManager,
+    private val sessionManager: InteractiveBrokerSessionManager,
     private val userRepository: IUserRepository,
     private val traderRepository: ITraderRepository,
     private val tradingOrderRepository: ITradingOrderRepository,
@@ -88,8 +88,8 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
-    override fun getAccountSummary(userId: UUID): User.AccountSummary {
-        val client = session.getClient(userId)
+    override suspend fun getAccountSummary(userId: UUID): User.AccountSummary {
+        val client = sessionManager.getClient(userId)
         val ibkrAccSum = client.getAccountSummary()
 
         return User.AccountSummary(
@@ -101,7 +101,7 @@ class InteractiveBrokersService(
     //===========================================================//
 
     suspend fun getHistoricalData(userId: UUID, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar> {
-        val client = session.getClient(userId)
+        val client = sessionManager.getClient(userId)
 
         val allBars = mutableListOf<IbkrHistoricalBar>()
 
@@ -294,7 +294,7 @@ class InteractiveBrokersService(
     // Private Method(s)
 
     private fun placeOrder(userId: UUID, order: InteractiveBrokersOrder) {
-        val client = session.getClient(userId)
+        val client = sessionManager.getClient(userId)
         val clientContract = createStockContract(order)
         val clientOrder = createMarketOrder(order)
 
@@ -338,7 +338,7 @@ class InteractiveBrokersService(
     //===========================================================//
 
     private fun reserveOrderId(userId: UUID): Int {
-        val client = session.getClient(userId)
+        val client = sessionManager.getClient(userId)
         return client.reserveOrderId()
     }
 }

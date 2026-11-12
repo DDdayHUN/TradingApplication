@@ -29,7 +29,9 @@ class InteractiveBrokerSessionManager(
 
     @OptIn(ExperimentalAtomicApi::class)
     private val isShuttingDown = AtomicBoolean(false)
-    private val sessionMutex = ReentrantReadWriteLock() // NOTE : If fairness becomes a problem, then set p0 = true
+    private val sessionMutex = ReentrantReadWriteLock()
+    // NOTE : If fairness becomes a problem with 'sessionMutex', then set constructor(p0 = true)
+    // NOTE : For more information read the official documentation of 'ReentrantReadWriteLock'
 
     //===========================================================//
     //===========================================================//
