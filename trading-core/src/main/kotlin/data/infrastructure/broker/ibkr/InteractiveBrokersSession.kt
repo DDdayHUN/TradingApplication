@@ -5,10 +5,10 @@ import java.util.*
 
 class InteractiveBrokersSession(
     val userId: UUID,
+    val clientId: Int,
     private val client: IbkrClient,
     private val host: String,
     private val port: Int,
-    private val clientId: Int,
 ) {
     //===========================================================//
     //===========================================================//
@@ -20,7 +20,7 @@ class InteractiveBrokersSession(
     //===========================================================//
     // Public Method(s)
 
-     suspend fun connect(){
+     suspend fun connect() {
         if (client.isConnected()) return
 
         client.connect(
