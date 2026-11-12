@@ -12,8 +12,15 @@ class InteractiveBrokerSessionManager(
     private val eventPublisher: ApplicationEventPublisher,
     private val config: IbkrConfig
 ) {
+    //===========================================================//
+    //===========================================================//
+    // Private Field(s)
 
     private val sessions = ConcurrentHashMap<UUID, InteractiveBrokersSession>()
+
+    //===========================================================//
+    //===========================================================//
+    // Public Field(s)
 
     suspend fun connect(userId: UUID, port: Int): InteractiveBrokersSession {
 

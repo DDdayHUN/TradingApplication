@@ -15,7 +15,7 @@ object Math {
 
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
     /**
      * Computes the standard deviation of returns derived from a price series.
      * The list must contain prices in chronological order.

@@ -59,9 +59,9 @@ class InteractiveBrokersService(
         }
 
 
-        val orderEntity = order.toEntity()
+        val orderEntity = order.toEntity(traderEntity)
         val ibkrOrder = order.toInteractiveBrokersOrder(reserveOrderId(userId))
-        ibkrOrder.toEntity(order)
+        ibkrOrder.toEntity(orderEntity)
 
         tradingOrderRepository.save().getOrThrow()
         ibkrOrderRepository.save(ibkrOrder).getOrThrow()
@@ -73,7 +73,7 @@ class InteractiveBrokersService(
         }
         catch(e: Exception) {
             ibkrOrderRepository.save(ibkrOrder.copy(
-                status = InteractiveBrokersOrder.Status.CANCELLED
+                status = Status.CANCELLED
             )).getOrThrow()
             throw e
         }

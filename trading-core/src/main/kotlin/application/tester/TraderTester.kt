@@ -29,7 +29,7 @@ class TraderTester {
 
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     suspend fun runTest() {
         println("#================================================#")
@@ -71,7 +71,7 @@ class TraderTester {
 
     //===========================================================//
     //===========================================================//
-    // Private Method(es)
+    // Private Method(s)
 
     private fun printHoldings(holdings: Set<SecurityHolding>) {
         if (holdings.isEmpty()) {

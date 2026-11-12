@@ -26,7 +26,7 @@ internal class TACPP45 : TradingAlgorithm {
 
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     override fun run(holdings: Set<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): TradingAlgorithm.Output {
         var buy: TradingAlgorithm.Output.Buy? = null

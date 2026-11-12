@@ -48,7 +48,7 @@ class TradingAlgorithmEvaluator {
 
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     suspend fun runEvaluationOnAll(): Output {
         return runEvaluation(m_Provider.getAllSecurityIdentifiers().getOrThrow())
@@ -73,7 +73,7 @@ class TradingAlgorithmEvaluator {
 
     //===========================================================//
     //===========================================================//
-    // Private Method(es)
+    // Private Method(s)
 
     // TODO : We currently still have the issues of the last calculations falling off ie.: Having less SecurityHistory elemnts than previous windows.
     private suspend fun years(

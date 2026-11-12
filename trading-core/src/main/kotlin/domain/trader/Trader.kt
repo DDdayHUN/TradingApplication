@@ -41,7 +41,7 @@ class Trader {
 
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     fun runAlgorithm(quote: Quote): Set<TradingOrder> {
         val currentPrice = quote.currentPrice
@@ -119,7 +119,7 @@ class Trader {
 
     //===========================================================//
     //===========================================================//
-    // Private Method(es)
+    // Private Method(s)
 
     private fun buy(price: Double, amount: Int) {
 

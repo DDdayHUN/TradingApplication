@@ -39,7 +39,7 @@ class FinnhubClient (
 
     /*===================================================*/
     /*===================================================*/
-    // Public Method(es)
+    // Public Method(s)
 
     /**
      * Gets the latest quote for a given stock symbol.
@@ -71,7 +71,7 @@ class FinnhubClient (
 
     /*===================================================*/
     /*===================================================*/
-    // Private Method(es)id
+    // Private Method(s)
 
     /**
      * Gets Ticker Symbol for a given isin number.

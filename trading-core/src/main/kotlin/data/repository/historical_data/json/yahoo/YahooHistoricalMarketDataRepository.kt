@@ -43,7 +43,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
 
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     override suspend fun getBySecurityIdentifier(
         securityIdentifier: SecurityIdentifier,
@@ -71,7 +71,7 @@ internal object YahooHistoricalMarketDataRepository : IHistoricalMarketDataProvi
 
     //===========================================================//
     //===========================================================//
-    // Private Method(es)
+    // Private Method(s)
 
     private fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto {
         val targetFile = s_SecurityToFileMap[securityIdentifier]

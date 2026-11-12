@@ -10,6 +10,7 @@ data class InteractiveBrokersOrder(
     val filledQuantity: String = "",
     val averageFillPrice: Double? = null
 ) {
+    // TODO : Remove this member function, because responsibility of this functionality will be placed onto IbkrService
     fun fill(
         filledQuantity: String,
         averageFillPrice: Double
@@ -54,8 +55,4 @@ fun TradingOrder.toInteractiveBrokersOrder(ibkrOrderId: Int): InteractiveBrokers
         brokerOrderId = ibkrOrderId,
         status = Status.PENDING,
     )
-}
-
-fun InteractiveBrokersOrder.toDomain(): TradingOrder {
-    return tradingOrder
 }

@@ -29,7 +29,7 @@ class Portfolio {
 
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     fun addTrader(trader: Trader) {
         m_Traders.add(trader)

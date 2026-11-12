@@ -52,4 +52,3 @@ fun InteractiveBrokersOrderEntity.toInteractiveBrokersOrder(): InteractiveBroker
         averageFillPrice = averageFillPrice,
     )
 }
-

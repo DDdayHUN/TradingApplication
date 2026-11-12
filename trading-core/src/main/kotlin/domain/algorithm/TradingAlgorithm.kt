@@ -18,7 +18,7 @@ import kotlin.time.Instant
 sealed interface TradingAlgorithm {
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     /**
      * Executes the algorithm based on current holdings and market conditions.
@@ -37,7 +37,7 @@ sealed interface TradingAlgorithm {
     companion object {
         //===========================================================//
         //===========================================================//
-        // Public Method(es)
+        // Public Method(s)
 
         /**
          * Creates and initializes an algorithm instance configured for backtesting.
@@ -82,7 +82,7 @@ sealed interface TradingAlgorithm {
 
         //===========================================================//
         //===========================================================//
-        // Private Method(es)
+        // Private Method(s)
 
         /**
          * Splits the historical data for backtesting into initial and remaining subsets.

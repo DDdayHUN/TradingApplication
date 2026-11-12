@@ -14,7 +14,7 @@ class InteractiveBrokersSession(
     //===========================================================//
     // Private Field(s)
 
-    private val logger = logger<InteractiveBrokersSession>()
+    private val m_Logger = logger<InteractiveBrokersSession>()
 
     //===========================================================//
     //===========================================================//
@@ -35,7 +35,8 @@ class InteractiveBrokersSession(
     fun disconnect() {
         if (!client.isConnected()) return
 
-        logger.info("Disconnecting user={} from IBKR", userId)
+        m_Logger.info("Disconnecting user from IBKR with ID:{${userId}} ")
+
         client.disconnect()
     }
 

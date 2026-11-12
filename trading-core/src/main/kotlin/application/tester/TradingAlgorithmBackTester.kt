@@ -1,6 +1,5 @@
 package application.tester
 
-import data.repository.historical_data.IHistoricalMarketDataProvider
 import domain.algorithm.TradingAlgorithm
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
@@ -70,7 +69,7 @@ class TradingAlgorithmBackTester {
 
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     fun runBackTest(): Output {
         reset()
@@ -79,7 +78,7 @@ class TradingAlgorithmBackTester {
 
     //===========================================================//
     //===========================================================//
-    // Private Method(es)
+    // Private Method(s)
 
     private fun reset() {
         val pair = TradingAlgorithm.create(m_TradingAlgorithmType, m_History, m_From, m_To).getOrThrow()
