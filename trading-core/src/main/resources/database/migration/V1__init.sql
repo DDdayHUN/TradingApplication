@@ -1,6 +1,14 @@
+-- =====================================================
+-- PORTFOLIO
+-- =====================================================
+
 CREATE TABLE app_portfolio (
    id UUID PRIMARY KEY
 );
+
+-- =====================================================
+-- USER
+-- =====================================================
 
 CREATE TABLE app_user (
   id UUID PRIMARY KEY,
@@ -13,87 +21,171 @@ CREATE TABLE app_user (
           ON DELETE CASCADE
 );
 
-CREATE TABLE app_trader(
+-- =====================================================
+-- TRADER
+-- =====================================================
+
+CREATE TABLE app_trader (
     id UUID PRIMARY KEY,
-    portfolio_id UUID NOT NULL,
+
+    portfolio_fk UUID NOT NULL,
+
     security_isin VARCHAR(12) NOT NULL,
     security_ticker VARCHAR(20) NOT NULL,
     security_currency VARCHAR(3) NOT NULL,
+
     capital DOUBLE PRECISION NOT NULL,
+
     algorithm_type VARCHAR(20) NOT NULL,
     algorithm_state JSONB NOT NULL,
 
-    CONSTRAINT fk_app_traders_portfolio
-            FOREIGN KEY (portfolio_id)
-            REFERENCES app_portfolio (id)
-            ON DELETE CASCADE,
+CONSTRAINT fk_app_trader_portfolio
+    FOREIGN KEY (portfolio_fk)
+        REFERENCES app_portfolio (id)
+        ON DELETE CASCADE,
 
-    CONSTRAINT chk_app_traders_capital
-            CHECK (capital >= 0)
+CONSTRAINT chk_app_trader_capital
+    CHECK (capital >= 0)
 );
 
-CREATE INDEX idx_app_traders_portfolio_id ON app_trader (portfolio_id);
+CREATE INDEX idx_app_trader_portfolio_id
+    ON app_trader (portfolio_fk);
 
-CREATE TABLE app_order(
-    id UUID PRIMARY KEY,
-    ibkr_order_id INTEGER NOT NULL,
-    trader_id UUID NOT NULL,
-    security_isin VARCHAR(12) NOT NULL,
-    security_ticker VARCHAR(20) NOT NULL,
-    security_currency VARCHAR(3) NOT NULL,
-    action VARCHAR(10) NOT NULL,
-    quantity DOUBLE PRECISION NOT NULL,
-    status VARCHAR(30) NOT NULL,
-    filled_quantity VARCHAR(30) NOT NULL,
-    signal_price DOUBLE PRECISION NOT NULL,
-    average_fill_price DOUBLE PRECISION,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+-- =====================================================
+-- SECURITY HOLDING
+-- =====================================================
 
-    CONSTRAINT  fk_app_order_trader
-            FOREIGN KEY (trader_id)
-            REFERENCES app_trader (id)
-            ON DELETE CASCADE
+CREATE TABLE app_security_holding (
+  id UUID PRIMARY KEY,
+
+  time_stamp TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  trader_fk UUID NOT NULL,
+
+  entry_price DOUBLE PRECISION NOT NULL,
+  amount INTEGER NOT NULL,
+
+  CONSTRAINT fk_app_security_holding_trader
+      FOREIGN KEY (trader_fk)
+          REFERENCES app_trader (id)
+          ON DELETE CASCADE,
+
+  CONSTRAINT chk_app_security_holding_entry_price
+      CHECK (entry_price > 0),
+
+  CONSTRAINT chk_app_security_holding_amount
+      CHECK (amount > 0)
 );
 
-CREATE INDEX idx_app_oder_ibkr_order_id ON app_order (ibkr_order_id);
-CREATE INDEX idx_app_order_trader_id ON app_order (trader_id);
+CREATE INDEX idx_app_security_holding_trader_fk
+    ON app_security_holding (trader_fk);
 
-CREATE TABLE app_security_holding(
-    id UUID PRIMARY KEY,
-    time_stamp TIMESTAMP WITH TIME ZONE NOT NULL,
-    trader_id UUID NOT NULL,
-    entry_price DOUBLE PRECISION NOT NULL,
-    amount INTEGER NOT NULL,
+-- =====================================================
+-- TRADING ORDER (DOMAIN)
+-- =====================================================
 
-    CONSTRAINT fk_holdings_trader
-            FOREIGN KEY  (trader_id)
-            REFERENCES app_trader (id)
-            ON DELETE CASCADE,
+CREATE TABLE app_order (
+   id UUID PRIMARY KEY,
 
-    CONSTRAINT chk_holding_entry_price
-        CHECK (entry_price > 0),
+   trader_fk UUID NOT NULL,
 
-    CONSTRAINT chk_holding_amount
-        CHECK (amount > 0)
+   security_isin VARCHAR(12) NOT NULL,
+   security_ticker VARCHAR(20) NOT NULL,
+   security_currency VARCHAR(3) NOT NULL,
+
+   action VARCHAR(10) NOT NULL,
+
+   buy_amount INTEGER,
+
+   signal_price DOUBLE PRECISION NOT NULL,
+
+   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+   CONSTRAINT fk_app_order_trader
+       FOREIGN KEY (trader_fk)
+           REFERENCES app_trader (id)
+           ON DELETE CASCADE,
+
+   CONSTRAINT chk_app_order_action
+       CHECK (action IN ('BUY', 'SELL')),
+
+    CONSTRAINT chk_app_order_buy_amount
+        CHECK (
+            (action = 'BUY' AND buy_amount IS NOT NULL AND buy_amount > 0)
+            OR
+            (action = 'SELL' AND buy_amount IS NULL)
+        )
 );
 
-CREATE INDEX idx_holdings_trader_id ON app_security_holding (trader_id);
+CREATE INDEX idx_app_order_trader_fk
+    ON app_order (trader_fk);
 
-CREATE TABLE app_order_sell_allocation (
-       id UUID PRIMARY KEY,
-       order_id UUID NOT NULL,
-       holding_id UUID NOT NULL,
-       amount INTEGER NOT NULL,
+-- =====================================================
+-- ORDER SELL ALLOCATION
+-- =====================================================
 
-       CONSTRAINT fk_order_sell_allocation_order
-           FOREIGN KEY (order_id)
-               REFERENCES app_order (id)
-               ON DELETE CASCADE
+CREATE TABLE app_order_sell_holdings (
+ id UUID PRIMARY KEY,
+
+ order_fk UUID NOT NULL,
+ holding_fk UUID NOT NULL,
+
+ amount INTEGER NOT NULL,
+
+ CONSTRAINT fk_order_sell_allocation_order
+     FOREIGN KEY (order_fk)
+         REFERENCES app_order (id)
+         ON DELETE CASCADE,
+
+ CONSTRAINT fk_order_sell_allocation_holding
+     FOREIGN KEY (holding_fk)
+         REFERENCES app_security_holding (id),
+
+ CONSTRAINT chk_order_sell_allocation_amount
+     CHECK (amount > 0)
 );
 
-CREATE INDEX idx_order_sell_allocation_order_id
-    ON app_order_sell_allocation (order_id);
+CREATE INDEX idx_order_sell_allocation_order_fk
+    ON app_order_sell_holdings (order_fk);
 
-CREATE INDEX idx_order_sell_allocation_holding_id
-    ON app_order_sell_allocation (holding_id);
+CREATE INDEX idx_order_sell_allocation_holding_fk
+    ON app_order_sell_holdings (holding_fk);
 
+-- =====================================================
+-- INTERACTIVE BROKERS USER
+-- =====================================================
+
+CREATE TABLE app_infrastructure_ibkr_user (
+  id UUID PRIMARY KEY,
+
+  client_id INTEGER NOT NULL,
+
+  CONSTRAINT fk_ibkr_user
+      FOREIGN KEY (id)
+          REFERENCES app_user (id)
+          ON DELETE CASCADE
+);
+
+-- =====================================================
+-- INTERACTIVE BROKERS ORDER
+-- =====================================================
+
+CREATE TABLE app_infrastructure_ibkr_order (
+   id UUID PRIMARY KEY,
+
+   ibkr_order_id INTEGER NOT NULL,
+
+   status VARCHAR(30) NOT NULL,
+
+   filled_quantity VARCHAR(30) NOT NULL DEFAULT '',
+
+   average_fill_price DOUBLE PRECISION,
+
+   CONSTRAINT fk_ibkr_order_trading_order
+       FOREIGN KEY (id)
+           REFERENCES app_order (id)
+           ON DELETE CASCADE
+);
+
+CREATE INDEX idx_ibkr_order_ibkr_order_id
+    ON app_infrastructure_ibkr_order (ibkr_order_id);

@@ -56,10 +56,7 @@ class Test(
     //===========================================================//
     //===========================================================//
 
-    @Scheduled(
-        cron = "0 33 17 * * *",
-        zone = "Europe/Budapest"
-    )
+
     fun getFinnhubMarketData(){
         scope.launch{
             try {
@@ -78,6 +75,10 @@ class Test(
 
     //===========================================================//
 
+    @Scheduled(
+        cron = "0 11 22 * * *",
+        zone = "Europe/Budapest"
+    )
     fun placeConcurrentTestOrders() {
         scope.launch {
             try {
@@ -85,6 +86,7 @@ class Test(
 
                 orders
                     .forEach { order ->
+                        logger.info("Order: $order")
                         orderService.submitOrderForUser(userId, order)
                     }
 
@@ -192,6 +194,10 @@ class Test(
 
     //===========================================================//
 
+    @Scheduled(
+        cron="0 57 21 * * *",
+        zone = "Europe/Budapest"
+    )
     fun createTradersByEvalOutput() {
         scope.launch {
             val evalOutput = TradingAlgorithmEvaluator(

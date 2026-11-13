@@ -8,14 +8,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.EnableScheduling
 
-@EntityScan("data.repository")
-@EnableJpaRepositories("data.repository")
+@EntityScan("data")
+@EnableJpaRepositories("data")
 @SpringBootApplication(
     scanBasePackages = [
         "api",
         "application",
-        "data",
-        "data/infrastructure"
+        "data"
     ]
 )
 @EnableAsync
@@ -24,8 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
     basePackages = [
         "api",
         "application",
-        "data",
-        "data/infrastructure"
+        "data"
     ]
 )
 class SpringMain

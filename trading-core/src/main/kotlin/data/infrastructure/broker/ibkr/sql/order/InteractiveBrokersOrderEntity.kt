@@ -5,12 +5,17 @@ import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Status
 import data.repository.order.sql.TradingOrderEntity
 import data.repository.order.sql.toDomain
 import jakarta.persistence.*
+import java.util.UUID
 
 @Entity
 @Table(name = "app_infrastructure_ibkr_order")
 class InteractiveBrokersOrderEntity(
     @Id
+    @Column(name = "id")
+    var id: UUID? = null,
+
     @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @MapsId
     @JoinColumn(name = "id", nullable = false, updatable = false)
     var tradingOrder: TradingOrderEntity,
 
