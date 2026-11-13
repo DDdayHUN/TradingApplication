@@ -32,6 +32,9 @@ class IbkrClientSession : IbkrInterfaceWrapper {
     private val m_Port: Int
     private val m_EventPublisher: ApplicationEventPublisher
 
+    //===========================================================//
+
+    private val m_Logger = logger<IbkrClientSession>()
     private val m_Signal = EJavaSignal()
     private val client = EClientSocket(this, m_Signal)
     private var reader: EReader? = null
@@ -53,10 +56,6 @@ class IbkrClientSession : IbkrInterfaceWrapper {
     private val pendingHistoricalData = ConcurrentHashMap<Int, HistoricalDataRequest>()
 
     private val historicalEndDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss 'UTC'").withZone(ZoneOffset.UTC)!!
-
-    //===========================================================//
-
-    private val m_Logger = logger<IbkrClientSession>()
 
     //===========================================================//
     //===========================================================//

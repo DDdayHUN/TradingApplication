@@ -1,12 +1,16 @@
 package data.infrastructure.broker.ibkr
 
 import api.config.IbkrConfig
+import data.infrastructure.broker.ibkr.sql.user.IInteractiveBrokersUserRepository
+import data.infrastructure.broker.ibkr.sql.user.InteractiveBrokersUserEntity
+import data.repository.user.IUserRepository
 import jakarta.annotation.PreDestroy
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantReadWriteLock
@@ -17,6 +21,8 @@ import kotlin.concurrent.write
 
 @Component
 class InteractiveBrokerSessionManager(
+    private val ibkrUserRepository: IInteractiveBrokersUserRepository,
+    private val userRepository: IUserRepository,
     private val eventPublisher: ApplicationEventPublisher,
     private val config: IbkrConfig
 ) {
@@ -37,16 +43,26 @@ class InteractiveBrokerSessionManager(
     //===========================================================//
     // Public Method(s)
 
+    @Transactional
     suspend fun connect(userId: UUID, port: Int) {
         sessionMutex.read {
             throwIfShuttingDown()
             val mutex = userLocks.computeIfAbsent(userId) { Mutex() }
 
             return mutex.withLock {
+                // NOTE : Ez itt csunya itt, de nem baj marad egyelore :)
                 sessions[userId] ?: run {
+                    val ibkrUserEntity = ibkrUserRepository.getById(userId).getOrNull() ?: run {
+                        val userEntity = userRepository.getById(userId).getOrThrow()
+                        ibkrUserRepository.save(user = InteractiveBrokersUserEntity(
+                            user = userEntity,
+                            clientId = ibkrUserRepository.fetchNextId().getOrThrow()
+                        )).getOrThrow()
+                    }
+
                     val clientSession = IbkrClientSession(
                         userId,
-                        1,
+                        ibkrUserEntity.clientId,
                         config.host,
                         port,
                         eventPublisher

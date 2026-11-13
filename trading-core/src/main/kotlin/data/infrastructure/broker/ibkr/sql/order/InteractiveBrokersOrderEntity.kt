@@ -37,13 +37,3 @@ fun InteractiveBrokersOrder.toEntity(tradingOrder: TradingOrderEntity): Interact
         averageFillPrice = averageFillPrice
     )
 }
-
-fun InteractiveBrokersOrderEntity.toInteractiveBrokersOrder(): InteractiveBrokersOrder {
-    return InteractiveBrokersOrder(
-        tradingOrder = tradingOrder.toDomain(),
-        brokerOrderId = ibkrOrderId,
-        status = status,
-        filledQuantity = filledQuantity,
-        averageFillPrice = averageFillPrice,
-    )
-}
