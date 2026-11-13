@@ -12,7 +12,7 @@ package domain.tax
 sealed interface ITaxation {
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     fun calculateRevenueAfterTax(revenue: Double, costBasis: Double): Double
     //abstract fun taxInterestIncome(value: Double): Double

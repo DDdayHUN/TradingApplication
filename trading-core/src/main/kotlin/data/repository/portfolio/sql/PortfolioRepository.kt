@@ -7,7 +7,7 @@ import java.util.*
 
 @Repository
 class PortfolioRepository(
-    private val portfolioRepository: IPortfolioJpaRepository
+    private val repository: IPortfolioJpaRepository
 ) : IPortfolioRepository {
     //===========================================================//
     //===========================================================//
@@ -15,7 +15,7 @@ class PortfolioRepository(
 
     override suspend fun save(portfolio: PortfolioEntity): Result<PortfolioEntity> {
        return runCatching {
-           portfolioRepository.save(portfolio)
+           repository.save(portfolio)
        }
     }
 
@@ -23,7 +23,7 @@ class PortfolioRepository(
 
     override suspend fun getById(portfolioId: UUID): Result<PortfolioEntity> {
         return runCatching {
-            portfolioRepository.findWithRelationsById(portfolioId)
+            repository.findWithRelationsById(portfolioId)
                 ?: throw PortfolioNotFoundException(portfolioId)
         }
     }

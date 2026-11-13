@@ -3,6 +3,7 @@ package api.service.auth
 import application.logging.logger
 import data.repository.user.IUserRepository
 import application.service.user.User
+import data.repository.user.sql.UserEntity
 import data.repository.user.sql.toDomain
 import data.repository.user.sql.toEntity
 import domain.Portfolio
@@ -95,7 +96,6 @@ class AuthenticationService(
                   )
                 }
                 .getOrThrow()
-                .toDomain()
                 .id
         }
     }

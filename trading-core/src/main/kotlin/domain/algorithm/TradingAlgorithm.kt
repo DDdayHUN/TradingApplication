@@ -1,7 +1,7 @@
 package domain.algorithm
 
 import com.google.gson.annotations.JsonAdapter
-import domain.adapter.AlgorithmAdapter
+import domain.adapter.TradingAlgorithmAdapter
 import domain.market.security.SecurityHistory
 import domain.market.security.SecurityHolding
 import kotlin.collections.filter
@@ -14,11 +14,11 @@ import kotlin.time.Instant
  */
 //===========================================================//
 
-@JsonAdapter(AlgorithmAdapter::class)
+@JsonAdapter(TradingAlgorithmAdapter::class)
 sealed interface TradingAlgorithm {
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     /**
      * Executes the algorithm based on current holdings and market conditions.
@@ -37,7 +37,7 @@ sealed interface TradingAlgorithm {
     companion object {
         //===========================================================//
         //===========================================================//
-        // Public Method(es)
+        // Public Method(s)
 
         /**
          * Creates and initializes an algorithm instance configured for backtesting.
@@ -82,7 +82,7 @@ sealed interface TradingAlgorithm {
 
         //===========================================================//
         //===========================================================//
-        // Private Method(es)
+        // Private Method(s)
 
         /**
          * Splits the historical data for backtesting into initial and remaining subsets.
@@ -203,18 +203,19 @@ sealed interface TradingAlgorithm {
 
     //===========================================================//
 
+    // NOTE : Maybe consolidate the TradingOrder Signal class and this one.
     data class Output(
         val buy: Buy?,
         val sell: Sell?
     ) {
         data class Buy(val amount: Int) {
             init {
-                require(amount > 0) { "Amount must be greater than 0" }
+                require(amount > 0)
             }
         }
         data class Sell(val batches: Set<Pair<SecurityHolding, Int>>) {
             init {
-                require(batches.isNotEmpty()) { "Batches must be non empty" }
+                require(batches.isNotEmpty())
             }
         }
     }

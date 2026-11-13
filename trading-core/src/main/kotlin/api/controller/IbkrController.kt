@@ -6,12 +6,18 @@ import data.infrastructure.broker.ibkr.InteractiveBrokerSessionManager
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+//===========================================================//
+//===========================================================//
+
 @RestController
 @RequestMapping("/api/ibkr/")
 class IbkrController(
     private val authService: IAuthenticationService,
     private val ibkrSessionManager: InteractiveBrokerSessionManager
 ) {
+    //===========================================================//
+    //===========================================================//
+    // GET
 
     @GetMapping("connected/")
     suspend fun isConnected(): ResponseEntity<Boolean>{
@@ -21,6 +27,10 @@ class IbkrController(
             ibkrSessionManager.isConnected(userId)
         )
     }
+
+    //===========================================================//
+    //===========================================================//
+    // POST
 
     @PostMapping("connect/")
     suspend fun ibkrConnect(@RequestBody request: ConnectIbkrRequest): ResponseEntity<Boolean> {
@@ -35,6 +45,8 @@ class IbkrController(
 
         return ResponseEntity.ok(response)
     }
+
+    //===========================================================//
 
     @PostMapping("disconnect/")
     suspend fun ibkrDisconnect(): ResponseEntity<Boolean>{

@@ -16,14 +16,14 @@ class SecurityHoldingEntity(
     @Column(name = "time_stamp", nullable = false, updatable = false)
     var timestamp: Instant,
 
-    @Column(name = "entry_price", nullable = false)
+    @Column(name = "entry_price", nullable = false, updatable = false)
     var entryPrice: Double,
 
     @Column(name = "amount", nullable = false)
     var amount: Int,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "trader_id", nullable = false)
+    @JoinColumn(name = "trader_fk", nullable = false, updatable = false)
     var trader: TraderEntity
 )
 

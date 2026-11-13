@@ -2,7 +2,7 @@ package api.config
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import domain.adapter.AlgorithmAdapter
+import domain.adapter.TradingAlgorithmAdapter
 import domain.adapter.InstantAdapter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,8 +14,8 @@ class GsonConfig {
     fun gson(): Gson {
         return GsonBuilder()
             .registerTypeAdapter(
-                AlgorithmAdapter::class.java,
-                AlgorithmAdapter()
+                TradingAlgorithmAdapter::class.java,
+                TradingAlgorithmAdapter()
             )
             .registerTypeAdapter(
                 InstantAdapter::class.java,

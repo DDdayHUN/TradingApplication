@@ -15,7 +15,7 @@ internal class ALGDES3 : TradingAlgorithm {
 
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     override fun run(holdings: Set<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): TradingAlgorithm.Output {
         var buy: TradingAlgorithm.Output.Buy? = null

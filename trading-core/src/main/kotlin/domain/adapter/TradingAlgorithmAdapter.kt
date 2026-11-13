@@ -4,7 +4,7 @@ import com.google.gson.*
 import domain.algorithm.*
 import java.lang.reflect.Type
 
-class AlgorithmAdapter : JsonSerializer<TradingAlgorithm>, JsonDeserializer<TradingAlgorithm> {
+class TradingAlgorithmAdapter : JsonSerializer<TradingAlgorithm>, JsonDeserializer<TradingAlgorithm> {
     override fun serialize(src: TradingAlgorithm, typeOfT: Type, context: JsonSerializationContext): JsonElement {
         val jsonElement = context.serialize(src, src.javaClass).asJsonObject
         val typeTag = TradingAlgorithm.typeTagOf(src).getOrElse {

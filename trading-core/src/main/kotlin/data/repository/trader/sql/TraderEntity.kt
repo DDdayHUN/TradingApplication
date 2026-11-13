@@ -17,9 +17,8 @@ import java.util.*
 @Entity
 @Table(name = "app_trader")
 class TraderEntity(
-
     @Id
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(name = "id")
     var id: UUID,
 
     @Embedded
@@ -28,28 +27,31 @@ class TraderEntity(
             name = "isin",
             column = Column(
                 name = "security_isin",
-                nullable = false
+                nullable = false,
+                updatable = false
             )
         ),
         AttributeOverride(
             name = "tickerSymbol",
             column = Column(
                 name = "security_ticker",
-                nullable = false
+                nullable = false,
+                updatable = false
             )
         ),
         AttributeOverride(
             name = "currency",
             column = Column(
                 name = "security_currency",
-                nullable = false
+                nullable = false,
+                updatable = false
             )
         )
     )
     var securityIdentifier: SecurityIdentifierEntity,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "portfolio_id", nullable = false)
+    @JoinColumn(name = "portfolio_fk", nullable = false)
     var portfolio: PortfolioEntity,
 
     @Column(name = "capital", nullable = false)
@@ -103,42 +105,4 @@ fun TraderEntity.toDomain(): Trader {
         allocatedCapital = capital,
         algorithm = algorithm
     )
-}
-
-fun TraderEntity.update(trader: Trader) {
-    require(this.id == trader.id) { "ID mismatch. ID1 {${this.id}} ID2 {${trader.id}}" }
-
-    securityIdentifier = trader.securityIdentifier.toEntity()
-    capital = trader.availableCapital
-
-    algorithmType = TradingAlgorithm.typeTagOf(trader.algorithm).getOrThrow()
-    algorithmState = g_GSON.toJson(
-        trader.algorithm,
-        TradingAlgorithm::class.java
-    )
-
-    val domainHoldings = trader.holdings.associateBy { holding -> holding.id }
-
-    // remove
-    holdings.removeIf { holding -> holding.id !in domainHoldings }
-
-    // update
-    holdings.forEach { holding ->
-        domainHoldings[holding.id]?.let { domainHolding ->
-            holding.entryPrice = domainHolding.purchasePrice
-            holding.amount = domainHolding.amount
-            holding.timestamp = domainHolding.timestamp
-        }
-    }
-
-    // add new
-    val existingHoldingIds = holdings
-        .map { it.id }
-        .toSet()
-
-    trader.holdings
-        .filter { it.id !in existingHoldingIds }
-        .forEach { holding ->
-            holdings.add(holding.toEntity(this))
-        }
 }

@@ -5,7 +5,7 @@ import domain.trader.TradingOrder
 import java.util.UUID
 
 interface IBrokerService {
-    suspend fun submitOrder(userId: UUID, order: TradingOrder)
-    suspend fun getAllOrder(userId: UUID): List<TradingOrder>
-    fun getAccountSummary(userId: UUID): User.AccountSummary
+    suspend fun submitOrderForUser(userId: UUID, order: TradingOrder)
+    suspend fun getAllOrderForUser(userId: UUID): List<TradingOrder>
+    suspend fun getAccountSummary(userId: UUID): User.AccountSummary
 }

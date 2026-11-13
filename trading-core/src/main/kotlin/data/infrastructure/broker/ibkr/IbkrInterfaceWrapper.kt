@@ -7,6 +7,8 @@ interface IbkrInterfaceWrapper : EWrapper {
     //===========================================================//
     //===========================================================//
     // Default Implementation(s)
+    // NOTE : Implementations don't throw 'UnsupportedOperation' and/or any Exceptions for that matter,
+    // NOTE : because Ibkr calls legacy functions as well, so implementations are intentionally left empty.
 
     override fun connectionClosed() {}
     override fun connectAck() {}

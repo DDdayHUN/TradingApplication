@@ -8,7 +8,7 @@ import java.util.UUID
 
 @Repository
 class TraderRepository(
-    private val traderRepository: ITraderJpaRepository
+    private val repository: ITraderJpaRepository
 ) : ITraderRepository {
     //===========================================================//
     //===========================================================//
@@ -16,7 +16,7 @@ class TraderRepository(
 
     override suspend fun save(trader: TraderEntity): Result<TraderEntity> {
         return runCatching {
-            traderRepository.save(trader)
+            repository.save(trader)
         }
     }
 
@@ -24,7 +24,7 @@ class TraderRepository(
 
     override suspend fun saveAll(traders: Iterable<TraderEntity>): Result<List<TraderEntity>> {
         return runCatching {
-            traderRepository.saveAll(traders)
+            repository.saveAll(traders)
         }
     }
 
@@ -32,7 +32,7 @@ class TraderRepository(
 
     override suspend fun getById(traderId: UUID): Result<TraderEntity> {
         return runCatching {
-            traderRepository.findByIdWithHoldings(traderId)
+            repository.findByIdWithHoldings(traderId)
                 ?: throw TraderNotFoundException(traderId)
         }
     }
@@ -42,7 +42,7 @@ class TraderRepository(
     override suspend fun getAllById(traderIds: Iterable<UUID>): Result<List<TraderEntity>> {
         return runCatching {
             val ids = traderIds.toList()
-            val entities = traderRepository.findAllByIdWithHoldings(ids)
+            val entities = repository.findAllByIdWithHoldings(ids)
             if (entities.size != ids.size) throw TraderNotFoundException(ids)
 
             entities
@@ -56,7 +56,7 @@ class TraderRepository(
             val entity = getById(traderId).getOrThrow()
             if (entity.holdings.isNotEmpty()) throw TraderHoldingsNotEmptyException(traderId)
 
-            traderRepository.deleteById(entity.id)
+            repository.deleteById(entity.id)
         }
     }
 
@@ -72,7 +72,7 @@ class TraderRepository(
 
             if(traderIdsWithHoldings.isNotEmpty()) throw TraderHoldingsNotEmptyException(traderIdsWithHoldings)
 
-            traderRepository.deleteAllById(traderIds)
+            repository.deleteAllById(traderIds)
         }
     }
 
@@ -80,7 +80,7 @@ class TraderRepository(
 
     override suspend fun deleteAll(): Result<Unit> {
         return runCatching {
-            traderRepository.deleteAll()
+            repository.deleteAll()
         }
     }
 }

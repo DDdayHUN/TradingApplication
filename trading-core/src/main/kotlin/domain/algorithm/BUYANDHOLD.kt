@@ -11,7 +11,7 @@ import domain.market.security.SecurityHolding
 internal class BUYANDHOLD: TradingAlgorithm {
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     override fun run(holdings: Set<SecurityHolding>, allocatedCapital: Double, currentPrice: Double): TradingAlgorithm.Output {
         val amount = (allocatedCapital / currentPrice).toInt()

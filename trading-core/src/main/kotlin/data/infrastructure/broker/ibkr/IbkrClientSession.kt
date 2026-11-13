@@ -10,25 +10,37 @@ import kotlinx.coroutines.withTimeout
 import org.springframework.context.ApplicationEventPublisher
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
-class IbkrClient(
-    private val event: ApplicationEventPublisher
-) : IbkrInterfaceWrapper {
+class IbkrClientSession : IbkrInterfaceWrapper {
+    //===========================================================//
+    //===========================================================//
+    // Public Field(s)
+
+    val userId: UUID
+    val clientId: Int
+
     //===========================================================//
     //===========================================================//
     // Private Field(s)
 
-    private val signal = EJavaSignal()
-    private val client = EClientSocket(this, signal)
+    private val m_Host: String
+    private val m_Port: Int
+    private val m_EventPublisher: ApplicationEventPublisher
+
+    //===========================================================//
+
+    private val m_Logger = logger<IbkrClientSession>()
+    private val m_Signal = EJavaSignal()
+    private val client = EClientSocket(this, m_Signal)
     private var reader: EReader? = null
     private var readerThread: Thread? = null
     private val nextOrderId = AtomicInteger(-1)
     private var readySignal = CompletableDeferred<Unit>()
-    private val logger = logger<IbkrClient>()
     private val marketDataRequestId = AtomicInteger(1_000)
     private val pendingPrices = ConcurrentHashMap<Int, CompletableDeferred<Double>>()
 
@@ -43,22 +55,22 @@ class IbkrClient(
     private val historicalDataRequestId = AtomicInteger(3_000)
     private val pendingHistoricalData = ConcurrentHashMap<Int, HistoricalDataRequest>()
 
-    private val historicalEndDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss 'UTC'").withZone(ZoneOffset.UTC)
+    private val historicalEndDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss 'UTC'").withZone(ZoneOffset.UTC)!!
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
-    suspend fun connect(host: String, port: Int, clientId: Int, maxAttempts: Int = 5) {
+    suspend fun connect(maxAttempts: Int = 5) {
         if(client.isConnected && nextOrderId.get() >= 0) {
-            logger.warn("IBKR client is already connected and ready")
+            m_Logger.warn("IBKR client is already connected and ready")
             return
         }
 
         repeat(maxAttempts) { attempt ->
             try{
-                logger.info("Connecting to IBKR attemp={}/{} host={}, port={} clientId={}",
-                    attempt + 1, maxAttempts, host, port, clientId)
+                m_Logger.info("Connecting to IBKR attemp={}/{} host={}, port={} clientId={}",
+                    attempt + 1, maxAttempts, m_Host, m_Port, clientId)
 
                 nextOrderId.set(-1)
                 readySignal = CompletableDeferred()
@@ -67,7 +79,7 @@ class IbkrClient(
                     client.eDisconnect()
                 }
 
-                client.eConnect(host, port, clientId)
+                client.eConnect(m_Host, m_Port, clientId)
 
                 if(!client.isConnected) {
                     throw IllegalStateException(
@@ -81,12 +93,12 @@ class IbkrClient(
                     readySignal.await()
                 }
 
-                logger.info("IBKR client is ready")
+                m_Logger.info("IBKR client is ready")
 
                 subscribeAccountSummary()
                 return
             } catch(e: Exception) {
-                logger.warn("IBKR conntection attempt {}/{} failed",
+                m_Logger.warn("IBKR conntection attempt {}/{} failed",
                     attempt + 1, maxAttempts, e)
 
                 if(client.isConnected) {
@@ -116,11 +128,11 @@ class IbkrClient(
 
     fun disconnect() {
         if(!client.isConnected) {
-            logger.debug("IBKR client is already disconnected")
+            m_Logger.debug("IBKR client is already disconnected")
             return
         }
 
-        logger.info("Disconnecting from IBKR Gateway")
+        m_Logger.info("Disconnecting from IBKR Gateway")
         client.cancelAccountSummary(
             accountSummaryRequestId
         )
@@ -149,7 +161,7 @@ class IbkrClient(
             "IBKR has not provided a valid order id"
         }
 
-        logger.info(
+        m_Logger.info(
             "Submitting IBKR order orderId={} symbol={} action={} quantity={}",
             orderId,
             contract.symbol(),
@@ -279,7 +291,7 @@ class IbkrClient(
 
     fun requestOpenOrders() {
         check(client.isConnected) {"IBKR client is not connected"}
-        logger.debug("Requesting current IBKR open orders")
+        m_Logger.debug("Requesting current IBKR open orders")
         client.reqOpenOrders()
     }
 
@@ -299,38 +311,38 @@ class IbkrClient(
     //===========================================================//
     // Ibkr Method(s)
 
-    override fun connectionClosed() = logger.info("IBKR connection closed")
-    override fun connectAck() = logger.info("IBKR connection acknowledged")
+    override fun connectionClosed() = m_Logger.info("IBKR connection closed")
+    override fun connectAck() = m_Logger.info("IBKR connection acknowledged")
 
     //===========================================================//
 
     override fun orderStatusProtoBuf(message: OrderStatusProto.OrderStatus?) {
         if(message == null) {
-            logger.warn("Received null IBKR orderStatus protobuf message")
+            m_Logger.warn("Received null IBKR orderStatus protobuf message")
             return
         }
 
-        when(message.status){
+        when(message.status) {
             "ApiPending", "PendingSubmit" -> {
-                event.publishEvent(IbkrEvent.OrderPendingEvent(message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderPendingEvent(userId, message.orderId))
             }
             "PreSubmitted" -> {
-                event.publishEvent(IbkrEvent.OrderPreSubmittedEvent(message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderPreSubmittedEvent(userId, message.orderId))
             }
             "Submitted" -> {
-                event.publishEvent(IbkrEvent.OrderSubmittedEvent(message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderSubmittedEvent(userId, message.orderId))
             }
             "PendingCancel" -> {
-                event.publishEvent(IbkrEvent.OrderPendingCancelEvent(message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderPendingCancelEvent(userId, message.orderId))
             }
             "Filled" -> {
-                event.publishEvent(IbkrEvent.OrderFilledEvent(message.orderId, message.filled, message.avgFillPrice))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderFilledEvent(userId, message.orderId, message.filled, message.avgFillPrice))
             }
             "ApiCancelled", "Cancelled" -> {
-                event.publishEvent(IbkrEvent.OrderCancelledEvent(message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderCancelledEvent(userId, message.orderId))
             }
             "Inactive" -> {
-                event.publishEvent(IbkrEvent.OrderInactiveEvent(message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderInactiveEvent(userId, message.orderId))
             }
         }
     }
@@ -339,11 +351,11 @@ class IbkrClient(
 
     override fun openOrderProtoBuf(message: OpenOrderProto.OpenOrder?) {
         if(message == null) {
-            logger.warn("Received null IBKR openOrder protobuf message")
+            m_Logger.warn("Received null IBKR openOrder protobuf message")
             return
         }
 
-        logger.debug(
+        m_Logger.debug(
             "IBKR open order orderId={} symbol={} action={} status={}",
             message.orderId,
             message.contract.symbol,
@@ -355,40 +367,40 @@ class IbkrClient(
     //===========================================================//
 
     override fun openOrdersEndProtoBuf(message: OpenOrdersEndProto.OpenOrdersEnd?) {
-        logger.debug("IBKR open-order snapshot completed")
+        m_Logger.debug("IBKR open-order snapshot completed")
     }
 
     //===========================================================//
 
     override fun errorProtoBuf(message: ErrorMessageProto.ErrorMessage?) {
         if(message == null) {
-            logger.warn("Received null IBKR protobuf error message")
+            m_Logger.warn("Received null IBKR protobuf error message")
             return
         }
 
         when(message.errorCode) {
-            2104, 2106, 2158 -> logger.info(
+            2104, 2106, 2158 -> m_Logger.info(
                 "IBKR status requestId={} code={} message={}",
                 message.id,
                 message.errorCode,
                 message.errorMsg
             )
 
-            2107, 2108 -> logger.debug(
+            2107, 2108 -> m_Logger.debug(
                 "IBKR status requestId={} code={} message={}",
                 message.id,
                 message.errorCode,
                 message.errorMsg
             )
 
-            399 -> logger.warn(
+            399 -> m_Logger.warn(
                 "IBKR order warning requestId={} code={} message={}",
                 message.id,
                 message.errorCode,
                 message.errorMsg
             )
 
-            else -> logger.error(
+            else -> m_Logger.error(
                 "IBKR error requestId={} code={} message={}",
                 message.id,
                 message.errorCode,
@@ -401,11 +413,11 @@ class IbkrClient(
 
     override fun execDetailsProtoBuf(message: ExecutionDetailsProto.ExecutionDetails?) {
         if(message == null) {
-            logger.warn("Received null IBKR executionDetails protobuf message")
+            m_Logger.warn("Received null IBKR executionDetails protobuf message")
             return
         }
 
-        logger.info(
+        m_Logger.info(
             "IBKR execution reqId={} symbol={} shares={} price={}",
             message.reqId,
             message.contract.symbol,
@@ -418,11 +430,11 @@ class IbkrClient(
 
     override fun execDetailsEndProtoBuf(message: ExecutionDetailsEndProto.ExecutionDetailsEnd?) {
         if(message == null) {
-            logger.warn("Received null IBKR executionDetailsEnd protobuf message")
+            m_Logger.warn("Received null IBKR executionDetailsEnd protobuf message")
             return
         }
 
-        logger.debug(
+        m_Logger.debug(
             "IBKR execution details completed reqId={}",
             message.reqId
         )
@@ -433,7 +445,7 @@ class IbkrClient(
     override fun tickPriceProtoBuf(message: TickPriceProto.TickPrice?) {
         if (message == null || message.price <= 0) return
 
-        logger.info(
+        m_Logger.info(
             "IBKR PRICE TICK reqId={} tickType={} price={}",
             message.reqId,
             message.tickType,
@@ -457,11 +469,11 @@ class IbkrClient(
 
     override fun managedAccountsProtoBuf(message: ManagedAccountsProto.ManagedAccounts?) {
         if(message == null) {
-            logger.warn("Received null IBKR managedAccounts protobuf message")
+            m_Logger.warn("Received null IBKR managedAccounts protobuf message")
             return
         }
 
-        logger.info(
+        m_Logger.info(
             "IBKR managed accounts account={}",
             message.accountsList
         )
@@ -480,7 +492,7 @@ class IbkrClient(
             "AvailableFunds" -> {
                 latestAvailableFunds = value
 
-                logger.debug(
+                m_Logger.debug(
                     "IBKR AvailableFunds updated: {}",
                     value
                 )
@@ -489,7 +501,7 @@ class IbkrClient(
             "NetLiquidation" -> {
                 latestNetLiquidation = value
 
-                logger.debug(
+                m_Logger.debug(
                     "IBKR NetLiquidation updated: {}",
                     value
                 )
@@ -500,7 +512,7 @@ class IbkrClient(
     //===========================================================//
 
     override fun accountSummaryEndProtoBuf(p0: AccountSummaryEndProto.AccountSummaryEnd?) {
-        logger.debug("IBKR account summary snapshot completed")
+        m_Logger.debug("IBKR account summary snapshot completed")
     }
 
     //===========================================================//
@@ -540,7 +552,7 @@ class IbkrClient(
 
     override fun nextValidIdProtoBuf(message: NextValidIdProto.NextValidId?) {
         if(message == null) {
-            logger.warn("Received null IBKR nextValidId protobuf message")
+            m_Logger.warn("Received null IBKR nextValidId protobuf message")
             return
         }
 
@@ -548,7 +560,7 @@ class IbkrClient(
             maxOf(current, message.orderId)
         }
 
-        logger.info("IBKR next valid orderId={}", message.orderId)
+        m_Logger.info("IBKR next valid orderId={}", message.orderId)
 
         if(!readySignal.isCompleted) {
             readySignal.complete(Unit)
@@ -570,29 +582,29 @@ class IbkrClient(
             "AvailableFunds,NetLiquidation"
         )
 
-        logger.info("Subscribed to IBKR account summary")
+        m_Logger.info("Subscribed to IBKR account summary")
     }
 
     //===========================================================//
 
     private fun startMessageReader() {
-        logger.debug("Starting IBKR message reader")
+        m_Logger.debug("Starting IBKR message reader")
 
-        reader = EReader(client, signal)
+        reader = EReader(client, m_Signal)
 
         reader?.start()
 
         readerThread = Thread {
             while(client.isConnected){
                 try{
-                    signal.waitForSignal()
+                    m_Signal.waitForSignal()
                     reader?.processMsgs()
                 } catch(e: InterruptedException){
                     Thread.currentThread().interrupt()
-                    logger.debug("IBKR reader thread interrupted")
+                    m_Logger.debug("IBKR reader thread interrupted")
                     break
                 } catch(e: Exception){
-                    logger.error("Unexpected error in IBKR reader thread", e)
+                    m_Logger.error("Unexpected error in IBKR reader thread", e)
                 }
             }
         }.apply {
@@ -610,5 +622,18 @@ class IbkrClient(
         )
 
         return historicalEndDateFormatter.format(javaInstant)
+    }
+
+    //===========================================================//
+    //===========================================================//
+    // Constructor(s)
+
+    constructor(userId: UUID, clientId: Int, host: String, port: Int, eventPublisher: ApplicationEventPublisher) {
+        this.userId = userId
+        this.clientId = clientId
+
+        m_Host = host
+        m_Port = port
+        m_EventPublisher = eventPublisher
     }
 }

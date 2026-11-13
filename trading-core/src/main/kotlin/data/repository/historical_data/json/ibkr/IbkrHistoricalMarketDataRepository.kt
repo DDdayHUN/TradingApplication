@@ -27,7 +27,7 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
 
     //===========================================================//
     //===========================================================//
-    // Public Method(es)
+    // Public Method(s)
 
     override suspend fun getBySecurityIdentifier(
         securityIdentifier: SecurityIdentifier,
@@ -59,7 +59,7 @@ internal object IbkrHistoricalMarketDataRepository : IHistoricalMarketDataProvid
 
     //===========================================================//
     //===========================================================//
-    // Private Method(es)
+    // Private Method(s)
 
     private suspend fun getBySecurityIdentifier(securityIdentifier: SecurityIdentifier): HistoricalMarketDataDto = withContext(Dispatchers.IO) {
         val targetFile = s_RootDir.walkTopDown()

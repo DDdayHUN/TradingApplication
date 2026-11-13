@@ -7,15 +7,27 @@ import application.service.user.User
 import com.ib.client.Contract
 import com.ib.client.Decimal
 import com.ib.client.Order
-import data.repository.order.sql.InteractiveBrokersOrderRepository
 import domain.trader.TradingOrder
 import data.infrastructure.broker.ibkr.IbkrEvent
 import data.infrastructure.broker.ibkr.IbkrHistoricalBar
 import data.infrastructure.broker.ibkr.InteractiveBrokerSessionManager
+import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
+import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Status
+import data.infrastructure.broker.ibkr.sql.order.IInteractiveBrokersOrderRepository
+import data.infrastructure.broker.ibkr.sql.order.toEntity
+import data.infrastructure.broker.ibkr.toInteractiveBrokersOrder
+import data.repository.order.ITradingOrderRepository
+import data.repository.order.sql.TradingOrderEntity
+import data.repository.order.sql.toDomain
+import data.repository.order.sql.toEntity
+import data.repository.security.toDomain
+import data.repository.trader.ITraderRepository
+import data.repository.user.IUserRepository
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.delay
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
@@ -23,10 +35,14 @@ import kotlin.time.Instant
 
 @Service
 class InteractiveBrokersService(
-    private val session: InteractiveBrokerSessionManager,
+    private val sessionManager: InteractiveBrokerSessionManager,
+    private val userRepository: IUserRepository,
+    private val traderRepository: ITraderRepository,
+    private val tradingOrderRepository: ITradingOrderRepository,
+    private val ibkrOrderRepository: IInteractiveBrokersOrderRepository,
     private val traderService: ITraderService,
-    private val orderRepository: InteractiveBrokersOrderRepository
 ) : IBrokerService {
+    // TODO : This class needs to be frissitve, cuz this is not good currently.
     //===========================================================//
     //===========================================================//
     // Private Field(s)
@@ -37,35 +53,41 @@ class InteractiveBrokersService(
     //===========================================================//
     // Public Method(s)
 
-    override suspend fun submitOrder(userId: UUID, order: TradingOrder) {
-        val persistedOrders = order.toInteractiveBrokersOrder(reserveOrderId(userId))
+    @Transactional
+    override suspend fun submitOrderForUser(userId: UUID, order: TradingOrder) {
+        val userEntity = userRepository.getById(userId).getOrThrow()
+        val traderEntity = traderRepository.getById(order.traderId).getOrThrow()
 
-        persistedOrders.forEach { order ->
-            orderRepository.save(order).getOrThrow()
+        if(!userEntity.portfolio.traders.contains(traderEntity)) {
+            throw IllegalArgumentException("Trader not found for user with ID:{${userEntity.id}}")
         }
 
-        persistedOrders.forEach { order ->
-            try {
-                placeOrder(userId,order)
-            } catch(e: Exception) {
-                orderRepository.save(order.copy(
-                    status = InteractiveBrokersOrder.Status.CANCELLED
-                )).getOrThrow()
-                throw e
-            }
+        val ibkrOrder = order.toInteractiveBrokersOrder(reserveOrderId(userId))
+
+        val orderEntity = tradingOrderRepository.save(order.toEntity(traderEntity)).getOrThrow()
+        val ibkrOrderEntity = ibkrOrderRepository.save(ibkrOrder.toEntity(orderEntity)).getOrThrow()
+
+        try {
+            placeOrder(userId, ibkrOrder)
+        }
+        catch(e: Exception) {
+            ibkrOrderEntity.status = Status.CANCELLED
+            ibkrOrderRepository.save(ibkrOrderEntity).getOrThrow()
+            throw e
         }
     }
 
     //===========================================================//
 
-    override suspend fun getAllOrder(userId: UUID): List<TradingOrder> {
-        return orderRepository.getAll(userId).getOrThrow().map { order -> order.toDomain() }
+    @Transactional(readOnly = true)
+    override suspend fun getAllOrderForUser(userId: UUID): List<TradingOrder> {
+        return ibkrOrderRepository.getAllByUserId(userId).getOrThrow().map { order -> order.tradingOrder.toDomain() }
     }
 
     //===========================================================//
 
-    override fun getAccountSummary(userId: UUID): User.AccountSummary {
-        val client = session.getClient(userId)
+    override suspend fun getAccountSummary(userId: UUID): User.AccountSummary {
+        val client = sessionManager.getClient(userId)
         val ibkrAccSum = client.getAccountSummary()
 
         return User.AccountSummary(
@@ -76,9 +98,8 @@ class InteractiveBrokersService(
 
     //===========================================================//
 
-
     suspend fun getHistoricalData(userId: UUID, securityIdentifier: SecurityIdentifier, from: Instant, to: Instant): List<IbkrHistoricalBar> {
-        val client = session.getClient(userId)
+        val client = sessionManager.getClient(userId)
 
         val allBars = mutableListOf<IbkrHistoricalBar>()
 
@@ -123,46 +144,56 @@ class InteractiveBrokersService(
     // Event Listener(s)
 
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderSubmittedEvent) {
-        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if (order.status == InteractiveBrokersOrder.Status.FILLED ||
-            order.status == InteractiveBrokersOrder.Status.CANCELLED ||
-            order.status == InteractiveBrokersOrder.Status.SUBMITTED
+        val order = ibkrOrderRepository.getById(event.userId).getOrThrow()
+
+        if (order.status == Status.FILLED       ||
+            order.status == Status.CANCELLED    ||
+            order.status == Status.SUBMITTED
         ) return
-        orderRepository.save(order.submit().getOrThrow()).getOrThrow()
+
+        order.status = Status.SUBMITTED
+        ibkrOrderRepository.save(order).getOrThrow()
+
+        m_Logger.info("IBKR order submitted with ID:{${order.tradingOrder.id}}")
     }
 
     //===========================================================//
 
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderCancelledEvent) {
-        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status == InteractiveBrokersOrder.Status.FILLED) return
+        val order = ibkrOrderRepository.getById(event.userId).getOrThrow()
 
-        orderRepository.save(order.cancel().getOrThrow()).getOrThrow()
+        if(order.status == Status.FILLED) return
+
+        order.status = Status.CANCELLED
+        ibkrOrderRepository.save(order).getOrThrow()
+
+        m_Logger.info("IBKR order cancelled with ID:{${order.tradingOrder.id}}")
     }
 
     //===========================================================//
 
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderFilledEvent) {
-        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status == InteractiveBrokersOrder.Status.FILLED) return
+        val order = ibkrOrderRepository.getById(event.userId).getOrThrow()
+        if(order.status == Status.FILLED) return
 
-        when (val signal = order.signal) {
-
-            is InteractiveBrokersOrder.Signal.Buy -> {
+        when (order.tradingOrder.action) {
+            TradingOrderEntity.Action.BUY -> {
                 traderService.applyBuyFill(
-                    traderId = order.traderId,
+                    traderId = order.tradingOrder.trader.id,
                     filledQuantity = event.filled.toInt(),
                     averageFillPrice = event.averageFillPrice
                 )
             }
-
-            is InteractiveBrokersOrder.Signal.Sell -> {
+            TradingOrderEntity.Action.SELL -> { // TODO : FIX THIS LATER.
                 traderService.applySellFill(
-                    traderId = order.traderId,
-                    sellAllocations = signal.allocations,
+                    traderId = order.tradingOrder.trader.id,
+                    sellAllocations = order.tradingOrder.sellHoldings!!.map{ it.toDomain() }.toSet(),
                     averageFillPrice = event.averageFillPrice
                 )
             }
@@ -175,90 +206,86 @@ class InteractiveBrokersService(
             event.averageFillPrice
         )
 
-        val filledOrder = order.fill(
-            filledQuantity = event.filled,
-            averageFillPrice = event.averageFillPrice
-        ).getOrThrow()
+        if(order.status != Status.PENDING || order.status != Status.SUBMITTED) return
 
-        orderRepository.save(filledOrder).getOrThrow()
+        order.filledQuantity = event.filled
+        order.averageFillPrice = event.averageFillPrice
+        order.status = Status.FILLED
 
-        if (order.signal is InteractiveBrokersOrder.Signal.Sell) {
-            orderRepository
-                .clearOrderAllocation(filledOrder.id)
-                .getOrThrow()
-        }
+        ibkrOrderRepository.save(order).getOrThrow()
     }
 
     //===========================================================//
 
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderPreSubmittedEvent) {
-        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status != InteractiveBrokersOrder.Status.PENDING) return
+        val order = ibkrOrderRepository.getById(event.userId).getOrThrow()
 
-        orderRepository.save(
-            order.copy(
-                status = InteractiveBrokersOrder.Status.PRE_SUBMITTED
-            )
-        ).getOrThrow()
+        if(order.status != Status.PENDING) return
 
-        m_Logger.info("IBKR order pre-submitted orderId=${event.orderId}")
+        order.status = Status.PRE_SUBMITTED
+        ibkrOrderRepository.save(order).getOrThrow()
+
+        m_Logger.info("IBKR order pre-submitted with ID:{${order.tradingOrder.id}}")
     }
 
     //===========================================================//
 
     @EventListener
+    @Transactional(readOnly = true)
     suspend fun handle(event: IbkrEvent.OrderPendingEvent) {
-        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if(order.status != InteractiveBrokersOrder.Status.PENDING) return
+        val order = ibkrOrderRepository.getById(event.userId).getOrThrow()
 
-        m_Logger.info("IBKR order pending orderId=${event.orderId}")
+        if(order.status != Status.PENDING) return
+
+        m_Logger.info("IBKR order pending with ID:{${order.tradingOrder.id}}")
     }
 
     //===========================================================//
 
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderPendingCancelEvent) {
-        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if (order.status == InteractiveBrokersOrder.Status.FILLED ||
-            order.status == InteractiveBrokersOrder.Status.CANCELLED ||
-            order.status == InteractiveBrokersOrder.Status.PENDING_CANCEL
+        val order = ibkrOrderRepository.getById(event.userId).getOrThrow()
+
+        if (order.status == Status.FILLED           ||
+            order.status == Status.CANCELLED        ||
+            order.status == Status.PENDING_CANCEL
         ) return
 
-        orderRepository.save(
-            order.copy(
-                status = InteractiveBrokersOrder.Status.PENDING_CANCEL
-            )
-        ).getOrThrow()
+        order.status = Status.PENDING_CANCEL
 
-        m_Logger.info("IBKR order pending cancellation orderId=${event.orderId}")
+        ibkrOrderRepository.save(order).getOrThrow()
+
+        m_Logger.info("IBKR order pending cancellation with ID:{${order.tradingOrder.id}}")
     }
 
     //===========================================================//
 
     @EventListener
+    @Transactional
     suspend fun handle(event: IbkrEvent.OrderInactiveEvent) {
-        val order = orderRepository.getByIbkrOrderId(event.orderId).getOrThrow()
-        if (order.status == InteractiveBrokersOrder.Status.FILLED ||
-            order.status == InteractiveBrokersOrder.Status.CANCELLED ||
-            order.status == InteractiveBrokersOrder.Status.INACTIVE
+        val order = ibkrOrderRepository.getById(event.userId).getOrThrow()
+
+        if (order.status == Status.FILLED       ||
+            order.status == Status.CANCELLED    ||
+            order.status == Status.INACTIVE
         ) return
 
-        orderRepository.save(
-            order.copy(
-                status = InteractiveBrokersOrder.Status.INACTIVE
-            )
-        ).getOrThrow()
+        order.status = Status.INACTIVE
 
-        m_Logger.warn("IBKR order inactive orderId=${event.orderId}")
+        ibkrOrderRepository.save(order).getOrThrow()
+
+        m_Logger.warn("IBKR order inactive with ID:{${order.tradingOrder.id}}")
     }
 
     //===========================================================//
     //===========================================================//
     // Private Method(s)
 
-    private fun placeOrder(userId: UUID, order: InteractiveBrokersOrder) {
-        val client = session.getClient(userId)
+    private suspend fun placeOrder(userId: UUID, order: InteractiveBrokersOrder) {
+        val client = sessionManager.getClient(userId)
         val clientContract = createStockContract(order)
         val clientOrder = createMarketOrder(order)
 
@@ -272,29 +299,37 @@ class InteractiveBrokersService(
     //===========================================================//
 
     private fun createStockContract(order: InteractiveBrokersOrder): Contract {
+        val securityIdentifier = order.tradingOrder.securityIdentifier
         return Contract().apply {
-            symbol(order.securityIdentifier.tickerSymbol)
+            symbol(securityIdentifier.tickerSymbol)
             secType("STK")
             exchange("SMART")
-            currency(order.securityIdentifier.currency)
+            currency(securityIdentifier.currency)
         }
     }
 
     //===========================================================//
 
     private fun createMarketOrder(order: InteractiveBrokersOrder): Order {
+        val tradingOrderSignal = order.tradingOrder.signal
+        val action = if(tradingOrderSignal is TradingOrder.Signal.Buy) "BUY" else "SELL"
+        val quantity = when (tradingOrderSignal) {
+            is TradingOrder.Signal.Buy -> tradingOrderSignal.amount.toDouble()
+            is TradingOrder.Signal.Sell -> tradingOrderSignal.sellHoldings.sumOf { (_, amount) -> amount }.toDouble()
+        }
+
         return Order().apply {
-            action(order.action.name)
+            action(action)
             orderType("MKT")
-            totalQuantity(Decimal.get(order.quantity))
+            totalQuantity(Decimal.get(quantity))
             tif("DAY")
         }
     }
 
     //===========================================================//
 
-    private fun reserveOrderId(userId: UUID): Int {
-        val client = session.getClient(userId)
+    private suspend fun reserveOrderId(userId: UUID): Int {
+        val client = sessionManager.getClient(userId)
         return client.reserveOrderId()
     }
 }
