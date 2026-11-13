@@ -615,4 +615,12 @@ class IbkrClient(
 
         return historicalEndDateFormatter.format(javaInstant)
     }
+
+    //===========================================================//
+    //===========================================================//
+    // Constructor(s)
+
+    init {
+
+    }
 }

@@ -2,6 +2,7 @@ package api.controller
 
 import api.dto.UserResponse
 import api.dto.toResponse
+import api.service.IControllerService
 import api.service.auth.IAuthenticationService
 import application.service.user.IUserService
 import data.repository.user.sql.toDomain
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/users/")
 class UserController(
     private val auth: IAuthenticationService,
-    private val userService: IUserService
+    private val controllerService: IControllerService
 ) {
     //===========================================================//
     //===========================================================//
@@ -27,8 +28,10 @@ class UserController(
 
     @GetMapping
     suspend fun getCurrentUser(): ResponseEntity<UserResponse> {
+        val userId = auth.currentUser()
+
         return ResponseEntity.ok(
-            userService.getUserById(auth.currentUser()).toDomain().toResponse()
+            controllerService.getUser(userId).toResponse()
         )
     }
 
@@ -42,6 +45,6 @@ class UserController(
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.getUserById(userId).toDomain().toResponse())
+            .body(controllerService.getUser(userId).toResponse())
     }
 }

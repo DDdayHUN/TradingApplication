@@ -15,13 +15,6 @@ class UserService(
     // Public Method(s)
 
     @Transactional(readOnly = true)
-    override suspend fun getUserById(userId: UUID): UserEntity {
-        return userRepository.getById(userId).getOrThrow()
-    }
-
-    //===========================================================//
-
-    @Transactional(readOnly = true)
     override suspend fun getAllUser(): List<UserEntity> {
         return userRepository.getAll().getOrThrow()
     }

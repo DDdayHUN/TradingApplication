@@ -55,7 +55,7 @@ class InteractiveBrokersService(
         val traderEntity = traderRepository.getById(order.traderId).getOrThrow()
 
         if(!userEntity.portfolio.traders.contains(traderEntity)) {
-            throw IllegalArgumentException("Not found trader for user with ID:{${userEntity.id}}")
+            throw IllegalArgumentException("Trader not found for user with ID:{${userEntity.id}}")
         }
 
 
@@ -293,7 +293,7 @@ class InteractiveBrokersService(
     //===========================================================//
     // Private Method(s)
 
-    private fun placeOrder(userId: UUID, order: InteractiveBrokersOrder) {
+    private suspend fun placeOrder(userId: UUID, order: InteractiveBrokersOrder) {
         val client = sessionManager.getClient(userId)
         val clientContract = createStockContract(order)
         val clientOrder = createMarketOrder(order)
