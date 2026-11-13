@@ -58,8 +58,10 @@ class InteractiveBrokersService(
         val userEntity = userRepository.getById(userId).getOrThrow()
         val traderEntity = traderRepository.getById(order.traderId).getOrThrow()
 
-        if(!userEntity.portfolio.traders.contains(traderEntity)) {
-            throw IllegalArgumentException("Trader not found for user with ID:{${userEntity.id}}")
+        if (userEntity.portfolio.traders.none { it.id == traderEntity.id }) {
+            throw IllegalArgumentException(
+                "Trader not found for user with ID: ${userEntity.id}"
+            )
         }
 
         val ibkrOrder = order.toInteractiveBrokersOrder(reserveOrderId(userId))

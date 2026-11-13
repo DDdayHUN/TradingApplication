@@ -1,7 +1,9 @@
 package data.infrastructure.broker.ibkr.sql.user
 
+import org.springframework.stereotype.Repository
 import java.util.UUID
 
+@Repository
 class InteractiveBrokersUserRepository(
     private val repository: IInteractiveBrokersUserJpaRepository
 ) : IInteractiveBrokersUserRepository {
