@@ -13,8 +13,8 @@ import data.infrastructure.broker.ibkr.IbkrHistoricalBar
 import data.infrastructure.broker.ibkr.InteractiveBrokerSessionManager
 import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
 import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Status
-import data.infrastructure.broker.ibkr.order.sql.IInteractiveBrokersOrderRepository
-import data.infrastructure.broker.ibkr.order.sql.toEntity
+import data.infrastructure.broker.ibkr.sql.order.IInteractiveBrokersOrderRepository
+import data.infrastructure.broker.ibkr.sql.order.toEntity
 import data.infrastructure.broker.ibkr.toInteractiveBrokersOrder
 import data.repository.order.ITradingOrderRepository
 import data.repository.order.sql.TradingOrderEntity
@@ -22,7 +22,6 @@ import data.repository.order.sql.toDomain
 import data.repository.order.sql.toEntity
 import data.repository.security.toDomain
 import data.repository.trader.ITraderRepository
-import data.repository.trader.sql.toDomain
 import data.repository.user.IUserRepository
 import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.delay

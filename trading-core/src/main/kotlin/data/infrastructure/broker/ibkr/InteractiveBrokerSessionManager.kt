@@ -24,7 +24,7 @@ class InteractiveBrokerSessionManager(
     //===========================================================//
     // Private Field(s)
 
-    private val sessions = ConcurrentHashMap<UUID, InteractiveBrokersSession>()
+    private val sessions = ConcurrentHashMap<UUID, IbkrClientSession>()
     private val userLocks = ConcurrentHashMap<UUID, Mutex>()
 
     @OptIn(ExperimentalAtomicApi::class)
@@ -37,27 +37,24 @@ class InteractiveBrokerSessionManager(
     //===========================================================//
     // Public Method(s)
 
-    suspend fun connect(userId: UUID, port: Int): InteractiveBrokersSession {
+    suspend fun connect(userId: UUID, port: Int) {
         sessionMutex.read {
             throwIfShuttingDown()
             val mutex = userLocks.computeIfAbsent(userId) { Mutex() }
 
             return mutex.withLock {
                 sessions[userId] ?: run {
-                    val client = IbkrClient(userId, eventPublisher)
-
-                    val session = InteractiveBrokersSession(
-                        userId = userId,
-                        client = client,
-                        host = config.host,
-                        port = port,
-                        clientId = 1
+                    val clientSession = IbkrClientSession(
+                        userId,
+                        1,
+                        config.host,
+                        port,
+                        eventPublisher
                     )
 
-                    session.connect()
+                    clientSession.connect()
 
-                    sessions[userId] = session
-                    session
+                    sessions[userId] = clientSession
                 }
             }
         }
@@ -65,14 +62,13 @@ class InteractiveBrokerSessionManager(
 
     //===========================================================//
 
-    suspend fun getClient(userId: UUID): IbkrClient {
+    suspend fun getClient(userId: UUID): IbkrClientSession {
         sessionMutex.read {
             throwIfShuttingDown()
             val mutex = userLocks.computeIfAbsent(userId) { Mutex() }
 
             return mutex.withLock {
-                sessions[userId]?.getClient()
-                    ?: throw IllegalStateException("User has no active IBKR connection with ID:{${userId}}")
+                sessions[userId] ?: throw IllegalStateException("User has no active IBKR connection with ID:{${userId}}")
             }
         }
     }

@@ -1,7 +1,6 @@
-package data.infrastructure.broker.ibkr.order.sql
+package data.infrastructure.broker.ibkr.sql.order
 
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Repository

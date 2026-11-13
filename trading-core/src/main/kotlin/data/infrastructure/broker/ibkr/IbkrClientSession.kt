@@ -16,13 +16,21 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
-class IbkrClient(
-    private val userId: UUID,
-    private val event: ApplicationEventPublisher
-) : IbkrInterfaceWrapper {
+class IbkrClientSession : IbkrInterfaceWrapper {
+    //===========================================================//
+    //===========================================================//
+    // Public Field(s)
+
+    val userId: UUID
+    val clientId: Int
+
     //===========================================================//
     //===========================================================//
     // Private Field(s)
+
+    private val m_Host: String
+    private val m_Port: Int
+    private val m_EventPublisher: ApplicationEventPublisher
 
     private val m_Signal = EJavaSignal()
     private val client = EClientSocket(this, m_Signal)
@@ -48,13 +56,13 @@ class IbkrClient(
 
     //===========================================================//
 
-    private val m_Logger = logger<IbkrClient>()
+    private val m_Logger = logger<IbkrClientSession>()
 
     //===========================================================//
     //===========================================================//
     // Public Method(s)
 
-    suspend fun connect(host: String, port: Int, clientId: Int, maxAttempts: Int = 5) {
+    suspend fun connect(maxAttempts: Int = 5) {
         if(client.isConnected && nextOrderId.get() >= 0) {
             m_Logger.warn("IBKR client is already connected and ready")
             return
@@ -63,7 +71,7 @@ class IbkrClient(
         repeat(maxAttempts) { attempt ->
             try{
                 m_Logger.info("Connecting to IBKR attemp={}/{} host={}, port={} clientId={}",
-                    attempt + 1, maxAttempts, host, port, clientId)
+                    attempt + 1, maxAttempts, m_Host, m_Port, clientId)
 
                 nextOrderId.set(-1)
                 readySignal = CompletableDeferred()
@@ -72,7 +80,7 @@ class IbkrClient(
                     client.eDisconnect()
                 }
 
-                client.eConnect(host, port, clientId)
+                client.eConnect(m_Host, m_Port, clientId)
 
                 if(!client.isConnected) {
                     throw IllegalStateException(
@@ -317,25 +325,25 @@ class IbkrClient(
 
         when(message.status) {
             "ApiPending", "PendingSubmit" -> {
-                event.publishEvent(IbkrEvent.OrderPendingEvent(userId, message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderPendingEvent(userId, message.orderId))
             }
             "PreSubmitted" -> {
-                event.publishEvent(IbkrEvent.OrderPreSubmittedEvent(userId, message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderPreSubmittedEvent(userId, message.orderId))
             }
             "Submitted" -> {
-                event.publishEvent(IbkrEvent.OrderSubmittedEvent(userId, message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderSubmittedEvent(userId, message.orderId))
             }
             "PendingCancel" -> {
-                event.publishEvent(IbkrEvent.OrderPendingCancelEvent(userId, message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderPendingCancelEvent(userId, message.orderId))
             }
             "Filled" -> {
-                event.publishEvent(IbkrEvent.OrderFilledEvent(userId, message.orderId, message.filled, message.avgFillPrice))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderFilledEvent(userId, message.orderId, message.filled, message.avgFillPrice))
             }
             "ApiCancelled", "Cancelled" -> {
-                event.publishEvent(IbkrEvent.OrderCancelledEvent(userId, message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderCancelledEvent(userId, message.orderId))
             }
             "Inactive" -> {
-                event.publishEvent(IbkrEvent.OrderInactiveEvent(userId, message.orderId))
+                m_EventPublisher.publishEvent(IbkrEvent.OrderInactiveEvent(userId, message.orderId))
             }
         }
     }
@@ -621,7 +629,12 @@ class IbkrClient(
     //===========================================================//
     // Constructor(s)
 
-    init {
+    constructor(userId: UUID, clientId: Int, host: String, port: Int, eventPublisher: ApplicationEventPublisher) {
+        this.userId = userId
+        this.clientId = clientId
 
+        m_Host = host
+        m_Port = port
+        m_EventPublisher = eventPublisher
     }
 }

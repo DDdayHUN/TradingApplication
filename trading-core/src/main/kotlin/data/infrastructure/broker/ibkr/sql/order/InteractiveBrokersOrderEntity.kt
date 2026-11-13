@@ -1,11 +1,10 @@
-package data.infrastructure.broker.ibkr.order.sql
+package data.infrastructure.broker.ibkr.sql.order
 
 import data.infrastructure.broker.ibkr.InteractiveBrokersOrder
 import data.infrastructure.broker.ibkr.InteractiveBrokersOrder.Status
 import data.repository.order.sql.TradingOrderEntity
 import data.repository.order.sql.toDomain
 import jakarta.persistence.*
-import java.util.*
 
 @Entity
 @Table(name = "app_infrastructure_ibkr_order")

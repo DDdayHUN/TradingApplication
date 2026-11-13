@@ -1,4 +1,4 @@
-package data.infrastructure.broker.ibkr.order.sql
+package data.infrastructure.broker.ibkr.sql.order
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
