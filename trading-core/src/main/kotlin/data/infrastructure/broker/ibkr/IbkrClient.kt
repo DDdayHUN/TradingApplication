@@ -10,12 +10,14 @@ import kotlinx.coroutines.withTimeout
 import org.springframework.context.ApplicationEventPublisher
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 class IbkrClient(
+    private val userId: UUID,
     private val event: ApplicationEventPublisher
 ) : IbkrInterfaceWrapper {
     //===========================================================//
@@ -130,7 +132,6 @@ class IbkrClient(
 
         client.eDisconnect()
 
-        readerThread?.
         readerThread?.interrupt()
         readerThread = null
         reader = null
@@ -314,27 +315,27 @@ class IbkrClient(
             return
         }
 
-        when(message.status){
+        when(message.status) {
             "ApiPending", "PendingSubmit" -> {
-                event.publishEvent(IbkrEvent.OrderPendingEvent(message.orderId))
+                event.publishEvent(IbkrEvent.OrderPendingEvent(userId, message.orderId))
             }
             "PreSubmitted" -> {
-                event.publishEvent(IbkrEvent.OrderPreSubmittedEvent(message.orderId))
+                event.publishEvent(IbkrEvent.OrderPreSubmittedEvent(userId, message.orderId))
             }
             "Submitted" -> {
-                event.publishEvent(IbkrEvent.OrderSubmittedEvent(message.orderId))
+                event.publishEvent(IbkrEvent.OrderSubmittedEvent(userId, message.orderId))
             }
             "PendingCancel" -> {
-                event.publishEvent(IbkrEvent.OrderPendingCancelEvent(message.orderId))
+                event.publishEvent(IbkrEvent.OrderPendingCancelEvent(userId, message.orderId))
             }
             "Filled" -> {
-                event.publishEvent(IbkrEvent.OrderFilledEvent(message.orderId, message.filled, message.avgFillPrice))
+                event.publishEvent(IbkrEvent.OrderFilledEvent(userId, message.orderId, message.filled, message.avgFillPrice))
             }
             "ApiCancelled", "Cancelled" -> {
-                event.publishEvent(IbkrEvent.OrderCancelledEvent(message.orderId))
+                event.publishEvent(IbkrEvent.OrderCancelledEvent(userId, message.orderId))
             }
             "Inactive" -> {
-                event.publishEvent(IbkrEvent.OrderInactiveEvent(message.orderId))
+                event.publishEvent(IbkrEvent.OrderInactiveEvent(userId, message.orderId))
             }
         }
     }

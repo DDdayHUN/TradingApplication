@@ -10,34 +10,6 @@ data class InteractiveBrokersOrder(
     val filledQuantity: String = "",
     val averageFillPrice: Double? = null
 ) {
-    // TODO : Remove this member function, because responsibility of this functionality will be placed onto IbkrService
-    fun fill(
-        filledQuantity: String,
-        averageFillPrice: Double
-    ): Result<InteractiveBrokersOrder> {
-        return when (status) {
-            Status.PENDING, Status.SUBMITTED -> {
-                Result.success(
-                    copy(
-                        status = Status.FILLED,
-                        filledQuantity = filledQuantity,
-                        averageFillPrice = averageFillPrice
-                    )
-                )
-            }
-
-            Status.FILLED -> {
-                Result.success(this)
-            }
-
-            else -> {
-                Result.failure(
-                    IllegalStateException("Cannot fill order with status $status")
-                )
-            }
-        }
-    }
-
     enum class Status {
         PENDING,
         SUBMITTED,

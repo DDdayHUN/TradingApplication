@@ -44,7 +44,7 @@ class InteractiveBrokerSessionManager(
 
             return mutex.withLock {
                 sessions[userId] ?: run {
-                    val client = IbkrClient(eventPublisher)
+                    val client = IbkrClient(userId, eventPublisher)
 
                     val session = InteractiveBrokersSession(
                         userId = userId,

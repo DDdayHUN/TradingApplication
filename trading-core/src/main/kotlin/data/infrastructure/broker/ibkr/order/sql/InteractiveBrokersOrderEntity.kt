@@ -11,15 +11,12 @@ import java.util.*
 @Table(name = "app_infrastructure_ibkr_order")
 class InteractiveBrokersOrderEntity(
     @Id
-    @Column(name = "id")
-    var id: UUID,
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id", nullable = false, updatable = false)
+    var tradingOrder: TradingOrderEntity,
 
     @Column(name = "ibkr_order_id", nullable = false, updatable = false)
     var ibkrOrderId: Int,
-
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "trading_order_fk", nullable = false, updatable = false)
-    var tradingOrder: TradingOrderEntity,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -34,9 +31,8 @@ class InteractiveBrokersOrderEntity(
 
 fun InteractiveBrokersOrder.toEntity(tradingOrder: TradingOrderEntity): InteractiveBrokersOrderEntity {
     return InteractiveBrokersOrderEntity(
-        id = tradingOrder.id,
-        ibkrOrderId = brokerOrderId,
         tradingOrder = tradingOrder,
+        ibkrOrderId = brokerOrderId,
         status = status,
         filledQuantity = filledQuantity,
         averageFillPrice = averageFillPrice

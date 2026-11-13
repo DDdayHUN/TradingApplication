@@ -190,8 +190,8 @@ class TraderService(
 
     //===========================================================//
 
-    @Transactional
     @Deprecated("Will be moved to another service in the future")
+    @Transactional
     override suspend fun applyBuyFill(traderId: UUID, filledQuantity: Int, averageFillPrice: Double) {
         val traderEntity = traderRepository.getById(traderId).getOrThrow()
         val traderDomain = traderEntity.toDomain()
@@ -208,8 +208,8 @@ class TraderService(
 
     //===========================================================//
 
-    @Transactional
     @Deprecated("Will be moved to another service in the future")
+    @Transactional
     override suspend fun applySellFill(traderId: UUID, sellAllocations: Set<SellSecurityHolding>, averageFillPrice: Double) {
         val traderEntity = traderRepository.getById(traderId).getOrThrow()
         val traderDomain = traderEntity.toDomain()

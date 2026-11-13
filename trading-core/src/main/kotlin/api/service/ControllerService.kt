@@ -4,9 +4,10 @@ import application.service.user.User
 import data.repository.user.IUserRepository
 import domain.Portfolio
 import domain.trader.Trader
+import org.springframework.stereotype.Service
 import java.util.UUID
 
-
+@Service
 class ControllerService(
     private val userRepository: IUserRepository
 ) : IControllerService {
