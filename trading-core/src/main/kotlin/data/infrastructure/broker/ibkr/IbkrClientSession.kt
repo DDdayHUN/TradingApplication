@@ -7,7 +7,6 @@ import domain.market.security.SecurityIdentifier
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import org.springframework.context.ApplicationEventPublisher
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -15,6 +14,9 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
+
+//===========================================================//
+//===========================================================//
 
 class IbkrClientSession : IbkrInterfaceWrapper {
     //===========================================================//
@@ -28,13 +30,12 @@ class IbkrClientSession : IbkrInterfaceWrapper {
     //===========================================================//
     // Private Field(s)
 
+    private val m_Logger = logger<IbkrClientSession>()
+
     private val m_Host: String
     private val m_Port: Int
-    private val m_EventPublisher: ApplicationEventPublisher
+    private val m_OrderHandlerService: IbkrOrderHandlerService
 
-    //===========================================================//
-
-    private val m_Logger = logger<IbkrClientSession>()
     private val m_Signal = EJavaSignal()
     private val client = EClientSocket(this, m_Signal)
     private var reader: EReader? = null
@@ -62,29 +63,20 @@ class IbkrClientSession : IbkrInterfaceWrapper {
     // Public Method(s)
 
     suspend fun connect(maxAttempts: Int = 5) {
-        if(client.isConnected && nextOrderId.get() >= 0) {
-            m_Logger.warn("IBKR client is already connected and ready")
-            return
-        }
-
         repeat(maxAttempts) { attempt ->
-            try{
-                m_Logger.info("Connecting to IBKR attemp={}/{} host={}, port={} clientId={}",
-                    attempt + 1, maxAttempts, m_Host, m_Port, clientId)
+            try {
+                if(client.isConnected) return
 
-                nextOrderId.set(-1)
+                m_Logger.info(
+                    "Connecting to IBKR attemp={}/{} host={}, port={} clientId={}",
+                    attempt + 1, maxAttempts, m_Host, m_Port, clientId
+                )
+
                 readySignal = CompletableDeferred()
-
-                if(client.isConnected) {
-                    client.eDisconnect()
-                }
-
                 client.eConnect(m_Host, m_Port, clientId)
 
                 if(!client.isConnected) {
-                    throw IllegalStateException(
-                        "Could not connect to IBKR Gateway"
-                    )
+                    throw IllegalStateException("Could not connect to IBKR Gateway")
                 }
 
                 startMessageReader()
@@ -97,13 +89,12 @@ class IbkrClientSession : IbkrInterfaceWrapper {
 
                 subscribeAccountSummary()
                 return
-            } catch(e: Exception) {
+            }
+            catch(e: Exception) {
                 m_Logger.warn("IBKR conntection attempt {}/{} failed",
                     attempt + 1, maxAttempts, e)
 
-                if(client.isConnected) {
-                    client.eDisconnect()
-                }
+                if(client.isConnected) client.eDisconnect()
 
                 readerThread?.interrupt()
                 readerThread = null
@@ -127,15 +118,11 @@ class IbkrClientSession : IbkrInterfaceWrapper {
     //===========================================================//
 
     fun disconnect() {
-        if(!client.isConnected) {
-            m_Logger.debug("IBKR client is already disconnected")
-            return
-        }
+        if(!client.isConnected) return
 
-        m_Logger.info("Disconnecting from IBKR Gateway")
-        client.cancelAccountSummary(
-            accountSummaryRequestId
-        )
+        m_Logger.info("Disconnecting from IBKR Gateway for user with ID:{${userId}}")
+
+        client.cancelAccountSummary(accountSummaryRequestId)
 
         client.eDisconnect()
 
@@ -147,7 +134,6 @@ class IbkrClientSession : IbkrInterfaceWrapper {
         pendingPrices.clear()
         pendingHistoricalData.values.forEach {pending ->pending.result.cancel()}
         pendingHistoricalData.clear()
-
     }
 
     //===========================================================//
@@ -324,26 +310,39 @@ class IbkrClientSession : IbkrInterfaceWrapper {
 
         when(message.status) {
             "ApiPending", "PendingSubmit" -> {
-                m_EventPublisher.publishEvent(IbkrEvent.OrderPendingEvent(userId, message.orderId))
+                m_OrderHandlerService.handle(
+                    orderEvent = IbkrOrderHandlerService.OrderEvent.Pending(userId, message.orderId)
+                )
             }
             "PreSubmitted" -> {
-                m_EventPublisher.publishEvent(IbkrEvent.OrderPreSubmittedEvent(userId, message.orderId))
+                m_OrderHandlerService.handle(
+                    orderEvent = IbkrOrderHandlerService.OrderEvent.PendingSubmit(userId, message.orderId)
+                )
             }
             "Submitted" -> {
-                m_EventPublisher.publishEvent(IbkrEvent.OrderSubmittedEvent(userId, message.orderId))
+                m_OrderHandlerService.handle(
+                    orderEvent = IbkrOrderHandlerService.OrderEvent.Submitted(userId, message.orderId)
+                )
             }
             "PendingCancel" -> {
-                m_EventPublisher.publishEvent(IbkrEvent.OrderPendingCancelEvent(userId, message.orderId))
+                m_OrderHandlerService.handle(
+                    orderEvent = IbkrOrderHandlerService.OrderEvent.PendingCancel(userId, message.orderId)
+                )
             }
             "Filled" -> {
-                m_EventPublisher.publishEvent(IbkrEvent.OrderFilledEvent(userId, message.orderId, message.filled, message.avgFillPrice))
+                m_OrderHandlerService.handle(
+                    orderEvent = IbkrOrderHandlerService.OrderEvent.Filled(userId, message.orderId, message.filled, averageFillPrice = message.avgFillPrice)
+                )
             }
             "ApiCancelled", "Cancelled" -> {
-                m_EventPublisher.publishEvent(IbkrEvent.OrderCancelledEvent(userId, message.orderId))
+                m_OrderHandlerService.handle(
+                    orderEvent = IbkrOrderHandlerService.OrderEvent.Cancelled(userId, message.orderId)
+                )
             }
+            /*
             "Inactive" -> {
-                m_EventPublisher.publishEvent(IbkrEvent.OrderInactiveEvent(userId, message.orderId))
-            }
+                m_OrderHandlerService.handle(IbkrEvent.OrderInactiveEvent(userId, message.orderId))
+            }*/
         }
     }
 
@@ -628,12 +627,12 @@ class IbkrClientSession : IbkrInterfaceWrapper {
     //===========================================================//
     // Constructor(s)
 
-    constructor(userId: UUID, clientId: Int, host: String, port: Int, eventPublisher: ApplicationEventPublisher) {
+    constructor(userId: UUID, clientId: Int, host: String, port: Int, orderHandlerService: IbkrOrderHandlerService) {
         this.userId = userId
         this.clientId = clientId
 
         m_Host = host
         m_Port = port
-        m_EventPublisher = eventPublisher
+        m_OrderHandlerService = orderHandlerService
     }
 }
